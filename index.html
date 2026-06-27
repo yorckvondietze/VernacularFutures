@@ -3188,7 +3188,7 @@ async function runBigBrother(){
   if(map&&a.hasCoord&&best.c.hasCoord){
     const lineCol=scn===1?'#9A7870':'#E07010';
     bbLine=L.polyline([[a.lat,a.lon],[best.c.lat,best.c.lon]],{
-      color:lineCol,weight:2.5,opacity:0.9
+      color:lineCol,weight:3.5,opacity:0.95
     }).addTo(map);
     const farNote=best.dist>1.2
       ?`<br><span style="font-family:monospace;font-size:10px;color:#b94040;">No close climate analogue identified in the present dataset — nearest available approximation shown (d=${best.dist.toFixed(2)}). Morphological inference should be treated with caution.</span>`
