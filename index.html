@@ -3371,11 +3371,14 @@ async function runBigBrother(){
       const bearing=(Math.atan2(y,x)*180/Math.PI+360)%360;
       const arrowIcon=L.divIcon({
         className:'',
-        html:`<svg width="18" height="18" viewBox="-9 -9 18 18" xmlns="http://www.w3.org/2000/svg"
-               style="transform:rotate(${bearing}deg);display:block;">
-               <polygon points="0,-9 5,5 0,1 -5,5" fill="${lineCol}" opacity="0.95"/>
+        html:`<svg width="22" height="22" viewBox="-11 -11 22 22" xmlns="http://www.w3.org/2000/svg"
+               style="transform:rotate(${bearing}deg);transform-origin:50% 50%;display:block;overflow:visible;">
+               <polyline points="-7,8 0,-9 7,8"
+                 stroke="${lineCol}" stroke-width="2.5"
+                 stroke-linecap="square" stroke-linejoin="miter"
+                 fill="none" opacity="0.95"/>
              </svg>`,
-        iconSize:[18,18],iconAnchor:[9,9]
+        iconSize:[22,22],iconAnchor:[11,11]
       });
       const bbArrow=L.marker([best.c.lat,best.c.lon],{icon:arrowIcon,interactive:false}).addTo(map);
       /* store on bbLine so clearBBLine can remove it */
