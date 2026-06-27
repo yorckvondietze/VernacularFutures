@@ -6,7 +6,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>_morphSHIFT1 — vernacular_typologies_and_climate_predictions</title>
+<title>vernacularfutures — _morphing_typologies_into_future_climates</title>
 <script>(function(){try{if(localStorage.getItem('atlasTheme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -43,8 +43,8 @@ html[data-theme="dark"]{
   --cat-flag:#3D1A1A;--cat-flag-ink:#F0907A;
 }
 html[data-theme="dark"] .chrome-stripe{background:linear-gradient(90deg,#A86FE0,#F2D33F);}
-html[data-theme="dark"] .scenario-slider{background:linear-gradient(90deg,#B86AF5,#F0A030);border-radius:6px;}
-html[data-theme="dark"] .scenario-slider::-moz-range-track{background:linear-gradient(90deg,#B86AF5,#F0A030);height:12px;border-radius:6px;}
+html[data-theme="dark"] .scenario-slider{background:linear-gradient(90deg,#B86AF5,#F0A030);border-radius:0;}
+html[data-theme="dark"] .scenario-slider::-moz-range-track{background:linear-gradient(90deg,#B86AF5,#F0A030);height:12px;border-radius:0;}
 html[data-theme="dark"] body{background:radial-gradient(ellipse at top,#15123080,transparent 60%) var(--paper);}
 html[data-theme="dark"] .map-legend{background:rgba(11,10,22,0.9);color:var(--ink);}
 html[data-theme="dark"] .leaflet-control-attribution{background:rgba(11,10,22,0.85)!important;color:var(--ink-faint)!important;}
@@ -108,6 +108,7 @@ button{font-family:inherit;}
 .app-header{background:var(--paper);color:var(--ink);padding:18px 28px 16px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;border-bottom:1.5px solid var(--line-strong);flex-shrink:0;}
 .brand-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--terracotta-deep);margin-bottom:6px;}
 .brand-title{font-family:var(--serif);font-size:26px;font-weight:700;letter-spacing:-0.01em;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+.brand-title em{font-style:italic;}
 .brand-name{display:inline-flex;align-items:baseline;}
 .brand-rest{color:var(--ink);}
 .brand-title .brand-hl{background:var(--paper-deep);padding:1px 8px;}
@@ -115,10 +116,10 @@ button{font-family:inherit;}
 .scenario-control{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
 .scenario-label{font-family:var(--mono);font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);}
 .scenario-slider-wrap{width:420px;}
-.scenario-slider{-webkit-appearance:none;appearance:none;width:100%;height:12px;background:linear-gradient(90deg,#7722CC,#9A7870,#E07010);cursor:pointer;margin:14px 0;border-radius:6px;}
+.scenario-slider{-webkit-appearance:none;appearance:none;width:100%;height:12px;background:linear-gradient(90deg,#7722CC,#9A7870,#E07010);cursor:pointer;margin:14px 0;border-radius:0;}
 .scenario-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:42px;height:42px;border-radius:50%;background:var(--terracotta);border:none;cursor:pointer;outline:none;box-shadow:0 2px 12px rgba(0,0,0,0.25);}
 .scenario-slider::-moz-range-thumb{width:42px;height:42px;border-radius:50%;background:var(--terracotta);border:none;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.25);}
-.scenario-slider::-moz-range-track{height:12px;background:linear-gradient(90deg,#7722CC,#9A7870,#E07010);border-radius:6px;}
+.scenario-slider::-moz-range-track{height:12px;background:linear-gradient(90deg,#7722CC,#9A7870,#E07010);border-radius:0;}
 .scenario-ticks{display:flex;justify-content:space-between;margin-top:4px;}
 .scenario-tick{font-family:var(--mono);font-size:12px;color:var(--ink-faint);text-align:center;flex:1;cursor:pointer;line-height:1.3;}
 .scenario-tick:first-child{text-align:left;}.scenario-tick:last-child{text-align:right;}
@@ -202,7 +203,7 @@ main{padding:22px 28px 50px;max-width:1500px;margin:0 auto;}
 .filter-bar{display:flex;align-items:center;gap:16px;flex-wrap:nowrap;overflow-x:auto;background:var(--paper);border:1px solid var(--line);padding:9px 16px;flex-shrink:0;scrollbar-width:thin;}
 .filter-group{display:flex;flex-direction:column;gap:4px;flex-shrink:0;}
 .filter-group .fl{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-faint);}
-.filter-group select{font-family:var(--sans);font-size:12.5px;padding:5px 8px;border:1px solid var(--line);border-radius:0;background:var(--paper-dim);color:var(--ink);min-width:120px;}
+.filter-group select{-webkit-appearance:none;-moz-appearance:none;appearance:none;font-family:var(--sans);font-size:12.5px;padding:5px 26px 5px 8px;border:1px solid var(--line);border-radius:0;background-color:var(--paper-dim);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;background-size:10px 6px;color:var(--ink);min-width:120px;cursor:pointer;}
 
 .filter-count{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin-left:auto;}
 .filter-reset{font-family:var(--mono);font-size:11px;background:transparent;border:1px solid var(--line);color:var(--ink-soft);padding:5px 10px;border-radius:0;cursor:pointer;}
@@ -472,15 +473,15 @@ footer .tag-link{background:var(--terracotta-dim);color:var(--terracotta-deep);p
 <body>
 <div class="chrome-stripe"></div>
 <div class="win-titlebar">
-  <span class="win-title">_morphSHIFT</span>
+  <span class="win-title">vernacularfutures</span>
   <span class="win-controls">
     <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">☾</button>
     <span class="c-game" id="openGameBtn" title="Open _climate_runner" style="font-family:var(--mono);font-size:11px;font-weight:700;">°C</span></span>
 </div>
 <header class="app-header">
   <div>
-    <div class="brand-eyebrow">vernacular_typologies_and_climate_predictions · cs_output_v5</div>
-    <div class="brand-title"><span class="brand-name"><span class="brand-hl">_morphSHIFT/_climacular??</span><span class="brand-rest"></span></span> <span class="module">vernacular_typologies_and_climate_predictions · cs_output_v5</span></div>
+    <div class="brand-eyebrow">_morphing_typologies_into_future_climates</div>
+    <div class="brand-title"><span class="brand-name"><span class="brand-hl">vernacular<em>futures</em></span></span> <span class="module">_morphing_typologies_into_future_climates</span></div>
   </div>
   <div class="scenario-control">
     <div class="scenario-label">Climate scenario · SSP5-8.5
@@ -1126,7 +1127,7 @@ let dirHandle=null;
 let sessionDxfFiles=[];
 let dirHandlePhotos=null;
 let sessionPhotoFiles=[];
-let excelSourceName='cs_output_v5.xlsx (embedded at build time)';
+let excelSourceName='workbook (embedded at build time)';
 
 /* ---- Excel column mapper: matches by header text, not position, so a
    re-uploaded workbook with reordered/added columns still parses. ---- */
