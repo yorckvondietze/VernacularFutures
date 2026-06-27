@@ -2672,11 +2672,40 @@ function extremesTabHTML(c,epwData){
   /* Derive extremes from real temp data if available, otherwise synthetic */
   const temps=epwData?epwData.temp:monthlyTemp(c,scn);
   const temps0=!MOCK&&epwData?null:monthlyTemp(c,0);
-  const maxT=Math.max(...temps.filter(v=>v!=null));
-  const minT=Math.min(...temps.filter(v=>v!=null));
+  const maxT=Math.max(...(temps||[]).filter(v=>v!=null));
+  const minT=Math.min(...(temps||[]).filter(v=>v!=null));
   const rnd=rngLocal(c.id+'extreme'+scn);
-  const heatwaveDays=Math.max(0,Math.round((maxT-26)*2.6+(MOCK?rnd()*5:0)+scn*5));
-  const frostDays=Math.max(0,Math.round((6-minT)*9-scn*14+(MOCK?rnd()*6:0)));
+  /* heatwave days: count days where daily max > 30°C using hourly data.
+     Hemisphere-agnostic — works for Southern Hemisphere (summer = DJF) too. */
+  let heatwaveDays=0;
+  if(!MOCK&&epwData&&epwData.hourlyTemp&&epwData.hourlyCount>0){
+    const n=Math.min(epwData.hourlyCount,8760);
+    for(let day=0;day<Math.floor(n/24);day++){
+      let dayMax=-Infinity;
+      for(let h=0;h<24;h++)dayMax=Math.max(dayMax,epwData.hourlyTemp[day*24+h]);
+      if(dayMax>30)heatwaveDays++;
+    }
+    heatwaveDays+=scn*Math.round(heatwaveDays*0.04); /* +4%/+8% per scenario */
+  }else if(MOCK){
+    heatwaveDays=Math.max(0,Math.round((maxT-26)*2.6+rnd()*5+scn*5));
+  }else{
+    heatwaveDays=maxT>-Infinity?Math.max(0,Math.round((maxT-26)*2.6+scn*5)):0;
+  }
+  /* frost days: daily min < 0°C */
+  let frostDays=0;
+  if(!MOCK&&epwData&&epwData.hourlyTemp&&epwData.hourlyCount>0){
+    const n=Math.min(epwData.hourlyCount,8760);
+    for(let day=0;day<Math.floor(n/24);day++){
+      let dayMin=Infinity;
+      for(let h=0;h<24;h++)dayMin=Math.min(dayMin,epwData.hourlyTemp[day*24+h]);
+      if(dayMin<0)frostDays++;
+    }
+    frostDays=Math.max(0,frostDays-scn*Math.round(frostDays*0.04));
+  }else if(MOCK){
+    frostDays=Math.max(0,Math.round((6-minT)*9-scn*14+rnd()*6));
+  }else{
+    frostDays=minT<Infinity?Math.max(0,Math.round((6-minT)*9-scn*14)):0;
+  }
   const heavyRain=MOCK?Math.max(0,Math.round(3+rnd()*9+scn*2.2)):null;
   const maxGust=MOCK?Math.round(58+rnd()*48+scn*4):null;
   const src=MOCK?'':'derived from EPW temp data';
