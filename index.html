@@ -3290,7 +3290,7 @@ function bbDistance(f1,f2){
 }
 function clearBBLine(){
   if(bbLine&&map){
-    try{(bbLine._bbArrows||[]).forEach(m=>map.removeLayer(m));}catch(e){}
+    try{if(bbLine._bbArrow)map.removeLayer(bbLine._bbArrow);}catch(e){}
     try{map.removeLayer(bbLine);}catch(e){}
     bbLine=null;
   }
@@ -3361,46 +3361,28 @@ async function runBigBrother(){
     bbLine=L.polyline([[a.lat,a.lon],[best.c.lat,best.c.lon]],{
       color:lineCol,weight:3.5,opacity:0.95
     }).addTo(map);
-    /* ── directed chevrons along the great-circle path ─────────── */
+    /* arrowhead at destination — compute bearing A→B */
     (function(){
-      const toRad=d=>d*Math.PI/180, toDeg=r=>r*180/Math.PI;
-      /* interpolate point at fraction t along great circle */
-      function gcPt(lat1,lon1,lat2,lon2,t){
-        const φ1=toRad(lat1),λ1=toRad(lon1),φ2=toRad(lat2),λ2=toRad(lon2);
-        const d=2*Math.asin(Math.sqrt(Math.sin((φ2-φ1)/2)**2+Math.cos(φ1)*Math.cos(φ2)*Math.sin((λ2-λ1)/2)**2));
-        if(d<1e-10)return{lat:lat1,lon:lon1};
-        const A=Math.sin((1-t)*d)/Math.sin(d),B=Math.sin(t*d)/Math.sin(d);
-        const x=A*Math.cos(φ1)*Math.cos(λ1)+B*Math.cos(φ2)*Math.cos(λ2);
-        const y=A*Math.cos(φ1)*Math.sin(λ1)+B*Math.cos(φ2)*Math.sin(λ2);
-        const z=A*Math.sin(φ1)+B*Math.sin(φ2);
-        return{lat:toDeg(Math.atan2(z,Math.sqrt(x*x+y*y))),lon:toDeg(Math.atan2(y,x))};
-      }
-      /* forward bearing at a given point toward next point */
-      function brng(lat1,lon1,lat2,lon2){
-        const dL=toRad(lon2-lon1),φ1=toRad(lat1),φ2=toRad(lat2);
-        const y=Math.sin(dL)*Math.cos(φ2);
-        const x=Math.cos(φ1)*Math.sin(φ2)-Math.sin(φ1)*Math.cos(φ2)*Math.cos(dL);
-        return(Math.atan2(y,x)*180/Math.PI+360)%360;
-      }
-      const steps=[0.18,0.30,0.42,0.54,0.66,0.78,0.90];
-      const arrows=[];
-      steps.forEach(t=>{
-        const p=gcPt(a.lat,a.lon,best.c.lat,best.c.lon,t);
-        const p2=gcPt(a.lat,a.lon,best.c.lat,best.c.lon,Math.min(t+0.04,1));
-        const b=brng(p.lat,p.lon,p2.lat,p2.lon);
-        const icon=L.divIcon({
-          className:'',
-          html:`<svg width="12" height="12" viewBox="-6 -6 12 12" xmlns="http://www.w3.org/2000/svg"
-                 style="transform:rotate(${b}deg);transform-origin:50% 50%;display:block;overflow:visible;">
-                 <polyline points="-4,5 0,-5 4,5"
-                   stroke="${lineCol}" stroke-width="2" stroke-linecap="square"
-                   stroke-linejoin="miter" fill="none" opacity="0.9"/>
-               </svg>`,
-          iconSize:[12,12],iconAnchor:[6,6]
-        });
-        arrows.push(L.marker([p.lat,p.lon],{icon,interactive:false}).addTo(map));
+      const toRad=d=>d*Math.PI/180;
+      const dLon=toRad(best.c.lon-a.lon);
+      const lat1=toRad(a.lat),lat2=toRad(best.c.lat);
+      const y=Math.sin(dLon)*Math.cos(lat2);
+      const x=Math.cos(lat1)*Math.sin(lat2)-Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
+      const bearing=(Math.atan2(y,x)*180/Math.PI+360)%360;
+      const arrowIcon=L.divIcon({
+        className:'',
+        html:`<svg width="22" height="22" viewBox="-11 -11 22 22" xmlns="http://www.w3.org/2000/svg"
+               style="transform:rotate(${bearing}deg);transform-origin:50% 50%;display:block;overflow:visible;">
+               <polyline points="-7,8 0,-9 7,8"
+                 stroke="${lineCol}" stroke-width="2.5"
+                 stroke-linecap="square" stroke-linejoin="miter"
+                 fill="none" opacity="0.95"/>
+             </svg>`,
+        iconSize:[22,22],iconAnchor:[11,11]
       });
-      bbLine._bbArrows=arrows;
+      const bbArrow=L.marker([best.c.lat,best.c.lon],{icon:arrowIcon,interactive:false}).addTo(map);
+      /* store on bbLine so clearBBLine can remove it */
+      bbLine._bbArrow=bbArrow;
     })();
     const farNote=best.dist>1.2
       ?`<br><span style="font-family:monospace;font-size:10px;color:#b94040;">No close climate analogue identified in the present dataset — nearest available approximation shown (d=${best.dist.toFixed(2)}). Morphological inference should be treated with caution.</span>`
