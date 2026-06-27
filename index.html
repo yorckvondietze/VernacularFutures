@@ -394,6 +394,24 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 .shapeshift-btn:hover{background:var(--terracotta);color:var(--paper);}
 .shapeshift-btn.active{background:var(--terracotta);color:var(--paper);}
 .shapeshift-btn .ss-cursive{font-style:italic;}
+/* ---- action buttons (shapeSHIFT, vernacularBIGBROTHER) ---- */
+.action-btn-wrap{position:relative;display:flex;align-items:center;margin-bottom:10px;}
+.action-info-icon{font-size:12px;cursor:pointer;color:var(--ink-faint);margin-left:6px;user-select:none;position:relative;line-height:1;flex-shrink:0;}
+.action-info-icon:hover{color:var(--terracotta);}
+.action-info-pop{position:absolute;top:calc(100% + 6px);right:-4px;width:340px;background:var(--paper);border:1px solid var(--line-strong);padding:14px 16px;z-index:400;box-shadow:0 4px 16px rgba(0,0,0,.18);display:none;pointer-events:auto;}
+.action-info-pop.open{display:block;}
+.ai-head{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px;}
+.ai-body{font-size:12.5px;line-height:1.6;color:var(--ink-soft);}
+.ai-cite{font-size:10.5px;font-family:var(--mono);color:var(--ink-faint);margin-top:8px;line-height:1.5;}
+.ai-warn{border-left:2px solid var(--rust);padding:6px 8px;margin-top:10px;font-size:11.5px;line-height:1.55;color:var(--ink-soft);}
+.ai-warn b{color:var(--rust);}
+/* ---- vernacularBIGBROTHER button ---- */
+.bb-btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:0.01em;padding:5px 10px;border:1px solid var(--ochre);background:var(--ochre-dim);color:var(--ochre);cursor:pointer;transition:background-color .2s ease,color .2s ease;white-space:nowrap;}
+.bb-btn:hover:not(:disabled):not(.bb-disabled){background:var(--ochre);color:var(--paper);}
+.bb-btn.active{background:var(--ochre);color:var(--paper);}
+.bb-btn:disabled,.bb-btn.bb-disabled{opacity:0.35;cursor:not-allowed;border-color:var(--line);background:transparent;color:var(--ink-faint);}
+.bb-progress{font-size:9px;opacity:0.75;margin-left:2px;}
+.bb-hint{font-family:var(--mono);font-size:10.5px;color:var(--ochre);font-style:italic;}
 .diagram-tab{font-family:var(--mono);font-size:10.5px;padding:5px 9px;border-radius:0;border:1px solid var(--line);background:var(--paper-dim);color:var(--ink-soft);cursor:pointer;}
 .diagram-tab:hover{border-color:var(--terracotta);color:var(--terracotta-deep);}
 .diagram-tab.active{background:var(--ink);border-color:var(--ink);color:var(--paper);font-weight:600;}
@@ -480,7 +498,7 @@ footer .tag-link{background:var(--terracotta-dim);color:var(--terracotta-deep);p
 </div>
 <header class="app-header">
   <div>
-    <div class="brand-eyebrow">_morphing_typologies_into_future_climates</div>
+    <div class="brand-eyebrow">SHI<span style="position:relative;bottom:5px;font-size:0.8em;">FT</span></div>
     <div class="brand-title"><span class="brand-name"><span class="brand-hl">vernacular<em>futures</em></span></span> <span class="module">_morphing_typologies_into_future_climates</span></div>
   </div>
   <div class="scenario-control">
@@ -2772,6 +2790,7 @@ const DIAGRAM_META={
 };
 let currentDiagram={A:'overheat',B:'overheat'};
 let shapeShiftOn={A:false,B:false};
+let bigBrotherActive=false,bbLine=null,bbResultId=null;
 /* shapeSHIFT: a heuristic "what if the recommended fix were applied" preview
    — not a re-simulation. Severity scales with how far into the future the
    scenario slider sits; which geometric levers move depends on which
@@ -3075,6 +3094,128 @@ function wireDiagramTabs(c,slot){
     }
   }));
 }
+/* ═══════════════════════════════════════════════════════════════
+   vernacularBIGBROTHER — climate analogue matching
+   Finds the present-day case whose EPW fingerprint most closely
+   matches the selected case's future EPW (2050 or 2080 SSP5-8.5).
+   Distance metric: weighted normalised Euclidean across 6 climate
+   variables that drive Central European vernacular morphology:
+     HDD₁₅  CDD₂₂  peak-summer-T  winter-min-T  thermal-amplitude  GHI
+   ─────────────────────────────────────────────────────────────── */
+function computeBBFingerprint(epw){
+  const T=epw.temp,G=epw.ghi,DPM=DAYS_PER_MONTH;
+  const hdd=T.reduce((a,t,i)=>t!=null?a+Math.max(0,15-t)*DPM[i]:a,0);
+  const cdd=T.reduce((a,t,i)=>t!=null?a+Math.max(0,t-22)*DPM[i]:a,0);
+  const tS=(T[5]+T[6]+T[7])/3;   /* Jun–Aug mean → summer strategy */
+  const tW=(T[11]+T[0]+T[1])/3;  /* Dec–Feb mean → heating strategy */
+  const tAmp=tS-tW;               /* thermal amplitude → mass proxy  */
+  const ghi=G.reduce((a,v,i)=>v!=null?a+v*DPM[i]:a,0);
+  return{hdd,cdd,tSummer:tS,tWinter:tW,tAmp,ghi};
+}
+/* Normalisation bounds from Central European TMYx station envelope;
+   weights reflect relative morphological influence per driver.      */
+const BB_NORM={hdd:3500,cdd:800,tSummer:16,tWinter:22,tAmp:32,ghi:800};
+const BB_W   ={hdd:1.4, cdd:1.4, tSummer:1.2, tWinter:1.2, tAmp:1.0, ghi:0.8};
+function bbDistance(f1,f2){
+  return Math.sqrt(Object.keys(BB_NORM).reduce((s,k)=>{
+    const d=BB_W[k]*(f1[k]-f2[k])/BB_NORM[k]; return s+d*d;
+  },0));
+}
+function clearBBLine(){
+  if(bbLine&&map){try{map.removeLayer(bbLine);}catch(e){}bbLine=null;}
+}
+function clearBigBrother(){
+  bigBrotherActive=false; bbResultId=null;
+  clearBBLine();
+  document.querySelectorAll('.bb-btn').forEach(b=>{
+    b.innerHTML='&gt;vernacular<b>BIGBROTHER</b>';
+    b.classList.remove('active');
+  });
+}
+async function runBigBrother(){
+  if(!selectedId||scn===0)return;
+  /* toggle off */
+  if(bigBrotherActive){
+    clearBigBrother(); compareId=null; renderPanel(); return;
+  }
+  const a=byId(selectedId);
+  if(!a||!a.epw)return;
+  /* loading state */
+  document.querySelectorAll('.bb-btn').forEach(b=>{
+    b.innerHTML='&gt;vernacular<b>BIGBROTHER</b> <span class="bb-progress">fetching…</span>';
+    b.disabled=true;
+  });
+  /* 1 — fetch future EPW for active case */
+  const paths=epwFwgPaths(a.epw);
+  const futurePath=scn===1?paths.m2050:paths.m2080;
+  let futureEpw;
+  try{futureEpw=await fetchParseEpw(futurePath);}catch(e){futureEpw=null;}
+  if(!futureEpw){
+    document.querySelectorAll('.bb-btn').forEach(b=>{
+      b.innerHTML='&gt;vernacular<b>BIGBROTHER</b>';b.disabled=(scn===0);
+    }); return;
+  }
+  const fFuture=computeBBFingerprint(futureEpw);
+  /* 2 — batch-fetch all present EPWs, concurrency 5 */
+  const candidates=CASES.filter(c=>c.id!==selectedId&&c.epw&&c.hasCoord);
+  const scored=[]; const BATCH=5;
+  for(let i=0;i<candidates.length;i+=BATCH){
+    const slice=candidates.slice(i,i+BATCH);
+    const epws=await Promise.all(
+      slice.map(c=>fetchParseEpw(epwFwgPaths(c.epw).present).catch(()=>null))
+    );
+    epws.forEach((epw,j)=>{
+      if(epw)scored.push({c:slice[j],dist:bbDistance(fFuture,computeBBFingerprint(epw))});
+    });
+    const prog=Math.min(i+BATCH,candidates.length);
+    document.querySelectorAll('.bb-btn').forEach(b=>{
+      b.innerHTML=`&gt;vernacular<b>BIGBROTHER</b> <span class="bb-progress">${prog}/${candidates.length}</span>`;
+    });
+  }
+  if(!scored.length){
+    document.querySelectorAll('.bb-btn').forEach(b=>{
+      b.innerHTML='&gt;vernacular<b>BIGBROTHER</b>';b.disabled=(scn===0);
+    }); return;
+  }
+  scored.sort((a,b)=>a.dist-b.dist);
+  const best=scored[0];
+  bbResultId=best.c.id;
+  /* 3 — open winner in compare slot B */
+  compareId=bbResultId; pickingCompare=false; bigBrotherActive=true;
+  renderPanel();
+  /* 4 — draw dashed line on map */
+  clearBBLine();
+  if(map&&a.hasCoord&&best.c.hasCoord){
+    const lineCol=scn===1?'#9A7870':'#E07010';
+    bbLine=L.polyline([[a.lat,a.lon],[best.c.lat,best.c.lon]],{
+      color:lineCol,weight:2.5,opacity:0.9,dashArray:'10,7'
+    }).addTo(map);
+    const farNote=best.dist>1.2
+      ?`<br><span style="font-family:monospace;font-size:10px;color:#b94040;">No close climate analogue identified in the present dataset — nearest available approximation shown (d=${best.dist.toFixed(2)}). Morphological inference should be treated with caution.</span>`
+      :'';
+    bbLine.bindPopup(
+      `<span style="font-family:monospace;font-weight:700;">vernacularBIGBROTHER</span><br>`+
+      `${a.name||a.id} → ${best.c.name||best.c.id}`+
+      `<br><span style="font-family:monospace;font-size:10px;opacity:0.6">climate distance ${best.dist.toFixed(3)}</span>`+
+      farNote
+    );
+  }
+}
+
+/* info-popover toggle helper: click icon to open, click anywhere else to close */
+function wireInfoIcon(iconId,popId){
+  const icon=document.getElementById(iconId);
+  const pop=document.getElementById(popId);
+  if(!icon||!pop)return;
+  icon.addEventListener('click',e=>{
+    e.stopPropagation();
+    const wasOpen=pop.classList.contains('open');
+    document.querySelectorAll('.action-info-pop.open').forEach(p=>p.classList.remove('open'));
+    if(!wasOpen)pop.classList.add('open');
+  });
+  pop.addEventListener('click',e=>e.stopPropagation());
+}
+
 function wireShapeShift(c,slot){
   const btn=document.getElementById('shapeShiftBtn-'+slot);
   if(!btn)return;
@@ -3085,6 +3226,7 @@ function wireShapeShift(c,slot){
     disposeViewer(slot);
     createViewer(document.getElementById('viewer3d-'+slot),c,slot);
   });
+  wireInfoIcon('ssInfoIcon-'+slot,'ssInfoPop-'+slot);
 }
 
 /* ---- metrics & tags: paginated table covering every workbook column ---- */
@@ -3230,7 +3372,16 @@ function caseDetailHTML(c,slot){
     <!-- TAB 4: SIMULATION -->
     <div class="cs-panel ${currentCsTab[slot]==='simulation'?'active':''}" data-cspanel="simulation" data-slot="${slot}">
       <div class="block" style="margin-top:12px;">
-        <button class="shapeshift-btn" id="shapeShiftBtn-${slot}">&gt;shape<span class="ss-cursive">SHIFT</span></button>
+        <div class="action-btn-wrap">
+          <button class="shapeshift-btn" id="shapeShiftBtn-${slot}" style="flex:1;">&gt;shape<span class="ss-cursive">SHIFT</span></button>
+          <span class="action-info-icon" id="ssInfoIcon-${slot}">ⓘ
+            <div class="action-info-pop" id="ssInfoPop-${slot}">
+              <div class="ai-head">_shape<em>SHIFT</em></div>
+              <div class="ai-body">A parametric heuristic preview of the morphological adjustment implied by this study's correlation findings. Building geometry is rescaled from correlation-derived design parameters. This is not a re-simulation — it is an illustrative approximation only. Vertex colours indicate the relative performance direction under the selected climate scenario.</div>
+              <div class="ai-cite">Validation pending: Honeybee / EnergyPlus v24.2 (EN ISO 13790 §11 solar heat gain not yet implemented in RC model).</div>
+            </div>
+          </span>
+        </div>
         <div class="diagram-tabs" id="diagramTabs-${slot}">
           ${Object.keys(DIAGRAM_META).map(k=>`<button class="diagram-tab sim-tab ${k===dtab?'active':''}" data-diagram="${k}" data-slot="${slot}">${DIAGRAM_META[k].label}</button>`).join('')}
         </div>
@@ -3359,11 +3510,15 @@ function renderPanel(){
   const isCompare=!!c2;
   if(grid)grid.classList.toggle('compare-active',isCompare);
   if(map&&isCompare!==wasCompare)setTimeout(()=>map.invalidateSize(),0);
-  const toolbar=c2
-    ? `<div class="panel-toolbar"><span class="compare-hint" style="margin-right:auto;">Comparing ${c.name||c.id} vs ${c2.name||c2.id}</span><button class="compare-toggle-btn exit" id="exitCompareBtn">× exit compare</button></div>`
-    : pickingCompare
-      ? `<div class="panel-toolbar"><span class="compare-hint" style="margin-right:auto;">Click another marker or chip to compare…</span><button class="compare-toggle-btn exit" id="exitCompareBtn">cancel</button></div>`
-      : `<div class="panel-toolbar"><button class="compare-toggle-btn" id="startCompareBtn">+ compare</button></div>`;
+  const bbInfoHTML=`<span class="action-info-icon" id="bbInfoIcon">ⓘ<div class="action-info-pop" id="bbInfoPop"><div class="ai-head">_vernacularBIGBROTHER</div><div class="ai-body">Identifies the present-day case study whose EPW climate profile most closely matches the future climate of the selected case under the active scenario. Proximity is measured by weighted normalised Euclidean distance across six morphologically relevant metrics: HDD&#x2081;&#x2085;, CDD&#x2082;&#x2082;, peak summer temperature, winter minimum temperature, annual thermal amplitude, and annual GHI.</div><div class="ai-warn"><b>&#x26A0; Baseline bias:</b> TMYx 2011&#x2013;2025 present-day EPW files already incorporate approximately 1.2&#x202F;°C of anthropogenic warming above the pre-industrial mean (IPCC AR6 WGI §2.3, 2021). Many buildings in this corpus were constructed during the Little Ice Age (c.&#x202F;1300&#x2013;1850&#x202F;CE) — a period of documented cold anomalies in Central Europe driven by reduced solar irradiance (Maunder Minimum, 1645&#x2013;1715; Spörer Minimum, 1460&#x2013;1550) and elevated volcanic forcing (Luterbacher et&#x202F;al., 2004, <em>Science</em> 303:1499&#x2013;1503; Mann et&#x202F;al., 1999, <em>Geophys.&#x202F;Res.&#x202F;Lett.</em>). Vernacular morphologies may encode adaptive responses to climates cooler than the present TMYx baseline, introducing a systematic bias in apparent climate sensitivity that is not corrected for in this analysis.</div></div></span>`;
+  const bbBtnHTML=`<button class="bb-btn${scn===0?' bb-disabled':''}" id="bigBrotherBtn"${scn===0?' disabled':''}>&gt;vernacular<b>BIGBROTHER</b></button>`;
+  const toolbar=bigBrotherActive&&c2
+    ? `<div class="panel-toolbar"><span class="compare-hint bb-hint" style="margin-right:auto;">vernacularBIGBROTHER → ${c2.name||c2.id}</span>${bbBtnHTML}${bbInfoHTML}<button class="compare-toggle-btn exit" id="exitCompareBtn">× clear</button></div>`
+    : c2
+      ? `<div class="panel-toolbar"><span class="compare-hint" style="margin-right:auto;">Comparing ${c.name||c.id} vs ${c2.name||c2.id}</span><button class="compare-toggle-btn exit" id="exitCompareBtn">× exit compare</button></div>`
+      : pickingCompare
+        ? `<div class="panel-toolbar"><span class="compare-hint" style="margin-right:auto;">Click another marker or chip to compare…</span><button class="compare-toggle-btn exit" id="exitCompareBtn">cancel</button></div>`
+        : `<div class="panel-toolbar"><button class="compare-toggle-btn" id="startCompareBtn">+ compare</button>${bbBtnHTML}${bbInfoHTML}</div>`;
   el.innerHTML = toolbar + (c2
     ? `<div class="compare-grid"><div class="compare-col">${caseDetailHTML(c,'A')}</div><div class="compare-col">${caseDetailHTML(c2,'B')}</div></div>`
     : caseDetailHTML(c,'A'));
@@ -3372,7 +3527,23 @@ function renderPanel(){
   const startBtn=document.getElementById('startCompareBtn');
   if(startBtn)startBtn.addEventListener('click',()=>{pickingCompare=true;renderPanel();});
   const exitBtn=document.getElementById('exitCompareBtn');
-  if(exitBtn)exitBtn.addEventListener('click',()=>{pickingCompare=false;compareId=null;renderPanel();});
+  if(exitBtn)exitBtn.addEventListener('click',()=>{
+    if(bigBrotherActive)clearBigBrother();
+    pickingCompare=false;compareId=null;renderPanel();
+  });
+  /* wire vernacularBIGBROTHER toolbar button */
+  const bbBtn=document.getElementById('bigBrotherBtn');
+  if(bbBtn){
+    if(bigBrotherActive)bbBtn.classList.add('active');
+    bbBtn.addEventListener('click',runBigBrother);
+  }
+  wireInfoIcon('bbInfoIcon','bbInfoPop');
+  /* close any open info popovers on outside click */
+  setTimeout(()=>{
+    document.addEventListener('click',()=>{
+      document.querySelectorAll('.action-info-pop.open').forEach(p=>p.classList.remove('open'));
+    },{once:true});
+  },0);
   drawSimilarityLines();
 }
 
@@ -3602,6 +3773,11 @@ function applyScenarioPalette(){
   root.setProperty('--terracotta',a.c);
   root.setProperty('--terracotta-deep',a.deep);
   root.setProperty('--terracotta-dim',a.dim);
+  /* vernacularBIGBROTHER: clear if user slides back to Present */
+  if(bigBrotherActive&&scn===0){
+    clearBigBrother(); compareId=null;
+    /* renderPanel will be called by onScenarioChange immediately after */
+  }
 }
 function applyTheme(theme){
   document.documentElement.setAttribute('data-theme',theme==='dark'?'dark':'light');
