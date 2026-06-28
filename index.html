@@ -2121,6 +2121,7 @@ async function fetchParseEpw(path){
   /* compact hourly arrays for psychrometric scatter — pre-allocated for 8760 rows */
   const hTemp=new Float32Array(8760);
   const hRh=new Uint8Array(8760);
+  const hWspd=new Float32Array(8760);
   let hIdx=0;
   for(let i=8;i<lines.length;i++){
     const l=lines[i].trim();if(!l)continue;
@@ -2140,7 +2141,7 @@ async function fetchParseEpw(path){
     if(isFinite(wspd)&&wspd>=0)acc.wspd.push(wspd);
     if(isFinite(precip)&&precip>=0){acc.precip=acc.precip||[];acc.precip.push(precip);}
     /* store hourly T and RH for psychrometric scatter */
-    if(hIdx<8760&&isFinite(temp)&&isFinite(rh)){hTemp[hIdx]=temp;hRh[hIdx]=Math.round(clamp01(rh/100)*100);hIdx++;}
+    if(hIdx<8760&&isFinite(temp)&&isFinite(rh)){hTemp[hIdx]=temp;hRh[hIdx]=Math.round(clamp01(rh/100)*100);hWspd[hIdx]=isFinite(wspd)&&wspd>=0?wspd:0;hIdx++;}
   }
   const avg=arr=>arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:null;
   /* GHI: sum of hourly Wh/m² for the month → divide by days → kWh/m²/day */
@@ -2158,6 +2159,7 @@ async function fetchParseEpw(path){
     stationElev:isFinite(stationElev)?Math.round(stationElev):null,
     hourlyTemp:hTemp,
     hourlyRh:hRh,
+    hourlyWspd:hWspd,
     hourlyCount:hIdx,
     /* wind rose: compute frequency+avg speed per 45° sector from actual hourly data */
     windRose:(()=>{
@@ -2804,6 +2806,45 @@ function drawPsychroCanvas(canvasId,epwData){
   ctx.strokeStyle=dark?'rgba(18,18,20,0.8)':'rgba(245,242,237,0.85)';
   ctx.lineWidth=3;ctx.strokeText('DIN 1946-2',labelX,labelY);
   ctx.fillStyle=dinCol;ctx.fillText('DIN 1946-2',labelX,labelY);
+
+  /* ── wet-bulb isopleths (Sherwood & Huber 2010 / WHO 2021) ── */
+  function rhForWb(T,twTarget){
+    /* binary search RH in [5,99] such that wetBulbStull(T,RH)=twTarget */
+    let lo=5,hi=99;
+    for(let i=0;i<32;i++){const mid=(lo+hi)/2;if(wetBulbStull(T,mid)<twTarget)lo=mid;else hi=mid;}
+    return(lo+hi)/2;
+  }
+  const wbLines=[
+    {tw:28,color:'rgba(210,110,0,0.75)',label:'28°C Tᵥᵥ',dash:[6,4]},
+    {tw:31,color:'rgba(180,40,0,0.80)',label:'31°C Tᵥᵥ',dash:[6,4]},
+    {tw:35,color:'rgba(140,0,0,0.90)',label:'35°C Tᵥᵥ',dash:[5,3]},
+  ];
+  wbLines.forEach(({tw,color,label,dash})=>{
+    ctx.beginPath();ctx.setLineDash(dash);ctx.lineWidth=1.5;ctx.strokeStyle=color;
+    let first=true;
+    /* isopleth: T from tw (≈ RH 100% intercept) to T_MAX */
+    for(let T=tw;T<=T_MAX;T+=0.5){
+      const rh=rhForWb(T,tw);
+      if(rh<5||rh>99.5)continue;
+      const w=humidityRatio(T,rh/100);
+      if(w<0||w>W_MAX)continue;
+      const px=tx(T),py=wy(w);
+      first?ctx.moveTo(px,py):ctx.lineTo(px,py);first=false;
+    }
+    ctx.stroke();ctx.setLineDash([]);
+    /* right-side label */
+    const labelT=T_MAX-1;
+    const labelRh=rhForWb(labelT,tw);
+    if(labelRh>=5&&labelRh<=99){
+      const labelW=humidityRatio(labelT,labelRh/100);
+      if(labelW>=0&&labelW<=W_MAX){
+        ctx.font=`bold 7.5px "IBM Plex Mono",monospace`;ctx.textAlign='right';
+        ctx.strokeStyle=dark?'rgba(18,18,20,0.9)':'rgba(245,242,237,0.9)';
+        ctx.lineWidth=2.5;ctx.strokeText(label,tx(labelT)-2,wy(labelW)-3);
+        ctx.fillStyle=color;ctx.fillText(label,tx(labelT)-2,wy(labelW)-3);
+      }
+    }
+  });
 }
 function windRoseSVG(rose){
   const W=220,H=220,cx=W/2,cy=H/2,maxR=82,maxFreq=Math.max(...rose.map(d=>d.freq)),maxSpeed=Math.max(...rose.map(d=>d.speed),1);
@@ -2871,7 +2912,27 @@ function overviewTabHTML(c,epwData){
       <div class="chart-caption"><span>— relative humidity (%)</span></div>
     </div>`;
 }
-function psychroTabHTML(c,epwData){return `<div class="chartwrap" style="padding:0;position:relative;"><canvas id="psychro-canvas-A" style="width:100%;display:block;" height="260"></canvas><div style="position:absolute;bottom:6px;right:8px;font-family:var(--mono);font-size:8px;color:var(--ink-faint);">DIN 1946-2 · outdoor conditions · 1 dot = 1 hour</div></div>`;}
+function psychroTabHTML(c,epwData,slot){
+  const sid=slot||'A';
+  return `<div class="chartwrap" style="padding:0;position:relative;">
+    <canvas id="psychro-canvas-${sid}" style="width:100%;display:block;" height="260"></canvas>
+    <div style="position:absolute;bottom:6px;left:8px;right:8px;display:flex;justify-content:space-between;align-items:flex-end;">
+      <div style="font-family:var(--mono);font-size:8px;color:var(--ink-faint);">DIN 1946-2 · outdoor conditions · 1 dot = 1 h</div>
+      <span class="action-info-icon" style="font-size:11px;position:relative;" id="psychroInfoIcon-${sid}">ⓘ
+        <div class="action-info-pop" id="psychroInfoPop-${sid}" style="bottom:calc(100% + 6px);top:auto;right:0;width:320px;">
+          <div class="ai-head">_psychrometric chart</div>
+          <div class="ai-body">
+            <b style="color:var(--moss);">⬜ DIN 1946-2 hatching</b> — Indoor thermal comfort zone for Central European buildings (DIN 1946-2:2018, Raumklima). Dashed green boundary; diagonal hatching marks the operative comfort envelope. Outdoor EPW conditions plotted as hourly scatter.
+          </div>
+          <div class="ai-body" style="margin-top:8px;">
+            <b style="color:#E07010;">── 28°C T<sub>w</sub></b> heat stress onset · <b style="color:#C04010;">── 31°C T<sub>w</sub></b> high risk (vulnerable) · <b style="color:#900000;">── 35°C T<sub>w</sub></b> survivability limit (6h).<br>
+            Lines of constant wet-bulb temperature after <b>Sherwood &amp; Huber (2010)</b>, <em>PNAS</em> 107(21):9552–9555, and <b>WHO (2021)</b> <em>Global Heat Health Information Network</em>. Wet-bulb Tw approximated via Stull (2011), <em>J. Atmos. Sci.</em> 68(10).
+          </div>
+        </div>
+      </span>
+    </div>
+  </div>`;
+}
 function windTabHTML(c,epwData){
   if(!MOCK&&!epwData)return `<div style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);padding:20px;">Wind data requires a loaded EPW file. NO_DATA for this case.</div>`;
   const rose=epwData?epwData.windRose:windRose(c);
@@ -2888,64 +2949,115 @@ function windTabHTML(c,epwData){
       </div>
     </div>`;
 }
+function wetBulbStull(T,RH){
+  /* Stull (2011) empirical wet-bulb approximation, valid -20..50°C, 5..99% RH */
+  return T*Math.atan(0.151977*Math.sqrt(RH+8.313659))
+    +Math.atan(T+RH)-Math.atan(RH-1.676331)
+    +0.00391838*Math.pow(RH,1.5)*Math.atan(0.023101*RH)-4.686035;
+}
 function extremesTabHTML(c,epwData){
   const nd='<span class="nodata">NO_DATA</span>';
   if(!MOCK&&!epwData){
-    return `<div style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);padding:20px;">Extreme events data requires a loaded EPW file — no data available for this case.</div>`;
+    return `<div style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);padding:20px;">Extreme events require a loaded EPW file.</div>`;
   }
-  /* Derive extremes from real temp data if available, otherwise synthetic */
+  const rnd=rngLocal(c.id+'extreme'+scn);
   const temps=epwData?epwData.temp:monthlyTemp(c,scn);
-  const temps0=!MOCK&&epwData?null:monthlyTemp(c,0);
   const maxT=Math.max(...(temps||[]).filter(v=>v!=null));
   const minT=Math.min(...(temps||[]).filter(v=>v!=null));
-  const rnd=rngLocal(c.id+'extreme'+scn);
-  /* heatwave days: count days where daily max > 30°C using hourly data.
-     Hemisphere-agnostic — works for Southern Hemisphere (summer = DJF) too. */
+  const hasHourly=!MOCK&&epwData&&epwData.hourlyTemp&&epwData.hourlyCount>0;
+  const n=hasHourly?Math.min(epwData.hourlyCount,8760):0;
+
+  /* ── heatwave days: daily max > 30°C ─────────────────────── */
   let heatwaveDays=0;
-  if(!MOCK&&epwData&&epwData.hourlyTemp&&epwData.hourlyCount>0){
-    const n=Math.min(epwData.hourlyCount,8760);
-    for(let day=0;day<Math.floor(n/24);day++){
-      let dayMax=-Infinity;
-      for(let h=0;h<24;h++)dayMax=Math.max(dayMax,epwData.hourlyTemp[day*24+h]);
-      if(dayMax>30)heatwaveDays++;
+  if(hasHourly){
+    for(let d=0;d<Math.floor(n/24);d++){
+      let mx=-Infinity;
+      for(let h=0;h<24;h++)mx=Math.max(mx,epwData.hourlyTemp[d*24+h]);
+      if(mx>30)heatwaveDays++;
     }
-    heatwaveDays+=scn*Math.round(heatwaveDays*0.04); /* +4%/+8% per scenario */
-  }else if(MOCK){
-    heatwaveDays=Math.max(0,Math.round((maxT-26)*2.6+rnd()*5+scn*5));
   }else{
-    heatwaveDays=maxT>-Infinity?Math.max(0,Math.round((maxT-26)*2.6+scn*5)):0;
+    heatwaveDays=Math.max(0,Math.round((maxT-26)*2.6+(MOCK?rnd()*5:0)+scn*5));
   }
-  /* frost days: daily min < 0°C */
+
+  /* ── frost days: daily min < 0°C ─────────────────────────── */
   let frostDays=0;
-  if(!MOCK&&epwData&&epwData.hourlyTemp&&epwData.hourlyCount>0){
-    const n=Math.min(epwData.hourlyCount,8760);
-    for(let day=0;day<Math.floor(n/24);day++){
-      let dayMin=Infinity;
-      for(let h=0;h<24;h++)dayMin=Math.min(dayMin,epwData.hourlyTemp[day*24+h]);
-      if(dayMin<0)frostDays++;
+  if(hasHourly){
+    for(let d=0;d<Math.floor(n/24);d++){
+      let mn=Infinity;
+      for(let h=0;h<24;h++)mn=Math.min(mn,epwData.hourlyTemp[d*24+h]);
+      if(mn<0)frostDays++;
     }
-    frostDays=Math.max(0,frostDays-scn*Math.round(frostDays*0.04));
-  }else if(MOCK){
-    frostDays=Math.max(0,Math.round((6-minT)*9-scn*14+rnd()*6));
   }else{
-    frostDays=minT<Infinity?Math.max(0,Math.round((6-minT)*9-scn*14)):0;
+    frostDays=Math.max(0,Math.round((6-minT)*9+(MOCK?rnd()*6:0)-scn*14));
   }
-  const heavyRain=MOCK?Math.max(0,Math.round(3+rnd()*9+scn*2.2)):null;
-  const maxGust=MOCK?Math.round(58+rnd()*48+scn*4):null;
-  const src=MOCK?'':'derived from EPW temp data';
-  const delta=(now,base)=>{if(now==null||base==null||now===base)return'';const up=now>base;return`<div class="sub" style="color:${up?'var(--rust)':'var(--moss)'};font-family:var(--mono);">${up?'▲':'▼'} ${Math.abs(now-base)} vs present</div>`;};
+
+  /* ── wet-bulb hours (Stull 2011) ─────────────────────────── */
+  let wb28=0,wb31=0,wb35=0;
+  if(hasHourly){
+    for(let i=0;i<n;i++){
+      const tw=wetBulbStull(epwData.hourlyTemp[i],epwData.hourlyRh[i]);
+      if(tw>28)wb28++;
+      if(tw>31)wb31++;
+      if(tw>35)wb35++;
+    }
+  }
+
+  /* ── peak wind (max hourly km/h) ─────────────────────────── */
+  let peakWind=null;
+  if(hasHourly&&epwData.hourlyWspd){
+    let mx=0;
+    for(let i=0;i<n;i++)if(epwData.hourlyWspd[i]>mx)mx=epwData.hourlyWspd[i];
+    peakWind=Math.round(mx*3.6); /* m/s → km/h */
+  }else if(MOCK){
+    peakWind=Math.round(58+rnd()*48+scn*4);
+  }
+
+  /* ── precipitation total (EPW col 33, monthly sums) ──────── */
+  const precipTotal=epwData&&epwData.precip?
+    Math.round(epwData.precip.filter(v=>v!=null).reduce((a,b)=>a+b,0)):null;
+
+  const src=hasHourly?'EPW hourly · 8760h':(MOCK?'synthetic':'monthly EPW');
+  const wbNote=wb28===0&&wb31===0?'(none for this station)':'';
+
   return `
-    <div class="climate-stat-row" style="grid-template-columns:repeat(2,1fr);">
-      <div class="cstat"><div class="v">${heatwaveDays}</div><div class="k">heatwave days &gt;30°C</div></div>
-      <div class="cstat"><div class="v">${frostDays}</div><div class="k">frost days &lt;0°C</div></div>
-      <div class="cstat"><div class="v">${heavyRain!=null?heavyRain:nd}</div><div class="k">heavy-rain days &gt;20mm</div></div>
-      <div class="cstat"><div class="v">${maxGust!=null?maxGust:nd}</div><div class="k">max gust (km/h)</div></div>
+    <div class="climate-stat-row" style="grid-template-columns:repeat(2,1fr);gap:8px;">
+      <div class="cstat"><div class="v">${heatwaveDays}</div><div class="k">HEATWAVE DAYS &gt;30°C</div></div>
+      <div class="cstat"><div class="v">${frostDays}</div><div class="k">FROST DAYS &lt;0°C</div></div>
     </div>
-    <div style="font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);margin-top:8px;">${SCENARIOS_LONG[scn]}${src?' · '+src:''}${MOCK?' · mock values':''}</div>`;
+    <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);margin:12px 0 6px;">WET-BULB TEMPERATURE — STULL (2011)</div>
+    <div class="climate-stat-row" style="grid-template-columns:repeat(3,1fr);gap:8px;">
+      <div class="cstat"><div class="v" style="font-size:18px;">${hasHourly?wb28:nd}</div><div class="k">HRS/YR &gt;28°C T<sub>w</sub><br><span style="opacity:0.6;font-size:8px;">discomfort</span></div></div>
+      <div class="cstat"><div class="v" style="font-size:18px;${hasHourly&&wb31>0?'color:var(--rust);':''}">${hasHourly?wb31:nd}</div><div class="k">HRS/YR &gt;31°C T<sub>w</sub><br><span style="opacity:0.6;font-size:8px;">dangerous</span></div></div>
+      <div class="cstat"><div class="v" style="font-size:18px;${hasHourly&&wb35>0?'color:var(--rust);font-weight:900;':''}">${hasHourly?wb35:nd}</div><div class="k">HRS/YR &gt;35°C T<sub>w</sub><br><span style="opacity:0.6;font-size:8px;">unsurvivable</span></div></div>
+    </div>
+    <div class="climate-stat-row" style="grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px;">
+      <div class="cstat"><div class="v">${peakWind!=null?peakWind+'<span style="font-size:12px;"> km/h</span>':nd}</div><div class="k">PEAK WIND (MAX HOURLY)</div></div>
+      <div class="cstat"><div class="v">${precipTotal!=null?precipTotal+'<span style="font-size:12px;"> mm</span>':nd}</div><div class="k">ANNUAL PRECIP (EPW)</div></div>
+    </div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin-top:10px;line-height:1.6;display:flex;align-items:flex-start;gap:6px;">
+      <span>${SCENARIOS_LONG[scn]} · ${src}${MOCK?' · mock values':''}<br>Wet-bulb: Stull, R. (2011). <em>J. Atmos. Sci.</em> 68(10), 2267–2269. ${wbNote}</span>
+      <span class="action-info-icon" style="font-size:11px;position:relative;flex-shrink:0;" id="extremesInfoIcon">ⓘ
+        <div class="action-info-pop" id="extremesInfoPop" style="bottom:calc(100% + 6px);top:auto;right:0;width:330px;">
+          <div class="ai-head">_health risk thresholds</div>
+          <div class="ai-body">
+            <b>Wet-bulb temperature (T<sub>w</sub>)</b> thresholds reflect physiological health risk, not thermal comfort:
+            <br><br>
+            <b style="color:#E07010;">28°C T<sub>w</sub></b> — heat stress onset; sustained outdoor exposure becomes problematic for most individuals. <em>WHO Global Heat Health Information Network (2021).</em>
+            <br><br>
+            <b style="color:#C04010;">31°C T<sub>w</sub></b> — high risk; dangerous for vulnerable populations (elderly, outdoor workers, cardiovascular patients). <em>WHO (2021); Raymond et al. (2020), Nature Climate Change.</em>
+            <br><br>
+            <b style="color:#900000;">35°C T<sub>w</sub></b> — physiological survivability limit for a resting adult in shade. Even 6h exposure can be fatal without mechanical cooling. <em>Sherwood &amp; Huber (2010), PNAS 107(21):9552–9555.</em>
+            <br><br>
+            <b>Heatwave / frost days</b> computed from hourly EPW dry-bulb temperature (col. 6). Wet-bulb approximated via Stull (2011) from EPW T + RH.
+          </div>
+        </div>
+      </span>
+    </div>`;
 }
-function renderClimateTabContent(key,c,epwData){
+
+function renderClimateTabContent(key,c,epwData,slot){
   if(key==='overview')return overviewTabHTML(c,epwData);
-  if(key==='psychro')return psychroTabHTML(c,epwData);
+  if(key==='psychro')return psychroTabHTML(c,epwData,slot);
   if(key==='wind')return windTabHTML(c,epwData);
   if(key==='extremes')return extremesTabHTML(c,epwData);
 }
@@ -2957,14 +3069,21 @@ async function renderClimateTabAsync(key,c,slot){
     el.innerHTML=`<div class="epw-loading">Loading climate data…</div>`;
     epwData=await getEpwData(c,scn);
     if(!document.getElementById('climateTabContent-'+slot))return;
-    el.innerHTML=renderClimateTabContent(key,c,epwData);
+    el.innerHTML=renderClimateTabContent(key,c,epwData,slot);
   }else{
-    el.innerHTML=renderClimateTabContent(key,c,null);
+    el.innerHTML=renderClimateTabContent(key,c,null,slot);
   }
   wireChartHoverTips(el);
   /* psychrometric tab: draw canvas after DOM insertion */
   if(key==='psychro'){
-    requestAnimationFrame(()=>drawPsychroCanvas('psychro-canvas-'+slot,epwData));
+    requestAnimationFrame(()=>{
+      drawPsychroCanvas('psychro-canvas-'+slot,epwData);
+      wireInfoIcon('psychroInfoIcon-'+slot,'psychroInfoPop-'+slot);
+    });
+  }
+  /* extremes tab: wire info icon */
+  if(key==='extremes'){
+    wireInfoIcon('extremesInfoIcon','extremesInfoPop');
   }
   /* restore scroll if locked */
   if(_preserveScroll!==null){const p=document.getElementById('csPanel');if(p)p.scrollTop=_preserveScroll;}
