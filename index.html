@@ -547,9 +547,15 @@ body.mobile-mode .explorer-grid{
 body.mobile-mode .map-col{
   position:static!important;
   top:auto!important;
+  align-self:auto!important;
+  height:auto!important;
+}
+body.mobile-mode .map-card{
+  height:300px!important;
 }
 body.mobile-mode #map{
   height:300px!important;
+  min-height:300px!important;
 }
 /* case study panel: full width, auto height */
 body.mobile-mode #csPanel{
@@ -3546,11 +3552,11 @@ function caseDetailHTML(c,slot){
       <div class="block" style="margin-top:12px;">
         <div class="media-row" id="media-row-${slot}">
           <div class="media-col photo-col" id="photo-col-${slot}">
-            <div class="media-col-head">PHOTOS / SCHEMATIC</div>
+            <div class="media-col-head">PHOTOS</div>
             <div id="photo-block-${slot}" class="media-col-content"><div class="photo-loading"><svg class="loading-house-svg" viewBox="0 0 120 90" width="56" height="42" xmlns="http://www.w3.org/2000/svg"><polygon points="60,6 114,38 6,38" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><rect x="18" y="38" width="84" height="46" fill="none" stroke="currentColor" stroke-width="2.5"/></svg></div></div>
           </div>
           <div class="media-col plan-col" id="plan-col-${slot}">
-            <div class="media-col-head">DRAWINGS</div>
+            <div class="media-col-head">DXF_ANALYSIS DRAWINGS</div>
             <div id="plan-block-${slot}" class="media-col-content"><div class="photo-carousel" style="display:flex;align-items:center;justify-content:center;"><svg class="loading-house-svg" viewBox="0 0 120 90" width="56" height="42" xmlns="http://www.w3.org/2000/svg" style="opacity:0.2;"><polygon points="60,6 114,38 6,38" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><rect x="18" y="38" width="84" height="46" fill="none" stroke="currentColor" stroke-width="2.5"/></svg></div></div>
           </div>
         </div>
@@ -4415,6 +4421,8 @@ renderSlider();buildFilters();initMap();applyFilter();renderPanel();buildFinding
     } else {
       document.body.classList.remove('mobile-mode');
     }
+    /* tell Leaflet the container size changed */
+    setTimeout(()=>{if(typeof map!=='undefined'&&map)map.invalidateSize();},50);
   }
   applyMobileMode();
   /* re-evaluate on resize / orientation change */
