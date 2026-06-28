@@ -658,12 +658,12 @@ body.mobile-mode .app-header{
   border-bottom:1px solid var(--line);
 }
 /* slider: compact on mobile */
-body.mobile-mode .scenario-slider-wrap{width:140px!important;}
+body.mobile-mode .scenario-slider-wrap{width:280px!important;}
 body.mobile-mode .scenario-control{gap:2px!important;}
 body.mobile-mode .scenario-label{font-size:7.5px!important;letter-spacing:0.04em!important;}
-body.mobile-mode .scenario-slider{height:5px!important;margin:4px 0!important;}
-body.mobile-mode .scenario-slider::-webkit-slider-thumb{width:16px!important;height:16px!important;}
-body.mobile-mode .scenario-slider::-moz-range-thumb{width:16px!important;height:16px!important;}
+body.mobile-mode .scenario-slider{height:10px!important;margin:8px 0!important;}
+body.mobile-mode .scenario-slider::-webkit-slider-thumb{width:32px!important;height:32px!important;}
+body.mobile-mode .scenario-slider::-moz-range-thumb{width:32px!important;height:32px!important;}
 body.mobile-mode .scenario-ticks{margin-top:1px!important;}
 body.mobile-mode .scenario-tick{font-size:6.5px!important;letter-spacing:0!important;}
 body.mobile-mode .scenario-period{display:none;}
@@ -4459,7 +4459,7 @@ renderSlider();buildFilters();initMap();applyFilter();renderPanel();buildFinding
         map.invalidateSize();
         /* zoom out on mobile — desktop default is too close */
         if(document.body.classList.contains('mobile-mode')){
-          map.setZoom(Math.max(2, map.getZoom()-1));
+          map.setZoom(2);
         }
       }
     },50);
