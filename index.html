@@ -928,7 +928,7 @@ function regionOf(c){return REGION_OF[c.country]||'Other';}
 /* ===================== APP MODE: demo vs full =====================
    Demo mode is the always-self-contained mode this prototype has run in
    throughout development — zero fetches, mock-filled, safe to open as a
-   raw file. Full mode fetches the real data/cs_output_v5.xlsx and shows
+   raw file. Full mode fetches the real data/_cs.xlsx and shows
    only real fields, NO_DATA everywhere else, restricted to cases with
    real coordinates. Demo is the default on load specifically so opening
    this file directly always lands somewhere that works; full mode is
@@ -1278,8 +1278,8 @@ function rebuildAppFromCases(newCases){
    record is), no mock fill at all. Cached after first successful fetch so
    toggling back and forth doesn't re-fetch every time. ---- */
 async function fetchFullModeRaw(){
-  const res=await fetch(`${DATA_BASE}/cs_output_v5.xlsx?v=${BUILD_TS}`);
-  if(!res.ok)throw new Error('HTTP '+res.status+' fetching data/cs_output_v5.xlsx');
+  const res=await fetch(`${DATA_BASE}/_cs.xlsx?v=${BUILD_TS}`);
+  if(!res.ok)throw new Error('HTTP '+res.status+' fetching data/_cs.xlsx');
   const buf=await res.arrayBuffer();
   const wb=XLSX.read(buf,{type:'array'});
   const parsed=parseWorkbookToCases(wb);
@@ -1291,7 +1291,7 @@ async function setAppMode(){
     try{
       FULL_CASES_RAW=await fetchFullModeRaw();
     }catch(err){
-      console.warn('Excel fetch failed — check data/cs_output_v5.xlsx is present and server is running via http.server:',err.message);
+      console.warn('Excel fetch failed — check data/_cs.xlsx is present and server is running via http.server:',err.message);
       return false;
     }
   }
@@ -1557,7 +1557,7 @@ function exportEditedWorkbook(){
   const ws=XLSX.utils.aoa_to_sheet(data);
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Case Studies');
-  XLSX.writeFile(wb,'cs_output_edited.xlsx');
+  XLSX.writeFile(wb,'_cs_edited.xlsx');
 }
 
 /* ---- DXF folder ---- */
