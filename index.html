@@ -71,15 +71,15 @@ button{font-family:inherit;}
 .chrome-stripe{height:4px;background:var(--terracotta);}
 .win-titlebar{background:var(--paper-dim);border-bottom:1px solid var(--line-strong);padding:6px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
 .win-titlebar .win-title{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);letter-spacing:0.02em;}
-.win-controls{display:flex;gap:7px;align-items:center;flex:none;}
+.win-controls{display:flex;gap:9px;align-items:center;flex:none;}
 .win-controls .c-min,.win-controls .c-max{display:none;}
-.win-controls .c-close{width:9px;height:9px;position:relative;cursor:pointer;}
+.win-controls .c-close{width:13px;height:13px;position:relative;cursor:pointer;flex:none;}
 /* map close gets a larger invisible click target */
 #mapCloseBtn{padding:6px;margin:-6px;}
-.win-controls .c-close::before,.win-controls .c-close::after{content:'';position:absolute;top:4px;left:0;width:9px;height:1.3px;background:var(--ink-faint);}
+.win-controls .c-close::before,.win-controls .c-close::after{content:'';position:absolute;top:6px;left:0;width:13px;height:1.4px;background:var(--ink-faint);}
 .win-controls .c-close::before{transform:rotate(45deg);}
 .win-controls .c-close::after{transform:rotate(-45deg);}
-.win-controls .c-fetch{width:13px;height:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0.45;transition:opacity .15s;}
+.win-controls .c-fetch{width:16px;height:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0.45;transition:opacity .15s;flex:none;}
 .win-controls .c-fetch:hover{opacity:1;}
 .win-controls .c-fetch svg{display:block;}
 /* hover → terracotta accent on all control buttons */
@@ -510,50 +510,7 @@ footer .tag-link{background:var(--terracotta-dim);color:var(--terracotta-deep);p
 
 @media (max-width:980px){.explorer-grid,.findings-grid{grid-template-columns:1fr;}#map{height:380px;}.map-col{position:static;}.panel{height:auto;max-height:none;overflow-y:visible;}.findings-menu{position:static;}.corpus-stats{grid-template-columns:repeat(2,1fr);}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
-.diff-block{margin-bottom:14px;}
-.diff-block-head{font-family:var(--mono);font-size:9px;letter-spacing:0.07em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px;}
-.diff-chips{display:flex;flex-wrap:wrap;gap:6px;}
-.diff-chip{font-family:var(--mono);font-size:11px;font-weight:700;padding:4px 9px;border-radius:0;border:1px solid transparent;display:inline-flex;align-items:baseline;gap:4px;}
-.diff-chip .diff-label{font-weight:400;opacity:0.75;font-size:10px;}
-.diff-chip.diff-worse{background:#3a1418;color:#ff8a8a;border-color:#5a2228;}
-html:not([data-theme="dark"]) .diff-chip.diff-worse{background:#ffeef0;color:#b3232f;border-color:#f5c6cb;}
-.diff-chip.diff-better{background:#0f2e1a;color:#7ee787;border-color:#1d4a2c;}
-html:not([data-theme="dark"]) .diff-chip.diff-better{background:#e6ffed;color:#1a7f37;border-color:#bbe8c4;}
-.diff-chip.diff-neutral{background:var(--paper-dim);color:var(--ink-faint);border-color:var(--line);}
-.diff-chip.diff-nodata{background:var(--paper-dim);color:var(--ink-faint);border-color:var(--line);font-weight:400;font-style:italic;}
 :focus-visible{outline:2px solid var(--terracotta-deep);outline-offset:2px;}
-
-/* ═══════════════════════════════════════════════════════
-   IDE STATUS BAR — VS Code style strip pinned to viewport
-   bottom. Always dark regardless of light/dark theme,
-   monospace, low-noise, purely informational.
-   ═══════════════════════════════════════════════════════ */
-.ide-statusbar{
-  position:fixed;
-  left:0;right:0;bottom:0;
-  height:22px;
-  z-index:9999;
-  background:#1a1825;
-  color:#c9c3e0;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:0 12px;
-  font-family:var(--mono);
-  font-size:10.5px;
-  letter-spacing:0.01em;
-  border-top:1px solid #2e2a40;
-  user-select:none;
-}
-.ide-statusbar .sb-seg{white-space:nowrap;opacity:0.85;}
-.ide-statusbar .sb-branch{color:#7ee787;opacity:1;}
-.ide-statusbar .sb-sep{opacity:0.3;}
-.ide-statusbar .sb-flex{flex:1;}
-.ide-statusbar .sb-mode{opacity:0.55;font-style:italic;}
-body{padding-bottom:22px;}
-html[data-theme="dark"] .ide-statusbar{background:#0d0c14;border-top-color:#1f1c2e;}
-body.mobile-mode .ide-statusbar{display:none;}
-body.mobile-mode{padding-bottom:0;}
 
 /* ═══════════════════════════════════════════════════════
    FULLSCREEN MAP MODE — applied via body.map-fullscreen
@@ -600,7 +557,7 @@ body.map-fullscreen .cs-search-input{
 body.map-fullscreen .map-col{
   position:fixed;
   top:var(--tabbar-bottom,60px);
-  left:0;right:0;bottom:22px;
+  left:0;right:0;bottom:0;
   z-index:9000;
   height:auto;
 }
@@ -631,7 +588,7 @@ body.map-fullscreen .explorer-grid > .card-window{
   position:fixed;
   top:calc(var(--tabbar-bottom,60px) + 14px);
   right:14px;
-  bottom:36px;
+  bottom:14px;
   width:420px;
   max-width:calc(100vw - 28px);
   z-index:9002;
@@ -932,14 +889,14 @@ body.mobile-mode .mobile-banner{ display:block; }
     <div class="explorer-grid">
       <div class="map-col">
         <div class="map-card">
-          <div class="card-titlebar"><span class="win-title">_map</span><span class="win-controls"><span class="c-fetch" id="mapFullscreenBtn" title="Toggle fullscreen map" style="display:flex;align-items:center;justify-content:center;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1 L1 1 L1 4 M7 1 L10 1 L10 4 M1 7 L1 10 L4 10 M10 7 L10 10 L7 10"/></svg></span><span class="c-fetch" id="koppenOverlayBtn" title="Toggle Köppen zone overlay" style="font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:0.04em;padding:0 3px;cursor:pointer;opacity:0.5;" >KG</span><span class="action-info-icon" id="koppenOverlayInfo" style="font-size:11px;position:relative;margin-right:4px;">ⓘ<div class="action-info-pop" id="koppenOverlayInfoPop" style="top:calc(100% + 4px);bottom:auto;right:0;width:320px;"><div class="ai-head">_Köppen overlay</div><div class="ai-body">Colour field interpolated from Köppen-Geiger classifications at case study station locations using inverse distance weighting (IDW, power 2). Each pixel is a weighted blend of the nearest stations' zone colours.</div><div class="ai-warn"><b>NOTE: This is not a validated climate map.</b> Boundaries are interpolation artefacts, not climatological zone boundaries. The overlay reflects only the stations in this corpus — gaps between stations are extrapolated. Do not interpret as a gridded climate product. For reference gridded data see Kottek et al. (2006), <em>Meteorologische Zeitschrift</em>, or Beck et al. (2018), <em>Scientific Data</em>.</div><div class="ai-cite">Classification per scenario derived from EPW-station Köppen assignment (Kottek et al. 2006 thresholds). Future zones: FWG morphed EPW (Rodrigues et al. 2023), SSP5-8.5.</div></div></span><span class="c-fetch" id="fetchMap" title="Re-fetch EPW &amp; coordinates"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 L2 9 M2 5 L2 9 L6 9"/></svg></span><span class="c-close" id="mapCloseBtn"></span></span></div>
+          <div class="card-titlebar"><span class="win-title">_map</span><span class="win-controls"><span class="c-fetch" id="mapFullscreenBtn" title="Toggle fullscreen map" style="display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1 L1 1 L1 4 M7 1 L10 1 L10 4 M1 7 L1 10 L4 10 M10 7 L10 10 L7 10"/></svg></span><span class="c-fetch" id="koppenOverlayBtn" title="Toggle Köppen zone overlay" style="display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0.5;"><svg width="17" height="16" viewBox="0 0 17 16" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="discoBallClip"><circle cx="8.5" cy="9.7" r="5.3"/></clipPath></defs><path d="M2.4 2.6 L3.7 3 L2.4 3.4 L2 4.7 L1.6 3.4 L0.3 3 L1.6 2.6 L2 1.3 Z" fill="currentColor"/><path d="M14.6 2 L15.35 2.25 L14.6 2.5 L14.35 3.25 L14.1 2.5 L13.35 2.25 L14.1 2 L14.35 1.25 Z" fill="currentColor"/><line x1="8.5" y1="1.7" x2="8.5" y2="3.5" stroke="currentColor" stroke-width="0.8"/><rect x="7.4" y="3.2" width="2.2" height="1.2" rx="0.2" fill="none" stroke="currentColor" stroke-width="0.7"/><circle cx="8.5" cy="9.7" r="5.3" fill="none" stroke="currentColor" stroke-width="1"/><g clip-path="url(#discoBallClip)"><path d="M3.2 9.7 H13.8 M4.1 7 H12.9 M4.1 12.4 H12.9 M4.9 5.5 Q8.5 9.7 12.1 14 M12.1 5.5 Q8.5 9.7 4.9 14 M8.5 4.5 Q5.9 9.7 8.5 15 M8.5 4.5 Q11.1 9.7 8.5 15" stroke="currentColor" stroke-width="0.5" fill="none" stroke-linecap="round"/></g></svg></span><span class="action-info-icon" id="koppenOverlayInfo" style="font-size:14px;position:relative;display:flex;align-items:center;">ⓘ<div class="action-info-pop" id="koppenOverlayInfoPop" style="top:calc(100% + 4px);bottom:auto;right:0;width:320px;"><div class="ai-head">_Köppen overlay</div><div class="ai-body">Colour field interpolated from Köppen-Geiger classifications at case study station locations using inverse distance weighting (IDW, power 2). Each pixel is a weighted blend of the nearest stations' zone colours.</div><div class="ai-warn"><b>NOTE: This is not a validated climate map.</b> Boundaries are interpolation artefacts, not climatological zone boundaries. The overlay reflects only the stations in this corpus — gaps between stations are extrapolated. Do not interpret as a gridded climate product. For reference gridded data see Kottek et al. (2006), <em>Meteorologische Zeitschrift</em>, or Beck et al. (2018), <em>Scientific Data</em>.</div><div class="ai-cite">Classification per scenario derived from EPW-station Köppen assignment (Kottek et al. 2006 thresholds). Future zones: FWG morphed EPW (Rodrigues et al. 2023), SSP5-8.5.</div></div></span><span class="c-fetch" id="fetchMap" title="Re-fetch EPW &amp; coordinates"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 L2 9 M2 5 L2 9 L6 9"/></svg></span><span class="c-close" id="mapCloseBtn"></span></span></div>
           <div id="map"></div>
           <div class="map-safe-msg" id="mapSafeMsg"></div>
           <div class="map-legend" id="mapLegend"></div>
         </div>
         </div>
       <div class="card-window">
-        <div class="card-titlebar"><span class="win-title">_case_study</span><span class="win-controls"><span class="c-fetch" id="fetchCase" title="Re-fetch photos &amp; plans"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 L2 9 M2 5 L2 9 L6 9"/></svg></span><span class="c-close"></span></span></div>
+        <div class="card-titlebar"><span class="win-title">_case_study</span><span class="win-controls"><span class="c-fetch" id="fetchCase" title="Re-fetch photos &amp; plans"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 L2 9 M2 5 L2 9 L6 9"/></svg></span><span class="c-close"></span></span></div>
         <div class="panel" id="csPanel"></div>
       </div>
     </div>
@@ -1282,23 +1239,6 @@ function median(arr){
   return s.length%2?s[m]:(s[m-1]+s[m])/2;
 }
 function caseMassNorm(c){return(c.area>0&&c.thermalMass!=null)?c.thermalMass/c.area:null;}
-/* ── git-diff style delta chips: Present → 2080 change summary ──── */
-function diffChipsHTML(c){
-  const items=[
-    {label:'overheating',val:caseOhDelta(c),unit:'h/yr',worseIfPositive:true},
-    {label:'comfort decline',val:caseComfortDelta(c),unit:'%',worseIfPositive:true},
-    {label:'solar exposure',val:caseSolarDelta(c),unit:'Wh/m²·d',worseIfPositive:true},
-  ];
-  const chips=items.map(it=>{
-    if(it.val==null)return `<span class="diff-chip diff-nodata">·&nbsp;${it.label}&nbsp;n/a</span>`;
-    const v=it.val,bad=it.worseIfPositive?v>0:v<0;
-    const sign=v>0?'+':v<0?'−':'±';
-    const cls=v===0?'diff-neutral':(bad?'diff-worse':'diff-better');
-    const mag=Math.abs(v).toFixed(v<10&&v>-10?1:0);
-    return `<span class="diff-chip ${cls}">${sign}${mag}${it.unit}&nbsp;<span class="diff-label">${it.label}</span></span>`;
-  }).join('');
-  return `<div class="diff-block"><div class="diff-block-head">_diff · present → 2080</div><div class="diff-chips">${chips}</div></div>`;
-}
 function caseOhDelta(c){return(c.sim&&c.sim.oh&&c.sim.oh[2]!=null&&c.sim.oh[0]!=null)?c.sim.oh[2]-c.sim.oh[0]:null;}
 function caseComfortDelta(c){return(c.sim&&c.sim.comfort&&c.sim.comfort[2]!=null&&c.sim.comfort[0]!=null)?c.sim.comfort[0]-c.sim.comfort[2]:null;}
 function caseSolarDelta(c){
@@ -1430,24 +1370,6 @@ function applyFilter(){
   document.getElementById('filterCount').textContent=`${vis.length}/${CASES.length} cases · ${mapped} mapped`;
   renderUnmapped(vis);
   if(selectedId&&!pass(byId(selectedId))){selectedId=null;renderPanel();}
-  updateStatusbar(vis.length);
-}
-function updateStatusbar(visCount){
-  const sb=document.getElementById('ideStatusbar');
-  if(!sb)return;
-  const scnEl=document.getElementById('sbScenario');
-  if(scnEl)scnEl.textContent=(SCENARIOS[scn]||'present').toLowerCase();
-  const ccEl=document.getElementById('sbCaseCount');
-  if(ccEl)ccEl.textContent=`${visCount!=null?visCount:CASES.filter(pass).length}/${CASES.length} cases`;
-  const selEl=document.getElementById('sbSelected');
-  if(selEl){
-    if(selectedId){
-      const c=byId(selectedId);
-      selEl.textContent=c?`${c.id} · ${c.name||''}`:selectedId;
-    }else{
-      selEl.textContent='no selection';
-    }
-  }
 }
 function renderUnmapped(vis){
   /* unmapped window was removed from the UI — guard against missing element */
@@ -4044,7 +3966,6 @@ function caseDetailHTML(c,slot){
     <!-- TAB 3: METRICS & ATTRIBUTES -->
     <div class="cs-panel ${currentCsTab[slot]==='metrics'?'active':''}" data-cspanel="metrics" data-slot="${slot}">
       <div class="block" style="margin-top:12px;">
-        ${diffChipsHTML(c)}
         <div class="metric-pager" id="metricPager-${slot}">${METRIC_PAGES.map((p,i)=>`<button class="metric-page-btn ${i===mpage?'active':''}" data-page="${i}" data-slot="${slot}">${p.label}</button>`).join('')}</div>
         <table class="metric-table" id="metricTable-${slot}">${metricRowsHTML(c,mpage)}</table>
         <div class="tagmatrix" style="margin-top:10px;">${STRATEGIES.map(s=>`<span class="tagchip ${c.tags[s.key]?'on':'off'}">${c.tags[s.key]?'✓ ':'○ '}${s.label}</span>`).join('')}</div>
@@ -4175,7 +4096,6 @@ function drawSimilarityLines(){
 
 function renderPanel(){
   disposeAllViewers();
-  updateStatusbar();
   const el=document.getElementById('csPanel');
   const grid=document.querySelector('.explorer-grid');
   const wasCompare=grid&&grid.classList.contains('compare-active');
@@ -4983,18 +4903,5 @@ renderSlider();buildFilters();initMap();applyFilter();renderPanel();buildFinding
 /* fetch Excel and rebuild with real data — setAppMode always full now */
 setAppMode();
 </script>
-<div class="ide-statusbar" id="ideStatusbar">
-  <span class="sb-seg sb-branch">⌥ <span id="sbScenario">present</span></span>
-  <span class="sb-sep">│</span>
-  <span class="sb-seg" id="sbCaseCount">0/0 cases</span>
-  <span class="sb-sep">│</span>
-  <span class="sb-seg" id="sbSelected">no selection</span>
-  <span class="sb-flex"></span>
-  <span class="sb-seg sb-mode">vernacularfutures</span>
-  <span class="sb-sep">│</span>
-  <span class="sb-seg">UTF-8</span>
-  <span class="sb-sep">│</span>
-  <span class="sb-seg">SSP5-8.5</span>
-</div>
 </body>
 </html>
