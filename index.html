@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta property="og:title" content="vernacularfutures — _morphing_typologies_into_future_climates">
+<meta property="og:title" content="vernacularfutures — _morphing_typologies_for_future_climates">
 <meta property="og:description" content="An interactive atlas of vernacular building morphology across climate zones, projected onto future climate scenarios (SSP5-8.5, 2050/2080).">
 <meta property="og:url" content="https://yorckvondietze.github.io/VernacularFutures/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="vernacularfutures — _morphing_typologies_into_future_climates">
+<meta name="twitter:title" content="vernacularfutures — _morphing_typologies_for_future_climates">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>vernacularfutures — _morphing_typologies_into_future_climates</title>
+<title>vernacularfutures — _morphing_typologies_for_future_climates</title>
 <script>(function(){try{if(localStorage.getItem('atlasTheme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -63,6 +63,7 @@ body{transition:background-color .2s ease,color .2s ease;}
 .egg-window,#eggCanvas,.brand-title .brand-hl{transition:background-color .35s ease,border-color .35s ease;}
 *{box-sizing:border-box;}html,body{margin:0;padding:0;height:100%;overflow:hidden;}
 body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14.5px;line-height:1.45;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;height:100vh;}
+body:not(.mobile-mode){zoom:1.12;}
 button{font-family:inherit;}
 .nodata{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);background:repeating-linear-gradient(45deg,#E6E6E6,#E6E6E6 5px,#F6F6F6 5px,#F6F6F6 10px);border:1px solid var(--ink-faint);border-radius:0;padding:0 5px;display:inline-block;}
 .ph-box{font-family:var(--mono);font-size:11px;color:var(--ink-soft);background:repeating-linear-gradient(45deg,rgba(0,0,0,0.045),rgba(0,0,0,0.045) 10px,rgba(0,0,0,0) 10px,rgba(0,0,0,0) 20px);border:1.5px dashed var(--ink-faint);border-radius:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:14px;line-height:1.5;}
@@ -119,7 +120,7 @@ button{font-family:inherit;}
 .brand-rest{color:var(--ink);}
 .brand-title .brand-hl{background:var(--paper-deep);padding:1px 8px;}
 .brand-title .module{font-family:var(--mono);font-size:12.5px;color:var(--ink-faint);font-weight:400;}
-.brand-subtitle{font-family:var(--mono);font-size:17px;color:var(--ink-soft);font-weight:500;letter-spacing:-0.01em;margin-top:4px;}
+.brand-subtitle{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);font-weight:500;letter-spacing:-0.01em;margin-top:4px;}
 .scenario-control{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
 .scenario-label{font-family:var(--mono);font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);}
 .scenario-slider-wrap{width:420px;}
@@ -215,6 +216,22 @@ main{padding:22px 28px 50px;max-width:1500px;margin:0 auto;}
 .filter-count{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin-left:auto;}
 .filter-reset{font-family:var(--mono);font-size:11px;background:transparent;border:1px solid var(--line);color:var(--ink-soft);padding:5px 10px;border-radius:0;cursor:pointer;}
 .cs-search-row{position:relative;margin-bottom:10px;}
+/* default mode: search row floats in the map's top-right corner, below the titlebar.
+   Fullscreen mode overrides this via its own position:fixed rule below.
+   Mobile mode reverts to normal flow — see mobile section.            */
+.map-card .cs-search-row{
+  position:absolute;
+  top:44px;right:12px;
+  width:260px;
+  margin:0;
+  z-index:800;
+}
+.map-card .cs-search-input{
+  background:color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  box-shadow:0 2px 10px rgba(0,0,0,.12);
+}
 .cs-search-input{width:100%;font-family:var(--mono);font-size:12px;padding:8px 12px;border:1px solid var(--line);background:var(--paper-dim);color:var(--ink);box-sizing:border-box;outline:none;}
 .cs-search-input:focus{border-color:var(--terracotta);}
 .cs-search-results{position:absolute;top:100%;left:0;right:0;background:var(--paper);border:1px solid var(--line-strong);border-top:none;z-index:100;max-height:240px;overflow-y:auto;}
@@ -514,7 +531,7 @@ body.map-fullscreen .explorer-grid{
 body.map-fullscreen .filter-bar{
   position:fixed;
   top:calc(var(--tabbar-bottom,60px) + 14px);
-  left:14px;right:14px;
+  left:60px;right:calc(420px + 28px + 160px);
   z-index:9001;
   background:color-mix(in srgb, var(--paper) 90%, transparent);
   backdrop-filter:blur(6px);
@@ -526,8 +543,8 @@ body.map-fullscreen .filter-bar{
 body.map-fullscreen .cs-search-row{
   position:fixed;
   top:var(--searchrow-top,140px);
-  left:14px;
-  width:340px;
+  left:60px;
+  width:300px;
   z-index:9001;
   margin:0;
 }
@@ -552,7 +569,7 @@ body.map-fullscreen .map-card{
 }
 body.map-fullscreen .map-card .card-titlebar{
   position:absolute;
-  top:14px;right:14px;left:auto;
+  top:14px;right:calc(420px + 28px);left:auto;
   width:auto;
   z-index:9010;
   background:color-mix(in srgb, var(--paper) 90%, transparent);
@@ -644,6 +661,12 @@ body.mobile-mode .filter-group select{
 /* search bar */
 body.mobile-mode .cs-search-bar{
   padding:6px 12px;
+}
+body.mobile-mode .map-card .cs-search-row{
+  position:static!important;
+  width:100%!important;
+  margin-bottom:10px!important;
+  top:auto!important;right:auto!important;
 }
 /* stack map + case panel */
 body.mobile-mode .explorer-grid{
@@ -802,7 +825,7 @@ body.mobile-mode .mobile-banner{ display:block; }
   <div>
     <div class="brand-eyebrow">SHI<span style="position:relative;bottom:5px;font-size:0.8em;">FT</span></div>
     <div class="brand-title"><span class="brand-name"><span class="brand-hl">vernacular<em>futures</em></span></span></div>
-    <div class="brand-subtitle">_morphing_typologies_into_future_climates</div>
+    <div class="brand-subtitle">_morphing_typologies_for_future_climates</div>
   </div>
   <div class="scenario-control">
     <div class="scenario-label">Climate scenario · SSP5-8.5
@@ -4767,6 +4790,17 @@ document.addEventListener('click',e=>{
 });
 
 renderSlider();buildFilters();initMap();applyFilter();renderPanel();buildFindings();buildCorpusStats();buildPipeline();seedDxfFromCases();seedPhotosFromCases();renderAdminView();
+/* move search row into the map card so it floats in its top-right corner
+   (default mode) / participates in fullscreen position:fixed (unaffected
+   by DOM nesting since fixed positioning is viewport-relative).        */
+(function(){
+  const searchRow=document.querySelector('.cs-search-row');
+  const mapCard=document.querySelector('.map-card');
+  const titlebar=mapCard?mapCard.querySelector('.card-titlebar'):null;
+  if(searchRow&&mapCard&&titlebar){
+    titlebar.insertAdjacentElement('afterend',searchRow);
+  }
+})();
 /* clear scroll lock when user manually scrolls the case panel (attached once) */
 (function(){const p=document.getElementById('csPanel');if(p)p.addEventListener('scroll',()=>{_preserveScroll=null;},{passive:true});})();
 /* ── fullscreen map mode ──────────────────────────────────────────
