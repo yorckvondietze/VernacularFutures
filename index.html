@@ -63,7 +63,6 @@ body{transition:background-color .2s ease,color .2s ease;}
 .egg-window,#eggCanvas,.brand-title .brand-hl{transition:background-color .35s ease,border-color .35s ease;}
 *{box-sizing:border-box;}html,body{margin:0;padding:0;height:100%;overflow:hidden;}
 body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14.5px;line-height:1.45;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;height:100vh;}
-body:not(.mobile-mode){zoom:1.12;}
 button{font-family:inherit;}
 .nodata{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);background:repeating-linear-gradient(45deg,#E6E6E6,#E6E6E6 5px,#F6F6F6 5px,#F6F6F6 10px);border:1px solid var(--ink-faint);border-radius:0;padding:0 5px;display:inline-block;}
 .ph-box{font-family:var(--mono);font-size:11px;color:var(--ink-soft);background:repeating-linear-gradient(45deg,rgba(0,0,0,0.045),rgba(0,0,0,0.045) 10px,rgba(0,0,0,0) 10px,rgba(0,0,0,0) 20px);border:1.5px dashed var(--ink-faint);border-radius:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:14px;line-height:1.5;}
@@ -876,7 +875,7 @@ body.mobile-mode .mobile-banner{ display:block; }
       <div class="filter-group"><span class="fl">Comfort decline Δ · →2080</span><select id="fComfortDelta"><option value="">All</option><option value="high">High · ≥ median</option></select></div>
       <div class="filter-group"><span class="fl">Solar exposure Δ · →2080</span><select id="fSolarDelta"><option value="">All</option><option value="high">High · ≥ median</option></select></div>
       <div class="filter-group"><span class="fl">Köppen zone shift</span><select id="fKoppenDelta"><option value="">All</option><option value="yes">Shifts by 2080</option></select></div>
-      <div class="filter-group"><span class="fl">Compactness ψ</span><select id="fCompact"><option value="">All</option><option value="cubey">Cubey · ψ≥0.85</option><option value="rectangly">Elongated · ψ&lt;0.85</option></select></div>
+      <div class="filter-group"><span class="fl">Compactness ψ</span><select id="fCompact"><option value="">All</option><option value="cubey">Compact · ψ≥0.85</option><option value="rectangly">Elongated · ψ&lt;0.85</option></select></div>
       <div class="filter-group"><span class="fl">WWR</span><select id="fWwr"><option value="">All</option><option value="high">High · ≥ median</option><option value="low">Low · &lt; median</option></select></div>
       <div class="filter-group"><span class="fl">Pentice · cultural</span><select id="fPentice"><option value="">All</option><option value="yes">Has pentice</option><option value="no">No pentice</option></select></div>
       <span class="filter-count" id="filterCount"></span>
