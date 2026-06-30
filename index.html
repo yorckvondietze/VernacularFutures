@@ -119,6 +119,7 @@ button{font-family:inherit;}
 .brand-rest{color:var(--ink);}
 .brand-title .brand-hl{background:var(--paper-deep);padding:1px 8px;}
 .brand-title .module{font-family:var(--mono);font-size:12.5px;color:var(--ink-faint);font-weight:400;}
+.brand-subtitle{font-family:var(--mono);font-size:17px;color:var(--ink-soft);font-weight:500;letter-spacing:-0.01em;margin-top:4px;}
 .scenario-control{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
 .scenario-label{font-family:var(--mono);font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);}
 .scenario-slider-wrap{width:420px;}
@@ -495,6 +496,99 @@ footer .tag-link{background:var(--terracotta-dim);color:var(--terracotta-deep);p
 :focus-visible{outline:2px solid var(--terracotta-deep);outline-offset:2px;}
 
 /* ═══════════════════════════════════════════════════════
+   FULLSCREEN MAP MODE — applied via body.map-fullscreen
+   Map fills the area below the tab bar; filter bar, search,
+   and the case study panel float on top with semi-transparent
+   backgrounds. Desktop-only feature.
+   All floating elements use position:fixed with explicit
+   viewport coordinates — no percentage-height chains through
+   nested flex/grid ancestors, which is fragile and was the
+   root cause of the v121 layout collapse.
+   ═══════════════════════════════════════════════════════ */
+body.map-fullscreen #view-cases{
+  display:contents;
+}
+body.map-fullscreen .explorer-grid{
+  display:contents;
+}
+body.map-fullscreen .filter-bar{
+  position:fixed;
+  top:calc(var(--tabbar-bottom,60px) + 14px);
+  left:14px;right:14px;
+  z-index:9001;
+  background:color-mix(in srgb, var(--paper) 90%, transparent);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  box-shadow:0 2px 12px rgba(0,0,0,.18);
+  border:1px solid var(--line);
+  width:auto;
+}
+body.map-fullscreen .cs-search-row{
+  position:fixed;
+  top:var(--searchrow-top,140px);
+  left:14px;
+  width:340px;
+  z-index:9001;
+  margin:0;
+}
+body.map-fullscreen .cs-search-input{
+  background:color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  box-shadow:0 2px 12px rgba(0,0,0,.18);
+}
+body.map-fullscreen .map-col{
+  position:fixed;
+  top:var(--tabbar-bottom,60px);
+  left:0;right:0;bottom:0;
+  z-index:9000;
+  height:auto;
+}
+body.map-fullscreen .map-card{
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  height:auto;
+  border:none;
+}
+body.map-fullscreen .map-card .card-titlebar{
+  position:absolute;
+  top:14px;right:14px;left:auto;
+  width:auto;
+  z-index:9010;
+  background:color-mix(in srgb, var(--paper) 90%, transparent);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  box-shadow:0 2px 12px rgba(0,0,0,.18);
+  border:1px solid var(--line);
+}
+body.map-fullscreen #map{
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  height:auto!important;
+  width:auto!important;
+}
+body.map-fullscreen .explorer-grid > .card-window{
+  position:fixed;
+  top:calc(var(--tabbar-bottom,60px) + 14px);
+  right:14px;
+  bottom:14px;
+  width:420px;
+  max-width:calc(100vw - 28px);
+  z-index:9002;
+  box-shadow:0 4px 24px rgba(0,0,0,.25);
+}
+body.map-fullscreen .explorer-grid > .card-window .panel,
+body.map-fullscreen .explorer-grid > .card-window #csPanel{
+  background:color-mix(in srgb, var(--paper) 95%, transparent);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  height:100%;
+  max-height:100%;
+}
+body.map-fullscreen #mapFullscreenBtn{opacity:1;color:var(--terracotta);}
+
+
+/* ═══════════════════════════════════════════════════════
    MOBILE MODE — applied via body.mobile-mode (JS-detected)
    Desktop layout is completely unaffected.
    ═══════════════════════════════════════════════════════ */
@@ -651,6 +745,7 @@ body.mobile-mode .viewer3d-canvas-box canvas{
   height:auto!important;
 }
 /* slider bar: sticky on mobile so it stays while scrolling */
+body.mobile-mode #mapFullscreenBtn{display:none!important;}
 body.mobile-mode .app-header{
   position:sticky!important;
   top:0;
@@ -706,7 +801,8 @@ body.mobile-mode .mobile-banner{ display:block; }
 <header class="app-header">
   <div>
     <div class="brand-eyebrow">SHI<span style="position:relative;bottom:5px;font-size:0.8em;">FT</span></div>
-    <div class="brand-title"><span class="brand-name"><span class="brand-hl">vernacular<em>futures</em></span></span> <span class="module">_morphing_typologies_into_future_climates</span></div>
+    <div class="brand-title"><span class="brand-name"><span class="brand-hl">vernacular<em>futures</em></span></span></div>
+    <div class="brand-subtitle">_morphing_typologies_into_future_climates</div>
   </div>
   <div class="scenario-control">
     <div class="scenario-label">Climate scenario · SSP5-8.5
@@ -750,10 +846,10 @@ body.mobile-mode .mobile-banner{ display:block; }
     <div class="filter-bar">
       <div class="filter-group"><span class="fl">Region</span><select id="fRegion"><option value="">All regions</option></select></div>
       <div class="filter-group"><span class="fl">Köppen zone</span><select id="fKoppen"><option value="">All</option></select></div>
-      <div class="filter-group"><span class="fl">Roof</span><select id="fRoof"><option value="">All</option><option value="steep">Steep · ≥35°</option><option value="shallow">Shallow · &lt;35°</option></select></div>
+      <div class="filter-group"><span class="fl">Roof pitch</span><select id="fRoof"><option value="">All</option><option value="steep">Steep · ≥35°</option><option value="shallow">Shallow · &lt;35°</option></select></div>
       <div class="filter-group"><span class="fl">Construction type</span><select id="fConstruction"><option value="">All</option><option value="timber_frame">Timber frame</option><option value="wood">Wood</option><option value="clay">Clay</option><option value="stone/masonry">Stone masonry</option><option value="log_construction">Log</option></select></div>
       <div class="filter-group"><span class="fl">Thermal mass · per m²</span><select id="fMass"><option value="">All</option><option value="high">High · ≥ median</option><option value="low">Low · &lt; median</option></select></div>
-      <div class="filter-group"><span class="fl">Overheating Δ · →2080</span><select id="fOhDelta"><option value="">All</option><option value="high">High · ≥ median</option></select></div>
+      <div class="filter-group"><span class="fl">Overheating Δ · →2080</span><select id="fOhDelta"><option value="">All</option><option value="high">High · ≥ median</option><option value="low">Low · &lt; median</option></select></div>
       <div class="filter-group"><span class="fl">Comfort decline Δ · →2080</span><select id="fComfortDelta"><option value="">All</option><option value="high">High · ≥ median</option></select></div>
       <div class="filter-group"><span class="fl">Solar exposure Δ · →2080</span><select id="fSolarDelta"><option value="">All</option><option value="high">High · ≥ median</option></select></div>
       <div class="filter-group"><span class="fl">Köppen zone shift</span><select id="fKoppenDelta"><option value="">All</option><option value="yes">Shifts by 2080</option></select></div>
@@ -770,7 +866,7 @@ body.mobile-mode .mobile-banner{ display:block; }
     <div class="explorer-grid">
       <div class="map-col">
         <div class="map-card">
-          <div class="card-titlebar"><span class="win-title">_map</span><span class="win-controls"><span class="c-fetch" id="koppenOverlayBtn" title="Toggle Köppen zone overlay" style="font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:0.04em;padding:0 3px;cursor:pointer;opacity:0.5;" >KG</span><span class="action-info-icon" id="koppenOverlayInfo" style="font-size:11px;position:relative;margin-right:4px;">ⓘ<div class="action-info-pop" id="koppenOverlayInfoPop" style="top:calc(100% + 4px);bottom:auto;right:0;width:320px;"><div class="ai-head">_Köppen overlay</div><div class="ai-body">Colour field interpolated from Köppen-Geiger classifications at case study station locations using inverse distance weighting (IDW, power 2). Each pixel is a weighted blend of the nearest stations' zone colours.</div><div class="ai-warn"><b>NOTE: This is not a validated climate map.</b> Boundaries are interpolation artefacts, not climatological zone boundaries. The overlay reflects only the stations in this corpus — gaps between stations are extrapolated. Do not interpret as a gridded climate product. For reference gridded data see Kottek et al. (2006), <em>Meteorologische Zeitschrift</em>, or Beck et al. (2018), <em>Scientific Data</em>.</div><div class="ai-cite">Classification per scenario derived from EPW-station Köppen assignment (Kottek et al. 2006 thresholds). Future zones: FWG morphed EPW (Rodrigues et al. 2023), SSP5-8.5.</div></div></span><span class="c-fetch" id="fetchMap" title="Re-fetch EPW &amp; coordinates"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 L2 9 M2 5 L2 9 L6 9"/></svg></span><span class="c-close" id="mapCloseBtn"></span></span></div>
+          <div class="card-titlebar"><span class="win-title">_map</span><span class="win-controls"><span class="c-fetch" id="mapFullscreenBtn" title="Toggle fullscreen map" style="display:flex;align-items:center;justify-content:center;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1 L1 1 L1 4 M7 1 L10 1 L10 4 M1 7 L1 10 L4 10 M10 7 L10 10 L7 10"/></svg></span><span class="c-fetch" id="koppenOverlayBtn" title="Toggle Köppen zone overlay" style="font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:0.04em;padding:0 3px;cursor:pointer;opacity:0.5;" >KG</span><span class="action-info-icon" id="koppenOverlayInfo" style="font-size:11px;position:relative;margin-right:4px;">ⓘ<div class="action-info-pop" id="koppenOverlayInfoPop" style="top:calc(100% + 4px);bottom:auto;right:0;width:320px;"><div class="ai-head">_Köppen overlay</div><div class="ai-body">Colour field interpolated from Köppen-Geiger classifications at case study station locations using inverse distance weighting (IDW, power 2). Each pixel is a weighted blend of the nearest stations' zone colours.</div><div class="ai-warn"><b>NOTE: This is not a validated climate map.</b> Boundaries are interpolation artefacts, not climatological zone boundaries. The overlay reflects only the stations in this corpus — gaps between stations are extrapolated. Do not interpret as a gridded climate product. For reference gridded data see Kottek et al. (2006), <em>Meteorologische Zeitschrift</em>, or Beck et al. (2018), <em>Scientific Data</em>.</div><div class="ai-cite">Classification per scenario derived from EPW-station Köppen assignment (Kottek et al. 2006 thresholds). Future zones: FWG morphed EPW (Rodrigues et al. 2023), SSP5-8.5.</div></div></span><span class="c-fetch" id="fetchMap" title="Re-fetch EPW &amp; coordinates"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 L2 9 M2 5 L2 9 L6 9"/></svg></span><span class="c-close" id="mapCloseBtn"></span></span></div>
           <div id="map"></div>
           <div class="map-safe-msg" id="mapSafeMsg"></div>
           <div class="map-legend" id="mapLegend"></div>
@@ -1233,6 +1329,7 @@ function pass(c){
   if(fMass==='high'&&!(caseMassNorm(c)!=null&&caseMassNorm(c)>=DYN.massMed))return false;
   if(fMass==='low'&&!(caseMassNorm(c)!=null&&caseMassNorm(c)<DYN.massMed))return false;
   if(fOhDelta==='high'&&!(caseOhDelta(c)!=null&&caseOhDelta(c)>=DYN.ohDeltaMed))return false;
+  if(fOhDelta==='low'&&!(caseOhDelta(c)!=null&&caseOhDelta(c)<DYN.ohDeltaMed))return false;
   if(fComfortDelta==='high'&&!(caseComfortDelta(c)!=null&&caseComfortDelta(c)>=DYN.comfortDeltaMed))return false;
   if(fSolarDelta==='high'&&!(caseSolarDelta(c)>=DYN.solarDeltaMed))return false;
   if(fKoppenDelta==='yes'&&!(c.koppen[0]&&c.koppen[2]&&c.koppen[0]!==c.koppen[2]))return false;
@@ -4672,6 +4769,53 @@ document.addEventListener('click',e=>{
 renderSlider();buildFilters();initMap();applyFilter();renderPanel();buildFindings();buildCorpusStats();buildPipeline();seedDxfFromCases();seedPhotosFromCases();renderAdminView();
 /* clear scroll lock when user manually scrolls the case panel (attached once) */
 (function(){const p=document.getElementById('csPanel');if(p)p.addEventListener('scroll',()=>{_preserveScroll=null;},{passive:true});})();
+/* ── fullscreen map mode ──────────────────────────────────────────
+   Map fills the area below the tab bar; filter/search/case panel
+   float on top. --tabbar-bottom is measured live so it works
+   regardless of header/slider height.                              */
+(function(){
+  function setTabbarBottomVar(){
+    const tb=document.querySelector('.tab-bar');
+    if(tb)document.documentElement.style.setProperty('--tabbar-bottom',tb.getBoundingClientRect().bottom+'px');
+    /* measure actual filter-bar height so search row never overlaps it,
+       regardless of how many lines the filter chips wrap onto */
+    requestAnimationFrame(()=>{
+      const fb=document.querySelector('.filter-bar');
+      if(fb&&document.body.classList.contains('map-fullscreen')){
+        const r=fb.getBoundingClientRect();
+        document.documentElement.style.setProperty('--searchrow-top',(r.bottom+10)+'px');
+      }
+    });
+  }
+  const btn=document.getElementById('mapFullscreenBtn');
+  const EXPAND_PATH='M4 1 L1 1 L1 4 M7 1 L10 1 L10 4 M1 7 L1 10 L4 10 M10 7 L10 10 L7 10';
+  const SHRINK_PATH='M1 4 L4 4 L4 1 M10 4 L7 4 L7 1 M1 7 L4 7 L4 10 M10 7 L7 7 L7 10';
+  if(btn){
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      setTabbarBottomVar();
+      const on=document.body.classList.toggle('map-fullscreen');
+      const path=btn.querySelector('svg path');
+      if(path)path.setAttribute('d',on?SHRINK_PATH:EXPAND_PATH);
+      setTimeout(()=>{if(map)map.invalidateSize();},60);
+    });
+  }
+  window.addEventListener('resize',()=>{
+    if(document.body.classList.contains('map-fullscreen')){
+      setTabbarBottomVar();
+      if(map)setTimeout(()=>map.invalidateSize(),60);
+    }
+  });
+  /* Esc key exits fullscreen map */
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'&&document.body.classList.contains('map-fullscreen')){
+      document.body.classList.remove('map-fullscreen');
+      const path=btn?btn.querySelector('svg path'):null;
+      if(path)path.setAttribute('d',EXPAND_PATH);
+      setTimeout(()=>{if(map)map.invalidateSize();},60);
+    }
+  });
+})();
 /* ── mobile detection ─────────────────────────────────────────────
    Adds body.mobile-mode when viewport < 768px or touch + < 1024px.
    Desktop layout is completely unaffected by this flag.           */
