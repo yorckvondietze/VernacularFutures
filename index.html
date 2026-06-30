@@ -510,7 +510,50 @@ footer .tag-link{background:var(--terracotta-dim);color:var(--terracotta-deep);p
 
 @media (max-width:980px){.explorer-grid,.findings-grid{grid-template-columns:1fr;}#map{height:380px;}.map-col{position:static;}.panel{height:auto;max-height:none;overflow-y:visible;}.findings-menu{position:static;}.corpus-stats{grid-template-columns:repeat(2,1fr);}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+.diff-block{margin-bottom:14px;}
+.diff-block-head{font-family:var(--mono);font-size:9px;letter-spacing:0.07em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px;}
+.diff-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.diff-chip{font-family:var(--mono);font-size:11px;font-weight:700;padding:4px 9px;border-radius:0;border:1px solid transparent;display:inline-flex;align-items:baseline;gap:4px;}
+.diff-chip .diff-label{font-weight:400;opacity:0.75;font-size:10px;}
+.diff-chip.diff-worse{background:#3a1418;color:#ff8a8a;border-color:#5a2228;}
+html:not([data-theme="dark"]) .diff-chip.diff-worse{background:#ffeef0;color:#b3232f;border-color:#f5c6cb;}
+.diff-chip.diff-better{background:#0f2e1a;color:#7ee787;border-color:#1d4a2c;}
+html:not([data-theme="dark"]) .diff-chip.diff-better{background:#e6ffed;color:#1a7f37;border-color:#bbe8c4;}
+.diff-chip.diff-neutral{background:var(--paper-dim);color:var(--ink-faint);border-color:var(--line);}
+.diff-chip.diff-nodata{background:var(--paper-dim);color:var(--ink-faint);border-color:var(--line);font-weight:400;font-style:italic;}
 :focus-visible{outline:2px solid var(--terracotta-deep);outline-offset:2px;}
+
+/* ═══════════════════════════════════════════════════════
+   IDE STATUS BAR — VS Code style strip pinned to viewport
+   bottom. Always dark regardless of light/dark theme,
+   monospace, low-noise, purely informational.
+   ═══════════════════════════════════════════════════════ */
+.ide-statusbar{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  height:22px;
+  z-index:9999;
+  background:#1a1825;
+  color:#c9c3e0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 12px;
+  font-family:var(--mono);
+  font-size:10.5px;
+  letter-spacing:0.01em;
+  border-top:1px solid #2e2a40;
+  user-select:none;
+}
+.ide-statusbar .sb-seg{white-space:nowrap;opacity:0.85;}
+.ide-statusbar .sb-branch{color:#7ee787;opacity:1;}
+.ide-statusbar .sb-sep{opacity:0.3;}
+.ide-statusbar .sb-flex{flex:1;}
+.ide-statusbar .sb-mode{opacity:0.55;font-style:italic;}
+body{padding-bottom:22px;}
+html[data-theme="dark"] .ide-statusbar{background:#0d0c14;border-top-color:#1f1c2e;}
+body.mobile-mode .ide-statusbar{display:none;}
+body.mobile-mode{padding-bottom:0;}
 
 /* ═══════════════════════════════════════════════════════
    FULLSCREEN MAP MODE — applied via body.map-fullscreen
@@ -557,7 +600,7 @@ body.map-fullscreen .cs-search-input{
 body.map-fullscreen .map-col{
   position:fixed;
   top:var(--tabbar-bottom,60px);
-  left:0;right:0;bottom:0;
+  left:0;right:0;bottom:22px;
   z-index:9000;
   height:auto;
 }
@@ -588,7 +631,7 @@ body.map-fullscreen .explorer-grid > .card-window{
   position:fixed;
   top:calc(var(--tabbar-bottom,60px) + 14px);
   right:14px;
-  bottom:14px;
+  bottom:36px;
   width:420px;
   max-width:calc(100vw - 28px);
   z-index:9002;
@@ -1239,6 +1282,23 @@ function median(arr){
   return s.length%2?s[m]:(s[m-1]+s[m])/2;
 }
 function caseMassNorm(c){return(c.area>0&&c.thermalMass!=null)?c.thermalMass/c.area:null;}
+/* ── git-diff style delta chips: Present → 2080 change summary ──── */
+function diffChipsHTML(c){
+  const items=[
+    {label:'overheating',val:caseOhDelta(c),unit:'h/yr',worseIfPositive:true},
+    {label:'comfort decline',val:caseComfortDelta(c),unit:'%',worseIfPositive:true},
+    {label:'solar exposure',val:caseSolarDelta(c),unit:'Wh/m²·d',worseIfPositive:true},
+  ];
+  const chips=items.map(it=>{
+    if(it.val==null)return `<span class="diff-chip diff-nodata">·&nbsp;${it.label}&nbsp;n/a</span>`;
+    const v=it.val,bad=it.worseIfPositive?v>0:v<0;
+    const sign=v>0?'+':v<0?'−':'±';
+    const cls=v===0?'diff-neutral':(bad?'diff-worse':'diff-better');
+    const mag=Math.abs(v).toFixed(v<10&&v>-10?1:0);
+    return `<span class="diff-chip ${cls}">${sign}${mag}${it.unit}&nbsp;<span class="diff-label">${it.label}</span></span>`;
+  }).join('');
+  return `<div class="diff-block"><div class="diff-block-head">_diff · present → 2080</div><div class="diff-chips">${chips}</div></div>`;
+}
 function caseOhDelta(c){return(c.sim&&c.sim.oh&&c.sim.oh[2]!=null&&c.sim.oh[0]!=null)?c.sim.oh[2]-c.sim.oh[0]:null;}
 function caseComfortDelta(c){return(c.sim&&c.sim.comfort&&c.sim.comfort[2]!=null&&c.sim.comfort[0]!=null)?c.sim.comfort[0]-c.sim.comfort[2]:null;}
 function caseSolarDelta(c){
@@ -1370,6 +1430,24 @@ function applyFilter(){
   document.getElementById('filterCount').textContent=`${vis.length}/${CASES.length} cases · ${mapped} mapped`;
   renderUnmapped(vis);
   if(selectedId&&!pass(byId(selectedId))){selectedId=null;renderPanel();}
+  updateStatusbar(vis.length);
+}
+function updateStatusbar(visCount){
+  const sb=document.getElementById('ideStatusbar');
+  if(!sb)return;
+  const scnEl=document.getElementById('sbScenario');
+  if(scnEl)scnEl.textContent=(SCENARIOS[scn]||'present').toLowerCase();
+  const ccEl=document.getElementById('sbCaseCount');
+  if(ccEl)ccEl.textContent=`${visCount!=null?visCount:CASES.filter(pass).length}/${CASES.length} cases`;
+  const selEl=document.getElementById('sbSelected');
+  if(selEl){
+    if(selectedId){
+      const c=byId(selectedId);
+      selEl.textContent=c?`${c.id} · ${c.name||''}`:selectedId;
+    }else{
+      selEl.textContent='no selection';
+    }
+  }
 }
 function renderUnmapped(vis){
   /* unmapped window was removed from the UI — guard against missing element */
@@ -3966,6 +4044,7 @@ function caseDetailHTML(c,slot){
     <!-- TAB 3: METRICS & ATTRIBUTES -->
     <div class="cs-panel ${currentCsTab[slot]==='metrics'?'active':''}" data-cspanel="metrics" data-slot="${slot}">
       <div class="block" style="margin-top:12px;">
+        ${diffChipsHTML(c)}
         <div class="metric-pager" id="metricPager-${slot}">${METRIC_PAGES.map((p,i)=>`<button class="metric-page-btn ${i===mpage?'active':''}" data-page="${i}" data-slot="${slot}">${p.label}</button>`).join('')}</div>
         <table class="metric-table" id="metricTable-${slot}">${metricRowsHTML(c,mpage)}</table>
         <div class="tagmatrix" style="margin-top:10px;">${STRATEGIES.map(s=>`<span class="tagchip ${c.tags[s.key]?'on':'off'}">${c.tags[s.key]?'✓ ':'○ '}${s.label}</span>`).join('')}</div>
@@ -4096,6 +4175,7 @@ function drawSimilarityLines(){
 
 function renderPanel(){
   disposeAllViewers();
+  updateStatusbar();
   const el=document.getElementById('csPanel');
   const grid=document.querySelector('.explorer-grid');
   const wasCompare=grid&&grid.classList.contains('compare-active');
@@ -4903,5 +4983,18 @@ renderSlider();buildFilters();initMap();applyFilter();renderPanel();buildFinding
 /* fetch Excel and rebuild with real data — setAppMode always full now */
 setAppMode();
 </script>
+<div class="ide-statusbar" id="ideStatusbar">
+  <span class="sb-seg sb-branch">⌥ <span id="sbScenario">present</span></span>
+  <span class="sb-sep">│</span>
+  <span class="sb-seg" id="sbCaseCount">0/0 cases</span>
+  <span class="sb-sep">│</span>
+  <span class="sb-seg" id="sbSelected">no selection</span>
+  <span class="sb-flex"></span>
+  <span class="sb-seg sb-mode">vernacularfutures</span>
+  <span class="sb-sep">│</span>
+  <span class="sb-seg">UTF-8</span>
+  <span class="sb-sep">│</span>
+  <span class="sb-seg">SSP5-8.5</span>
+</div>
 </body>
 </html>
