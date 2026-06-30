@@ -1637,7 +1637,13 @@ function parseWorkbookToCases(workbook){
     const row=rows[r];if(!row)continue;
     const get=key=>{const i=idx[key];return i>=0?row[i]:null;};
     const id=get('id');if(!id)continue;
-    const[lat,lon]=parseCoordJS(get('coordinates'));
+    const coordRawVal=get('coordinates');
+    const elevRawVal=get('elevation');
+    const[lat,lon]=parseCoordJS(coordRawVal);
+    const isApproxRe=/\(approx\.?\)/i;
+    const approxFlags=[];
+    if(isApproxRe.test(String(coordRawVal||'')))approxFlags.push('Coordinates approximate');
+    if(isApproxRe.test(String(elevRawVal||'')))approxFlags.push('Elevation approximate');
     const structure=get('structure');
     out.push({
       id:String(id),name:get('name')||null,country:get('country')||null,year:get('year')||null,
@@ -1656,7 +1662,8 @@ function parseWorkbookToCases(workbook){
       rakeDepth:numOf(get('rakeDepth')),facadeMat:get('facadeMat')||null,gableClad:get('gableClad')||null,
       facadeColor:get('facadeColor')||null,jettying:get('jettying')||null,pentice:get('pentice')||null,
       elevGF:get('elevGF')||null,shutters:get('shutters')||null,courtyard:get('courtyard')||null,
-      balconies:get('balconies')||null,special:get('special')||null,flags:get('flags')||null,
+      balconies:get('balconies')||null,special:get('special')||null,
+      flags:[get('flags')||null,...approxFlags].filter(Boolean).join('; ')||null,
       notes:get('notes')||null,source:get('source')||null,
       sim:{oh:[numOf(get('oh00')),numOf(get('oh50')),numOf(get('oh80'))],comfort:[numOf(get('cf00')),numOf(get('cf50')),numOf(get('cf80'))]},
       wallType:wallTypeFromStructure(structure),
