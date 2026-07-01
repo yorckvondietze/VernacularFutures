@@ -645,6 +645,13 @@ body.atlas-active.cs-open .explorer-grid > .card-window .panel{
   flex:1;min-height:0;overflow-y:scroll!important;overflow-x:hidden;
   height:auto!important;max-height:none!important;
 }
+/* mosaic-wrap: don't create a second nested scroll container — the
+   outer .panel already scrolls. height:100% inside a flex-stretched
+   parent is unreliable and was clipping the last grid row. */
+body.atlas-active.cs-open .explorer-grid > .card-window .mosaic-wrap{
+  height:auto!important;overflow-y:visible!important;
+  padding-bottom:60px;
+}
 /* Override media query that kills scroll */
 @media(max-width:980px){
   body.atlas-active .explorer-grid > .card-window .panel{overflow-y:auto!important;}
@@ -5625,7 +5632,7 @@ if(window._hideLoader)window._hideLoader();
   wireInfoIcon('avgTInfoIconPersistent','avgTInfoPopPersistent');
   /* wire case study panel titlebar X → reset to mosaic */
   const csClose=document.getElementById('csPanelCloseBtn');
-  if(csClose)csClose.addEventListener('click',()=>{_activeAvgZone=null;selectedId=null;renderPanel();document.body.classList.remove('cs-open');document.getElementById('csStripBtn')?.classList.remove('active');setTimeout(()=>{if(map)map.invalidateSize();},260);});
+  if(csClose)csClose.addEventListener('click',()=>{_activeAvgZone=null;selectedId=null;renderPanel();});
   /* force map resize once layout has painted */
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     const h=document.querySelector('.app-header');
