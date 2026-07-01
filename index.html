@@ -3206,14 +3206,27 @@ function extremesTabHTML(c,epwData){
   const hasHourly=!MOCK&&epwData&&epwData.hourlyTemp&&epwData.hourlyCount>0;
   const n=hasHourly?Math.min(epwData.hourlyCount,8760):0;
 
-  /* ── heatwave days: daily max > 30°C ─────────────────────── */
+  /* ── heatwave days: HWN metric, Perkins & Alexander (2013) ───
+     Days contributing to heatwave events, defined as periods of
+     ≥3 consecutive days with daily Tmax > 30°C. Absolute threshold
+     enables cross-site comparison (relative thresholds normalise
+     away the climate differences that drive morphological variation).
+     ─────────────────────────────────────────────────────────────── */
   let heatwaveDays=0;
   if(hasHourly){
-    for(let d=0;d<Math.floor(n/24);d++){
+    const days=Math.floor(n/24);
+    /* 1. compute daily Tmax array */
+    const tmax=new Float32Array(days);
+    for(let d=0;d<days;d++){
       let mx=-Infinity;
       for(let h=0;h<24;h++)mx=Math.max(mx,epwData.hourlyTemp[d*24+h]);
-      if(mx>30)heatwaveDays++;
+      tmax[d]=mx;
     }
+    /* 2. mark days that form part of a ≥3-consecutive-day run above 30°C */
+    let run=0;
+    const hot=new Uint8Array(days);
+    for(let d=0;d<days;d++){if(tmax[d]>30){run++;if(run>=3){hot[d]=1;if(run===3){hot[d-1]=1;hot[d-2]=1;}}}else{run=0;}}
+    for(let d=0;d<days;d++)if(hot[d])heatwaveDays++;
   }else{
     heatwaveDays=Math.max(0,Math.round((maxT-26)*2.6+(MOCK?rnd()*5:0)+scn*5));
   }
@@ -3260,7 +3273,16 @@ function extremesTabHTML(c,epwData){
 
   return `
     <div class="climate-stat-row" style="grid-template-columns:repeat(2,1fr);gap:8px;">
-      <div class="cstat"><div class="v">${heatwaveDays}</div><div class="k">HEATWAVE DAYS &gt;30°C</div></div>
+      <div class="cstat" style="position:relative;">
+        <div class="v">${heatwaveDays}</div>
+        <div class="k">HEATWAVE DAYS (HWN)
+          <span class="action-info-icon" id="hwInfoIcon" style="font-size:10px;vertical-align:middle;">ⓘ<div class="action-info-pop" id="hwInfoPop" style="bottom:calc(100% + 4px);top:auto;left:0;right:auto;width:300px;">
+            <div class="ai-head">_heatwave days · HWN metric</div>
+            <div class="ai-body">Days contributing to heatwave events, defined as periods of <b>≥3 consecutive days</b> with daily T<sub>max</sub> &gt; 30°C. Absolute threshold (not percentile-based) to enable cross-site comparison across climate zones — a relative threshold would normalise away the climate differences that drive morphological variation.</div>
+            <div class="ai-cite">Perkins, S.E. &amp; Alexander, L.V. (2013). On the measurement of heat waves. <em>Journal of Climate</em> 26(13), 4500–4517. Threshold: WHO Euro Regional Office heat-health action threshold (30°C Tmax).</div>
+          </div></span>
+        </div>
+      </div>
       <div class="cstat"><div class="v">${frostDays}</div><div class="k">FROST DAYS &lt;0°C</div></div>
     </div>
     <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);margin:12px 0 6px;">WET-BULB TEMPERATURE — STULL (2011)</div>
@@ -3323,6 +3345,7 @@ async function renderClimateTabAsync(key,c,slot){
   /* extremes tab: wire info icon */
   if(key==='extremes'){
     wireInfoIcon('extremesInfoIcon','extremesInfoPop');
+    wireInfoIcon('hwInfoIcon','hwInfoPop');
   }
   /* restore scroll if locked */
   if(_preserveScroll!==null){const p=document.getElementById('csPanel');if(p)p.scrollTop=_preserveScroll;}
