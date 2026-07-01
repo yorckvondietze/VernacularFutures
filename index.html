@@ -1269,26 +1269,18 @@ function renderKoppenOverlay(){
   const cv=document.createElement('canvas');cv.width=W;cv.height=H;
   const ctx=cv.getContext('2d');
   const img=ctx.createImageData(W,H);const d=img.data;
-  /* influence radius in squared Euclidean lat/lon degrees:
-     FULL_D2  = 4²  = 16  → full opacity within ~400 km
-     MAX_D2   = 7²  = 49  → hard cutoff at ~700 km
-     pixels between the two fade linearly to transparent     */
-  const FULL_D2=16,MAX_D2=49;
   for(let py=0;py<H;py++){
     for(let px=0;px<W;px++){
       const ll=map.containerPointToLatLng(L.point(px*SCALE+SCALE/2,py*SCALE+SCALE/2));
-      let sw=0,sr=0,sg=0,sb=0,minD2=Infinity;
+      let sw=0,sr=0,sg=0,sb=0;
       for(let k=0;k<pts.length;k++){
         const dLat=ll.lat-pts[k].lat,dLon=ll.lng-pts[k].lon;
         const d2=dLat*dLat+dLon*dLon;
-        if(d2<minD2)minD2=d2;
         const w=d2<1e-8?1e8:1/(d2*d2);
         sw+=w;sr+=w*pts[k].r;sg+=w*pts[k].g;sb+=w*pts[k].b;
       }
-      if(minD2>MAX_D2)continue; /* outside all influence radii → transparent */
-      const alpha=minD2<FULL_D2?148:Math.round(148*(MAX_D2-minD2)/(MAX_D2-FULL_D2));
       const i=(py*W+px)*4;
-      d[i]=sr/sw;d[i+1]=sg/sw;d[i+2]=sb/sw;d[i+3]=alpha;
+      d[i]=sr/sw;d[i+1]=sg/sw;d[i+2]=sb/sw;d[i+3]=148;
     }
   }
   ctx.putImageData(img,0,0);
