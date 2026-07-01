@@ -417,7 +417,7 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 .shapeshift-btn{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:0.01em;padding:11px 14px;margin-bottom:10px;border:1.5px solid var(--terracotta);background:var(--terracotta-dim);color:var(--terracotta-deep);cursor:pointer;transition:background-color .2s ease,color .2s ease;}
 .shapeshift-btn:hover{background:var(--terracotta);color:var(--paper);}
 .shapeshift-btn.active{background:var(--terracotta);color:var(--paper);}
-.shapeshift-btn .ss-cursive{font-style:italic;}
+.shapeshift-btn .ss-cursive{font-style:italic;margin-left:-1px;}
 /* ---- action buttons (shapeSHIFT, vernacularBIGBROTHER) ---- */
 .action-btn-wrap{position:relative;display:flex;align-items:center;margin-bottom:10px;}
 .action-info-icon{font-size:12px;cursor:pointer;color:var(--ink-faint);margin-left:6px;user-select:none;position:relative;line-height:1;flex-shrink:0;}
@@ -429,7 +429,15 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 .ai-cite{font-size:10.5px;font-family:var(--mono);color:var(--ink-faint);margin-top:8px;line-height:1.5;}
 .ai-warn{border-left:2px solid var(--rust);padding:6px 8px;margin-top:10px;font-size:11.5px;line-height:1.55;color:var(--ink-soft);}
 .ai-warn b{color:var(--rust);}
-/* ---- vernacularBIGBROTHER button ---- */
+/* ---- averageTYPOLOGY button ---- */
+.avgt-btn{display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:0.01em;padding:5px 10px;border:1px solid var(--moss,#3a7a3a);background:transparent;color:var(--moss,#3a7a3a);cursor:pointer;transition:background-color .2s,color .2s;white-space:nowrap;}
+.avgt-btn:hover{background:var(--moss,#3a7a3a);color:var(--paper);}
+.avgt-zone-panel{font-family:var(--mono);font-size:11px;padding:6px 10px;border:1px solid var(--line);background:var(--paper-dim);margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.avgt-zone-label{flex:1;min-width:0;font-size:10px;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.avgt-radius-slider{flex:0 0 100px;accent-color:var(--moss,#3a7a3a);}
+.avgt-remove{font-size:10px;cursor:pointer;opacity:0.5;flex:none;background:none;border:none;color:var(--ink);padding:0;font-family:var(--mono);}
+.avgt-remove:hover{opacity:1;}
+.avgt-zones-list{margin-top:8px;}
 .bb-btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:0.01em;padding:5px 10px;border:1px solid var(--ochre);background:var(--ochre-dim);color:var(--ochre);cursor:pointer;transition:background-color .2s ease,color .2s ease;white-space:nowrap;}
 .bb-btn:hover:not(:disabled):not(.bb-disabled){background:var(--ochre);color:var(--paper);}
 .bb-btn.active{background:var(--ochre);color:var(--paper);}
@@ -3378,6 +3386,9 @@ let currentDiagram={A:'overheat',B:'overheat'};
 let shapeShiftOn={A:false,B:false};
 let bigBrotherActive=false,bbLine=null,bbResultId=null;
 let koppenOverlayActive=false,koppenOverlayLayer=null,_koppenRenderTimer=null;
+/* averageTYPOLOGY state */
+let avgTypologyZones=[];   /* [{pin:L.marker, circle:L.circle, radius_km, caseIds:[], panelId}] */
+let _avgTypNextId=1;       /* incrementing zone ID */
 /* shapeSHIFT: a heuristic "what if the recommended fix were applied" preview
    — not a re-simulation. Severity scales with how far into the future the
    scenario slider sits; which geometric levers move depends on which
@@ -3719,7 +3730,7 @@ function clearBigBrother(){
   bigBrotherActive=false; bbResultId=null;
   clearBBLine();
   document.querySelectorAll('.bb-btn').forEach(b=>{
-    b.innerHTML='&gt;vernacular<b>BIGBROTHER</b>';
+    b.innerHTML='&gt;vernacular<em>BIGBROTHER</em>';
     b.classList.remove('active');
   });
 }
@@ -3733,7 +3744,7 @@ async function runBigBrother(){
   if(!a||!a.epw)return;
   /* loading state */
   document.querySelectorAll('.bb-btn').forEach(b=>{
-    b.innerHTML='&gt;vernacular<b>BIGBROTHER</b> <span class="bb-progress">fetching…</span>';
+    b.innerHTML='&gt;vernacular<em>BIGBROTHER</em> <span class="bb-progress">fetching…</span>';
     b.disabled=true;
   });
   /* 1 — fetch future EPW for active case */
@@ -3743,7 +3754,7 @@ async function runBigBrother(){
   try{futureEpw=await fetchParseEpw(futurePath);}catch(e){futureEpw=null;}
   if(!futureEpw){
     document.querySelectorAll('.bb-btn').forEach(b=>{
-      b.innerHTML='&gt;vernacular<b>BIGBROTHER</b>';b.disabled=(scn===0);
+      b.innerHTML='&gt;vernacular<em>BIGBROTHER</em>';b.disabled=(scn===0);
     }); return;
   }
   const fFuture=computeBBFingerprint(futureEpw);
@@ -3760,12 +3771,12 @@ async function runBigBrother(){
     });
     const prog=Math.min(i+BATCH,candidates.length);
     document.querySelectorAll('.bb-btn').forEach(b=>{
-      b.innerHTML=`&gt;vernacular<b>BIGBROTHER</b> <span class="bb-progress">${prog}/${candidates.length}</span>`;
+      b.innerHTML=`&gt;vernacular<em>BIGBROTHER</em> <span class="bb-progress">${prog}/${candidates.length}</span>`;
     });
   }
   if(!scored.length){
     document.querySelectorAll('.bb-btn').forEach(b=>{
-      b.innerHTML='&gt;vernacular<b>BIGBROTHER</b>';b.disabled=(scn===0);
+      b.innerHTML='&gt;vernacular<em>BIGBROTHER</em>';b.disabled=(scn===0);
     }); return;
   }
   scored.sort((a,b)=>a.dist-b.dist);
@@ -3846,6 +3857,168 @@ function wireInfoIcon(iconId,popId){
     if(!wasOpen)pop.classList.add('open');
   });
   pop.addEventListener('click',e=>e.stopPropagation());
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   averageTYPOLOGY — drops a draggable pin on the map, defines a
+   radius, collects all case studies within it, averages morphological
+   parameters into a representative typology label, and shows one
+   merged marker on the map. Multiple zones can coexist; a case
+   study may belong to more than one zone.
+   ─────────────────────────────────────────────────────────────── */
+function haversineKm(lat1,lon1,lat2,lon2){
+  const R=6371,dL=((lat2-lat1)*Math.PI/180),dO=((lon2-lon1)*Math.PI/180);
+  const a=Math.sin(dL/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dO/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function computeAvgTypology(zone){
+  const {pinLat,pinLon,radius_km}=zone;
+  const members=CASES.filter(c=>c.hasCoord&&haversineKm(pinLat,pinLon,c.lat,c.lon)<=radius_km);
+  if(!members.length)return{members:[],label:'TYPOLOGY_no_cases',epwId:null};
+  /* dominant Köppen at current scenario */
+  const koppenCounts={};
+  members.forEach(c=>{const k=c.koppen[scn];if(k)koppenCounts[k]=(koppenCounts[k]||0)+1;});
+  const domKoppen=Object.entries(koppenCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||'?';
+  /* dominant structure/wall type */
+  const structCounts={};
+  members.forEach(c=>{const s=c.structure||c.wallType;if(s)structCounts[s]=(structCounts[s]||0)+1;});
+  const domStruct=Object.entries(structCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||null;
+  /* average roof pitch → steep/shallow */
+  const pitchVals=members.map(c=>c.roofPitch||c.pitch).filter(v=>v!=null&&!isNaN(v));
+  const avgPitch=pitchVals.length?pitchVals.reduce((a,b)=>a+b,0)/pitchVals.length:null;
+  const pitchTag=avgPitch!=null?(avgPitch>=35?'steep':'shallow'):null;
+  /* average thermal mass */
+  const massVals=members.map(c=>c.thermMass||c.mass).filter(v=>v!=null&&!isNaN(v));
+  const avgMass=massVals.length?massVals.reduce((a,b)=>a+b,0)/massVals.length:null;
+  const massTag=avgMass!=null?(avgMass>=200?'highmass':'lowmass'):null;
+  /* average WWR */
+  const wwrVals=members.map(c=>c.wwr).filter(v=>v!=null&&!isNaN(v));
+  const avgWWR=wwrVals.length?wwrVals.reduce((a,b)=>a+b,0)/wwrVals.length:null;
+  const wwrTag=avgWWR!=null?(avgWWR<0.2?'lowwwr':'highwwr'):null;
+  /* most central EPW: station with min avg haversine to all other members */
+  let bestEpw=null;
+  if(members.length===1){
+    bestEpw=members[0].epw;
+  }else{
+    let minAvgDist=Infinity;
+    members.forEach(m=>{
+      if(!m.epw||!m.hasCoord)return;
+      const avg=members.filter(o=>o.epw&&o.hasCoord&&o!==m)
+        .reduce((s,o)=>s+haversineKm(m.lat,m.lon,o.lat,o.lon),0)/(members.length-1);
+      if(avg<minAvgDist){minAvgDist=avg;bestEpw=m.epw;}
+    });
+  }
+  /* build label */
+  const parts=[domKoppen,domStruct,pitchTag,massTag,wwrTag].filter(Boolean);
+  const label=`TYPOLOGY_${parts.join('_')}`;
+  return{members,label,epwId:bestEpw};
+}
+function renderAvgTypologyZone(zone){
+  const{members,label,epwId}=computeAvgTypology(zone);
+  zone.caseIds=members.map(c=>c.id);
+  zone.label=label;
+  zone.epwId=epwId;
+  /* update circle */
+  if(zone.circle){zone.circle.setLatLng([zone.pinLat,zone.pinLon]);zone.circle.setRadius(zone.radius_km*1000);}
+  /* update merged marker */
+  if(zone.mergedMarker)map.removeLayer(zone.mergedMarker);
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const borderCol=isDark?'#ffffff':'#000000';
+  const icon=L.divIcon({
+    className:'',
+    html:`<div style="width:18px;height:18px;border-radius:50%;background:var(--terracotta);border:2.5px solid ${borderCol};box-shadow:0 0 0 1px ${borderCol}40;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:7px;color:${borderCol};font-weight:700;">${members.length}</div>`,
+    iconSize:[18,18],iconAnchor:[9,9]
+  });
+  zone.mergedMarker=L.marker([zone.pinLat,zone.pinLon],{icon,zIndexOffset:500}).addTo(map);
+  zone.mergedMarker.bindPopup(`<b style="font-family:monospace;">${label}</b><br>${members.length} case ${members.length===1?'study':'studies'}<br><span style="font-size:10px;opacity:0.7;font-family:monospace;">EPW: ${epwId||'n/a'}</span>`);
+  /* fade individual markers */
+  markers.forEach(mk=>{
+    const inZone=avgTypologyZones.some(z=>z.caseIds.includes(mk._cid));
+    mk.setStyle({fillOpacity:inZone?0.25:0.92,opacity:inZone?0.25:1});
+  });
+  /* update panel */
+  updateAvgTypologyPanel();
+}
+function removeAvgTypologyZone(zoneId){
+  const idx=avgTypologyZones.findIndex(z=>z.id===zoneId);
+  if(idx<0)return;
+  const zone=avgTypologyZones[idx];
+  if(zone.pin)map.removeLayer(zone.pin);
+  if(zone.circle)map.removeLayer(zone.circle);
+  if(zone.mergedMarker)map.removeLayer(zone.mergedMarker);
+  avgTypologyZones.splice(idx,1);
+  /* restore marker opacity */
+  markers.forEach(mk=>{
+    const inZone=avgTypologyZones.some(z=>(z.caseIds||[]).includes(mk._cid));
+    mk.setStyle({fillOpacity:inZone?0.25:0.92,opacity:inZone?0.25:1});
+  });
+  updateAvgTypologyPanel();
+}
+function updateAvgTypologyPanel(){
+  const el=document.getElementById('avgTypologyZonesList');
+  if(!el)return;
+  if(!avgTypologyZones.length){el.innerHTML='';return;}
+  el.innerHTML=avgTypologyZones.map(z=>`
+    <div class="avgt-zone-panel" data-zoneid="${z.id}">
+      <span class="avgt-zone-label" title="${z.label||''}">${z.label||'computing…'} <span style="opacity:0.5;">(${(z.caseIds||[]).length} CS)</span></span>
+      <input type="range" class="avgt-radius-slider" min="50" max="600" step="25" value="${z.radius_km}" data-zoneid="${z.id}">
+      <span style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);flex:none;" id="avgt-radius-label-${z.id}">${z.radius_km} km</span>
+      <button class="avgt-remove" data-zoneid="${z.id}" title="Remove zone">×</button>
+    </div>`).join('');
+  /* wire sliders and remove buttons */
+  el.querySelectorAll('.avgt-radius-slider').forEach(sl=>{
+    sl.addEventListener('input',()=>{
+      const zid=+sl.dataset.zoneid;
+      const zone=avgTypologyZones.find(z=>z.id===zid);
+      if(!zone)return;
+      zone.radius_km=+sl.value;
+      const lbl=document.getElementById('avgt-radius-label-'+zid);
+      if(lbl)lbl.textContent=sl.value+' km';
+      if(zone.circle)zone.circle.setRadius(zone.radius_km*1000);
+      renderAvgTypologyZone(zone);
+    });
+  });
+  el.querySelectorAll('.avgt-remove').forEach(btn=>{
+    btn.addEventListener('click',()=>removeAvgTypologyZone(+btn.dataset.zoneid));
+  });
+}
+function addAvgTypologyZone(){
+  if(!map)return;
+  const center=map.getCenter();
+  const zoneId=_avgTypNextId++;
+  const DEFAULT_RADIUS=200;
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const borderCol=isDark?'#ffffff':'#000000';
+  /* draggable pin */
+  const pin=L.marker([center.lat,center.lng],{
+    draggable:true,
+    icon:L.divIcon({
+      className:'',
+      html:`<div style="width:22px;height:22px;border-radius:0;background:var(--terracotta);border:2px solid ${borderCol};display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:8px;color:${isDark?'#000':'#fff'};font-weight:700;cursor:move;">Ø</div>`,
+      iconSize:[22,22],iconAnchor:[11,11]
+    }),
+    zIndexOffset:600
+  }).addTo(map);
+  /* radius circle */
+  const circle=L.circle([center.lat,center.lng],{
+    radius:DEFAULT_RADIUS*1000,
+    color:'var(--terracotta)',
+    weight:1.5,
+    dashArray:'6,4',
+    fill:true,
+    fillColor:'var(--terracotta)',
+    fillOpacity:0.06,
+    interactive:false
+  }).addTo(map);
+  const zone={id:zoneId,pin,circle,mergedMarker:null,pinLat:center.lat,pinLon:center.lng,radius_km:DEFAULT_RADIUS,caseIds:[],label:null,epwId:null};
+  avgTypologyZones.push(zone);
+  pin.on('drag',e=>{
+    zone.pinLat=e.latlng.lat;zone.pinLon=e.latlng.lng;
+    circle.setLatLng(e.latlng);
+    renderAvgTypologyZone(zone);
+  });
+  pin.on('dragend',()=>renderAvgTypologyZone(zone));
+  renderAvgTypologyZone(zone);
 }
 
 function wireShapeShift(c,slot){
@@ -4143,14 +4316,16 @@ function renderPanel(){
   if(grid)grid.classList.toggle('compare-active',isCompare);
   if(map&&isCompare!==wasCompare)setTimeout(()=>map.invalidateSize(),0);
   const bbInfoHTML=`<span class="action-info-icon" id="bbInfoIcon">ⓘ<div class="action-info-pop" id="bbInfoPop"><div class="ai-head">_vernacularBIGBROTHER</div><div class="ai-body">Identifies the present-day case study whose EPW climate profile most closely matches the future climate of the selected case under the active scenario. Proximity is measured by weighted normalised Euclidean distance across six morphologically relevant metrics: HDD&#x2081;&#x2085;, CDD&#x2082;&#x2082;, peak summer temperature, winter minimum temperature, annual thermal amplitude, and annual GHI.</div><div class="ai-warn"><b>&#x26A0; Baseline bias:</b> TMYx 2011&#x2013;2025 present-day EPW files already incorporate approximately 1.2&#x202F;°C of anthropogenic warming above the pre-industrial mean (IPCC AR6 WGI §2.3, 2021). Many buildings in this corpus were constructed during the Little Ice Age (c.&#x202F;1300&#x2013;1850&#x202F;CE) — a period of documented cold anomalies in Central Europe driven by reduced solar irradiance (Maunder Minimum, 1645&#x2013;1715; Spörer Minimum, 1460&#x2013;1550) and elevated volcanic forcing (Luterbacher et&#x202F;al., 2004, <em>Science</em> 303:1499&#x2013;1503; Mann et&#x202F;al., 1999, <em>Geophys.&#x202F;Res.&#x202F;Lett.</em>). Vernacular morphologies may encode adaptive responses to climates cooler than the present TMYx baseline, introducing a systematic bias in apparent climate sensitivity that is not corrected for in this analysis.</div></div></span>`;
-  const bbBtnHTML=`<button class="bb-btn${scn===0?' bb-disabled':''}" id="bigBrotherBtn"${scn===0?' disabled':''}>&gt;vernacular<b>BIGBROTHER</b></button>`;
+  const bbBtnHTML=`<button class="bb-btn${scn===0?' bb-disabled':''}" id="bigBrotherBtn"${scn===0?' disabled':''}>&gt;vernacular<em>BIGBROTHER</em></button>`;
+  const avgTBtnHTML=`<button class="avgt-btn" id="avgTypologyBtn">&gt;average<em>TYPOLOGY</em></button>`;
+  const avgTInfoHTML=`<span class="action-info-icon" id="avgTInfoIcon" style="font-size:11px;position:relative;">ⓘ<div class="action-info-pop" id="avgTInfoPop" style="top:calc(100% + 4px);bottom:auto;right:0;width:330px;"><div class="ai-head">_average<em>TYPOLOGY</em></div><div class="ai-body">Drops a draggable pin with an adjustable radius (50–600 km). All case studies within the radius are averaged into one representative typology. Label derived from dominant Köppen zone, construction type, roof pitch (steep ≥35° / shallow), thermal mass (high ≥200 kg·m⁻² / low), and WWR (low &lt;0.2 / high). The representative EPW is the spatial medoid — the station with minimum average haversine distance to all others in the zone. Multiple zones may be defined simultaneously; a case study may belong to more than one zone.</div><div class="ai-cite">Averaging: arithmetic mean of continuous metrics, plurality vote for categorical. EPW: spatial medoid within zone (minimises total intra-zone travel distance).</div></div></span>`;
   const toolbar=bigBrotherActive&&c2
     ? `<div class="panel-toolbar"><span class="compare-hint bb-hint" style="margin-right:auto;">vernacularBIGBROTHER → ${c2.name||c2.id}</span>${bbBtnHTML}${bbInfoHTML}<button class="compare-toggle-btn exit" id="exitCompareBtn">× clear</button></div>`
     : c2
       ? `<div class="panel-toolbar"><span class="compare-hint" style="margin-right:auto;">Comparing ${c.name||c.id} vs ${c2.name||c2.id}</span><button class="compare-toggle-btn exit" id="exitCompareBtn">× exit compare</button></div>`
       : pickingCompare
         ? `<div class="panel-toolbar"><span class="compare-hint" style="margin-right:auto;">Click another marker or chip to compare…</span><button class="compare-toggle-btn exit" id="exitCompareBtn">cancel</button></div>`
-        : `<div class="panel-toolbar"><button class="compare-toggle-btn" id="startCompareBtn">+ compare</button>${bbBtnHTML}${bbInfoHTML}</div>`;
+        : `<div class="panel-toolbar"><button class="compare-toggle-btn" id="startCompareBtn">+ compare</button>${bbBtnHTML}${bbInfoHTML}${avgTBtnHTML}${avgTInfoHTML}</div><div class="avgt-zones-list" id="avgTypologyZonesList"></div>`;
   el.innerHTML = toolbar + (c2
     ? `<div class="compare-grid"><div class="compare-col">${caseDetailHTML(c,'A')}</div><div class="compare-col">${caseDetailHTML(c2,'B')}</div></div>`
     : caseDetailHTML(c,'A'));
@@ -4170,6 +4345,12 @@ function renderPanel(){
     bbBtn.addEventListener('click',runBigBrother);
   }
   wireInfoIcon('bbInfoIcon','bbInfoPop');
+  /* averageTYPOLOGY button */
+  const avgTBtn=document.getElementById('avgTypologyBtn');
+  if(avgTBtn)avgTBtn.addEventListener('click',addAvgTypologyZone);
+  wireInfoIcon('avgTInfoIcon','avgTInfoPop');
+  /* repopulate zones list if zones exist */
+  if(avgTypologyZones.length)updateAvgTypologyPanel();
   /* close any open info popovers on outside click */
   setTimeout(()=>{
     document.addEventListener('click',()=>{
