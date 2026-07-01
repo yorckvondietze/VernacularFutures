@@ -909,7 +909,7 @@ body.mobile-mode .mobile-banner{ display:block; }
         </div>
         </div>
       <div class="card-window">
-        <div class="card-titlebar"><span class="win-title">_case_study</span><span class="win-controls"><span class="c-fetch" id="fetchCase" title="Re-fetch photos &amp; plans"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 L2 9 M2 5 L2 9 L6 9"/></svg></span><span class="c-close"></span></span></div>
+        <div class="card-titlebar"><span class="win-title">_case_study</span><span class="win-controls"><span class="c-fetch" id="fetchCase" title="Re-fetch photos &amp; plans"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 L2 9 M2 5 L2 9 L6 9"/></svg></span><span class="c-close" id="csPanelCloseBtn"></span></span></div>
         <div class="panel" id="csPanel"></div>
       </div>
     </div>
@@ -3395,6 +3395,7 @@ let koppenOverlayActive=false,koppenOverlayLayer=null,_koppenRenderTimer=null;
 /* averageTYPOLOGY state */
 let avgTypologyZones=[];   /* [{pin:L.marker, circle:L.circle, radius_km, caseIds:[], panelId}] */
 let _avgTypNextId=1;       /* incrementing zone ID */
+let _activeAvgZone=null;   /* which zone is currently shown in the case study panel */
 /* shapeSHIFT: a heuristic "what if the recommended fix were applied" preview
    — not a re-simulation. Severity scales with how far into the future the
    scenario slider sits; which geometric levers move depends on which
@@ -4017,7 +4018,9 @@ function updateAvgTypologyPanel(){
     sl.addEventListener('change',()=>{
       const zid=+sl.dataset.zoneid;
       const zone=avgTypologyZones.find(z=>z.id===zid);
-      if(zone)renderAvgTypologyZone(zone);
+      if(!zone)return;
+      renderAvgTypologyZone(zone);
+      if(_activeAvgZone===zone)renderAvgTypologyDetailPanel(zone);
     });
   });
   el.querySelectorAll('.avgt-remove').forEach(btn=>{
@@ -4025,6 +4028,7 @@ function updateAvgTypologyPanel(){
   });
 }
 function renderAvgTypologyDetailPanel(zone){
+  _activeAvgZone=zone;
   const el=document.getElementById('csPanel');
   if(!el)return;
   const{members,label,epwId}=computeAvgTypology(zone);
@@ -4091,7 +4095,7 @@ function renderAvgTypologyDetailPanel(zone){
   });
   /* wire close button */
   const closeBtn=document.getElementById('avgTCloseBtn');
-  if(closeBtn)closeBtn.addEventListener('click',()=>{selectedId=null;renderPanel();});
+  if(closeBtn)closeBtn.addEventListener('click',()=>{_activeAvgZone=null;selectedId=null;renderPanel();});
 }
 
 function addAvgTypologyZone(){
@@ -4129,7 +4133,10 @@ function addAvgTypologyZone(){
     circle.setLatLng(e.latlng);
     renderAvgTypologyZone(zone);
   });
-  pin.on('dragend',()=>renderAvgTypologyZone(zone));
+  pin.on('dragend',()=>{
+    renderAvgTypologyZone(zone);
+    if(_activeAvgZone===zone)renderAvgTypologyDetailPanel(zone);
+  });
   renderAvgTypologyZone(zone);
 }
 
@@ -4410,6 +4417,7 @@ function drawSimilarityLines(){
 
 function renderPanel(){
   disposeAllViewers();
+  _activeAvgZone=null;
   const el=document.getElementById('csPanel');
   const grid=document.querySelector('.explorer-grid');
   const wasCompare=grid&&grid.classList.contains('compare-active');
@@ -5115,6 +5123,9 @@ renderSlider();buildFilters();initMap();applyFilter();renderPanel();buildFinding
   const btn=document.getElementById('avgTypologyBtnPersistent');
   if(btn)btn.addEventListener('click',addAvgTypologyZone);
   wireInfoIcon('avgTInfoIconPersistent','avgTInfoPopPersistent');
+  /* wire case study panel titlebar X → reset to mosaic */
+  const csClose=document.getElementById('csPanelCloseBtn');
+  if(csClose)csClose.addEventListener('click',()=>{_activeAvgZone=null;selectedId=null;renderPanel();});
 })();
 /* move search row into the map card so it floats in its top-right corner
    (default mode) / participates in fullscreen position:fixed (unaffected
