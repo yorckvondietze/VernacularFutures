@@ -1179,6 +1179,8 @@ body.mobile-mode.atlas-active .avgt-persistent-bar{
    from, causing visual overlap */
 body.mobile-mode .map-legend{
   max-width:150px;padding:7px 9px;
+  top:44px!important;bottom:auto!important;
+  right:12px!important;left:auto!important;
 }
 body.mobile-mode .map-legend .legend-body{ display:none; }
 body.mobile-mode .map-legend.legend-open .legend-body{ display:grid; }
@@ -1245,6 +1247,16 @@ body.mobile-mode.atlas-active #csPanelCloseBtn,
 body.mobile-mode.atlas-active .c-close,
 body.mobile-mode.atlas-active .c-fetch{
   padding:8px!important;
+  box-sizing:content-box!important;
+}
+/* the padding above turned these into flex containers whose SVG
+   child (no explicit CSS width, only an SVG width attribute) got
+   flex-shrunk to 0 width — rendering the icon invisible while the
+   box itself stayed clickable. Lock the SVG to its intrinsic size. */
+body.mobile-mode.atlas-active .c-fetch svg,
+body.mobile-mode.atlas-active .c-close svg{
+  flex:none!important;
+  width:14px!important;height:14px!important;
 }
 body.mobile-mode.atlas-active .avgt-radius-slider{
   height:24px!important;
