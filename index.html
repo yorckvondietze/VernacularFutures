@@ -4159,6 +4159,9 @@ function wireInfoIcon(iconId,popId){
   pop.style.position='fixed';
   pop.style.pointerEvents='auto';
   pop.style.margin='0';
+  /* guard against double-wiring — stacked click listeners cancel each other out */
+  if(icon.dataset.infoWired==='1')return;
+  icon.dataset.infoWired='1';
   const popWidth=parseInt(pop.style.width)||330;
   icon.addEventListener('click',e=>{
     e.stopPropagation();
