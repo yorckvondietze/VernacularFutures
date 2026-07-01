@@ -3421,7 +3421,7 @@ function windSpeedChart(c,s,epwData){
 /* ---- climate sub-tabs ---- */
 const CLIMATE_TABS=['overview','psychro','wind','extremes'];
 const CLIMATE_LABEL={overview:'Overview',psychro:'Psychrometric',wind:'Wind',extremes:'Extremes'};
-let currentClimateTab={A:'overview',B:'overview'};
+let currentClimateTab={A:'psychro',B:'psychro'};
 function overviewTabHTML(c,epwData){
   const nd='<span class="nodata">NO_DATA</span>';
   /* headline stats */
@@ -4802,7 +4802,7 @@ function wireCaseDetail(c,slot){
   /* ---- main tab switching ---- */
   let climateLoaded=currentCsTab[slot]==='climate';
   /* if restoring to climate tab after scenario change, load data immediately */
-  if(climateLoaded)renderClimateTabAsync(currentClimateTab[slot]||'overview',c,slot);
+  if(climateLoaded)renderClimateTabAsync(currentClimateTab[slot]||'psychro',c,slot);
   document.querySelectorAll(`.cs-main-tab[data-slot="${slot}"]`).forEach(btn=>{
     btn.addEventListener('click',()=>{
       const key=btn.dataset.cstab;
@@ -4814,7 +4814,7 @@ function wireCaseDetail(c,slot){
       if(target)target.classList.add('active');
       if(key==='climate'&&!climateLoaded){
         climateLoaded=true;
-        renderClimateTabAsync(currentClimateTab[slot]||'overview',c,slot);
+        renderClimateTabAsync(currentClimateTab[slot]||'psychro',c,slot);
       }
     });
   });
