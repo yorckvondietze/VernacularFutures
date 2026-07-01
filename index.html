@@ -637,6 +637,9 @@ body.map-fullscreen.filter-open .filter-bar{width:20vw!important;min-width:260px
 /* ── Panel scroll in atlas cs drawer ── */
 body.atlas-active.cs-open .explorer-grid > .card-window{
   display:flex!important;flex-direction:column;
+  height:auto!important; /* cancel out unscoped .explorer-grid .card-window{height:100%}
+    which over-constrains position:fixed top+bottom, pushing the box
+    past the viewport bottom by exactly the top offset */
 }
 body.atlas-active.cs-open .explorer-grid > .card-window .card-titlebar{
   flex:none;
@@ -752,6 +755,7 @@ body.atlas-active:not(.map-fullscreen) .explorer-grid > .card-window{
   position:fixed!important;
   top:var(--deck-top,80px);right:40px;bottom:0;
   width:0;overflow:hidden;
+  height:auto!important;
   background:var(--paper);border-left:none;
   z-index:500;transition:width .22s cubic-bezier(.4,0,.2,1),border .22s;
 }
