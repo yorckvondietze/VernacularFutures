@@ -4088,10 +4088,13 @@ function renderClimateTabContent(key,c,epwData,slot){
 async function renderClimateTabAsync(key,c,slot){
   const el=document.getElementById('climateTabContent-'+slot);
   if(!el)return;
+  /* same vernacularBIGBROTHER exception as caseDetailHTML — slot B always
+     fetches present-day data during an active comparison */
+  const displayScn=(bigBrotherActive&&slot==='B')?0:scn;
   let epwData=null;
   if(!MOCK&&c.epw){
     el.innerHTML=`<div class="epw-loading">Loading climate data…</div>`;
-    epwData=await getEpwData(c,scn);
+    epwData=await getEpwData(c,displayScn);
     if(!document.getElementById('climateTabContent-'+slot))return;
     el.innerHTML=renderClimateTabContent(key,c,epwData,slot);
   }else{
@@ -4459,29 +4462,65 @@ function wireDiagramTabs(c,slot){
      HDD₁₅  CDD₂₂  peak-summer-T  winter-min-T  thermal-amplitude  GHI
    ─────────────────────────────────────────────────────────────── */
 function computeBBFingerprint(epw){
-  const T=epw.temp,G=epw.ghi,DPM=DAYS_PER_MONTH;
+  const T=epw.temp,G=epw.ghi,RH=epw.rh,P=epw.precip,DPM=DAYS_PER_MONTH;
   const hdd=T.reduce((a,t,i)=>t!=null?a+Math.max(0,15-t)*DPM[i]:a,0);
   const cdd=T.reduce((a,t,i)=>t!=null?a+Math.max(0,t-22)*DPM[i]:a,0);
   const tS=(T[5]+T[6]+T[7])/3;   /* Jun–Aug mean → summer strategy */
   const tW=(T[11]+T[0]+T[1])/3;  /* Dec–Feb mean → heating strategy */
   const tAmp=tS-tW;               /* thermal amplitude → mass proxy  */
   const ghi=G.reduce((a,v,i)=>v!=null?a+v*DPM[i]:a,0);
-  return{hdd,cdd,tSummer:tS,tWinter:tW,tAmp,ghi};
+  /* wet-bulb temperature — Stull (2011) approximation, fuses dry-bulb
+     temp + RH into the single physically-meaningful diagnostic that the
+     psychrometric chart's diagonal isolines already show. Computed from
+     the same summer/winter month groupings as tS/tW so it stays a
+     direct humidity-aware counterpart to the existing thermal terms. */
+  function wetBulb(t,rh){
+    if(t==null||rh==null)return null;
+    return t*Math.atan(0.151977*Math.sqrt(rh+8.313659))
+      +Math.atan(t+rh)-Math.atan(rh-1.676331)
+      +0.00391838*Math.pow(rh,1.5)*Math.atan(0.023101*rh)
+      -4.686035;
+  }
+  const rhS=(RH&&RH[5]!=null&&RH[6]!=null&&RH[7]!=null)?(RH[5]+RH[6]+RH[7])/3:null;
+  const rhW=(RH&&RH[11]!=null&&RH[0]!=null&&RH[1]!=null)?(RH[11]+RH[0]+RH[1])/3:null;
+  const wbSummer=wetBulb(tS,rhS);
+  const wbWinter=wetBulb(tW,rhW);
+  /* annual precipitation total. Note: the FWG morphing pipeline does not
+     modify precipitation for future scenarios (per Belcher et al. 2005 —
+     same rule this project already applies to future Köppen
+     classification), so present-day precipitation is the correct value
+     to compare on BOTH sides regardless of which scenario triggered the
+     search — the future EPW's precip field is just a copy of present. */
+  const precip=(P&&P.some(v=>v!=null))?P.reduce((a,v)=>v!=null?a+v:a,0):null;
+  return{hdd,cdd,tSummer:tS,tWinter:tW,tAmp,ghi,wbSummer,wbWinter,precip};
 }
 /* Normalisation bounds from Central European TMYx station envelope;
-   weights reflect relative morphological influence per driver.      */
-const BB_NORM={hdd:3500,cdd:800,tSummer:16,tWinter:22,tAmp:32,ghi:800};
-const BB_W   ={hdd:1.4, cdd:1.4, tSummer:1.2, tWinter:1.2, tAmp:1.0, ghi:0.8};
+   weights reflect relative morphological influence per driver.
+   wbSummer/wbWinter and precip are first-pass estimates — not yet
+   calibrated against the real corpus — see BB_MAX_DISTANCE note below. */
+const BB_NORM={hdd:3500,cdd:800,tSummer:16,tWinter:22,tAmp:32,ghi:800,wbSummer:10,wbWinter:8,precip:900};
+const BB_W   ={hdd:1.4, cdd:1.4, tSummer:1.2, tWinter:1.2, tAmp:1.0, ghi:0.8, wbSummer:1.5, wbWinter:1.1, precip:1.1};
 /* Maximum climate-fingerprint distance for a match to count as a genuine
-   analogue. Above this, the two stations differ enough (e.g. humid
-   subtropical vs. hyper-arid) that morphological inference isn't
-   defensible — this was previously only used to append a caution note
-   post-hoc; it now actually gates whether a match is shown at all. */
-const BB_MAX_DISTANCE=1.2;
+   analogue. Above this, the two stations differ enough (e.g. arid
+   highveld vs. equatorial rainforest — same failure mode that prompted
+   adding humidity/precipitation above) that morphological inference
+   isn't defensible.
+   bbDistance is a WEIGHTED RMS (root-mean-square across dimensions),
+   not a raw weighted sum — this keeps the threshold's meaning stable
+   if dimensions are added or removed later: a value of 1.0 means "on
+   average, weighted, each dimension differs by about one typical
+   Central-European inter-station unit." Still a first-pass number —
+   calibrate against the real corpus's nearest-neighbour distribution
+   once available (see conversation notes on this). */
+const BB_MAX_DISTANCE=1.15;
 function bbDistance(f1,f2){
-  return Math.sqrt(Object.keys(BB_NORM).reduce((s,k)=>{
+  const keys=Object.keys(BB_NORM).filter(k=>f1[k]!=null&&f2[k]!=null);
+  if(!keys.length)return Infinity;
+  const sumSqW=keys.reduce((s,k)=>s+BB_W[k]*BB_W[k],0);
+  const sumSq=keys.reduce((s,k)=>{
     const d=BB_W[k]*(f1[k]-f2[k])/BB_NORM[k]; return s+d*d;
-  },0));
+  },0);
+  return Math.sqrt(sumSq/sumSqW);
 }
 function clearBBLine(){
   if(bbLine&&map){
@@ -4617,7 +4656,7 @@ function applyBigBrotherResult(a,targetCase,dist){
       });
       bbLine._bbArrows=arrows;
     })();
-    const farNote=dist>1.2
+    const farNote=dist>BB_MAX_DISTANCE
       ?`<br><span style="font-family:monospace;font-size:10px;color:#b94040;">Shown as closest cousin — below the similarity threshold for a genuine climate analogue (d=${dist.toFixed(2)}). Morphological inference should be treated with caution.</span>`
       :'';
     bbLine.bindPopup(
@@ -5228,6 +5267,12 @@ function wireMetricPager(c,slot){
 /* ---- single case-detail block, reused for slot A (primary) and slot B (compare) ---- */
 function caseDetailHTML(c,slot){
   const oh=c.sim&&c.sim.oh?c.sim.oh[scn]:null, cf=c.sim&&c.sim.comfort?c.sim.comfort[scn]:null;
+  /* vernacularBIGBROTHER exception: slot B is a PRESENT-day station being
+     proposed as a future analogue — always show ITS present-day climate
+     here, regardless of the slider, so the user can visually check
+     whether it really does resemble the selected case's projected
+     future climate (shown in slot A at the active scenario). */
+  const displayScn=(bigBrotherActive&&slot==='B')?0:scn;
   const ctab=currentClimateTab[slot],dtab=currentDiagram[slot],mpage=currentMetricPage[slot];
   return `
     <div class="panel-eyebrow">${c.region} · ${c.id} · ${c.country||'—'}</div>
@@ -5264,8 +5309,9 @@ function caseDetailHTML(c,slot){
         <div class="kvline">Case elevation: <b>${fmt(c.elev,' m',0)}</b></div>
         <div class="kvline" id="stationElev-${slot}" style="${!MOCK&&c.epw?'':'display:none;'}"></div>
         <div class="kvline" id="stationDist-${slot}" style="${!MOCK&&c.epw?'':'display:none;'}"></div>
+        ${bigBrotherActive&&slot==='B'?`<div style="background:var(--terracotta);color:#fff;font-family:var(--mono);font-size:10px;padding:6px 9px;margin:8px 0 0;display:flex;align-items:flex-start;gap:7px;line-height:1.4;"><span style="font-size:12px;flex:none;">◉</span><span><b>PRESENT-DAY CLIMATE SHOWN</b> for this side, regardless of the slider — compare it against ${c.id===selectedId?'':(byId(selectedId)?byId(selectedId).name||byId(selectedId).id:'the selected case')}'s projected ${SCENARIOS_LONG[scn]} climate on the left.</span></div>`:''}
         <div class="koppen-strip">
-          ${c.koppen.map((k,i)=>`<div class="koppen-box ${i===scn?'current':''}"><div class="scn">${SCENARIOS[i]}</div><div class="code">${k||'<span class="nodata" style="font-size:10px">—</span>'}</div></div>`).join('')}
+          ${c.koppen.map((k,i)=>`<div class="koppen-box ${i===displayScn?'current':''}"><div class="scn">${SCENARIOS[i]}</div><div class="code">${k||'<span class="nodata" style="font-size:10px">—</span>'}</div></div>`).join('')}
         </div>
         <div class="diagram-tabs">${CLIMATE_TABS.map(k=>`<button class="diagram-tab climate-tab ${k===ctab?'active':''}" data-ctab="${k}" data-slot="${slot}">${CLIMATE_LABEL[k]}</button>`).join('')}</div>
         <div id="climateTabContent-${slot}"><div class="epw-loading">Loading climate data…</div></div>
