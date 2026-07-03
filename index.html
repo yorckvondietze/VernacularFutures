@@ -375,7 +375,7 @@ main{padding:6px 28px 50px;max-width:1500px;margin:0 auto;}
 .compare-hint{font-family:var(--mono);font-size:10.5px;color:var(--terracotta-deep);background:var(--terracotta-dim);padding:5px 10px;border-radius:0;}
 .explorer-grid.compare-active{grid-template-columns:0.75fr 1.6fr;}
 /* ---- case study main tabs ---- */
-.cs-main-tabs{display:flex;gap:4px;padding:10px 12px 0;flex-shrink:0;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line);}
+.cs-main-tabs{display:flex;flex-wrap:wrap;gap:4px;padding:10px 12px 0;flex-shrink:0;border-bottom:1px solid var(--line);}
 .cs-main-tabs::-webkit-scrollbar{display:none;}
 .cs-main-tab{font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:9px 16px 8px;border:1.5px dotted var(--line);background:none;color:var(--ink-soft);cursor:pointer;margin-bottom:-1px;white-space:nowrap;transition:color .15s,border-color .15s,background .15s;}
 .cs-main-tab:hover{color:var(--ink-soft);border-color:var(--ink-faint);}
@@ -446,9 +446,12 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
   flex:none;gap:6px;margin-bottom:0;
 }
 .climate-tab.climate-tab-square{
-  width:64px;height:64px;padding:6px 4px;
+  box-sizing:border-box;
+  width:72px;height:72px;padding:5px 4px;
   display:flex;align-items:center;justify-content:center;text-align:center;
-  font-size:9.5px;line-height:1.2;white-space:normal;
+  font-size:8px;line-height:1.15;white-space:normal;
+  word-break:break-word;overflow-wrap:break-word;hyphens:auto;
+  overflow:hidden;
 }
 .climate-tab.climate-tab-favorite{border-color:var(--ochre);color:var(--ochre);}
 .climate-tab.climate-tab-favorite:hover{border-color:var(--ochre);color:var(--ochre);background:var(--ochre-dim);}
@@ -5434,8 +5437,12 @@ function caseDetailHTML(c,slot){
     <!-- TAB 3: METRICS & ATTRIBUTES -->
     <div class="cs-panel ${currentCsTab[slot]==='metrics'?'active':''}" data-cspanel="metrics" data-slot="${slot}">
       <div class="block" style="margin-top:12px;">
-        <div class="metric-pager" id="metricPager-${slot}">${METRIC_PAGES.map((p,i)=>`<button class="metric-page-btn ${i===mpage?'active':''}" data-page="${i}" data-slot="${slot}">${p.label}</button>`).join('')}</div>
-        <table class="metric-table" id="metricTable-${slot}">${metricRowsHTML(c,mpage)}</table>
+        <div class="climate-tabs-row">
+          <div class="metric-pager climate-tabs-sidebar" id="metricPager-${slot}">${METRIC_PAGES.map((p,i)=>`<button class="metric-page-btn climate-tab-square ${i===mpage?'active':''}" data-page="${i}" data-slot="${slot}">${p.label}</button>`).join('')}</div>
+          <div class="climate-tabs-content">
+            <table class="metric-table" id="metricTable-${slot}">${metricRowsHTML(c,mpage)}</table>
+          </div>
+        </div>
         <div class="tagmatrix" style="margin-top:10px;">${STRATEGIES.map(s=>`<span class="tagchip ${c.tags[s.key]?'on':'off'}">${c.tags[s.key]?'✓ ':'○ '}${s.label}</span>`).join('')}</div>
       </div>
     </div>
@@ -5453,12 +5460,16 @@ function caseDetailHTML(c,slot){
             </div>
           </span>
         </div>
-        <div class="diagram-tabs" id="diagramTabs-${slot}">
-          ${Object.keys(DIAGRAM_META).map(k=>`<button class="diagram-tab sim-tab ${k===dtab?'active':''}" data-diagram="${k}" data-slot="${slot}">${DIAGRAM_META[k].label}</button>`).join('')}
+        <div class="climate-tabs-row">
+          <div class="diagram-tabs sim-tabs-sidebar climate-tabs-sidebar" id="diagramTabs-${slot}">
+            ${Object.keys(DIAGRAM_META).map(k=>`<button class="diagram-tab sim-tab climate-tab-square ${k===dtab?'active':''}" data-diagram="${k}" data-slot="${slot}">${DIAGRAM_META[k].label}</button>`).join('')}
+          </div>
+          <div class="climate-tabs-content">
+            <div class="viewer3d-canvas-box" id="viewer3d-${slot}"><div class="viewer3d-hint">drag to rotate</div></div>
+            <div class="heat-legend"><div class="heat-legend-bar"></div><div class="heat-legend-labels"><span>low</span><span>high</span></div></div>
+            <div class="diagram-caption" id="diagramCaption-${slot}"></div>
+          </div>
         </div>
-        <div class="viewer3d-canvas-box" id="viewer3d-${slot}"><div class="viewer3d-hint">drag to rotate</div></div>
-        <div class="heat-legend"><div class="heat-legend-bar"></div><div class="heat-legend-labels"><span>low</span><span>high</span></div></div>
-        <div class="diagram-caption" id="diagramCaption-${slot}"></div>
         <div class="sim-grid" style="margin-top:10px;">
           <div class="sim-cell"><div class="k">Overheating hours (${SCENARIOS[scn]})</div><div class="v">${oh!=null?oh:'<span class="nodata" style="font-size:12px">NO_DATA</span>'}<span class="u">${oh!=null?' h':''}</span></div></div>
           <div class="sim-cell"><div class="k">Adaptive comfort ASHRAE-55</div><div class="v">${cf!=null?cf:'<span class="nodata" style="font-size:12px">NO_DATA</span>'}<span class="u">${cf!=null?' %':''}</span></div></div>
