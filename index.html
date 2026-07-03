@@ -48,9 +48,11 @@ html[data-theme="dark"]{
   --cat-sim:#3D2A08;--cat-sim-ink:#F0A030;
   --cat-flag:#3D1A1A;--cat-flag-ink:#F0907A;
 }
-html[data-theme="dark"] .chrome-stripe{background:linear-gradient(90deg,#A86FE0,#F2D33F);}
-html[data-theme="dark"] .scenario-slider{background:linear-gradient(90deg,#B86AF5,#F0A030);border-radius:0;}
-html[data-theme="dark"] .scenario-slider::-moz-range-track{background:linear-gradient(90deg,#B86AF5,#F0A030);height:12px;border-radius:0;}
+/* chrome-stripe intentionally has no dark-mode override — it uses
+   var(--terracotta) which applyScenarioPalette() already updates
+   correctly per-theme; a static override here was blocking that. */
+html[data-theme="dark"] .scenario-slider{background:linear-gradient(90deg,#B86AF5,#F0A030);border-radius:6px;}
+html[data-theme="dark"] .scenario-slider::-moz-range-track{background:linear-gradient(90deg,#B86AF5,#F0A030);height:12px;border-radius:6px;}
 html[data-theme="dark"] body{background:radial-gradient(ellipse at top,#15123080,transparent 60%) var(--paper);}
 html[data-theme="dark"] .map-legend{background:rgba(11,10,22,0.9);color:var(--ink);}
 html[data-theme="dark"] .leaflet-control-attribution{background:rgba(11,10,22,0.85)!important;color:var(--ink-faint)!important;}
@@ -67,7 +69,7 @@ button{font-family:inherit;}
 .nodata{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);background:repeating-linear-gradient(45deg,#E6E6E6,#E6E6E6 5px,#F6F6F6 5px,#F6F6F6 10px);border:1px solid var(--ink-faint);border-radius:0;padding:0 5px;display:inline-block;}
 .ph-box{font-family:var(--mono);font-size:11px;color:var(--ink-soft);background:repeating-linear-gradient(45deg,rgba(0,0,0,0.045),rgba(0,0,0,0.045) 10px,rgba(0,0,0,0) 10px,rgba(0,0,0,0) 20px);border:1.5px dashed var(--ink-faint);border-radius:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:14px;line-height:1.5;}
 
-.chrome-stripe{height:4px;background:var(--terracotta);}
+.chrome-stripe{height:4px;background:var(--terracotta);transition:background-color .35s ease;}
 .win-titlebar{background:var(--paper-dim);border-bottom:1px solid var(--line-strong);padding:6px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
 .win-titlebar .win-title{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);letter-spacing:0.02em;}
 .win-controls{display:flex;gap:9px;align-items:center;flex:none;}
@@ -99,7 +101,7 @@ button{font-family:inherit;}
 .mode-error{font-family:var(--mono);font-size:10px;color:var(--rust);margin-top:6px;line-height:1.5;max-width:260px;}
 .theme-toggle:hover{border-color:var(--terracotta);color:var(--terracotta-deep);}
 .chart-tip{position:fixed;z-index:10000;pointer-events:none;font-family:var(--mono);font-size:10.5px;background:var(--ink);color:var(--paper);padding:4px 7px;border:1px solid var(--ink);white-space:nowrap;transform:translate(-50%,-100%);margin-top:-8px;}
-.egg-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.egg-overlay{position:fixed;inset:0;z-index:100001;display:flex;align-items:center;justify-content:center;pointer-events:none;}
 .egg-window{pointer-events:auto;width:560px;max-width:92vw;background:var(--paper);border:1px solid var(--line);box-shadow:0 22px 60px rgba(0,0,0,0.4);}
 .egg-body{padding:12px;}
 #eggCanvas{display:block;width:100%;height:auto;background:var(--paper-dim);border:1px solid var(--line);cursor:pointer;touch-action:none;}
@@ -121,13 +123,16 @@ button{font-family:inherit;}
 .brand-title .module{font-family:var(--mono);font-size:12.5px;color:var(--ink-faint);font-weight:400;}
 .brand-subtitle{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);font-weight:500;letter-spacing:-0.01em;margin-top:4px;}
 .scenario-control{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:0;}
+body:not(.map-fullscreen) .scenario-control{transform:scale(0.9);transform-origin:right center;}
 .scenario-label{font-family:var(--mono);font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);}
+body:not(.map-fullscreen) .scenario-label{transform:translateY(5px);}
 .scenario-slider-wrap{width:420px;padding:0 5px;box-sizing:border-box;}
-.scenario-slider{-webkit-appearance:none;appearance:none;width:100%;height:12px;background:linear-gradient(90deg,#7722CC,#9A7870,#E07010);cursor:pointer;margin:14px 0;border-radius:0;}
-.scenario-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:42px;height:42px;border-radius:50%;background:var(--terracotta);border:none;cursor:pointer;outline:none;box-shadow:0 2px 12px rgba(0,0,0,0.25);}
-.scenario-slider::-moz-range-thumb{width:42px;height:42px;border-radius:50%;background:var(--terracotta);border:none;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.25);}
-.scenario-slider::-moz-range-track{height:12px;background:linear-gradient(90deg,#7722CC,#9A7870,#E07010);border-radius:0;}
+.scenario-slider{-webkit-appearance:none;appearance:none;width:100%;height:12px;background:linear-gradient(90deg,#7722CC,#9A7870,#E07010);cursor:pointer;margin:23px 0 5px;border-radius:6px;}
+.scenario-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:30px;height:30px;border-radius:50%;background:var(--terracotta);border:none;cursor:pointer;outline:none;box-shadow:0 2px 12px rgba(0,0,0,0.25);}
+.scenario-slider::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:var(--terracotta);border:none;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.25);}
+.scenario-slider::-moz-range-track{height:12px;background:linear-gradient(90deg,#7722CC,#9A7870,#E07010);border-radius:6px;}
 .scenario-ticks{display:flex;justify-content:space-between;margin-top:4px;}
+body:not(.map-fullscreen) .scenario-ticks{transform:translateY(8px);}
 .scenario-tick{font-family:var(--mono);font-size:12px;color:var(--ink-faint);text-align:center;flex:1;cursor:pointer;line-height:1.3;}
 .scenario-tick:first-child{text-align:left;}.scenario-tick:last-child{text-align:right;}
 .scenario-tick.active{color:var(--terracotta-deep);font-weight:700;font-size:13px;}
@@ -204,7 +209,7 @@ button{font-family:inherit;}
 .btn-secondary{font-family:var(--mono);font-size:11.5px;padding:7px 13px;border:1px solid var(--line);border-radius:0;background:var(--paper-dim);color:var(--ink-soft);cursor:pointer;}
 .btn-secondary:hover{border-color:var(--terracotta);color:var(--terracotta-deep);}
 
-main{padding:22px 28px 50px;max-width:1500px;margin:0 auto;}
+main{padding:6px 28px 50px;max-width:1500px;margin:0 auto;}
 .view{display:none;}.view.active{display:block;}
 
 .filter-bar{display:flex;align-items:center;gap:16px;flex-wrap:nowrap;overflow-x:auto;background:var(--paper);border:1px solid var(--line);padding:9px 16px;flex-shrink:0;scrollbar-width:thin;}
@@ -334,10 +339,20 @@ main{padding:22px 28px 50px;max-width:1500px;margin:0 auto;}
 .kvline b{color:var(--ink);}
 
 .koppen-strip{display:flex;gap:8px;margin:10px 0;}
-.koppen-box{flex:1;border:1px solid var(--line);border-radius:0;padding:8px 6px;text-align:center;background:var(--paper-dim);}
+.koppen-box{flex:1;border:1px solid var(--line);border-radius:0;padding:3px 6px;text-align:center;background:var(--paper-dim);}
 .koppen-box.current{border-color:var(--terracotta);background:var(--terracotta-dim);}
 .koppen-box .scn{font-family:var(--mono);font-size:8.5px;text-transform:uppercase;color:var(--ink-soft);}
-.koppen-box .code{font-family:var(--serif);font-size:18px;font-weight:600;margin-top:2px;}
+.koppen-box .code{font-family:var(--serif);font-size:15px;font-weight:600;margin-top:1px;}
+/* map titlebar controls: match the Köppen icon's height to the others (it
+   comes from a taller 17×16 viewBox) and optically centre the ⓘ text glyph,
+   so every icon's centerline lines up (applies in fullscreen too — same nodes) */
+.map-card .card-titlebar #koppenOverlayBtn svg{height:14px;width:auto;display:block;}
+.map-card .card-titlebar .action-info-icon{display:inline-flex;align-items:center;justify-content:center;line-height:1;}
+.map-card .card-titlebar .win-controls > span{display:inline-flex;align-items:center;justify-content:center;height:14px;margin:0;padding:0;}
+.map-card .card-titlebar .win-controls .c-close{position:relative;width:14px;}
+.map-card .card-titlebar .win-controls .c-close::before,
+.map-card .card-titlebar .win-controls .c-close::after{top:calc(50% - 0.7px);}
+.map-card .card-titlebar .win-controls #mapCloseBtn{margin:0;padding:0;}
 
 .metric-table{width:100%;border-collapse:collapse;}
 .metric-table td{padding:5.5px 0;border-bottom:1px solid var(--line-soft);font-size:12.5px;}
@@ -439,6 +454,20 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 /* ---- averageTYPOLOGY button ---- */
 .avgt-btn{display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:0.01em;padding:5px 10px;border:1px solid var(--moss,#3a7a3a);background:transparent;color:var(--moss,#3a7a3a);cursor:pointer;transition:background-color .2s,color .2s;white-space:nowrap;}
 .avgt-btn:hover{background:var(--moss,#3a7a3a);color:var(--paper);}
+.roulette-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;margin-top:14px;padding:9px 10px;
+  font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:0.01em;
+  border:1px solid var(--terracotta);background:transparent;color:var(--terracotta);
+  cursor:pointer;transition:background-color .2s,color .2s;
+}
+.roulette-btn:hover{background:var(--terracotta);color:var(--paper);}
+.roulette-btn:disabled{cursor:default;}
+.roulette-btn.spinning{animation:rl-spin .85s cubic-bezier(.2,.8,.3,1);}
+@keyframes rl-spin{
+  0%{transform:rotate(0deg);}
+  100%{transform:rotate(1080deg);}
+}
 .avgt-zone-panel.zone-selected{outline:2px solid var(--terracotta);outline-offset:-1px;}
 .avgt-zone-panel{font-family:var(--mono);font-size:11px;padding:6px 10px;border:1px solid var(--line);background:var(--paper-dim);margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .avgt-zone-label{flex:1;min-width:0;font-size:10px;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -532,7 +561,13 @@ footer .tag-link{background:var(--terracotta-dim);color:var(--terracotta-deep);p
 /* ═══════════════════════════════════════════════════════
    COMPACT HEADER
    ═══════════════════════════════════════════════════════ */
-.app-header{padding:10px 20px 8px 8px!important;}
+.app-header{padding:10px 20px 8px 8px!important;height:113px!important;overflow:visible;align-items:center!important;position:relative;}
+/* logo is taller than the header; keep it as the middle flex item (so
+   space-between centres it in the gap between the left brand block and the
+   right scenario control) but give it zero layout height — overflowing
+   visibly — so it doesn't inflate the flex line or pull the row off the
+   header's true vertical centre */
+body:not(.mobile-mode) .app-header .header-logo-center{height:0;overflow:visible;align-self:center;transform:translateX(20px);}
 .brand-title{font-size:22px!important;}
 .brand-eyebrow{font-size:9px;}
 
@@ -603,8 +638,8 @@ footer .tag-link{background:var(--terracotta-dim);color:var(--terracotta-deep);p
   width:40px;background:var(--paper-dim);border:none;
   flex-direction:column;align-items:center;padding-top:12px;gap:16px;}
 body.atlas-active .deck-strip{display:flex;}
-.deck-strip-left{left:0;top:var(--deck-top,80px);bottom:0;}
-.deck-strip-right{right:0;top:var(--deck-top,80px);bottom:0;}
+.deck-strip-left{left:0;top:var(--deck-top,80px);bottom:0;border-right:none;box-shadow:1px 0 0 var(--line);}
+.deck-strip-right{right:0;top:var(--deck-top,80px);bottom:0;box-shadow:-1px 0 0 var(--line);}
 .deck-strip-btn{background:none;border:none;cursor:pointer;padding:8px;
   color:var(--ink-faint);transition:color .15s,background-color .15s;
   display:flex;align-items:center;justify-content:center;}
@@ -631,14 +666,14 @@ body.atlas-active:not(.map-fullscreen) #map{
 /* Filter drawer: fixed left, slides open */
 body.atlas-active:not(.map-fullscreen) .filter-bar{
   position:fixed!important;
-  top:var(--deck-top,80px);left:40px;bottom:0;
+  top:var(--deck-top,80px);left:40px;bottom:var(--avgt-bar-h,0px);
   width:0;overflow:hidden;
   flex-direction:column;align-items:stretch;gap:8px;
   background:var(--paper);border-right:none;
   z-index:500;transition:width .22s cubic-bezier(.4,0,.2,1),border .22s;padding:0;
 }
 body.atlas-active.filter-open .filter-bar{border-right:1px solid var(--line-strong)!important;}
-body.map-fullscreen.filter-open .filter-bar{width:20vw!important;min-width:260px!important;padding:14px 12px 80px!important;overflow-y:auto!important;}
+body.map-fullscreen.filter-open .filter-bar{width:20vw!important;min-width:260px!important;padding:14px 12px 16px!important;overflow-y:auto!important;}
 
 /* ── Panel scroll in atlas cs drawer ── */
 body.atlas-active.cs-open .explorer-grid > .card-window{
@@ -675,8 +710,9 @@ body.atlas-active.filter-open .filter-bar{
 /* ── Fullscreen mode: filter strip + drawer above map ── */
 
 body.map-fullscreen .explorer-grid > .card-window{
-  position:fixed!important;top:0!important;right:40px!important;
+  position:fixed!important;top:34px!important;right:40px!important;
   bottom:0!important;width:0!important;overflow:hidden;
+  border:none;border-left:1px solid var(--line);
   z-index:9002;transition:width .22s cubic-bezier(.4,0,.2,1);
 }
 body.map-fullscreen.cs-open .explorer-grid > .card-window{
@@ -685,20 +721,33 @@ body.map-fullscreen.cs-open .explorer-grid > .card-window{
 
 /* Fullscreen: hide header, show floating slider */
 body.map-fullscreen .app-header{display:none!important;}
-body.map-fullscreen .win-titlebar{position:fixed;top:0;left:0;right:0;z-index:9010;}
+body.map-fullscreen .win-titlebar{position:fixed;top:4px;left:0;right:0;z-index:9010;}
+body.map-fullscreen .chrome-stripe{position:fixed;top:0;left:0;right:0;z-index:9011;}
 body.map-fullscreen .scenario-slider-wrap{
   position:fixed;
-  bottom:20px;left:50%;
-  transform:translateX(-50%);
+  bottom:20px;
+  left:40px;right:40px;margin:0 auto;
+  width:fit-content;
+  transform:none;
   z-index:9005;
   background:color-mix(in srgb, var(--paper) 92%, transparent);
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   border:1px solid var(--line);
-  padding:10px 20px 6px;
-  min-width:340px;cursor:move;
+  padding:8px 16px 5px;
+  min-width:290px;cursor:move;
   box-shadow:0 4px 20px rgba(0,0,0,.25);
   user-select:none;
 }
+/* match the header slider's rendered size + proportions (its 30px thumb /
+   12px track / 410px track scaled 0.9 → ~27 / 11 / 369) */
+body.map-fullscreen .scenario-slider{width:369px!important;height:11px!important;margin:12px 0 6px!important;}
+body.map-fullscreen .scenario-slider::-webkit-slider-thumb{width:27px!important;height:27px!important;}
+body.map-fullscreen .scenario-slider::-moz-range-thumb{width:27px!important;height:27px!important;}
+body.map-fullscreen .scenario-slider::-moz-range-track{height:11px!important;}
+/* keep the slider centred on the visible map area — not the full
+   viewport — as the filter/case-study drawers shift the map's bounds */
+body.map-fullscreen.filter-open .scenario-slider-wrap{left:calc(20vw + 40px);}
+body.map-fullscreen.cs-open .scenario-slider-wrap{right:calc(40vw + 40px);}
 body.map-fullscreen .scenario-ticks{display:flex!important;}
 
 body.map-fullscreen .scenario-label{
@@ -725,26 +774,32 @@ body.map-fullscreen .filter-bar .filter-group select{
 body.map-fullscreen .filter-bar .fl{
   margin-bottom:3px;
 }
-body.map-fullscreen .deck-strip-right{display:flex!important;z-index:9002!important;top:34px!important;right:0!important;}
+body.map-fullscreen .deck-strip-right{display:flex!important;z-index:9003!important;top:34px!important;right:0!important;}
 body.map-fullscreen.filter-open .filter-bar{
   z-index:9001!important;
   width:20vw!important;min-width:260px!important;
   overflow-y:auto!important;
 }
 body.map-fullscreen .filter-bar{
+  position:fixed!important;
   top:34px!important;
   left:40px!important;
-  bottom:0!important;
+  bottom:var(--avgt-bar-h,0px)!important;
 }
 /* Fullscreen filter collapses fully when not open */
 body.map-fullscreen:not(.filter-open) .filter-bar{
-  width:0!important;min-width:0!important;padding:0!important;border-right:none!important;
+  width:0!important;min-width:0!important;padding:0!important;
+  border-right:none!important;
+  border-top:none!important;border-bottom:none!important;
+  border-left:1px solid var(--line)!important;
 }
 
 
 body.atlas-active.filter-open .filter-bar{
   width:20vw;min-width:260px;
-  padding:14px 12px 80px 12px;overflow-y:auto;overflow-x:hidden;
+  padding:14px 12px 12px 12px;
+  padding-bottom:16px;
+  overflow-y:auto;overflow-x:hidden;
 }
 body.atlas-active .filter-bar .filter-group{flex-direction:column;width:100%;min-width:0;}
 body.atlas-active .filter-bar .filter-group select{width:100%;}
@@ -813,11 +868,17 @@ body.map-fullscreen .explorer-grid{
 /* old fullscreen filter layout removed — deck drawer used instead */
 body.map-fullscreen .cs-search-row{
   position:fixed;
-  top:var(--searchrow-top,140px);
-  left:60px;
-  width:300px;
-  z-index:9001;
+  top:80px;
+  right:52px;left:auto;
+  width:300px;max-width:calc(100vw - 120px);
+  z-index:9011;
   margin:0;
+  transition:right .22s cubic-bezier(.4,0,.2,1);
+}
+/* search bar sits next to the case study column — slides with it,
+   same right-anchor formula as the map titlebar above it */
+body.map-fullscreen.cs-open .cs-search-row{
+  right:calc(40vw + 52px);
 }
 body.map-fullscreen .cs-search-input{
   background:color-mix(in srgb, var(--paper) 92%, transparent);
@@ -841,8 +902,8 @@ body.map-fullscreen .map-card{
   border:none;
 }
 body.map-fullscreen .map-card .card-titlebar{
-  position:absolute;
-  top:14px;right:calc(420px + 28px);left:auto;
+  position:fixed;
+  top:34px;right:52px;left:auto;
   width:auto;
   z-index:9010;
   background:color-mix(in srgb, var(--paper) 90%, transparent);
@@ -850,6 +911,12 @@ body.map-fullscreen .map-card .card-titlebar{
   -webkit-backdrop-filter:blur(6px);
   box-shadow:0 2px 12px rgba(0,0,0,.18);
   border:1px solid var(--line);
+  transition:right .22s cubic-bezier(.4,0,.2,1);
+}
+/* when the case study drawer is open, slide the map header left so it
+   sits just beside the drawer edge instead of underneath it */
+body.map-fullscreen.cs-open .map-card .card-titlebar{
+  right:calc(40vw + 52px);
 }
 body.map-fullscreen #map{
   position:absolute;
@@ -865,7 +932,7 @@ body.map-fullscreen .explorer-grid > .card-window{
   width:420px;
   max-width:calc(100vw - 28px);
   z-index:9002;
-  box-shadow:0 4px 24px rgba(0,0,0,.25);
+  box-shadow:none;
 }
 body.map-fullscreen .explorer-grid > .card-window .panel,
 body.map-fullscreen .explorer-grid > .card-window #csPanel{
@@ -1264,10 +1331,13 @@ body.mobile-mode.atlas-active .avgt-radius-slider{
 
 
 /* ── Leaflet zoom controls: push below map titlebar, dark mode inverted ── */
-body.atlas-active .leaflet-top.leaflet-left{top:46px!important;}
+body.atlas-active .leaflet-top.leaflet-left{top:34px!important;}
 html[data-theme="dark"] .leaflet-control-zoom a{background:var(--paper-dim)!important;color:var(--ink)!important;border-color:var(--line-strong)!important;}
 html[data-theme="dark"] .leaflet-control-zoom a:hover{background:var(--paper)!important;color:var(--ink)!important;}
-
+/* keep transform changes instant (they're driven by JS to clear the filter
+   drawer) — an inherited `transition:all` was animating/chasing them */
+body.atlas-active .leaflet-top.leaflet-left,
+body.atlas-active .map-legend{transition-property:background-color,border-color,color;}
 
 
 /* ═══════════════════════════════════════════════════════
@@ -1277,28 +1347,67 @@ html[data-theme="dark"] .leaflet-control-zoom a:hover{background:var(--paper)!im
   position:fixed;inset:0;z-index:100000;
   background:#FFFFFF;
   display:flex;align-items:center;justify-content:center;
-  transition:opacity .5s ease,visibility .5s ease;
+  transition:opacity .5s ease,visibility .5s ease,background-color .3s ease;
+}
+/* dark mode: proper dark version, not the light one forced through —
+   toggleable live during boot via the loader's own theme button */
+html[data-theme="dark"] #siteLoader{
+  background:#0B0A16;
+}
+html[data-theme="dark"] .loader-brand{
+  color:#F7F6FB;
+}
+html[data-theme="dark"] .loader-status{
+  color:#84809B;
 }
 #siteLoader.loader-hidden{opacity:0;visibility:hidden;pointer-events:none;}
+.loader-controls{
+  position:absolute;top:20px;right:24px;
+  display:flex;align-items:center;gap:14px;
+  z-index:100001;color:var(--ink);
+}
 .loader-inner{display:flex;flex-direction:column;align-items:center;gap:22px;}
-.loader-svg-host{width:520px;max-width:80vw;height:auto;margin-bottom:-14px;}
+.loader-svg-host{width:520px;max-width:80vw;height:auto;margin-bottom:-14px;transform:translateX(-1.4%);}
 .loader-svg-host svg{width:100%;height:auto;display:block;}
 .loader-svg-host svg .cls-1,.loader-svg-host svg .cls-2,.loader-svg-host svg .cls-4{stroke-width:3.2px!important;}
 .loader-svg-host svg .cls-3{stroke-width:4.5px!important;}
 .loader-brand{
   font-family:var(--serif);font-size:28px;font-weight:700;letter-spacing:-0.01em;
-  color:var(--ink,#111);
+  color:#111111;
 }
 .loader-brand em{font-style:italic;color:var(--loader-beam,#F0D000);transition:color .3s ease;}
 .loader-status{
   font-family:var(--mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
-  color:var(--ink-faint,#8A8A8A);
+  color:#8A8A8A;
 }
+.header-logo-host{
+  width:208px;flex:none;
+  display:flex;align-items:center;
+}
+.header-logo-center{
+  display:flex;align-items:center;justify-content:center;
+  flex:none;align-self:center;
+}
+.header-logo-host svg{width:100%;height:auto;display:block;}
+.header-logo-host svg .hdrlogo-1,.header-logo-host svg .hdrlogo-2,.header-logo-host svg .hdrlogo-4{stroke-width:4px;}
+.header-logo-host svg .hdrlogo-3{stroke-width:5.5px;}
+/* UFO body + house silhouette: medium grey (was solid black — too heavy).
+   Beam: a step lighter. Both use theme-aware variables so dark mode
+   adapts automatically without a separate override. */
+.header-logo-host svg .hdrlogo-3,
+.header-logo-host svg .hdrlogo-4,
+.header-logo-host svg polygon{fill:var(--ink-soft);}
+.header-logo-host svg .hdrlogo-1{fill:var(--paper-deep);}
+.header-logo-host svg .hdrlogo-1,.header-logo-host svg .hdrlogo-2,.header-logo-host svg .hdrlogo-3,.header-logo-host svg .hdrlogo-4{stroke:var(--paper)!important;}
 
 </style>
 </head>
 <body>
 <div id="siteLoader">
+  <div class="loader-controls">
+    <button class="theme-toggle" id="loaderThemeToggle" title="Toggle dark mode">☾</button>
+    <span class="c-game" id="loaderGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg></span>
+  </div>
   <div class="loader-inner">
     <div id="loaderSvgHost" class="loader-svg-host"></div>
     <div class="loader-brand">vernacular<em>futures</em></div>
@@ -1322,12 +1431,54 @@ html[data-theme="dark"] .leaflet-control-zoom a:hover{background:var(--paper)!im
         <line x1="0" y1="13" x2="18" y2="13" stroke="currentColor" stroke-width="1.5"/>
       </svg>
     </button>
+    
     <div>
       <div class="brand-eyebrow">SHI<span style="position:relative;bottom:5px;font-size:0.8em;">FT</span></div>
       <div class="brand-title"><span class="brand-name"><span class="brand-hl">vernacular<em>futures</em></span></span></div>
       <div class="brand-subtitle">_morphing_typologies_for_future_climates</div>
     </div>
   </div>
+  <div class="header-logo-center" aria-hidden="true"><div class="header-logo-host" aria-hidden="true"><svg class="header-logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1366 768" aria-hidden="true">
+    <defs>
+      <style>
+        .hdrlogo-1 {
+          fill: #9A9A9A;
+        }
+  
+        .hdrlogo-1, .hdrlogo-2, .hdrlogo-3, .hdrlogo-4 {
+          stroke: #fff;
+          stroke-miterlimit: 10;
+        }
+  
+        .hdrlogo-1, .hdrlogo-2, .hdrlogo-4 {
+          stroke-width: 2px;
+        }
+  
+        .hdrlogo-2 {
+          fill: none;
+        }
+  
+        .hdrlogo-3 {
+          stroke-width: 3px;
+        }
+      </style>
+    </defs>
+    <g id="Layer_1" data-name="Layer 1">
+      <g>
+        <path class="hdrlogo-4" d="M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z"/>
+        <ellipse class="hdrlogo-4" cx="705.45" cy="281.69" rx="242.52" ry="36.38"/>
+        <path class="hdrlogo-4" d="M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z"/>
+        <path class="hdrlogo-4" d="M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z"/>
+        <path class="hdrlogo-4" d="M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z"/>
+      </g>
+    </g>
+    <g id="Layer_3" data-name="Layer 3">
+      <path class="hdrlogo-1" d="M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z"/>
+      <polygon points="773.34 420.42 771.91 427.98 753.47 420.16 770.35 490.42 661.89 516.49 645 446.18 632.1 461.55 627.43 455.51 682.38 390.02 687.44 384 694.61 387.04 728.55 401.43 725.29 387.86 738.07 384.79 743.6 407.81 773.34 420.42"/>
+      <path class="hdrlogo-3" d="M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z"/>
+      <path class="hdrlogo-2" d="M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z"/>
+    </g>
+  </svg></div></div>
   <div class="scenario-control">
     <div class="scenario-label">Climate scenario · SSP5-8.5
       <span class="info-btn" id="scenarioInfoBtn" title="About these scenarios">ⓘ</span>
@@ -1433,7 +1584,7 @@ html[data-theme="dark"] .leaflet-control-zoom a:hover{background:var(--paper)!im
         </div>
         </div>
       <div class="card-window">
-        <div class="card-titlebar"><span class="win-title">_case_study</span><span class="win-controls"><span class="c-fetch" id="fetchCase" title="Re-fetch photos &amp; plans"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 L2 9 M2 5 L2 9 L6 9"/></svg></span><span class="c-close" id="csPanelCloseBtn"></span></span></div>
+        <div class="card-titlebar" style="position:relative;top:-2.3px;"><span class="win-title">_case_study</span><span class="win-controls"><span class="c-fetch" id="fetchCase" title="Re-fetch photos &amp; plans"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 L2 9 M2 5 L2 9 L6 9"/></svg></span><span class="c-close" id="csPanelCloseBtn"></span></span></div>
         <div class="panel" id="csPanel"></div>
       </div>
     </div>
@@ -1998,8 +2149,37 @@ function buildFilters(){
   const infoBtn=document.getElementById('scenarioInfoBtn');
   const infoPop=document.getElementById('scenarioInfoPop');
   if(infoBtn&&infoPop){
-    infoBtn.addEventListener('click',e=>{e.stopPropagation();infoPop.style.display=infoPop.style.display==='none'?'block':'none';});
-    document.addEventListener('click',e=>{if(!e.target.closest('.scenario-label'))infoPop.style.display='none';});
+    /* portal into the top-level overlay so it's never hidden behind
+       the case study drawer or any other stacking context */
+    const portal=document.getElementById('infoPopoverPortal');
+    if(portal&&infoPop.parentElement!==portal){portal.appendChild(infoPop);}
+    infoPop.style.position='fixed';
+    infoPop.style.pointerEvents='auto';
+    infoPop.classList.add('action-info-pop'); /* so the shared outside-click closer handles it */
+    infoBtn.addEventListener('click',e=>{
+      e.stopPropagation();
+      /* ensure it's in the top-level portal (wire-time move can miss) */
+      const portalNow=document.getElementById('infoPopoverPortal');
+      if(portalNow&&infoPop.parentElement!==portalNow){
+        infoPop.style.position='fixed';infoPop.style.pointerEvents='auto';
+        portalNow.appendChild(infoPop);
+      }
+      const isOpen=infoPop.style.display==='block';
+      if(portalNow)portalNow.querySelectorAll('.action-info-pop').forEach(p=>{p.style.display='none';});
+      if(isOpen){infoPop.style.display='none';return;}
+      const r=infoBtn.getBoundingClientRect();
+      const pw=Math.min(320,window.innerWidth-16);
+      infoPop.style.width=pw+'px';
+      infoPop.style.left=Math.max(8,Math.min(r.right-pw,window.innerWidth-pw-8))+'px';
+      infoPop.style.right='auto';
+      infoPop.style.visibility='hidden';infoPop.style.display='block';
+      const ph=infoPop.offsetHeight;
+      const bottomSpace=window.innerHeight-r.bottom-10;
+      if(ph>bottomSpace&&r.top>bottomSpace){infoPop.style.top='auto';infoPop.style.bottom=(window.innerHeight-r.top+4)+'px';}
+      else{infoPop.style.top=(r.bottom+6)+'px';infoPop.style.bottom='auto';}
+      infoPop.style.visibility='visible';
+    });
+    infoPop.addEventListener('click',e=>e.stopPropagation());
   }
   /* egg game data source popover */
   const eggInfoBtn=document.getElementById('eggInfoBtn');
@@ -2665,13 +2845,39 @@ async function buildMosaic(cases, onProgress){
   return found;
 }
 
+function rouletteBtnHTML(){
+  return `<button class="roulette-btn" id="caseRouletteBtn" title="Jump to a random case study">&gt;casestudy<em>ROULETTE</em></button>`;
+}
+function wireRouletteBtn(){
+  const btn=document.getElementById('caseRouletteBtn');
+  if(btn)btn.addEventListener('click',spinCaseRoulette);
+}
+function spinCaseRoulette(){
+  const btn=document.getElementById('caseRouletteBtn');
+  if(!btn||btn.classList.contains('spinning'))return;
+  const candidates=CASES.filter(c=>c.hasCoord);
+  if(!candidates.length)return;
+  const target=candidates[Math.floor(Math.random()*candidates.length)];
+  btn.classList.add('spinning');
+  btn.disabled=true;
+  /* spin first, then zoom map + mosaic together once the wheel settles */
+  setTimeout(()=>{
+    btn.classList.remove('spinning');
+    btn.disabled=false;
+    if(map&&target.hasCoord){
+      map.flyTo([target.lat,target.lon],9,{duration:1.1});
+    }
+    selectCase(target.id);
+  },850);
+}
 function renderMosaicGrid(el,plans){
   if(!plans.length){
-    el.innerHTML=`<div class="mosaic-wrap" style="display:flex;align-items:center;justify-content:center;padding:40px;"><span style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);">No floor plans found — add cs01_floorplan.png to data/plans/</span></div>`;
+    el.innerHTML=`<div class="mosaic-wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;"><span style="font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin-bottom:14px;">No floor plans found — add cs01_floorplan.png to data/plans/</span>${rouletteBtnHTML()}</div>`;
+    wireRouletteBtn();
     return;
   }
   const thumbs=plans.map(p=>`<div class="mosaic-thumb" data-id="${p.caseId}" data-has-plan="1" title="${p.name}"><img src="${p.url}" alt="${p.name}" loading="lazy"/><div class="mosaic-thumb-label">${p.caseId}${p.name&&p.name!==p.caseId?' · '+p.name:''}</div></div>`).join('');
-  el.innerHTML=`<div class="mosaic-wrap"><div class="mosaic-grid">${thumbs}</div></div>`;
+  el.innerHTML=`<div class="mosaic-wrap"><div class="mosaic-grid">${thumbs}</div>${rouletteBtnHTML()}</div>`;
   el.querySelectorAll('.mosaic-thumb').forEach(th=>{
     th.addEventListener('click',()=>{
       const id=th.dataset.id;
@@ -2679,6 +2885,7 @@ function renderMosaicGrid(el,plans){
       if(plan)zoomToCase(id,th,plan.url);else selectCaseCore(id);
     });
   });
+  wireRouletteBtn();
 }
 
 function renderEmptyPanel(el){
@@ -2687,7 +2894,8 @@ function renderEmptyPanel(el){
     return;
   }
   /* show empty grid immediately — thumbnails appear as probes complete */
-  el.innerHTML=`<div class="mosaic-wrap"><div class="mosaic-grid" id="mosaicGrid"></div></div>`;
+  el.innerHTML=`<div class="mosaic-wrap"><div class="mosaic-grid" id="mosaicGrid"></div>${rouletteBtnHTML()}</div>`;
+  wireRouletteBtn();
   FLOORPLAN_MOSAIC=[];
   buildMosaic(CASES,entry=>{
     if(!entry)return;
@@ -3932,6 +4140,7 @@ const DIAGRAM_META={
 let currentDiagram={A:'overheat',B:'overheat'};
 let shapeShiftOn={A:false,B:false};
 let bigBrotherActive=false,bbLine=null,bbResultId=null;
+let bbNoMatch=false,bbCousin=null,bbCousinDist=null;
 let koppenOverlayActive=false,koppenOverlayLayer=null,_koppenRenderTimer=null;
 /* averageTYPOLOGY state */
 let avgTypologyZones=[];   /* [{pin:L.marker, circle:L.circle, radius_km, caseIds:[], panelId}] */
@@ -4263,6 +4472,12 @@ function computeBBFingerprint(epw){
    weights reflect relative morphological influence per driver.      */
 const BB_NORM={hdd:3500,cdd:800,tSummer:16,tWinter:22,tAmp:32,ghi:800};
 const BB_W   ={hdd:1.4, cdd:1.4, tSummer:1.2, tWinter:1.2, tAmp:1.0, ghi:0.8};
+/* Maximum climate-fingerprint distance for a match to count as a genuine
+   analogue. Above this, the two stations differ enough (e.g. humid
+   subtropical vs. hyper-arid) that morphological inference isn't
+   defensible — this was previously only used to append a caution note
+   post-hoc; it now actually gates whether a match is shown at all. */
+const BB_MAX_DISTANCE=1.2;
 function bbDistance(f1,f2){
   return Math.sqrt(Object.keys(BB_NORM).reduce((s,k)=>{
     const d=BB_W[k]*(f1[k]-f2[k])/BB_NORM[k]; return s+d*d;
@@ -4277,6 +4492,7 @@ function clearBBLine(){
 }
 function clearBigBrother(){
   bigBrotherActive=false; bbResultId=null;
+  bbNoMatch=false; bbCousin=null; bbCousinDist=null;
   clearBBLine();
   document.querySelectorAll('.bb-btn').forEach(b=>{
     b.innerHTML='&gt;vernacular<em>BIGBROTHER</em>';
@@ -4288,6 +4504,9 @@ async function runBigBrother(){
   /* toggle off */
   if(bigBrotherActive){
     clearBigBrother(); compareId=null; renderPanel(); return;
+  }
+  if(bbNoMatch){
+    bbNoMatch=false; bbCousin=null; bbCousinDist=null; renderPanel(); return;
   }
   const a=byId(selectedId);
   if(!a||!a.epw)return;
@@ -4330,15 +4549,31 @@ async function runBigBrother(){
   }
   scored.sort((a,b)=>a.dist-b.dist);
   const best=scored[0];
-  bbResultId=best.c.id;
-  /* 3 — open winner in compare slot B */
+  if(best.dist>BB_MAX_DISTANCE){
+    /* no genuine climate analogue in the dataset — don't silently show
+       a mismatched pairing (e.g. a hyper-arid station standing in for a
+       humid subtropical one). Offer the nearest one as an explicit,
+       clearly-labelled fallback instead. */
+    bbNoMatch=true; bbCousin=best.c; bbCousinDist=best.dist;
+    document.querySelectorAll('.bb-btn').forEach(b=>{
+      b.innerHTML='&gt;vernacular<em>BIGBROTHER</em>';b.disabled=(scn===0);
+    });
+    renderPanel();
+    return;
+  }
+  bbNoMatch=false;
+  applyBigBrotherResult(a,best.c,best.dist);
+}
+function applyBigBrotherResult(a,targetCase,dist){
+  bbResultId=targetCase.id;
+  /* open winner in compare slot B */
   compareId=bbResultId; pickingCompare=false; bigBrotherActive=true;
   renderPanel();
-  /* 4 — draw dashed line on map */
+  /* draw dashed line on map */
   clearBBLine();
-  if(map&&a.hasCoord&&best.c.hasCoord){
+  if(map&&a.hasCoord&&targetCase.hasCoord){
     const lineCol=scn===1?'#9A7870':'#E07010';
-    bbLine=L.polyline([[a.lat,a.lon],[best.c.lat,best.c.lon]],{
+    bbLine=L.polyline([[a.lat,a.lon],[targetCase.lat,targetCase.lon]],{
       color:lineCol,weight:3.5,opacity:0.95
     }).addTo(map);
     /* ── directed chevrons along the great-circle path ─────────── */
@@ -4365,8 +4600,8 @@ async function runBigBrother(){
       const steps=[0.18,0.30,0.42,0.54,0.66,0.78,0.90];
       const arrows=[];
       steps.forEach(t=>{
-        const p=gcPt(a.lat,a.lon,best.c.lat,best.c.lon,t);
-        const p2=gcPt(a.lat,a.lon,best.c.lat,best.c.lon,Math.min(t+0.04,1));
+        const p=gcPt(a.lat,a.lon,targetCase.lat,targetCase.lon,t);
+        const p2=gcPt(a.lat,a.lon,targetCase.lat,targetCase.lon,Math.min(t+0.04,1));
         const b=brng(p.lat,p.lon,p2.lat,p2.lon);
         const icon=L.divIcon({
           className:'',
@@ -4382,16 +4617,25 @@ async function runBigBrother(){
       });
       bbLine._bbArrows=arrows;
     })();
-    const farNote=best.dist>1.2
-      ?`<br><span style="font-family:monospace;font-size:10px;color:#b94040;">No close climate analogue identified in the present dataset — nearest available approximation shown (d=${best.dist.toFixed(2)}). Morphological inference should be treated with caution.</span>`
+    const farNote=dist>1.2
+      ?`<br><span style="font-family:monospace;font-size:10px;color:#b94040;">Shown as closest cousin — below the similarity threshold for a genuine climate analogue (d=${dist.toFixed(2)}). Morphological inference should be treated with caution.</span>`
       :'';
     bbLine.bindPopup(
       `<span style="font-family:monospace;font-weight:700;">vernacularBIGBROTHER</span><br>`+
-      `${a.name||a.id} → ${best.c.name||best.c.id}`+
-      `<br><span style="font-family:monospace;font-size:10px;opacity:0.6">climate distance ${best.dist.toFixed(3)}</span>`+
+      `${a.name||a.id} → ${targetCase.name||targetCase.id}`+
+      `<br><span style="font-family:monospace;font-size:10px;opacity:0.6">climate distance ${dist.toFixed(3)}</span>`+
       farNote
     );
   }
+}
+/* user opts into seeing the nearest available station even though it
+   didn't pass the similarity threshold */
+function showBBCousin(){
+  if(!bbCousin)return;
+  const a=byId(selectedId);
+  if(!a)return;
+  applyBigBrotherResult(a,bbCousin,bbCousinDist);
+  bbNoMatch=false;
 }
 
 /* info-popover toggle helper: click icon to open, click anywhere else to close */
@@ -4414,9 +4658,16 @@ function wireInfoIcon(iconId,popId){
   const popWidth=parseInt(pop.style.width)||330;
   icon.addEventListener('click',e=>{
     e.stopPropagation();
+    /* ensure the popover is in the top-level portal — the wire-time
+       move can miss if the portal or pop wasn't ready yet */
+    const portalNow=document.getElementById('infoPopoverPortal');
+    if(portalNow&&pop.parentElement!==portalNow){
+      pop.style.position='fixed';pop.style.pointerEvents='auto';pop.style.margin='0';
+      portalNow.appendChild(pop);
+    }
     const isOpen=pop.style.display==='block';
     /* close all others */
-    if(portal)portal.querySelectorAll('.action-info-pop').forEach(p=>{p.style.display='none';});
+    if(portalNow)portalNow.querySelectorAll('.action-info-pop').forEach(p=>{p.style.display='none';});
     if(isOpen){pop.style.display='none';return;}
     /* position relative to icon */
     const r=icon.getBoundingClientRect();
@@ -4704,13 +4955,15 @@ function renderAvgTypologyDetailPanel(zone){
     <div class="cs-title" style="padding:4px 16px 0;font-size:18px;word-break:break-all;">${label}</div>
     <div class="cs-sub" style="padding:2px 16px 10px;">Averaged typology · ${SCENARIOS_LONG[scn]}</div>
     <div class="cs-main-tabs" style="padding:0 16px;">
-      <button class="cs-tab active" data-avgtab="building">Building</button>
-      <button class="cs-tab" data-avgtab="climate">Climate</button>
-      <button class="cs-tab" data-avgtab="metrics">Metrics &amp; Attributes</button>
-      <button class="cs-tab" data-avgtab="members">Members (${members.length})</button>
+      <button class="cs-main-tab active" data-avgtab="building">Building</button>
+      <button class="cs-main-tab" data-avgtab="climate">Climate</button>
+      <button class="cs-main-tab" data-avgtab="metrics">Metrics &amp; Attributes</button>
+      <button class="cs-main-tab" data-avgtab="members">Members (${members.length})</button>
     </div>
 
     <div class="cs-panel active" id="avgT-panel-building" style="padding:14px 16px;">
+      <div class="media-col-head" style="font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px;">Photographs · all members</div>
+      <div id="avgTPhotoBlock" class="media-col-content" style="margin-bottom:18px;"><div class="photo-carousel" style="display:flex;align-items:center;justify-content:center;min-height:180px;"><span style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">Loading member photographs…</span></div></div>
       <div class="media-col-head" style="font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px;">Aggregated drawings · all members</div>
       <div id="avgTPlanBlock" class="media-col-content"><div class="photo-carousel" style="display:flex;align-items:center;justify-content:center;min-height:180px;"><span style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">Loading member drawings…</span></div></div>
     </div>
@@ -4737,9 +4990,9 @@ function renderAvgTypologyDetailPanel(zone){
     </div>`;
 
   /* wire main tabs */
-  el.querySelectorAll('.cs-tab[data-avgtab]').forEach(btn=>{
+  el.querySelectorAll('.cs-main-tab[data-avgtab]').forEach(btn=>{
     btn.addEventListener('click',()=>{
-      el.querySelectorAll('.cs-tab[data-avgtab]').forEach(b=>b.classList.remove('active'));
+      el.querySelectorAll('.cs-main-tab[data-avgtab]').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
       el.querySelectorAll('[id^="avgT-panel-"]').forEach(p=>p.style.display='none');
       const target=el.querySelector('#avgT-panel-'+btn.dataset.avgtab);
@@ -4762,6 +5015,28 @@ function renderAvgTypologyDetailPanel(zone){
   /* wire close */
   const closeBtn=document.getElementById('avgTCloseBtn');
   if(closeBtn)closeBtn.addEventListener('click',()=>{_activeAvgZone=null;_selectedZoneId=0;selectedId=null;renderPanel();});
+
+  /* async: load all member photographs stacked into one carousel */
+  (async()=>{
+    const allPhotos=[];
+    for(const c of members){
+      try{
+        const photos=await fetchPhotos(c.id);
+        if(photos&&photos.length){
+          photos.forEach(u=>allPhotos.push(u));
+        }
+      }catch(e){}
+    }
+    const block=document.getElementById('avgTPhotoBlock');
+    if(!block)return;
+    if(!allPhotos.length){
+      block.innerHTML=`<div class="photo-carousel" style="display:flex;align-items:center;justify-content:center;min-height:180px;"><span style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">No member photographs found</span></div>`;
+      return;
+    }
+    const carouselHtml=renderPhotoCarousel(allPhotos,'avgT-'+zone.id);
+    block.innerHTML=carouselHtml;
+    wirePhotoCarousel(block,allPhotos,'avgT-'+zone.id);
+  })();
 
   /* async: load all member plans stacked into one carousel */
   (async()=>{
@@ -5150,7 +5425,10 @@ function renderPanel(){
   if(map&&isCompare!==wasCompare)setTimeout(()=>map.invalidateSize(),0);
   const bbInfoHTML=`<span class="action-info-icon" id="bbInfoIcon">ⓘ<div class="action-info-pop" id="bbInfoPop"><div class="ai-head">_vernacularBIGBROTHER</div><div class="ai-body">Identifies the present-day case study whose EPW climate profile most closely matches the future climate of the selected case under the active scenario. Proximity is measured by weighted normalised Euclidean distance across six morphologically relevant metrics: HDD&#x2081;&#x2085;, CDD&#x2082;&#x2082;, peak summer temperature, winter minimum temperature, annual thermal amplitude, and annual GHI.</div><div class="ai-warn"><b>&#x26A0; Baseline bias:</b> TMYx 2011&#x2013;2025 present-day EPW files already incorporate approximately 1.2&#x202F;°C of anthropogenic warming above the pre-industrial mean (IPCC AR6 WGI §2.3, 2021). Many buildings in this corpus were constructed during the Little Ice Age (c.&#x202F;1300&#x2013;1850&#x202F;CE) — a period of documented cold anomalies in Central Europe driven by reduced solar irradiance (Maunder Minimum, 1645&#x2013;1715; Spörer Minimum, 1460&#x2013;1550) and elevated volcanic forcing (Luterbacher et&#x202F;al., 2004, <em>Science</em> 303:1499&#x2013;1503; Mann et&#x202F;al., 1999, <em>Geophys.&#x202F;Res.&#x202F;Lett.</em>). Vernacular morphologies may encode adaptive responses to climates cooler than the present TMYx baseline, introducing a systematic bias in apparent climate sensitivity that is not corrected for in this analysis.</div></div></span>`;
   const bbBtnHTML=`<button class="bb-btn${scn===0?' bb-disabled':''}" id="bigBrotherBtn"${scn===0?' disabled':''}>&gt;vernacular<em>BIGBROTHER</em></button>`;
-  const toolbar=bigBrotherActive&&c2
+  const bbCousinInfoHTML=`<span class="action-info-icon" id="bbCousinInfoIcon" style="font-size:11px;">ⓘ<div class="action-info-pop" id="bbCousinInfoPop" style="width:290px;"><div class="ai-head">_closest cousin</div><div class="ai-body">No station in the present-day dataset falls within the similarity threshold (d ≤ ${BB_MAX_DISTANCE}) for a defensible climate analogue under this scenario. "Closest cousin" shows the single nearest match anyway — simply the most similar station available in the corpus, not a validated analogue. Treat any morphological inference from it with caution.</div></div></span>`;
+  const toolbar=bbNoMatch
+    ? `<div class="panel-toolbar"><span class="compare-hint bb-hint" style="margin-right:auto;color:#B94040;">No vernacular<em>BIGBROTHER</em> found :(</span><button class="compare-toggle-btn" id="bbCousinBtn">Show closest cousin</button>${bbCousinInfoHTML}${bbBtnHTML}</div>`
+    : bigBrotherActive&&c2
     ? `<div class="panel-toolbar"><span class="compare-hint bb-hint" style="margin-right:auto;">vernacularBIGBROTHER → ${c2.name||c2.id}</span>${bbBtnHTML}${bbInfoHTML}<button class="compare-toggle-btn exit" id="exitCompareBtn">× clear</button></div>`
     : c2
       ? `<div class="panel-toolbar"><span class="compare-hint" style="margin-right:auto;">Comparing ${c.name||c.id} vs ${c2.name||c2.id}</span><button class="compare-toggle-btn exit" id="exitCompareBtn">× exit compare</button></div>`
@@ -5176,6 +5454,9 @@ function renderPanel(){
     bbBtn.addEventListener('click',runBigBrother);
   }
   wireInfoIcon('bbInfoIcon','bbInfoPop');
+  const bbCousinBtn=document.getElementById('bbCousinBtn');
+  if(bbCousinBtn)bbCousinBtn.addEventListener('click',showBBCousin);
+  wireInfoIcon('bbCousinInfoIcon','bbCousinInfoPop');
   /* averageTYPOLOGY button */
   const avgTBtn=document.getElementById('avgTypologyBtn');
   if(avgTBtn)avgTBtn.addEventListener('click',addAvgTypologyZone);
@@ -5288,11 +5569,9 @@ function buildPipeline(){
 }
 document.getElementById('openGameBtn').addEventListener('click',()=>openEggGame());
 
-/* ---- filter bar: scroll wheel → horizontal scroll ---- */
-document.querySelector('.filter-bar').addEventListener('wheel',e=>{
-  e.preventDefault();
-  e.currentTarget.scrollLeft+=e.deltaY+e.deltaX;
-},{passive:false});
+/* (removed: obsolete wheel→horizontal-scroll hijack. The filter is now
+   a vertical column, so this handler was preventing normal vertical
+   scroll. Native overflow-y:auto handles wheel scrolling correctly.) */
 
 /* ---- map X Easter egg: 50/50 fate ---- */
 let _mapEggActive=false;
@@ -5403,7 +5682,7 @@ function applyScenarioPalette(){
   root.setProperty('--terracotta-deep',a.deep);
   root.setProperty('--terracotta-dim',a.dim);
   /* vernacularBIGBROTHER: clear if user slides back to Present */
-  if(bigBrotherActive&&scn===0){
+  if((bigBrotherActive||bbNoMatch)&&scn===0){
     clearBigBrother(); compareId=null;
     /* renderPanel will be called by onScenarioChange immediately after */
   }
@@ -5412,6 +5691,8 @@ function applyTheme(theme){
   document.documentElement.setAttribute('data-theme',theme==='dark'?'dark':'light');
   const btn=document.getElementById('themeToggle');
   if(btn)btn.textContent=theme==='dark'?'☀':'☾';
+  const loaderBtn=document.getElementById('loaderThemeToggle');
+  if(loaderBtn)loaderBtn.textContent=theme==='dark'?'☀':'☾';
   if(tileLayer)tileLayer.setUrl(theme==='dark'?DARK_TILE_URL:LIGHT_TILE_URL);
   applyScenarioPalette();
 }
@@ -5422,6 +5703,8 @@ function toggleTheme(){
   setStoredTheme(next);
 }
 document.getElementById('themeToggle').addEventListener('click',toggleTheme);
+document.getElementById('loaderThemeToggle')?.addEventListener('click',toggleTheme);
+document.getElementById('loaderGameBtn')?.addEventListener('click',()=>openEggGame());
 applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light');
 
 /* ===================== EASTER EGG: ELEVATION RUNNER =====================
@@ -5854,12 +6137,128 @@ if(window._hideLoader)window._hideLoader();
     document.body.classList.remove('filter-open');
     document.getElementById('filterStripBtn')?.classList.remove('active');
   });
+  /* clicking the vernacularfutures brand title returns to the Atlas
+     initial screen (Atlas tab active, mosaic reset) — like a home link */
+  function goToAtlasHome(){
+    /* if the map is in fullscreen, exit it first so we land on the normal
+       initiating view (the fullscreen toggle handler also resets its icon) */
+    if(document.body.classList.contains('map-fullscreen')){
+      document.getElementById('mapFullscreenBtn')?.click();
+    }
+    /* switch to the Atlas (cases) tab */
+    const casesBtn=document.querySelector('.tab-btn[data-tab="cases"]');
+    if(casesBtn)casesBtn.click();
+    /* reset to the mosaic (clear any selected case / typology zone) */
+    selectedId=null;compareId=null;_activeAvgZone=null;_selectedZoneId=0;
+    if(typeof renderPanel==='function')renderPanel();
+    /* on desktop, ensure the case study drawer is open showing the mosaic */
+    const isMobile=window.innerWidth<768||(('ontouchstart' in window||navigator.maxTouchPoints>0)&&window.innerWidth<1024);
+    if(!isMobile){
+      document.body.classList.add('cs-open');
+      document.getElementById('csStripBtn')?.classList.add('active');
+    }
+    setTimeout(()=>{if(map)map.invalidateSize();},120);
+  }
+  const brandTitle=document.querySelector('.brand-title');
+  if(brandTitle){
+    brandTitle.style.cursor='pointer';
+    brandTitle.setAttribute('title','Back to the atlas');
+    brandTitle.addEventListener('click',goToAtlasHome);
+  }
+  /* the "vernacularfutures" text in the very top bar does the same */
+  const winTitle=document.querySelector('.win-title');
+  if(winTitle){
+    winTitle.style.cursor='pointer';
+    winTitle.setAttribute('title','Back to the atlas');
+    winTitle.addEventListener('click',goToAtlasHome);
+  }
+  /* keep the filter drawer's scrollable area clear of the fixed
+     averageTYPOLOGY footer bar — as typologies are added the bar grows
+     taller, so sync the drawer's bottom padding to the bar's height.
+     This ensures the last filter row and the scrollbar's bottom arrow
+     are always reachable, never hidden behind the bar. */
+  (function(){
+    const bar=document.getElementById('avgtPersistentBar');
+    const filterBar=document.querySelector('.filter-bar');
+    if(!bar||!filterBar||typeof ResizeObserver==='undefined')return;
+    const sync=()=>{
+      requestAnimationFrame(()=>{
+        const h=bar.getBoundingClientRect().height||0;
+        /* only apply when the bar is actually visible (filter open, not mobile static) */
+        const visible=getComputedStyle(bar).position==='fixed'&&getComputedStyle(bar).display!=='none';
+        filterBar.style.setProperty('--avgt-bar-h',(visible?h:0)+'px');
+      });
+    };
+    const ro=new ResizeObserver(sync);
+    ro.observe(bar);
+    const zonesList=document.getElementById('avgTypologyZonesListPersistent');
+    if(zonesList){
+      ro.observe(zonesList);
+      /* content changes (adding/removing typology zones) reflow the bar's
+         height; re-sync so the drawer bottom always clears the box */
+      new MutationObserver(sync).observe(zonesList,{childList:true,subtree:true});
+    }
+    window.addEventListener('resize',sync);
+    document.getElementById('filterStripBtn')?.addEventListener('click',()=>setTimeout(sync,260));
+    sync();
+  })();
+  /* Keep the map's zoom control + Köppen legend clear of the filter drawer.
+     The map's own left position when the drawer opens varies with which
+     panels are open, so rather than assume, we MEASURE each control's real
+     (untransformed) position once the layout has settled and nudge it right
+     by exactly the distance still needed to sit just past the drawer — 0px
+     gap for the zoom control, 12px for the legend (their closed-tab gaps).
+     This self-corrects in every mode and never double-shifts. */
+  (function(){
+    const filterBar=document.querySelector('.filter-bar');
+    if(!filterBar)return;
+    const targets=[
+      {get:()=>document.querySelector('.leaflet-top.leaflet-left'),gap:0},
+      {get:()=>document.getElementById('mapLegend'),gap:12}
+    ];
+    /* natural (untransformed) viewport-left of an element — offsetLeft is
+       unaffected by CSS transforms, so we can read it WITHOUT clearing the
+       control's own transform (which caused a visible snap-back flicker) */
+    const natLeft=(el)=>{const op=el.offsetParent;return (op?op.getBoundingClientRect().left:0)+el.offsetLeft;};
+    const apply=()=>{
+      const open=document.body.classList.contains('filter-open')&&!document.body.classList.contains('mobile-mode');
+      /* predicted final drawer right edge (strip-left + width max(20vw,260px)) */
+      const fr=filterBar.getBoundingClientRect().left+Math.max(window.innerWidth*0.2,260);
+      targets.forEach(t=>{
+        const el=t.get();if(!el)return;
+        const want=open?(()=>{const s=Math.max(0,Math.round(fr+t.gap-natLeft(el)));return s?('translateX('+s+'px)'):'';})():'';
+        if((el.style.transform||'')!==want)el.style.transform=want;   /* only write when it changes */
+      });
+    };
+    /* A short rAF loop runs while the filter is open, re-pinning the controls
+       to the drawer edge every frame. The grid reflow that moves the map is
+       animated and its timing varies by mode, so continuously pinning (rather
+       than a one-shot shift) keeps them locked in place — no lag, no drift,
+       no overshoot. The loop self-stops once the filter is closed. */
+    let running=false,raf;
+    const tick=()=>{
+      apply();
+      if(document.body.classList.contains('filter-open')&&!document.body.classList.contains('mobile-mode')){
+        raf=requestAnimationFrame(tick);
+      }else{running=false;}
+    };
+    const start=()=>{if(!running){running=true;cancelAnimationFrame(raf);raf=requestAnimationFrame(tick);}};
+    new MutationObserver(()=>{
+      if(document.body.classList.contains('filter-open')&&!document.body.classList.contains('mobile-mode'))start();
+      else apply();                              /* closed → clear transforms */
+    }).observe(document.body,{attributes:true,attributeFilter:['class']});
+    window.addEventListener('resize',start);
+    start();apply();
+  })();
   /* force map resize once layout has painted */
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     const h=document.querySelector('.app-header');
     if(h)document.documentElement.style.setProperty('--deck-top',h.getBoundingClientRect().bottom+'px');
     if(map)map.invalidateSize();
   }));
+  /* extra deferred resizes so the map fills its column on FIRST open, once
+     the drawer/layout has fully settled (Leaflet sizes before CSS layout) */
+  [120,350,700].forEach(t=>setTimeout(()=>{if(map)map.invalidateSize();},t));
 })();
 
 /* ── hamburger navigation ───────────────────────────────── */
@@ -6005,12 +6404,12 @@ window.addEventListener('resize',()=>{clearTimeout(window._searchRowTimer);windo
           }
           document.body.appendChild(sliderWrap);
           /* reset any drag position to default bottom-center */
-          sliderWrap.style.left='';sliderWrap.style.top='';
+          sliderWrap.style.left='';sliderWrap.style.top='';sliderWrap.style.right='';
           sliderWrap.style.bottom='';sliderWrap.style.transform='';
         }else if(sliderWrap._origParent){
           if(sliderWrap._origNext)sliderWrap._origParent.insertBefore(sliderWrap,sliderWrap._origNext);
           else sliderWrap._origParent.appendChild(sliderWrap);
-          sliderWrap.style.left='';sliderWrap.style.top='';
+          sliderWrap.style.left='';sliderWrap.style.top='';sliderWrap.style.right='';
           sliderWrap.style.bottom='';sliderWrap.style.transform='';
         }
       }
@@ -6103,6 +6502,7 @@ window.addEventListener('resize',()=>{clearTimeout(window._searchRowTimer);windo
     ox=r.left;oy=r.top;startX=e.clientX;startY=e.clientY;
     wrap.style.transform='none';
     wrap.style.left=ox+'px';wrap.style.top=oy+'px';
+    wrap.style.right='auto';
     wrap.style.bottom='auto';
     e.preventDefault();
   });
