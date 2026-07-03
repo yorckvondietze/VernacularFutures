@@ -377,7 +377,7 @@ main{padding:6px 28px 50px;max-width:1500px;margin:0 auto;}
 /* ---- case study main tabs ---- */
 .cs-main-tabs{display:flex;gap:4px;padding:10px 12px 0;flex-shrink:0;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line);}
 .cs-main-tabs::-webkit-scrollbar{display:none;}
-.cs-main-tab{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:6px 12px 5px;border:1.5px dotted var(--line);background:none;color:var(--ink-faint);cursor:pointer;margin-bottom:-1px;white-space:nowrap;transition:color .15s,border-color .15s,background .15s;}
+.cs-main-tab{font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:9px 16px 8px;border:1.5px dotted var(--line);background:none;color:var(--ink-soft);cursor:pointer;margin-bottom:-1px;white-space:nowrap;transition:color .15s,border-color .15s,background .15s;}
 .cs-main-tab:hover{color:var(--ink-soft);border-color:var(--ink-faint);}
 .cs-main-tab.active{color:var(--terracotta);border-color:var(--terracotta);border-bottom-color:var(--paper);background:var(--paper);}
 .cs-main-tab .numeral{margin-right:5px;opacity:0.6;font-style:italic;}
@@ -436,6 +436,28 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 .sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 
 .diagram-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+/* ---- climate sub-tabs: vertical sidebar of square buttons ----
+   Scoped to .climate-tabs-sidebar specifically (not .diagram-tabs
+   generally) so the simulation diagram tabs, which share the base
+   .diagram-tab class, are unaffected. */
+.climate-tabs-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px;}
+.climate-tabs-sidebar{
+  display:flex;flex-direction:column;flex-wrap:nowrap;
+  flex:none;gap:6px;margin-bottom:0;
+}
+.climate-tab.climate-tab-square{
+  width:64px;height:64px;padding:6px 4px;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font-size:9.5px;line-height:1.2;white-space:normal;
+}
+.climate-tab.climate-tab-favorite{border-color:var(--ochre);color:var(--ochre);}
+.climate-tab.climate-tab-favorite:hover{border-color:var(--ochre);color:var(--ochre);background:var(--ochre-dim);}
+.climate-tab.climate-tab-favorite.active{background:var(--ochre);border-color:var(--ochre);color:var(--paper);}
+.climate-tabs-content{flex:1;min-width:0;}
+@media(max-width:600px){
+  .climate-tabs-row{flex-direction:column;}
+  .climate-tabs-sidebar{flex-direction:row;flex-wrap:wrap;}
+}
 .shapeshift-btn{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:0.01em;padding:11px 14px;margin-bottom:10px;border:1.5px solid var(--terracotta);background:var(--terracotta-dim);color:var(--terracotta-deep);cursor:pointer;transition:background-color .2s ease,color .2s ease;}
 .shapeshift-btn:hover{background:var(--terracotta);color:var(--paper);}
 .shapeshift-btn.active{background:var(--terracotta);color:var(--paper);}
@@ -454,6 +476,13 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 /* ---- averageTYPOLOGY button ---- */
 .avgt-btn{display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:0.01em;padding:5px 10px;border:1px solid var(--moss,#3a7a3a);background:transparent;color:var(--moss,#3a7a3a);cursor:pointer;transition:background-color .2s,color .2s;white-space:nowrap;}
 .avgt-btn:hover{background:var(--moss,#3a7a3a);color:var(--paper);}
+.cscompare-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:0.01em;
+  padding:5px 10px;border:1px solid var(--slate);background:transparent;color:var(--slate);
+  cursor:pointer;transition:background-color .2s,color .2s;white-space:nowrap;
+}
+.cscompare-btn:hover{background:var(--slate);color:var(--paper);}
 .roulette-btn{
   display:flex;align-items:center;justify-content:center;
   width:100%;margin-top:14px;padding:9px 10px;
@@ -1051,6 +1080,7 @@ body.mobile-mode .explorer-grid.compare-active > *:nth-child(2){
 }
 /* hide compare / BB buttons (require slot B) */
 body.mobile-mode .compare-toggle-btn,
+body.mobile-mode .cscompare-btn,
 body.mobile-mode .bb-btn,
 body.mobile-mode .action-info-icon{
   display:none!important;
@@ -1299,6 +1329,7 @@ body.mobile-mode.atlas-active #csPanel{
 
 /* bigger, more tappable buttons throughout the mobile atlas view */
 body.mobile-mode.atlas-active .compare-toggle-btn,
+body.mobile-mode.atlas-active .cscompare-btn,
 body.mobile-mode.atlas-active .bb-btn,
 body.mobile-mode.atlas-active .avgt-btn,
 body.mobile-mode.atlas-active .metric-page-btn,
@@ -1547,6 +1578,8 @@ html[data-theme="dark"] .loader-status{
       <div class="filter-group"><span class="fl">Compactness ψ</span><select id="fCompact"><option value="">All</option><option value="cubey">Compact · ψ≥0.85</option><option value="rectangly">Elongated · ψ&lt;0.85</option></select></div>
       <div class="filter-group"><span class="fl">WWR</span><select id="fWwr"><option value="">All</option><option value="high">High · ≥ median</option><option value="low">Low · &lt; median</option></select></div>
       <div class="filter-group"><span class="fl">Pentice · cultural</span><select id="fPentice"><option value="">All</option><option value="yes">Has pentice</option><option value="no">No pentice</option></select></div>
+      <div class="filter-group"><span class="fl">Diurnal swing<span class="action-info-icon" id="fDiurnalInfoIcon" style="font-size:10px;margin-left:4px;">ⓘ<div class="action-info-pop" id="fDiurnalInfoPop" style="width:290px;"><div class="ai-head">_diurnal swing threshold</div><div class="ai-body">Annual mean of daily (T<sub>max</sub> − T<sub>min</sub>). High-mass construction is desirable above roughly <b>10°C</b>; below <b>6°C</b>, low-mass construction generally performs best, and high mass can cause overheating in humid climates with limited night-time cooling. This filter uses 10°C as the high/low split.</div><div class="ai-cite">Reardon, C., McGee, C. &amp; Milne, G. (2020). Thermal mass. <em>YourHome: Australia's guide to environmentally sustainable homes</em>, Australian Government.</div></div></span></span><select id="fDiurnal"><option value="">All</option><option value="high">High · ≥10°C</option><option value="low">Low · &lt;10°C</option></select></div>
+      <div class="filter-group"><span class="fl">Construction period</span><select id="fPeriod"><option value="">All</option><option value="pre1500">Pre-1500</option><option value="1500-1700">1500–1700</option><option value="1700-1850">1700–1850</option><option value="1850-1920">1850–1920</option><option value="1920-1970">1920–1970</option><option value="1970-now">1970–present</option></select></div>
       <span class="filter-count" id="filterCount"></span>
       <button class="filter-reset" id="filterReset">Reset</button>
     </div>
@@ -1906,7 +1939,7 @@ let _zoomAnimating=false;   /* prevent re-entrant zoom on rapid clicks */
 let _mosaicPaused=false;    /* pause mosaic batch probing while a case panel is loading */
 const LIGHT_TILE_URL='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 const DARK_TILE_URL='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-let fRegion='',fKoppen='',fRoof='',fConstruction='',fMass='',fOhDelta='',fComfortDelta='',fSolarDelta='',fKoppenDelta='',fCompact='',fWwr='',fPentice='';
+let fRegion='',fKoppen='',fRoof='',fConstruction='',fMass='',fOhDelta='',fComfortDelta='',fSolarDelta='',fKoppenDelta='',fCompact='',fWwr='',fPentice='',fDiurnal='',fPeriod='';
 const byId=id=>CASES.find(c=>c.id===id);
 const grp=code=>code?code[0]:null;
 const noData='<span class="nodata">NO_DATA</span>';
@@ -2056,6 +2089,18 @@ function pass(c){
   if(fWwr==='low'&&!(c.wwr!=null&&c.wwr<DYN.wwrMed))return false;
   if(fPentice==='yes'&&c.pentice!=='yes')return false;
   if(fPentice==='no'&&c.pentice==='yes')return false;
+  if(fDiurnal==='high'&&!(c.diurnalSwing!=null&&c.diurnalSwing>=10))return false;
+  if(fDiurnal==='low'&&!(c.diurnalSwing!=null&&c.diurnalSwing<10))return false;
+  if(fPeriod){
+    const y=+c.year;
+    if(!y)return false;
+    if(fPeriod==='pre1500'&&!(y<1500))return false;
+    if(fPeriod==='1500-1700'&&!(y>=1500&&y<1700))return false;
+    if(fPeriod==='1700-1850'&&!(y>=1700&&y<1850))return false;
+    if(fPeriod==='1850-1920'&&!(y>=1850&&y<1920))return false;
+    if(fPeriod==='1920-1970'&&!(y>=1920&&y<1970))return false;
+    if(fPeriod==='1970-now'&&!(y>=1970))return false;
+  }
   return true;
 }
 function applyFilter(){
@@ -2088,7 +2133,7 @@ function refreshKoppenOptions(){
     .sort((a,b)=> a[0]===b[0] ? a.localeCompare(b) : 'ABCDE'.indexOf(a[0])-'ABCDE'.indexOf(b[0]));
   codes.forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k+(KOPPEN_LABEL[k]?' · '+KOPPEN_LABEL[k]:'');ks.appendChild(o);});
 }
-const FILTER_SELECT_IDS=['fRoof','fConstruction','fMass','fOhDelta','fComfortDelta','fSolarDelta','fKoppenDelta','fCompact','fWwr','fPentice'];
+const FILTER_SELECT_IDS=['fRoof','fConstruction','fMass','fOhDelta','fComfortDelta','fSolarDelta','fKoppenDelta','fCompact','fWwr','fPentice','fDiurnal','fPeriod'];
 function buildFilters(){
   computeDynamicThresholds();
   refreshRegionOptions();
@@ -2106,6 +2151,9 @@ function buildFilters(){
   document.getElementById('fCompact').addEventListener('change',e=>{fCompact=e.target.value;applyFilter();});
   document.getElementById('fWwr').addEventListener('change',e=>{fWwr=e.target.value;applyFilter();});
   document.getElementById('fPentice').addEventListener('change',e=>{fPentice=e.target.value;applyFilter();});
+  document.getElementById('fDiurnal').addEventListener('change',e=>{fDiurnal=e.target.value;applyFilter();});
+  document.getElementById('fPeriod').addEventListener('change',e=>{fPeriod=e.target.value;applyFilter();});
+  wireInfoIcon('fDiurnalInfoIcon','fDiurnalInfoPop');
   document.getElementById('filterReset').addEventListener('click',()=>{
     fRegion='';fKoppen='';fRoof='';fConstruction='';fMass='';fOhDelta='';fComfortDelta='';fSolarDelta='';fKoppenDelta='';fCompact='';fWwr='';fPentice='';
     document.getElementById('fRegion').value='';document.getElementById('fKoppen').value='';
@@ -3876,7 +3924,7 @@ function windSpeedChart(c,s,epwData){
 }
 
 /* ---- climate sub-tabs ---- */
-const CLIMATE_TABS=['overview','psychro','wind','extremes'];
+const CLIMATE_TABS=['psychro','overview','extremes','wind'];
 const CLIMATE_LABEL={overview:'Overview',psychro:'Psychrometric',wind:'Wind',extremes:'Extremes'};
 let currentClimateTab={A:'psychro',B:'psychro'};
 function overviewTabHTML(c,epwData){
@@ -3994,6 +4042,28 @@ function extremesTabHTML(c,epwData){
     heatwaveDays=Math.max(0,Math.round((maxT-26)*2.6+(MOCK?rnd()*5:0)+scn*5));
   }
 
+  /* ── mean diurnal swing: annual mean of daily (Tmax − Tmin) ─
+     High-mass construction is desirable above a ~10°C diurnal
+     range (YourHome 2020); below that, thermal mass has less
+     day/night swing to buffer and can even work against comfort
+     in humid climates with limited night cooling. ───────────── */
+  let diurnalSwing=null;
+  if(hasHourly){
+    const days=Math.floor(n/24);
+    let sum=0,count=0;
+    for(let d=0;d<days;d++){
+      let mx=-Infinity,mn=Infinity;
+      for(let h=0;h<24;h++){
+        const t=epwData.hourlyTemp[d*24+h];
+        if(t>mx)mx=t; if(t<mn)mn=t;
+      }
+      if(isFinite(mx)&&isFinite(mn)){sum+=(mx-mn);count++;}
+    }
+    diurnalSwing=count?+(sum/count).toFixed(1):null;
+  }else if(MOCK){
+    diurnalSwing=+(6+Math.abs(45-Math.abs(c.lat||45))*0.14+rnd()*3).toFixed(1);
+  }
+
   /* ── frost days: daily min < 0°C ─────────────────────────── */
   let frostDays=0;
   if(hasHourly){
@@ -4058,6 +4128,18 @@ function extremesTabHTML(c,epwData){
       <div class="cstat"><div class="v">${peakWind!=null?peakWind+'<span style="font-size:12px;"> km/h</span>':nd}</div><div class="k">PEAK WIND (MAX HOURLY)</div></div>
       <div class="cstat"><div class="v">${precipTotal!=null?precipTotal+'<span style="font-size:12px;"> mm</span>':nd}</div><div class="k">ANNUAL PRECIP (EPW)</div></div>
     </div>
+    <div class="climate-stat-row" style="grid-template-columns:1fr;gap:8px;margin-top:8px;">
+      <div class="cstat" style="position:relative;">
+        <div class="v">${diurnalSwing!=null?diurnalSwing+'<span style="font-size:12px;"> °C</span>':nd}</div>
+        <div class="k">MEAN DIURNAL SWING
+          <span class="action-info-icon" id="diurnalInfoIcon" style="font-size:10px;vertical-align:middle;">ⓘ<div class="action-info-pop" id="diurnalInfoPop" style="bottom:calc(100% + 4px);top:auto;left:0;right:auto;width:310px;">
+            <div class="ai-head">_mean diurnal swing</div>
+            <div class="ai-body">Annual mean of daily (T<sub>max</sub> − T<sub>min</sub>). High-mass construction is desirable above roughly <b>10°C</b>; below <b>6°C</b>, low-mass construction generally performs best, and high mass can cause overheating in humid climates with limited night-time cooling.</div>
+            <div class="ai-cite">Reardon, C., McGee, C. &amp; Milne, G. (2020). Thermal mass. <em>YourHome: Australia's guide to environmentally sustainable homes</em>, Australian Government.</div>
+          </div></span>
+        </div>
+      </div>
+    </div>
     <div style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin-top:10px;line-height:1.6;display:flex;align-items:flex-start;gap:6px;">
       <span>${SCENARIOS_LONG[scn]} · ${src}${MOCK?' · mock values':''}<br>Wet-bulb: Stull, R. (2011). <em>J. Atmos. Sci.</em> 68(10), 2267–2269. ${wbNote}</span>
       <span class="action-info-icon" style="font-size:11px;position:relative;flex-shrink:0;" id="extremesInfoIcon">ⓘ
@@ -4112,16 +4194,22 @@ async function renderClimateTabAsync(key,c,slot){
   if(key==='extremes'){
     wireInfoIcon('extremesInfoIcon','extremesInfoPop');
     wireInfoIcon('hwInfoIcon','hwInfoPop');
+    wireInfoIcon('diurnalInfoIcon','diurnalInfoPop');
   }
   /* restore scroll if locked */
   if(_preserveScroll!==null){const p=document.getElementById('csPanel');if(p)p.scrollTop=_preserveScroll;}
 }
 function wireClimateTabs(c,slot){
   document.querySelectorAll(`.climate-tab[data-slot="${slot}"]`).forEach(b=>b.addEventListener('click',()=>{
-    currentClimateTab[slot]=b.dataset.ctab;
-    document.querySelectorAll(`.climate-tab[data-slot="${slot}"]`).forEach(x=>x.classList.toggle('active',x===b));
-    renderClimateTabAsync(b.dataset.ctab,c,slot);
+    const key=b.dataset.ctab;
+    switchClimateSubTab(slot,key,c);
+    mirrorTabChange(slot,(oSlot,oCase)=>switchClimateSubTab(oSlot,key,oCase));
   }));
+}
+function switchClimateSubTab(slot,key,c){
+  currentClimateTab[slot]=key;
+  document.querySelectorAll(`.climate-tab[data-slot="${slot}"]`).forEach(x=>x.classList.toggle('active',x.dataset.ctab===key));
+  renderClimateTabAsync(key,c,slot);
 }
 
 /* ===================== 3D PERFORMANCE VIEWER =====================
@@ -4443,15 +4531,33 @@ function applyDiagram(key,c,slot){
   document.querySelectorAll(`.sim-tab[data-slot="${slot}"]`).forEach(b=>b.classList.toggle('active',b.dataset.diagram===key));
 }
 function wireDiagramTabs(c,slot){
+  /* compare-mode mirroring: changing any tab in one case study now
+     mirrors the same tab selection to the compared case study, so
+     the two stay on matching views (psychrometric vs psychrometric,
+     not psychrometric vs wind). */
   document.querySelectorAll(`.sim-tab[data-slot="${slot}"]`).forEach(b=>b.addEventListener('click',()=>{
-    currentDiagram[slot]=b.dataset.diagram;
-    if(shapeShiftOn[slot]){
-      disposeViewer(slot);
-      createViewer(document.getElementById('viewer3d-'+slot),c,slot);
-    }else{
-      applyDiagram(currentDiagram[slot],c,slot);
-    }
+    const key=b.dataset.diagram;
+    switchDiagramTab(slot,key,c);
+    mirrorTabChange(slot,(oSlot,oCase)=>switchDiagramTab(oSlot,key,oCase));
   }));
+}
+function switchDiagramTab(slot,key,c){
+  currentDiagram[slot]=key;
+  if(shapeShiftOn[slot]){
+    disposeViewer(slot);
+    createViewer(document.getElementById('viewer3d-'+slot),c,slot);
+  }else{
+    applyDiagram(key,c,slot);
+  }
+}
+function mirrorSlot(slot){return slot==='A'?'B':'A';}
+function caseForSlot(slot){return slot==='A'?byId(selectedId):(compareId?byId(compareId):null);}
+/* run fn(otherSlot,otherCase) only when actively comparing and the
+   other case exists — shared by every tab system below */
+function mirrorTabChange(slot,fn){
+  if(!compareId)return;
+  const oSlot=mirrorSlot(slot),oCase=caseForSlot(oSlot);
+  if(oCase)fn(oSlot,oCase);
 }
 /* ═══════════════════════════════════════════════════════════════
    vernacularBIGBROTHER — climate analogue matching
@@ -5258,10 +5364,15 @@ function metricRowsHTML(c,pageIdx){
 }
 function wireMetricPager(c,slot){
   document.querySelectorAll(`.metric-page-btn[data-slot="${slot}"]`).forEach(b=>b.addEventListener('click',()=>{
-    currentMetricPage[slot]=+b.dataset.page;
-    document.getElementById('metricTable-'+slot).innerHTML=metricRowsHTML(c,currentMetricPage[slot]);
-    document.querySelectorAll(`.metric-page-btn[data-slot="${slot}"]`).forEach(x=>x.classList.toggle('active',+x.dataset.page===currentMetricPage[slot]));
+    const page=+b.dataset.page;
+    switchMetricPage(slot,page,c);
+    mirrorTabChange(slot,(oSlot,oCase)=>switchMetricPage(oSlot,page,oCase));
   }));
+}
+function switchMetricPage(slot,page,c){
+  currentMetricPage[slot]=page;
+  document.getElementById('metricTable-'+slot).innerHTML=metricRowsHTML(c,page);
+  document.querySelectorAll(`.metric-page-btn[data-slot="${slot}"]`).forEach(x=>x.classList.toggle('active',+x.dataset.page===page));
 }
 
 /* ---- single case-detail block, reused for slot A (primary) and slot B (compare) ---- */
@@ -5313,8 +5424,10 @@ function caseDetailHTML(c,slot){
         <div class="koppen-strip">
           ${c.koppen.map((k,i)=>`<div class="koppen-box ${i===displayScn?'current':''}"><div class="scn">${SCENARIOS[i]}</div><div class="code">${k||'<span class="nodata" style="font-size:10px">–</span>'}</div></div>`).join('')}
         </div>
-        <div class="diagram-tabs">${CLIMATE_TABS.map(k=>`<button class="diagram-tab climate-tab ${k===ctab?'active':''}" data-ctab="${k}" data-slot="${slot}">${CLIMATE_LABEL[k]}</button>`).join('')}</div>
-        <div id="climateTabContent-${slot}"><div class="epw-loading">Loading climate data…</div></div>
+        <div class="climate-tabs-row">
+          <div class="diagram-tabs climate-tabs-sidebar">${CLIMATE_TABS.map(k=>`<button class="diagram-tab climate-tab climate-tab-square ${k===ctab?'active':''} ${k==='extremes'?'climate-tab-favorite':''}" data-ctab="${k}" data-slot="${slot}">${CLIMATE_LABEL[k]}</button>`).join('')}</div>
+          <div id="climateTabContent-${slot}" class="climate-tabs-content"><div class="epw-loading">Loading climate data…</div></div>
+        </div>
       </div>
     </div>
 
@@ -5370,24 +5483,29 @@ function wireCaseDetail(c,slot){
   if(slot==='A')updateStationMarker(c);
 
   /* ---- main tab switching ---- */
-  let climateLoaded=currentCsTab[slot]==='climate';
   /* if restoring to climate tab after scenario change, load data immediately */
-  if(climateLoaded)renderClimateTabAsync(currentClimateTab[slot]||'psychro',c,slot);
+  if(currentCsTab[slot]==='climate')renderClimateTabAsync(currentClimateTab[slot]||'psychro',c,slot);
   document.querySelectorAll(`.cs-main-tab[data-slot="${slot}"]`).forEach(btn=>{
     btn.addEventListener('click',()=>{
       const key=btn.dataset.cstab;
-      currentCsTab[slot]=key; /* persist across scenario changes */
-      document.querySelectorAll(`.cs-main-tab[data-slot="${slot}"]`).forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      document.querySelectorAll(`.cs-panel[data-slot="${slot}"]`).forEach(p=>p.classList.remove('active'));
-      const target=document.querySelector(`.cs-panel[data-cspanel="${key}"][data-slot="${slot}"]`);
-      if(target)target.classList.add('active');
-      if(key==='climate'&&!climateLoaded){
-        climateLoaded=true;
-        renderClimateTabAsync(currentClimateTab[slot]||'psychro',c,slot);
-      }
+      switchCaseMainTab(slot,key,c);
+      mirrorTabChange(slot,(oSlot,oCase)=>switchCaseMainTab(oSlot,key,oCase));
     });
   });
+}
+function switchCaseMainTab(slot,key,c){
+  currentCsTab[slot]=key; /* persist across scenario changes */
+  document.querySelectorAll(`.cs-main-tab[data-slot="${slot}"]`).forEach(b=>b.classList.toggle('active',b.dataset.cstab===key));
+  document.querySelectorAll(`.cs-panel[data-slot="${slot}"]`).forEach(p=>p.classList.remove('active'));
+  const target=document.querySelector(`.cs-panel[data-cspanel="${key}"][data-slot="${slot}"]`);
+  if(target)target.classList.add('active');
+  if(key==='climate'){
+    /* EPW_CACHE makes repeat calls for an already-loaded scenario cheap,
+       so it's safe to just always (re)load rather than track a loaded
+       flag per slot — simpler, and correct for compare-mode mirroring
+       where this can now be triggered from the other slot's click. */
+    renderClimateTabAsync(currentClimateTab[slot]||'psychro',c,slot);
+  }
 }
 
 /* ---- similarity lines: connect the selected case to its closest analogues on the map ---- */
@@ -5469,7 +5587,7 @@ function renderPanel(){
   const isCompare=!!c2;
   if(grid)grid.classList.toggle('compare-active',isCompare);
   if(map&&isCompare!==wasCompare)setTimeout(()=>map.invalidateSize(),0);
-  const bbInfoHTML=`<span class="action-info-icon" id="bbInfoIcon">ⓘ<div class="action-info-pop" id="bbInfoPop"><div class="ai-head">_vernacularBIGBROTHER</div><div class="ai-body">Identifies the present-day case study whose EPW climate profile most closely matches the future climate of the selected case under the active scenario. Proximity is measured by weighted normalised Euclidean distance across six morphologically relevant metrics: HDD&#x2081;&#x2085;, CDD&#x2082;&#x2082;, peak summer temperature, winter minimum temperature, annual thermal amplitude and annual GHI.</div><div class="ai-warn"><b>&#x26A0; Baseline bias:</b> TMYx 2011&#x2013;2025 present-day EPW files already incorporate approximately 1.2&#x202F;°C of anthropogenic warming above the pre-industrial mean (IPCC AR6 WGI §2.3, 2021). Many buildings in this corpus were constructed during the Little Ice Age (c.&#x202F;1300&#x2013;1850&#x202F;CE), a period of documented cold anomalies in Central Europe driven by reduced solar irradiance (Maunder Minimum, 1645&#x2013;1715; Spörer Minimum, 1460&#x2013;1550) and elevated volcanic forcing (Luterbacher et&#x202F;al., 2004, <em>Science</em> 303:1499&#x2013;1503; Mann et&#x202F;al., 1999, <em>Geophys.&#x202F;Res.&#x202F;Lett.</em>). Vernacular morphologies may encode adaptive responses to climates cooler than the present TMYx baseline, introducing a systematic bias in apparent climate sensitivity that is not corrected for in this analysis.</div></div></span>`;
+  const bbInfoHTML=`<span class="action-info-icon" id="bbInfoIcon">ⓘ<div class="action-info-pop" id="bbInfoPop"><div class="ai-head">_vernacularBIGBROTHER</div><div class="ai-body">Identifies the present-day case study whose EPW climate profile most closely matches the future climate of the selected case under the active scenario. Proximity is measured by a weighted, normalised root-mean-square distance across nine morphologically relevant metrics: HDD&#x2081;&#x2085;, CDD&#x2082;&#x2082;, peak summer temperature, winter minimum temperature, annual thermal amplitude, annual GHI, summer and winter wet-bulb temperature (Stull, 2011) and annual precipitation. Wet-bulb temperature is weighted most heavily, since hot-humid and hot-dry climates can share similar dry-bulb profiles while calling for opposite vernacular strategies. A match is only shown if the distance falls within a similarity threshold; beyond it the tool reports no analogue found and offers the nearest station anyway as an explicitly labelled &quot;closest cousin&quot; rather than presenting a mismatched pairing as a genuine twin.</div><div class="ai-warn"><b>&#x26A0; Baseline bias:</b> TMYx 2011&#x2013;2025 present-day EPW files already incorporate approximately 1.2&#x202F;°C of anthropogenic warming above the pre-industrial mean (IPCC AR6 WGI §2.3, 2021). Many buildings in this corpus were constructed during the Little Ice Age (c.&#x202F;1300&#x2013;1850&#x202F;CE), a period of documented cold anomalies in Central Europe driven by reduced solar irradiance (Maunder Minimum, 1645&#x2013;1715; Spörer Minimum, 1460&#x2013;1550) and elevated volcanic forcing (Luterbacher et&#x202F;al., 2004, <em>Science</em> 303:1499&#x2013;1503; Mann et&#x202F;al., 1999, <em>Geophys.&#x202F;Res.&#x202F;Lett.</em>). Vernacular morphologies may encode adaptive responses to climates cooler than the present TMYx baseline, introducing a systematic bias in apparent climate sensitivity that is not corrected for in this analysis.</div></div></span>`;
   const bbBtnHTML=`<button class="bb-btn${scn===0?' bb-disabled':''}" id="bigBrotherBtn"${scn===0?' disabled':''}>&gt;vernacular<em>BIGBROTHER</em></button>`;
   const bbCousinInfoHTML=`<span class="action-info-icon" id="bbCousinInfoIcon" style="font-size:11px;">ⓘ<div class="action-info-pop" id="bbCousinInfoPop" style="width:290px;"><div class="ai-head">_closest cousin</div><div class="ai-body">No station in the present-day dataset falls within the similarity threshold (d ≤ ${BB_MAX_DISTANCE}) for a defensible climate analogue under this scenario. "Closest cousin" shows the single nearest match anyway. It is simply the most similar station available in the corpus, not a validated analogue. Treat any morphological inference from it with caution.</div></div></span>`;
   const toolbar=bbNoMatch
@@ -5480,7 +5598,7 @@ function renderPanel(){
       ? `<div class="panel-toolbar"><span class="compare-hint" style="margin-right:auto;">Comparing ${c.name||c.id} vs ${c2.name||c2.id}</span><button class="compare-toggle-btn exit" id="exitCompareBtn">× exit compare</button></div>`
       : pickingCompare
         ? `<div class="panel-toolbar"><span class="compare-hint" style="margin-right:auto;">Click another marker or chip to compare…</span><button class="compare-toggle-btn exit" id="exitCompareBtn">cancel</button></div>`
-        : `<div class="panel-toolbar"><button class="compare-toggle-btn" id="startCompareBtn">+ compare</button>${bbBtnHTML}${bbInfoHTML}</div>`;
+        : `<div class="panel-toolbar"><button class="cscompare-btn" id="startCompareBtn">&gt;cs<em>COMPARE</em></button>${bbBtnHTML}${bbInfoHTML}</div>`;
   el.innerHTML = toolbar + (c2
     ? `<div class="compare-grid"><div class="compare-col">${caseDetailHTML(c,'A')}</div><div class="compare-col">${caseDetailHTML(c2,'B')}</div></div>`
     : caseDetailHTML(c,'A'));
