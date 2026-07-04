@@ -4072,6 +4072,14 @@ function extremesTabHTML(c,epwData){
     diurnalSwing=+(6+Math.abs(45-Math.abs(c.lat||45))*0.14+rnd()*3).toFixed(1);
   }
 
+  /* ── seasonal swing: annual range of monthly mean temperature ─
+     max(monthly mean) − min(monthly mean). Unlike diurnal swing
+     this needs no hourly data and no hemisphere assumption — it
+     just takes whichever months are hottest/coldest, so it works
+     the same way in both hemispheres. ─────────────────────────── */
+  const monthlyMeans=(epwData&&epwData.temp)?epwData.temp.filter(t=>t!=null):[];
+  const seasonalSwing=monthlyMeans.length?+(Math.max(...monthlyMeans)-Math.min(...monthlyMeans)).toFixed(1):(MOCK?+(14+Math.abs(c.lat||45)*0.35+rnd()*4).toFixed(1):null);
+
   /* ── frost days: daily min < 0°C ─────────────────────────── */
   let frostDays=0;
   if(hasHourly){
@@ -4136,7 +4144,7 @@ function extremesTabHTML(c,epwData){
       <div class="cstat"><div class="v">${peakWind!=null?peakWind+'<span style="font-size:12px;"> km/h</span>':nd}</div><div class="k">PEAK WIND (MAX HOURLY)</div></div>
       <div class="cstat"><div class="v">${precipTotal!=null?precipTotal+'<span style="font-size:12px;"> mm</span>':nd}</div><div class="k">ANNUAL PRECIP (EPW)</div></div>
     </div>
-    <div class="climate-stat-row" style="grid-template-columns:1fr;gap:8px;margin-top:8px;">
+    <div class="climate-stat-row" style="grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px;">
       <div class="cstat" style="position:relative;">
         <div class="v">${diurnalSwing!=null?diurnalSwing+'<span style="font-size:12px;"> °C</span>':nd}</div>
         <div class="k">MEAN DIURNAL SWING
@@ -4146,6 +4154,10 @@ function extremesTabHTML(c,epwData){
             <div class="ai-cite">Reardon, C., McGee, C. &amp; Milne, G. (2020). Thermal mass. <em>YourHome: Australia's guide to environmentally sustainable homes</em>, Australian Government.</div>
           </div></span>
         </div>
+      </div>
+      <div class="cstat">
+        <div class="v">${seasonalSwing!=null?seasonalSwing+'<span style="font-size:12px;"> °C</span>':nd}</div>
+        <div class="k">SEASONAL SWING</div>
       </div>
     </div>
     <div style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin-top:10px;line-height:1.6;display:flex;align-items:flex-start;gap:6px;">
