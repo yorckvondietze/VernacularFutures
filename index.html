@@ -131,6 +131,41 @@ body:not(.map-fullscreen) .scenario-label{transform:translateY(5px);}
 .scenario-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:30px;height:30px;border-radius:50%;background:var(--terracotta);border:none;cursor:pointer;outline:none;box-shadow:0 2px 12px rgba(0,0,0,0.25);}
 .scenario-slider::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:var(--terracotta);border:none;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.25);}
 .scenario-slider::-moz-range-track{height:12px;background:linear-gradient(90deg,#7722CC,#9A7870,#E07010);border-radius:6px;}
+/* ── animated UFO slider thumb (reuses the boot-loader frames) ──────── */
+.scenario-slider-wrap{position:relative;}
+.scenario-slider::-webkit-slider-thumb{background:transparent!important;box-shadow:none!important;}
+.scenario-slider::-moz-range-thumb{background:transparent!important;box-shadow:none!important;}
+.ufo-thumb{position:absolute;left:0;top:0;width:44px;height:44px;border-radius:50%;
+  background:var(--terracotta);box-shadow:0 2px 12px rgba(0,0,0,0.25);
+  transform:translate(-50%,-50%);pointer-events:none;z-index:6;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;}
+.ufo-thumb .ufo-logo{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+.ufo-thumb .ufo-logo svg{width:100%;height:100%;display:block;}
+/* dark-mode logo look: only the original SOLID-BLACK parts (saucer, house,
+   ground) become white; the light beam stays open so the circle shows
+   through, and thick outlines in the circle's own colour separate the white
+   shapes and make the house animation legible */
+.ufo-thumb .ufo-logo svg .cls-4,.ufo-thumb .ufo-logo svg .cls-3,
+.ufo-thumb .ufo-logo svg polygon{fill:#FFFFFF!important;}
+/* light beam: transparent white — the bottom oval (cls-3) stays solid white */
+.ufo-thumb .ufo-logo svg .cls-1{fill:rgba(255,255,255,0.30)!important;}
+.ufo-thumb .ufo-logo svg .cls-2{fill:none!important;}
+.ufo-thumb .ufo-logo svg .cls-1,.ufo-thumb .ufo-logo svg .cls-2,
+.ufo-thumb .ufo-logo svg .cls-3,.ufo-thumb .ufo-logo svg .cls-4,
+.ufo-thumb .ufo-logo svg polygon{stroke:var(--terracotta)!important;stroke-width:9px!important;stroke-linejoin:round!important;}
+/* saucer (top half: dome + crescent) gets WHITE outlines; the rest keep the circle colour */
+.ufo-thumb .ufo-logo svg .cls-4{stroke:#FFFFFF!important;}
+/* keep the house solid white even where it overlaps at the top */
+.ufo-thumb .ufo-logo svg polygon{paint-order:stroke;}
+/* any unclassed shape (the house at the top frame) stays white, never black */
+.ufo-thumb .ufo-logo svg path:not([class]){fill:#FFFFFF!important;}
+/* the saucer-brim "middle line" takes the background/circle colour (reference) */
+.ufo-thumb .ufo-logo svg ellipse.cls-4{stroke:var(--terracotta)!important;stroke-width:30px!important;}
+/* clickable scenario tick labels */
+.scenario-ticks > *{cursor:pointer;}
+/* fullscreen: real spacing (grows the box) so the larger circle clears the
+   labels AND the labels stay inside the floating box */
+body.map-fullscreen .scenario-ticks{margin-top:18px!important;}
 .scenario-ticks{display:flex;justify-content:space-between;margin-top:4px;}
 body:not(.map-fullscreen) .scenario-ticks{transform:translateY(8px);}
 .scenario-tick{font-family:var(--mono);font-size:12px;color:var(--ink-faint);text-align:center;flex:1;cursor:pointer;line-height:1.3;}
@@ -356,8 +391,8 @@ main{padding:6px 28px 50px;max-width:1500px;margin:0 auto;}
 
 .metric-table{width:100%;border-collapse:collapse;}
 .metric-table td{padding:5.5px 0;border-bottom:1px solid var(--line-soft);font-size:12.5px;}
-.metric-table td.k{color:var(--ink-soft);}
-.metric-table td.v{text-align:right;font-family:var(--mono);font-weight:600;}
+.metric-table td.k{color:var(--ink-soft);width:42%;padding-right:12px;vertical-align:top;word-break:break-word;}
+.metric-table td.v{text-align:right;font-family:var(--mono);font-weight:600;width:58%;vertical-align:top;word-break:break-word;overflow-wrap:anywhere;}
 .metric-table td.v.wrap{text-align:left;font-weight:400;white-space:normal;max-width:230px;}
 .metric-pager{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px;}
 .metric-page-btn{font-family:var(--mono);font-size:9.5px;padding:4px 8px;border-radius:0;border:1px solid var(--line);background:var(--paper-dim);color:var(--ink-soft);cursor:pointer;}
@@ -690,7 +725,7 @@ body.atlas-active:not(.map-fullscreen) .map-col{
   transition:left .22s cubic-bezier(.4,0,.2,1),right .22s cubic-bezier(.4,0,.2,1);
 }
 body.atlas-active.filter-open:not(.map-fullscreen) .map-col{left:calc(20vw + 40px);min-left:calc(260px + 40px);}
-body.atlas-active.cs-open:not(.map-fullscreen) .map-col{right:calc(40vw + 40px);}
+body.atlas-active.cs-open:not(.map-fullscreen) .map-col{right:calc(var(--cs-width, 40vw) + 40px);}
 body.atlas-active:not(.map-fullscreen) .map-card{
   position:absolute;inset:0;border:none;
 }
@@ -751,7 +786,7 @@ body.map-fullscreen .explorer-grid > .card-window{
   z-index:9002;transition:width .22s cubic-bezier(.4,0,.2,1);
 }
 body.map-fullscreen.cs-open .explorer-grid > .card-window{
-  width:40vw!important;min-width:340px!important;
+  width:var(--cs-width, 40vw)!important;min-width:340px!important;max-width:85vw!important;
 }
 
 /* Fullscreen: hide header, show floating slider */
@@ -782,7 +817,7 @@ body.map-fullscreen .scenario-slider::-moz-range-track{height:11px!important;}
 /* keep the slider centred on the visible map area — not the full
    viewport — as the filter/case-study drawers shift the map's bounds */
 body.map-fullscreen.filter-open .scenario-slider-wrap{left:calc(20vw + 40px);}
-body.map-fullscreen.cs-open .scenario-slider-wrap{right:calc(40vw + 40px);}
+body.map-fullscreen.cs-open .scenario-slider-wrap{right:calc(var(--cs-width, 40vw) + 40px);}
 body.map-fullscreen .scenario-ticks{display:flex!important;}
 
 body.map-fullscreen .scenario-label{
@@ -857,8 +892,26 @@ body.atlas-active:not(.map-fullscreen) .explorer-grid > .card-window{
 }
 body.atlas-active.cs-open .explorer-grid > .card-window{border-left:1px solid var(--line-strong)!important;}
 body.atlas-active.cs-open .explorer-grid > .card-window{
-  width:40vw;min-width:340px;
+  width:var(--cs-width, 40vw);min-width:340px;max-width:85vw;
 }
+/* left-edge drag handle to resize the case study drawer horizontally */
+.cs-resize-handle{
+  position:absolute;left:0;top:0;bottom:0;width:8px;
+  cursor:ew-resize;z-index:20;
+  background:transparent;
+}
+/* thin visible line (the 8px above is just the grab zone) */
+.cs-resize-handle::after{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:transparent;transition:background .15s;
+}
+.cs-resize-handle:hover::after,body.cs-resizing .cs-resize-handle::after{
+  background:var(--terracotta);opacity:0.55;
+}
+body.cs-resizing{cursor:ew-resize;user-select:none;}
+/* suppress the width animation while actively dragging so it tracks the
+   pointer 1:1 instead of easing behind it */
+body.cs-resizing .explorer-grid > .card-window{transition:none!important;}
 body.atlas-active.cs-open .explorer-grid > .card-window .panel{
   height:100%;max-height:calc(100% - 38px);overflow-y:auto;overflow-x:hidden;
 }
@@ -913,7 +966,7 @@ body.map-fullscreen .cs-search-row{
 /* search bar sits next to the case study column — slides with it,
    same right-anchor formula as the map titlebar above it */
 body.map-fullscreen.cs-open .cs-search-row{
-  right:calc(40vw + 52px);
+  right:calc(var(--cs-width, 40vw) + 52px);
 }
 body.map-fullscreen .cs-search-input{
   background:color-mix(in srgb, var(--paper) 92%, transparent);
@@ -929,7 +982,7 @@ body.map-fullscreen .map-col{
   transition:left .22s cubic-bezier(.4,0,.2,1),right .22s cubic-bezier(.4,0,.2,1);
 }
 body.map-fullscreen.filter-open .map-col{left:calc(20vw + 40px);}
-body.map-fullscreen.cs-open .map-col{right:calc(40vw + 40px);}
+body.map-fullscreen.cs-open .map-col{right:calc(var(--cs-width, 40vw) + 40px);}
 body.map-fullscreen .map-card{
   position:absolute;
   top:0;left:0;right:0;bottom:0;
@@ -951,7 +1004,7 @@ body.map-fullscreen .map-card .card-titlebar{
 /* when the case study drawer is open, slide the map header left so it
    sits just beside the drawer edge instead of underneath it */
 body.map-fullscreen.cs-open .map-card .card-titlebar{
-  right:calc(40vw + 52px);
+  right:calc(var(--cs-width, 40vw) + 52px);
 }
 body.map-fullscreen #map{
   position:absolute;
@@ -1477,47 +1530,7 @@ html[data-theme="dark"] .loader-status{
       <div class="brand-subtitle">_morphing_typologies_for_future_climates</div>
     </div>
   </div>
-  <div class="header-logo-center" aria-hidden="true"><div class="header-logo-host" aria-hidden="true"><svg class="header-logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1366 768" aria-hidden="true">
-    <defs>
-      <style>
-        .hdrlogo-1 {
-          fill: #9A9A9A;
-        }
   
-        .hdrlogo-1, .hdrlogo-2, .hdrlogo-3, .hdrlogo-4 {
-          stroke: #fff;
-          stroke-miterlimit: 10;
-        }
-  
-        .hdrlogo-1, .hdrlogo-2, .hdrlogo-4 {
-          stroke-width: 2px;
-        }
-  
-        .hdrlogo-2 {
-          fill: none;
-        }
-  
-        .hdrlogo-3 {
-          stroke-width: 3px;
-        }
-      </style>
-    </defs>
-    <g id="Layer_1" data-name="Layer 1">
-      <g>
-        <path class="hdrlogo-4" d="M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z"/>
-        <ellipse class="hdrlogo-4" cx="705.45" cy="281.69" rx="242.52" ry="36.38"/>
-        <path class="hdrlogo-4" d="M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z"/>
-        <path class="hdrlogo-4" d="M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z"/>
-        <path class="hdrlogo-4" d="M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z"/>
-      </g>
-    </g>
-    <g id="Layer_3" data-name="Layer 3">
-      <path class="hdrlogo-1" d="M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z"/>
-      <polygon points="773.34 420.42 771.91 427.98 753.47 420.16 770.35 490.42 661.89 516.49 645 446.18 632.1 461.55 627.43 455.51 682.38 390.02 687.44 384 694.61 387.04 728.55 401.43 725.29 387.86 738.07 384.79 743.6 407.81 773.34 420.42"/>
-      <path class="hdrlogo-3" d="M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z"/>
-      <path class="hdrlogo-2" d="M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z"/>
-    </g>
-  </svg></div></div>
   <div class="scenario-control">
     <div class="scenario-label">Climate scenario · SSP5-8.5
       <span class="info-btn" id="scenarioInfoBtn" title="About these scenarios">ⓘ</span>
@@ -1624,7 +1637,7 @@ html[data-theme="dark"] .loader-status{
           <div class="map-legend" id="mapLegend"></div>
         </div>
         </div>
-      <div class="card-window">
+      <div class="card-window" id="csCardWindow"><div class="cs-resize-handle" id="csResizeHandle" title="Drag to resize"></div>
         <div class="card-titlebar" style="position:relative;top:-2.3px;"><span class="win-title">_case_study</span><span class="win-controls"><span class="c-fetch" id="fetchCase" title="Re-fetch photos &amp; plans"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 L2 9 M2 5 L2 9 L6 9"/></svg></span><span class="c-close" id="csPanelCloseBtn"></span></span></div>
         <div class="panel" id="csPanel"></div>
       </div>
@@ -3261,7 +3274,7 @@ async function updateStationMarker(c){
     html:'<div class="station-sq"></div>',
     iconSize:[10,10],iconAnchor:[5,5],
   });
-  stationMarker=L.marker([coord.lat,coord.lon],{icon,interactive:false,zIndexOffset:-100})
+  stationMarker=L.marker([coord.lat,coord.lon],{icon,interactive:true,zIndexOffset:-100})
     .addTo(map)
     .bindTooltip(`EPW station: ${c.epw.replace(/_TMYx\.\d{4}-\d{4}\.epw/,'').replace(/_/g,' ')}`,{permanent:false,direction:'top'});
   /* dotted connecting line — read the theme colour from CSS vars */
@@ -3274,7 +3287,7 @@ async function updateStationMarker(c){
   const stElevEl=document.getElementById('stationElev-A');
   if(distEl&&c.lat!=null&&c.lon!=null){
     const km=haversineKm(c.lat,c.lon,coord.lat,coord.lon);
-    distEl.innerHTML=`<b>${km} km</b> from case study`;
+    distEl.innerHTML=`<b>${km.toFixed(2)} km</b> from case study`;
   }
   if(stElevEl&&coord.elev!=null){
     stElevEl.innerHTML=`<b>${coord.elev} m</b> (station elevation)`;
@@ -3599,14 +3612,14 @@ function tempPrecipChart(c,s,epwData){
      CMIP6; present values verified at 577mm/yr for Praha). Synthetic in demo. */
   const precip=epwData&&epwData.precip?epwData.precip:(fullMode?null:monthlyPrecip(c,s));
   /* absolute axis: AX.T_MIN to AX.T_MAX, always the same scale */
-  const W=300,H=140,pad=24;
+  const W=300,H=140,pad=32;
   const tLo=AX.T_MIN,tHi=AX.T_MAX;
   const x=i=>pad+i*(W-pad-8)/11,yT=v=>H-pad-((v-tLo)/(tHi-tLo))*(H-pad-28),baseY=H-pad;
   const barW=((W-pad-8)/11)*0.55;
   let g='';
   for(let v=tLo;v<=tHi;v+=10){
     g+=`<line x1="${pad}" y1="${yT(v)}" x2="${W-6}" y2="${yT(v)}" stroke="var(--line-soft)" stroke-width="${v===0?1.5:1}"/>`
-      +`<text x="2" y="${yT(v)+3}" font-family="IBM Plex Mono" font-size="7.5" fill="var(--ink-faint)">${v}°</text>`;
+      +`<text x="${pad-5}" y="${yT(v)+3}" font-family="IBM Plex Mono" font-size="7.5" fill="var(--ink-faint)" text-anchor="end">${v}°</text>`;
   }
   if(precip){
     const pMax=Math.max(...precip.filter(v=>v!=null),20);
@@ -3652,9 +3665,9 @@ function solarBreakdownChart(c,s,epwData){
 function rhChart(c,s,epwData){
   if(!MOCK&&!epwData)return noDataChart(300,86,'relative humidity: EPW not loaded');
   const rh=epwData?epwData.rh:monthlyRH(c,s);
-  const W=300,H=86,pad=22,x=i=>pad+i*(W-pad-6)/11,y=v=>H-18-((v-0)/100)*(H-34);
+  const W=300,H=86,pad=30,x=i=>pad+i*(W-pad-6)/11,y=v=>H-18-((v-0)/100)*(H-34);
   let g='';
-  [0,20,40,60,80,100].forEach(v=>{g+=`<line x1="${pad}" y1="${y(v)}" x2="${W-6}" y2="${y(v)}" stroke="var(--line-soft)" stroke-width="1"/><text x="2" y="${y(v)+3}" font-family="IBM Plex Mono" font-size="7.5" fill="var(--ink-faint)">${v}</text>`;});
+  [0,20,40,60,80,100].forEach(v=>{g+=`<line x1="${pad}" y1="${y(v)}" x2="${W-6}" y2="${y(v)}" stroke="var(--line-soft)" stroke-width="1"/><text x="${pad-5}" y="${y(v)+3}" font-family="IBM Plex Mono" font-size="7.5" fill="var(--ink-faint)" text-anchor="end">${v}</text>`;});
   g+=MONTHS.map((m,i)=>`<text x="${x(i)}" y="${H-4}" font-family="IBM Plex Mono" font-size="7" fill="var(--ink-faint)" text-anchor="middle">${m}</text>`).join('');
   const validPts=rh.map((v,i)=>({v,i})).filter(p=>p.v!=null);
   const path=validPts.map((p,pi)=>(pi?'L':'M')+x(p.i).toFixed(1)+' '+y(p.v).toFixed(1)).join(' ');
@@ -3920,9 +3933,9 @@ function windRoseSVG(rose){
 function windSpeedChart(c,s,epwData){
   if(!MOCK&&!epwData)return noDataChart(300,86,'wind speed: EPW not loaded');
   const wind=epwData?epwData.windSpd:monthlyWind(c,s);
-  const W=300,H=86,pad=22,maxW=AX.WIND_MAX,x=i=>pad+i*(W-pad-6)/11,y=v=>H-18-(v/maxW)*(H-34);
+  const W=300,H=86,pad=30,maxW=AX.WIND_MAX,x=i=>pad+i*(W-pad-6)/11,y=v=>H-18-(v/maxW)*(H-34);
   let g='';
-  [0,5,10].forEach(v=>{g+=`<line x1="${pad}" y1="${y(v)}" x2="${W-6}" y2="${y(v)}" stroke="var(--line-soft)" stroke-width="1"/><text x="2" y="${y(v)+3}" font-family="IBM Plex Mono" font-size="7.5" fill="var(--ink-faint)">${v}</text>`;});
+  [0,5,10].forEach(v=>{g+=`<line x1="${pad}" y1="${y(v)}" x2="${W-6}" y2="${y(v)}" stroke="var(--line-soft)" stroke-width="1"/><text x="${pad-5}" y="${y(v)+3}" font-family="IBM Plex Mono" font-size="7.5" fill="var(--ink-faint)" text-anchor="end">${v}</text>`;});
   g+=MONTHS.map((m,i)=>`<text x="${x(i)}" y="${H-4}" font-family="IBM Plex Mono" font-size="7" fill="var(--ink-faint)" text-anchor="middle">${m}</text>`).join('');
   const validPts=wind.map((v,i)=>({v,i})).filter(p=>p.v!=null);
   const path=validPts.map((p,pi)=>(pi?'L':'M')+x(p.i).toFixed(1)+' '+y(p.v).toFixed(1)).join(' ');
@@ -5109,7 +5122,7 @@ function renderAvgTypologyDetailPanel(zone){
   const chips=members.map(c=>`<span class="cs-chip" style="cursor:pointer;font-size:9.5px;padding:3px 7px;border:1px solid var(--line);display:inline-flex;align-items:center;gap:4px;margin:2px 2px 2px 0;background:var(--paper-dim);border-radius:0;" data-cid="${c.id}"><span style="width:7px;height:7px;border-radius:50%;background:${kcolor(c.koppen[scn])};flex:none;display:inline-block;"></span><b>${c.id}</b> <span style="opacity:0.55;">${c.name||''}</span></span>`).join('');
   const domRegion=pluralOf(c=>c.region)||'–';
   /* metric page tabs */
-  const metricSubtabs=AVG_PAGES.map((p,i)=>`<button class="metric-page-btn${i===0?' active':''}" data-avgmetricpage="${i}">${p.label}</button>`).join('');
+  const metricSubtabs=AVG_PAGES.map((p,i)=>`<button class="metric-page-btn climate-tab-square${i===0?' active':''}" data-avgmetricpage="${i}">${p.label}</button>`).join('');
   const metricTable=pi=>{const page=AVG_PAGES[pi];return `<table style="width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px;">${page.rows().map(([k,v])=>`<tr style="border-bottom:1px solid var(--line);"><td style="padding:5px 0;color:var(--ink-soft);vertical-align:top;padding-right:10px;">${k}</td><td style="padding:5px 0;text-align:right;font-weight:700;">${v}</td></tr>`).join('')}</table>`;};
 
   el.innerHTML=`
@@ -5143,8 +5156,10 @@ function renderAvgTypologyDetailPanel(zone){
 
     <div class="cs-panel" id="avgT-panel-metrics" style="padding:14px 16px;display:none;">
       <div style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin-bottom:10px;line-height:1.5;">Continuous metrics = arithmetic mean of members with data. Categorical = plurality (most common value). Non-null members only.</div>
-      <div class="metric-pager" style="margin-bottom:12px;">${metricSubtabs}</div>
-      <div id="avgTMetricTable">${metricTable(0)}</div>
+      <div class="climate-tabs-row">
+        <div class="metric-pager climate-tabs-sidebar" style="margin-bottom:0;">${metricSubtabs}</div>
+        <div class="climate-tabs-content"><div id="avgTMetricTable">${metricTable(0)}</div></div>
+      </div>
     </div>
 
     <div class="cs-panel" id="avgT-panel-members" style="padding:14px 16px;display:none;">
@@ -5897,6 +5912,13 @@ function applyTheme(theme){
   if(loaderBtn)loaderBtn.textContent=theme==='dark'?'☀':'☾';
   if(tileLayer)tileLayer.setUrl(theme==='dark'?DARK_TILE_URL:LIGHT_TILE_URL);
   applyScenarioPalette();
+  /* if the elevation-runner is open, rebuild its saucer sprite so its
+     colours follow the new theme immediately (not just on next open).
+     Check the overlay's visibility rather than the eggOpen variable:
+     applyTheme runs at load, before eggOpen (let) is initialized, so
+     touching that variable — even via typeof — throws a TDZ error. */
+  const _eggOv=document.getElementById('eggOverlay');
+  if(_eggOv&&_eggOv.style.display==='flex'&&typeof eggBuildUfoSprite==='function')eggBuildUfoSprite();
 }
 function toggleTheme(){
   const cur=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';
@@ -6105,6 +6127,7 @@ function eggScoreDisplay(){
 }
 
 const EGG_W=560,EGG_H=200,EGG_GROUND_Y=160,EGG_PLAYER_X=58,EGG_PLAYER_R=9;
+const EGG_FLOAT=7; /* resting hover height above the ground line (px) */
 const EGG_GRAVITY=0.55,EGG_JUMP_V=-10.6;
 const EGG_OBST_H_MIN=42,EGG_OBST_H_MAX=74,EGG_OBST_W_MIN=12,EGG_OBST_W_MAX=92;
 const EGG_FALLBACK_SHAPE={env:[[0,0],[1,0],[1,0.58],[0.5,1],[0,0.58]],aspect:0.78,groups:{
@@ -6140,6 +6163,7 @@ function eggReset(){
 function openEggGame(){
   if(eggOpen)return;
   eggOpen=true;
+  eggBuildUfoSprite();
   eggSetStartYearFromScenario();
   eggBuildPool();
   eggReset();
@@ -6147,6 +6171,30 @@ function openEggGame(){
   eggLastTs=0;
   eggRaf=requestAnimationFrame(eggTick);
 }
+/* Build the player sprite: the little UFO saucer from the slider/loader
+   logo, but WITHOUT the light beam and the house — just the disc. Drawn
+   once to an <img> we can blit each frame with ctx.drawImage. */
+let eggUfoImg=null,eggUfoReady=false,eggUfoTheme=null;
+function eggBuildUfoSprite(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  const theme=dark?'dark':'light';
+  if(eggUfoImg&&eggUfoTheme===theme)return; /* already built for this theme */
+  eggUfoTheme=theme;
+  eggUfoReady=false;
+  /* Uploaded head-on saucer (Asset_2). Per design: the asset's white parts
+     take the GROUND-LINE colour, the black parts take the game BACKGROUND
+     colour, so the saucer reads as an outline drawn in the same ink as the
+     ground, sitting on the paper. Read both live from CSS so it always
+     matches the current theme. */
+  const groundCol=(cssVar('--line-strong')||'#2a2825').trim();  /* was white  */
+  const bgCol=(cssVar('--paper-dim')||'#f0ede8').trim();        /* was black  */
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 377.96 116.65"><g stroke="none"><path fill="${bgCol}" d="M364.94,71.94c-8.45-3.6-22.24-7.27-44.57-10.62-35.13-5.26-81.79-8.17-131.39-8.17s-96.26,2.91-131.39,8.17c-22.35,3.35-36.14,7.02-44.59,10.63C1.92,76.66,0,81.26,0,84.9c0,6.41,5.97,15.83,57.59,23.57,35.13,5.27,81.79,8.18,131.39,8.18s96.26-2.91,131.39-8.18c51.62-7.74,57.59-17.16,57.59-23.57,0-3.64-1.92-8.24-13.02-12.96ZM8,84.9c0-.08,2.19-8.38,50.77-15.66,34.75-5.22,80.99-8.09,130.21-8.09s95.46,2.87,130.2,8.09c48.59,7.28,50.78,15.58,50.78,15.66s-2.19,8.38-50.78,15.66c-34.74,5.22-80.98,8.09-130.2,8.09s-95.46-2.87-130.21-8.09c-48.58-7.28-50.77-15.58-50.77-15.66Z"/><path fill="${bgCol}" d="M234.1,89.18c-10.12-2.65-28.89-4.29-48.99-4.29s-38.88,1.64-48.99,4.3c-4.42,1.16-9.5,3.02-9.5,7.02,0,.86.26,1.71.76,2.47,5.63,8.61,52.42,8.85,57.73,8.85s52.1-.24,57.73-8.85c.5-.76.76-1.61.76-2.47,0-4-5.07-5.86-9.5-7.03ZM236.36,96.23c-5.18,2.23-22.2,5.3-51.25,5.3-26.94,0-45.82-2.89-51.3-5.28.81-.34,2.02-.78,3.84-1.26,9.64-2.53,27.83-4.1,47.46-4.1s37.81,1.57,47.46,4.1c1.78.47,2.99.9,3.79,1.24Z"/><path fill="${groundCol}" stroke="${groundCol}" stroke-width="2" stroke-miterlimit="10" d="M364.94,71.94c-8.45-3.6-22.24-7.27-44.57-10.62-35.13-5.26-81.79-8.17-131.39-8.17s-96.26,2.91-131.39,8.17c-22.35,3.35-36.14,7.02-44.59,10.63,16.58-11.6,54.85-20.99,103.96-25.7C122.82,20.53,151.13,1,185.19,1s61.87,19.17,68.07,44.55c52.78,4.44,94.22,14.18,111.68,26.39Z"/><path fill="${groundCol}" d="M319.18,69.24c-34.74-5.22-80.98-8.09-130.2-8.09s-95.46,2.87-130.21,8.09c-48.58,7.28-50.77,15.58-50.77,15.66s2.19,8.38,50.77,15.66c34.75,5.22,80.99,8.09,130.21,8.09s95.46-2.87,130.2-8.09c48.59-7.28,50.78-15.58,50.78-15.66s-2.19-8.38-50.78-15.66ZM242.84,98.68c-5.63,8.61-52.41,8.85-57.73,8.85s-52.1-.24-57.73-8.85c-.5-.76-.76-1.61-.76-2.47,0-4,5.08-5.86,9.5-7.02,10.11-2.66,28.88-4.3,48.99-4.3s38.87,1.64,48.99,4.29c4.43,1.17,9.5,3.03,9.5,7.03,0,.86-.26,1.71-.76,2.47Z"/><path fill="${groundCol}" d="M236.36,96.23c-5.18,2.23-22.2,5.3-51.25,5.3-26.94,0-45.82-2.89-51.3-5.28.81-.34,2.02-.78,3.84-1.26,9.64-2.53,27.83-4.1,47.46-4.1s37.81,1.57,47.46,4.1c1.78.47,2.99.9,3.79,1.24Z"/></g></svg>`;
+  const img=new Image();
+  img.onload=()=>{eggUfoReady=true;};
+  img.src='data:image/svg+xml;utf8,'+encodeURIComponent(svg);
+  eggUfoImg=img;
+}
+
 function closeEggGame(){
   eggOpen=false;
   document.getElementById('eggOverlay').style.display='none';
@@ -6189,7 +6237,7 @@ function eggTick(ts){
       eggNextSpawnFrames=minGap+Math.random()*(maxGap-minGap);
     }
 
-    const playerBottom=EGG_GROUND_Y+eggPlayerY;
+    const playerBottom=EGG_GROUND_Y+eggPlayerY-EGG_FLOAT;
     const playerL=EGG_PLAYER_X-EGG_PLAYER_R,playerR=EGG_PLAYER_X+EGG_PLAYER_R;
     for(let i=eggObstacles.length-1;i>=0;i--){
       const o=eggObstacles[i];
@@ -6267,10 +6315,21 @@ function eggDraw(){
     ctx.fillText(o.id,o.x+o.w/2,EGG_GROUND_Y-o.h-4);
   });
 
-  ctx.fillStyle=purple;
-  ctx.beginPath();
-  ctx.arc(EGG_PLAYER_X,EGG_GROUND_Y+eggPlayerY-EGG_PLAYER_R,EGG_PLAYER_R,0,Math.PI*2);
-  ctx.fill();
+  const _pcx=EGG_PLAYER_X;
+  const _pcy=EGG_GROUND_Y+eggPlayerY-EGG_PLAYER_R-EGG_FLOAT;
+  if(eggUfoReady&&eggUfoImg){
+    /* Uploaded saucer sprite. Source art is 377.96 × 116.65 (~3.24:1);
+       draw it a bit wider than the old circle and centre it on the
+       player position, keeping that aspect ratio. */
+    const uw=EGG_PLAYER_R*3.6;             /* saucer width */
+    const uh=uw*(116.65/377.96);           /* keep source aspect ratio */
+    ctx.drawImage(eggUfoImg,_pcx-uw/2,_pcy-uh/2,uw,uh);
+  }else{
+    ctx.fillStyle=purple;
+    ctx.beginPath();
+    ctx.arc(_pcx,_pcy,EGG_PLAYER_R,0,Math.PI*2);
+    ctx.fill();
+  }
 
   ctx.textAlign='center';
   if(!eggStarted){
@@ -6316,7 +6375,9 @@ document.addEventListener('click',e=>{
 });
 
 renderSlider();buildFilters();initMap();applyFilter();renderPanel();buildFindings();buildCorpusStats();buildPipeline();seedDxfFromCases();seedPhotosFromCases();renderAdminView();
-if(window._hideLoader)window._hideLoader();
+window.__appReady=true;
+if(window._hideLoaderWhenReady)window._hideLoaderWhenReady();
+else if(window._hideLoader)window._hideLoader();
 /* wire persistent averageTYPOLOGY button */
 (function(){
   const btn=document.getElementById('avgTypologyBtnPersistent');
@@ -6326,6 +6387,7 @@ if(window._hideLoader)window._hideLoader();
   const csClose=document.getElementById('csPanelCloseBtn');
   if(csClose)csClose.addEventListener('click',()=>{
     _activeAvgZone=null;selectedId=null;renderPanel();
+    if(window._resetCsWidth)window._resetCsWidth();
     /* mobile: X also collapses the bottom sheet (no persistent
        side-drawer state to "reset" the way desktop has) */
     if(document.body.classList.contains('mobile-mode')){
@@ -6342,6 +6404,8 @@ if(window._hideLoader)window._hideLoader();
   /* clicking the vernacularfutures brand title returns to the Atlas
      initial screen (Atlas tab active, mosaic reset) — like a home link */
   function goToAtlasHome(){
+    /* reset any manual case-study drawer resize back to default */
+    if(window._resetCsWidth)window._resetCsWidth();
     /* if the map is in fullscreen, exit it first so we land on the normal
        initiating view (the fullscreen toggle handler also resets its icon) */
     if(document.body.classList.contains('map-fullscreen')){
@@ -6479,6 +6543,85 @@ if(window._hideLoader)window._hideLoader();
     const h=document.querySelector('.app-header');
     if(h)document.documentElement.style.setProperty('--deck-top',h.getBoundingClientRect().bottom+'px');
   }
+  /* ── case study drawer horizontal resize (drag the left edge) ──────
+     The drawer is right-anchored, so a wider drawer means dragging the
+     left edge further left. We drive width via the --cs-width CSS var
+     the drawer's width rule reads, clamped to the same min/max as CSS. */
+  (function(){
+    const handle=document.getElementById('csResizeHandle');
+    if(!handle)return;
+    let dragging=false;
+    /* minimum width the map must always keep, so the drawer can never
+       squash it to a sliver (the bug visible when max was a flat 85vw) */
+    const MAP_MIN=380;
+    function mapLeftEdge(){
+      /* where the map column starts: 40px normally, or past the filter
+         drawer (20vw, min 260px, +40px anchor) when the filter is open */
+      if(document.body.classList.contains('filter-open')){
+        return 40+Math.max(window.innerWidth*0.20,260);
+      }
+      return 40;
+    }
+    function widthFor(clientX){
+      /* drawer right edge is fixed at 40px from viewport right; width is
+         the gap between the pointer and that right edge */
+      const w=window.innerWidth-clientX-40;
+      const min=340;
+      /* the drawer's left edge must stay right of (map left + MAP_MIN),
+         with a 16px breathing gap. This one rule covers every case:
+         atlas or fullscreen, filter open or closed, because it's driven
+         by wherever the map actually begins. */
+      const max=window.innerWidth-40-mapLeftEdge()-MAP_MIN-16;
+      return Math.max(min,Math.min(max,w));
+    }
+    function onMove(e){
+      if(!dragging)return;
+      const x=e.touches?e.touches[0].clientX:e.clientX;
+      document.documentElement.style.setProperty('--cs-width',widthFor(x)+'px');
+      if(map&&map.invalidateSize)map.invalidateSize();
+    }
+    function onUp(){
+      if(!dragging)return;
+      dragging=false;
+      document.body.classList.remove('cs-resizing');
+      window.removeEventListener('pointermove',onMove);
+      window.removeEventListener('pointerup',onUp);
+      if(map&&map.invalidateSize)setTimeout(()=>map.invalidateSize(),0);
+    }
+    handle.addEventListener('pointerdown',e=>{
+      e.preventDefault();
+      dragging=true;
+      document.body.classList.add('cs-resizing');
+      window.addEventListener('pointermove',onMove);
+      window.addEventListener('pointerup',onUp);
+    });
+    /* reset the drawer to its default width (clears the override so the
+       CSS 40vw default applies again). Called when returning to atlas or
+       toggling the drawer via the right column, per design. */
+    window._resetCsWidth=function(){
+      document.documentElement.style.removeProperty('--cs-width');
+      if(map&&map.invalidateSize)setTimeout(()=>map.invalidateSize(),260);
+    };
+    /* re-clamp the current width against the present constraints (used
+       when the filter opens and might otherwise leave the drawer
+       overlapping it). No-op if the drawer is within bounds. */
+    window._reclampCsWidth=function(){
+      /* prefer the explicit target set via the var (avoids reading a
+         mid-transition computed width); fall back to computed width if
+         the var isn't set yet (still at its 40vw default) */
+      const varVal=document.documentElement.style.getPropertyValue('--cs-width');
+      let curPx=parseFloat(varVal);
+      if(!curPx){
+        curPx=parseFloat(getComputedStyle(document.getElementById('csCardWindow')).width);
+      }
+      if(!curPx)return;
+      const clamped=widthFor(window.innerWidth-curPx-40);
+      if(Math.abs(clamped-curPx)>1){
+        document.documentElement.style.setProperty('--cs-width',clamped+'px');
+        if(map&&map.invalidateSize)setTimeout(()=>map.invalidateSize(),0);
+      }
+    };
+  })();
   function setAtlasActive(isAtlas){
     document.body.classList.toggle('atlas-active',isAtlas);
     if(isAtlas){setDeckTop();setTimeout(()=>{if(map)map.invalidateSize();},60);}
@@ -6522,6 +6665,7 @@ if(window._hideLoader)window._hideLoader();
   if(filterBtn)filterBtn.addEventListener('click',()=>{
     document.body.classList.toggle('filter-open');
     filterBtn.classList.toggle('active',document.body.classList.contains('filter-open'));
+    if(window._reclampCsWidth)window._reclampCsWidth();
     setTimeout(()=>{if(map)map.invalidateSize();},260);
     /* re-measure searchrow-top after filter drawer opens */
     const fb=document.querySelector('.filter-bar');
@@ -6537,6 +6681,7 @@ if(window._hideLoader)window._hideLoader();
   if(csBtn)csBtn.addEventListener('click',()=>{
     document.body.classList.toggle('cs-open');
     csBtn.classList.toggle('active',document.body.classList.contains('cs-open'));
+    if(window._resetCsWidth)window._resetCsWidth();
     setTimeout(()=>{if(map)map.invalidateSize();},260);
     if(document.body.classList.contains('cs-open')&&!selectedId)renderPanel();
   });
@@ -6743,16 +6888,35 @@ document.addEventListener('keydown',e=>{
 
 /* ── Site loader: SVG frame-sequence animation, cycling beam colour ── */
 (function(){
-  const FRAMES=["<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .cls-1 {\n        fill: var(--loader-beam, #ff0);\n      }\n\n      .cls-1, .cls-2, .cls-3, .cls-4 {\n        stroke: #fff;\n        stroke-miterlimit: 10;\n      }\n\n      .cls-1, .cls-2, .cls-4 {\n        stroke-width: 2px;\n      }\n\n      .cls-2 {\n        fill: none;\n      }\n\n      .cls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <g>\n      <path class=\"cls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n      <ellipse class=\"cls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n      <path class=\"cls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n      <path class=\"cls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n      <path class=\"cls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n    </g>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"cls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <polygon points=\"776.8 485.25 773.64 492.27 757.54 480.36 757.54 552.62 645.99 552.62 645.99 480.31 629.86 492.24 626.73 485.28 695.46 434.44 701.79 429.77 708.05 434.4 737.69 456.32 737.69 442.37 750.83 442.37 750.83 466.04 776.8 485.25\"/>\n    <path class=\"cls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"cls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n  </g>\n</svg>", "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .cls-1 {\n        fill: var(--loader-beam, #ff0);\n      }\n\n      .cls-1, .cls-2, .cls-3, .cls-4 {\n        stroke: #fff;\n        stroke-miterlimit: 10;\n      }\n\n      .cls-1, .cls-2, .cls-4 {\n        stroke-width: 2px;\n      }\n\n      .cls-2 {\n        fill: none;\n      }\n\n      .cls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <g>\n      <path class=\"cls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n      <ellipse class=\"cls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n      <path class=\"cls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n      <path class=\"cls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n      <path class=\"cls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n    </g>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"cls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <polygon points=\"773.34 420.42 771.91 427.98 753.47 420.16 770.35 490.42 661.89 516.49 645 446.18 632.1 461.55 627.43 455.51 682.38 390.02 687.44 384 694.61 387.04 728.55 401.43 725.29 387.86 738.07 384.79 743.6 407.81 773.34 420.42\"/>\n    <path class=\"cls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"cls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n  </g>\n</svg>", "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .cls-1 {\n        fill: var(--loader-beam, #ff0);\n      }\n\n      .cls-1, .cls-2, .cls-3, .cls-4 {\n        stroke: #fff;\n        stroke-miterlimit: 10;\n      }\n\n      .cls-1, .cls-2, .cls-4 {\n        stroke-width: 2px;\n      }\n\n      .cls-2 {\n        fill: none;\n      }\n\n      .cls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <g>\n      <path class=\"cls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n      <ellipse class=\"cls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n      <path class=\"cls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n      <path class=\"cls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n      <path class=\"cls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n    </g>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"cls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <polygon points=\"780.13 409.07 777.67 416.36 760.49 406.07 767.52 477.99 656.5 488.84 649.46 416.88 634.57 430.32 630.78 423.7 694.24 366.41 700.08 361.15 706.76 365.15 738.39 384.08 737.04 370.2 750.11 368.92 752.42 392.47 780.13 409.07\"/>\n    <path class=\"cls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"cls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n  </g>\n</svg>", "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .cls-1 {\n        fill: var(--loader-beam, #ff0);\n      }\n\n      .cls-1, .cls-2, .cls-3, .cls-4 {\n        stroke: #fff;\n        stroke-miterlimit: 10;\n      }\n\n      .cls-1, .cls-2, .cls-4 {\n        stroke-width: 2px;\n      }\n\n      .cls-2 {\n        fill: none;\n      }\n\n      .cls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <g>\n      <path class=\"cls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n      <ellipse class=\"cls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n      <path class=\"cls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n      <path class=\"cls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n      <path class=\"cls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n    </g>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"cls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <polygon points=\"768.24 380.81 763.59 386.95 750.55 371.75 734.43 442.18 625.69 417.3 641.82 346.81 623.44 354.85 621.94 347.36 700.28 313.14 707.49 309.99 712.56 315.9 736.56 343.88 739.68 330.29 752.48 333.22 747.2 356.29 768.24 380.81\"/>\n    <path class=\"cls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"cls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n  </g>\n</svg>", "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .cls-1 {\n        fill: var(--loader-beam, #ff0);\n      }\n\n      .cls-1, .cls-2, .cls-3, .cls-4 {\n        stroke: #fff;\n        stroke-miterlimit: 10;\n      }\n\n      .cls-1, .cls-2, .cls-4 {\n        stroke-width: 2px;\n      }\n\n      .cls-2 {\n        fill: none;\n      }\n\n      .cls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <path class=\"cls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n    <ellipse class=\"cls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n    <path class=\"cls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n    <path class=\"cls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"cls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <path class=\"cls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"cls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n    <path class=\"cls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n    <path d=\"M700.49,291.79c-21.69,0-41.16,1.27-54.49,3.28v56.36h111.55v-55.95c-13.33-2.25-33.92-3.69-57.06-3.69Z\"/>\n  </g>\n</svg>"];
+  const FRAMES=window.__LOADER_FRAMES=["<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .cls-1 {\n        fill: var(--loader-beam, #ff0);\n      }\n\n      .cls-1, .cls-2, .cls-3, .cls-4 {\n        stroke: #fff;\n        stroke-miterlimit: 10;\n      }\n\n      .cls-1, .cls-2, .cls-4 {\n        stroke-width: 2px;\n      }\n\n      .cls-2 {\n        fill: none;\n      }\n\n      .cls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <g>\n      <path class=\"cls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n      <ellipse class=\"cls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n      <path class=\"cls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n      <path class=\"cls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n      <path class=\"cls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n    </g>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"cls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <polygon points=\"776.8 485.25 773.64 492.27 757.54 480.36 757.54 552.62 645.99 552.62 645.99 480.31 629.86 492.24 626.73 485.28 695.46 434.44 701.79 429.77 708.05 434.4 737.69 456.32 737.69 442.37 750.83 442.37 750.83 466.04 776.8 485.25\"/>\n    <path class=\"cls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"cls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n  </g>\n</svg>", "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .cls-1 {\n        fill: var(--loader-beam, #ff0);\n      }\n\n      .cls-1, .cls-2, .cls-3, .cls-4 {\n        stroke: #fff;\n        stroke-miterlimit: 10;\n      }\n\n      .cls-1, .cls-2, .cls-4 {\n        stroke-width: 2px;\n      }\n\n      .cls-2 {\n        fill: none;\n      }\n\n      .cls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <g>\n      <path class=\"cls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n      <ellipse class=\"cls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n      <path class=\"cls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n      <path class=\"cls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n      <path class=\"cls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n    </g>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"cls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <polygon points=\"773.34 420.42 771.91 427.98 753.47 420.16 770.35 490.42 661.89 516.49 645 446.18 632.1 461.55 627.43 455.51 682.38 390.02 687.44 384 694.61 387.04 728.55 401.43 725.29 387.86 738.07 384.79 743.6 407.81 773.34 420.42\"/>\n    <path class=\"cls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"cls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n  </g>\n</svg>", "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .cls-1 {\n        fill: var(--loader-beam, #ff0);\n      }\n\n      .cls-1, .cls-2, .cls-3, .cls-4 {\n        stroke: #fff;\n        stroke-miterlimit: 10;\n      }\n\n      .cls-1, .cls-2, .cls-4 {\n        stroke-width: 2px;\n      }\n\n      .cls-2 {\n        fill: none;\n      }\n\n      .cls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <g>\n      <path class=\"cls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n      <ellipse class=\"cls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n      <path class=\"cls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n      <path class=\"cls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n      <path class=\"cls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n    </g>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"cls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <polygon points=\"780.13 409.07 777.67 416.36 760.49 406.07 767.52 477.99 656.5 488.84 649.46 416.88 634.57 430.32 630.78 423.7 694.24 366.41 700.08 361.15 706.76 365.15 738.39 384.08 737.04 370.2 750.11 368.92 752.42 392.47 780.13 409.07\"/>\n    <path class=\"cls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"cls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n  </g>\n</svg>", "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .cls-1 {\n        fill: var(--loader-beam, #ff0);\n      }\n\n      .cls-1, .cls-2, .cls-3, .cls-4 {\n        stroke: #fff;\n        stroke-miterlimit: 10;\n      }\n\n      .cls-1, .cls-2, .cls-4 {\n        stroke-width: 2px;\n      }\n\n      .cls-2 {\n        fill: none;\n      }\n\n      .cls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <g>\n      <path class=\"cls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n      <ellipse class=\"cls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n      <path class=\"cls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n      <path class=\"cls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n      <path class=\"cls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n    </g>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"cls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <polygon points=\"768.24 380.81 763.59 386.95 750.55 371.75 734.43 442.18 625.69 417.3 641.82 346.81 623.44 354.85 621.94 347.36 700.28 313.14 707.49 309.99 712.56 315.9 736.56 343.88 739.68 330.29 752.48 333.22 747.2 356.29 768.24 380.81\"/>\n    <path class=\"cls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"cls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n  </g>\n</svg>", "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .cls-1 {\n        fill: var(--loader-beam, #ff0);\n      }\n\n      .cls-1, .cls-2, .cls-3, .cls-4 {\n        stroke: #fff;\n        stroke-miterlimit: 10;\n      }\n\n      .cls-1, .cls-2, .cls-4 {\n        stroke-width: 2px;\n      }\n\n      .cls-2 {\n        fill: none;\n      }\n\n      .cls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <path class=\"cls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n    <ellipse class=\"cls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n    <path class=\"cls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n    <path class=\"cls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"cls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <path class=\"cls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"cls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n    <path class=\"cls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n    <path d=\"M700.49,291.79c-21.69,0-41.16,1.27-54.49,3.28v56.36h111.55v-55.95c-13.33-2.25-33.92-3.69-57.06-3.69Z\"/>\n  </g>\n</svg>"];
   const host=document.getElementById('loaderSvgHost');
   const loader=document.getElementById('siteLoader');
   const statusEl=document.getElementById('loaderStatus');
   if(!host||!loader)return;
+  /* Playback sequence: rise forward through the frames, a couple of beats
+     with the house gone entirely, then play BACKWARDS down again before
+     looping. 'h' is a sentinel meaning "house completely hidden". */
+  const _last=FRAMES.length-1;
+  const SEQ=[];
+  for(let s=0;s<=_last;s++)SEQ.push(s);      /* forward 0..last */
+  SEQ.push('h','h');                          /* house gone, brief hold */
+  for(let s=_last;s>=1;s--)SEQ.push(s);       /* backward last..1 (0 loops in) */
+  let _loaderCycles=0;                        /* full sequences completed */
+  window.__loaderCycles=0;
+  function setLoaderFrame(step){
+    const hidden=(step==='h');
+    host.innerHTML=FRAMES[hidden?0:step];
+    if(hidden){
+      const svg=host.querySelector('svg');
+      if(svg)svg.querySelectorAll('polygon,path:not([class])').forEach(n=>{n.style.display='none';});
+    }
+  }
   let f=0;
-  host.innerHTML=FRAMES[0];
+  setLoaderFrame(SEQ[0]);
   const frameInterval=setInterval(()=>{
-    f=(f+1)%FRAMES.length;
-    host.innerHTML=FRAMES[f];
+    f=(f+1)%SEQ.length;
+    if(f===0){_loaderCycles++;window.__loaderCycles=_loaderCycles;}
+    setLoaderFrame(SEQ[f]);
   },220);
   /* cycle the beam colour through the site's scenario accent palette,
      matching the Present → 2050 → 2080 gradient used on the slider */
@@ -6778,8 +6942,104 @@ document.addEventListener('keydown',e=>{
     clearInterval(statusInterval);
     setTimeout(()=>{if(loader.parentNode)loader.parentNode.removeChild(loader);},600);
   };
+  /* the app's init chain runs BEFORE this loader IIFE and calls
+     _hideLoader() before it exists (the guard just no-ops then). If init
+     has already flagged itself ready, hide after a short minimum so the
+     animation is briefly seen rather than flashing — this is what kept
+     the loader up for ~10s (it was only ever hidden by the safety net). */
+  /* play the full ping-pong sequence at least twice before dismissing,
+     so the animation reads as a deliberate loop rather than a flash.
+     One cycle = SEQ.length frames × 220ms; we wait for two. */
+  const LOADER_MIN_CYCLES=2;
+  const _frameMs=220;
+  const _cycleMs=SEQ.length*_frameMs;
+  const LOADER_MIN_MS=LOADER_MIN_CYCLES*_cycleMs;
+  const _loaderStart=performance.now();
+  window._hideLoaderWhenReady=function(){
+    const wait=Math.max(0,LOADER_MIN_MS-(performance.now()-_loaderStart));
+    setTimeout(()=>window._hideLoader(),wait);
+  };
+  if(window.__appReady){window._hideLoaderWhenReady();}
   /* safety net: force-hide after 10s even if app init hangs */
   setTimeout(()=>{if(window._hideLoader)window._hideLoader();},10000);
+})();
+
+/* ── animated UFO slider thumb ───────────────────────────────────────
+   The thumb reuses the loader's EXACT frame array + colour cycling,
+   reframed to the logo's bounds and shrunk into the circular thumb; it
+   runs while the slider value is changing (same timing as the load
+   screen). */
+(function(){
+  function init(){
+    var input=document.getElementById('scenarioSlider');
+    var wrap=input&&input.closest('.scenario-slider-wrap');
+    if(!input||!wrap||document.getElementById('ufoThumb'))return;
+    var FR=window.__LOADER_FRAMES||[];
+    /* ping-pong sequence: rise to the top, a couple of "house gone" beats,
+       then play BACKWARDS down again (loops seamlessly to the bottom) */
+    var _last=Math.max(0,FR.length-1),SEQ=[];
+    for(var _s=0;_s<=_last;_s++)SEQ.push(_s);
+    SEQ.push('h','h');
+    for(var _s2=_last-1;_s2>=1;_s2--)SEQ.push(_s2);
+    var COLORS=['#7722CC','#9A7870','#E07010','#00BBAA','#FF9900','#FFEE00'];
+    var thumb=document.createElement('div');thumb.className='ufo-thumb';thumb.id='ufoThumb';
+    var logo=document.createElement('div');logo.className='ufo-logo';
+    thumb.appendChild(logo);wrap.appendChild(thumb);
+    thumb.style.setProperty('--loader-beam',COLORS[2]);
+    function setFrame(step){
+      if(!FR.length)return;
+      var hidden=(step==='h');   /* 'h' = house completely gone */
+      logo.innerHTML=FR[hidden?0:step];
+      var svg=logo.querySelector('svg');
+      if(svg){
+        svg.setAttribute('viewBox','378 58 654 654');svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+        if(hidden){svg.querySelectorAll('polygon,path:not([class])').forEach(function(n){n.style.display='none';});}
+      }
+    }
+    setFrame(0);
+    function pos(){
+      var min=+input.min||0,max=+input.max||100,val=+input.value;
+      var f=(max>min)?(val-min)/(max-min):0;
+      /* use layout offsets (unscaled), not getBoundingClientRect — the whole
+         scenario control is transform:scale(0.9), so screen-space rects don't
+         match the coordinate system where left/top apply. Travel the full
+         track width so the circle reaches + covers both ends. */
+      var ol=input.offsetLeft,ow=input.offsetWidth,ot=input.offsetTop,oh=input.offsetHeight;
+      if(!ow)return;
+      /* inset by half the native 30px thumb so the circle lines up with the
+         tick text at the extremes, exactly like the slider in index.html */
+      thumb.style.left=(ol+15+f*(ow-30))+'px';
+      thumb.style.top=(ot+oh/2)+'px';
+    }
+    var fi=0,ci=2,frameTimer=null,colorTimer=null,stopT=null;
+    function startAnim(){
+      if(!frameTimer&&SEQ.length)frameTimer=setInterval(function(){fi=(fi+1)%SEQ.length;setFrame(SEQ[fi]);},220);
+      if(!colorTimer)colorTimer=setInterval(function(){ci=(ci+1)%COLORS.length;thumb.style.setProperty('--loader-beam',COLORS[ci]);},450);
+    }
+    function stopAnim(){
+      clearInterval(frameTimer);frameTimer=null;
+      clearInterval(colorTimer);colorTimer=null;
+      fi=0;setFrame(0);
+    }
+    function kick(){startAnim();clearTimeout(stopT);stopT=setTimeout(stopAnim,SEQ.length*220+150);}
+    input.addEventListener('input',function(){pos();kick();});
+    input.addEventListener('change',pos);
+    input.addEventListener('pointerdown',kick);
+    /* clicking a scenario label below the slider moves the circle there */
+    var ticks=document.getElementById('scenarioTicks');
+    if(ticks)ticks.addEventListener('click',function(){
+      /* the app's own tick handler already sets the slider value + re-renders;
+         just sync the circle to the new value (and play the animation) */
+      requestAnimationFrame(pos);pos();setTimeout(pos,0);kick();
+    });
+    window.addEventListener('resize',pos);
+    if('ResizeObserver' in window)new ResizeObserver(pos).observe(wrap);
+    new MutationObserver(pos).observe(document.body,{attributes:true,attributeFilter:['class']});
+    requestAnimationFrame(function(){requestAnimationFrame(pos);});
+    setTimeout(pos,400);setTimeout(pos,1200);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+  else init();
 })();
 
 </script>
