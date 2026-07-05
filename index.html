@@ -580,6 +580,62 @@ body.atlas-active:not(.filter-open) .avgt-persistent-bar{display:none!important;
 .findings-grid{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start;}
 .findings-menu{background:var(--paper);border:1px solid var(--line);border-radius:0;padding:8px;position:sticky;top:14px;}
 .fm-group-label{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink-faint);padding:10px 12px 4px;}
+/* ── Findings: dynamic values, blink, action button, dropdowns ── */
+.dyn-val{
+  font-family:var(--mono);font-weight:700;
+  color:var(--terracotta-deep);
+  background:var(--terracotta-dim);
+  padding:0 5px;border-radius:0;white-space:nowrap;
+}
+@keyframes dynBlink{0%,100%{opacity:1;}50%{opacity:0.15;}}
+.dyn-val.dyn-blinking{animation:dynBlink 0.5s ease-in-out 6;} /* 6 × 0.5s = 3s */
+.fc-userbullet{
+  border-left:2px solid var(--ochre);
+  background:var(--ochre-dim);
+  padding:8px 12px;margin:10px 0;
+  font-family:var(--sans);font-size:13px;line-height:1.55;
+}
+.fc-userbullet .ub-tag{
+  font-family:var(--mono);font-size:8.5px;letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--ochre);display:block;margin-bottom:3px;
+}
+.findings-actionbar{display:flex;align-items:center;gap:8px;margin:0 0 20px;flex-wrap:wrap;}
+.dynfind-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:0.01em;
+  padding:8px 13px;border:1.5px solid var(--terracotta);
+  background:transparent;color:var(--terracotta-deep);
+  cursor:pointer;transition:background-color .2s,color .2s;white-space:nowrap;
+}
+.dynfind-btn:hover,.dynfind-btn.active{background:var(--terracotta);color:var(--paper);}
+.fc-ksel{
+  font-family:var(--mono);font-size:12px;padding:6px 10px;
+  border:1px solid var(--line);background:var(--paper-dim);color:var(--ink);
+  cursor:pointer;margin:6px 0 14px;
+}
+.fc-lowsample{
+  font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+  padding:10px 12px;border:1px dashed var(--line);margin:8px 0;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.fc-showanyway{
+  font-family:var(--mono);font-size:10px;padding:4px 10px;
+  border:1px solid var(--line);background:transparent;color:var(--ink-soft);cursor:pointer;
+}
+.fc-showanyway:hover{border-color:var(--terracotta);color:var(--terracotta-deep);}
+.fc-tmrow{
+  display:grid;grid-template-columns:auto 1fr;gap:6px 16px;
+  font-family:var(--mono);font-size:12.5px;margin:3px 0;align-items:baseline;
+}
+.fc-tmrow .tm-label{color:var(--ink-soft);}
+.fc-datatag{
+  font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--ink-faint);border:1px solid var(--line);padding:2px 6px;display:inline-block;margin-top:2px;
+}
+.fc-transparency{
+  margin-top:28px;padding:14px 16px;border:1px solid var(--line-strong);
+  font-family:var(--mono);font-size:10.5px;line-height:1.6;color:var(--ink-soft);
+}
 .fm-item{display:block;width:100%;text-align:left;font-family:var(--sans);font-size:13px;padding:9px 12px;border:none;background:transparent;color:var(--ink-soft);cursor:pointer;border-radius:0;border-left:3px solid transparent;}
 .fm-item:hover{background:var(--paper-dim);color:var(--ink);}
 .fm-item.active{background:var(--paper-dim);color:var(--terracotta-deep);font-weight:600;border-left-color:var(--terracotta);}
@@ -5715,43 +5771,166 @@ document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>
   if(b.dataset.tab==='cases'&&map)setTimeout(()=>map.invalidateSize(),60);}));
 
 /* TAB II */
-const FINDINGS=[
- {group:'Prescriptions',items:[
-  {id:'roofpitch',title:'Roof pitch is a summer strategy',eyebrow:'Prescription · roof',
-   body:`<p>The vernacular steep pitch behaves as a seasonal split. A steeper pitch increases winter heat loss through stronger convection in the larger attic volume, but reduces summer cooling load (on the order of <span class="nodata">~9% (to confirm)</span>) by driving stack ventilation through the attic buffer.</p><p>It therefore correlates with cooling-degree-days, not heating-degree-days. The Kaltdach is primarily a summer thermal buffer.</p><div class="prescription"><div class="pl">Prescription</div>Where future CDD rises, retain or increase pitch and open ridge/eave vents so the attic buffer is exploited. Where the load stays heating-dominated, steep pitch is a winter penalty with little payoff.</div>`},
-  {id:'mass',title:'Thermal mass under warming',eyebrow:'Prescription · envelope',
-   body:`<p>High mass rewards large diurnal or seasonal swing, the arid-zone adobe and masonry case. Under warming, mass without an assured night-flush path re-radiates stored daytime heat into the night, eroding comfort.</p><div class="prescription"><div class="pl">Prescription</div>Keep mass where the swing is large and night ventilation is reliable; pair it with night-purge openings wherever cooling load grows. In humid-tropical drift, prefer lightweight, ventilated, raised construction.</div>`},
-  {id:'eaves',title:'Eaves, shading and the solar caveat',eyebrow:'Prescription · shading',
-   body:`<p>Deep eaves earn their cost where solar load is significant. But shading geometry cannot be transferred by climate analogue: solar angles are fixed by latitude, not by the climate envelope.</p><div class="caveat"><div class="pl">Caveat</div>A site drifting Cfb→Cfa keeps its original sun angles. Eave depth tuned for a southern analogue's sun will over- or under-shade at the original latitude. Size overhangs to the local solar geometry under the future load.</div>`},
-  {id:'wwr',title:'Glazing and window-to-wall ratio',eyebrow:'Prescription · openings',
-   body:`<p>Low WWR minimises the dominant load in strongly heating- or cooling-dominated climates, but it also limits night-purge ventilation and daylight. Several corpus buildings sit at WWR = 0 (no windows in the recorded elevations), which flags a ventilation question under warming.</p><div class="prescription"><div class="pl">Prescription</div>In warming mixed climates, decouple the roles: keep solar-gain glazing modest on the sun-facing side, but add operable, shaded openings for cross- and night-ventilation as cooling load rises.</div>`}]},
- {group:'General findings',items:[
-  {id:'convergence',title:'Cross-cultural convergence',eyebrow:'Finding · theory',
-   body:`<p>Steep roofs appearing independently in Norway, Bavaria and Japan is the strongest counter-evidence to the cultural-randomness hypothesis. Independent convergence on the same form under similar climate supports selection pressure (Rapoport) over random cultural transmission.</p><p>This is the argument that lets the corpus be read as climate-responsive rather than as an accident of cultural diffusion.</p>`},
-  {id:'confounding',title:'Geographic confounding is real',eyebrow:'Finding · method',
-   body:`<p>Cultural and climate variables co-vary geographically, so simple averaging is insufficient. Country and altitude zone are confound controls in the logistic regression.</p><p>The methodological value is not the broad correlations (which risk appearing obvious) but the EPW-matched binary tag matrix, the outlier analysis and the threshold quantification.</p>`},
-  {id:'tmyx',title:'TMYx already embeds warming',eyebrow:'Finding · data',
-   body:`<p>The 2011–2025 TMYx normals carry recent warming, so no stations classify as Dfb under TMYx even where 1961–1990 normals would. Significant rather than an error: the present-day baseline is itself shifted, compressing the apparent distance to the 2050 and 2080 envelopes.</p>`}]}];
-function buildFindings(){
-  const menu=document.getElementById('findingsMenu');
-  const fc=document.getElementById('findingsContent');
-  if(!menu||!fc)return;
-  if(!MOCK){
-    /* full mode: findings not yet written — placeholder */
-    menu.innerHTML='<div class="fm-group-label" style="opacity:0.5">Findings</div>';
-    fc.innerHTML=`<div style="padding:28px 32px;font-family:var(--mono);color:var(--ink-soft);">
-      <div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:18px;">FINDINGS · DRAFT PENDING</div>
-      ${Array(6).fill(0).map((_,i)=>`<p style="margin-bottom:14px;line-height:1.6;">${loremParagraph(i)}</p>`).join('')}
-      <div style="margin-top:24px;padding:16px;border:1px solid var(--line);font-size:10.5px;color:var(--ink-faint);">
-        Findings and recommendations will be written by the research team once the statistical analysis and simulation validation are complete. This section will present the ranked morphological strategies for climate-adaptive design derived from the VMA corpus.
-      </div>
-    </div>`;
-    return;
-  }
-  FINDINGS.forEach(g=>{const l=document.createElement('div');l.className='fm-group-label';l.textContent=g.group;menu.appendChild(l);
-    g.items.forEach(it=>{const b=document.createElement('button');b.className='fm-item';b.textContent=it.title;b.dataset.fid=it.id;b.addEventListener('click',()=>showFinding(it.id));menu.appendChild(b);});});
-  showFinding(FINDINGS[0].items[0].id);
+/* TAB II — FINDINGS / RECOMMENDATIONS
+   Text is NOT AI-generated: everything still to be written by the research
+   team shows as lorem ipsum. Pink (dynamic) values from the draft are marked
+   with <span class="dyn-val"> — they will be recomputed from the dataset and
+   can be made to blink via the >dynamicFINDINGS action button. The user's own
+   draft bullet points are preserved verbatim in ochre .fc-userbullet blocks. */
+function dynV(v){return '<span class="dyn-val">'+v+'</span>';}
+function ub(text,tag){return '<div class="fc-userbullet">'+(tag?'<span class="ub-tag">'+tag+'</span>':'')+text+'</div>';}
+function loremP(seed){return '<p style="margin-bottom:14px;line-height:1.65;">'+loremParagraph(seed)+'</p>';}
+
+/* Köppen zones with sample sizes computed live from the corpus. */
+function koppenSampleCounts(){
+  const counts={};
+  CASES.forEach(c=>{const k=(c.koppen&&c.koppen[0])||null;if(k)counts[k]=(counts[k]||0)+1;});
+  return counts;
 }
+const TM_MIN_N=8; /* only auto-show köppen zones with n>8 */
+
+/* ---- Thermal-mass threshold block (with köppen dropdown + n-gate) ---- */
+function thermalMassBlock(){
+  const counts=koppenSampleCounts();
+  const zones=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+  const bigZones=zones.filter(z=>counts[z]>TM_MIN_N);
+  const opts=zones.map(z=>`<option value="${z}">${z} (n=${counts[z]})</option>`).join('');
+  const first=bigZones[0]||zones[0]||'Cfb';
+  return `
+    <select class="fc-ksel" id="tmKoppenSel">${opts}</select>
+    <div id="tmKoppenPanel">${thermalMassZonePanel(first,counts)}</div>`;
+}
+function thermalMassZonePanel(zone,counts){
+  counts=counts||koppenSampleCounts();
+  const n=counts[zone]||0;
+  if(n<=TM_MIN_N){
+    return `<div class="fc-lowsample">
+      <span>sample size too low (${dynV('n='+n)})</span>
+      <button class="fc-showanyway" data-tmzone="${zone}">show anyway</button>
+    </div><div id="tmForced-${zone}"></div>`;
+  }
+  return thermalMassZoneRows(zone);
+}
+function thermalMassZoneRows(zone){
+  /* thresholds are [SIM] placeholders until simulation output lands */
+  return `
+    <div class="fc-tmrow"><span class="tm-label">${zone} Present</span><span>thermal mass effective up to ~${dynV('[SIM] kg/m²')}</span></div>
+    <div class="fc-tmrow"><span class="tm-label">${zone} 2050</span><span>threshold drops to ~${dynV('[SIM] kg/m²')}</span></div>
+    <div class="fc-tmrow"><span class="tm-label">${zone} 2080</span><span>thermal mass threshold ~${dynV('[SIM] kg/m²')}</span></div>
+    <div class="fc-datatag">computed from morphed EPW + simulation · SSP5-8.5</div>`;
+}
+function tmForceShow(zone){
+  const host=document.getElementById('tmForced-'+zone);
+  if(host)host.innerHTML=thermalMassZoneRows(zone);
+}
+function wireThermalMassDropdown(){
+  const sel=document.getElementById('tmKoppenSel');
+  if(sel){
+    sel.addEventListener('change',()=>{
+      const panel=document.getElementById('tmKoppenPanel');
+      if(panel)panel.innerHTML=thermalMassZonePanel(sel.value);
+    });
+  }
+  /* delegate "show anyway" clicks (buttons can be re-rendered by the dropdown) */
+  const content=document.getElementById('findingsContent');
+  if(content&&!content._tmDelegated){
+    content._tmDelegated=true;
+    content.addEventListener('click',e=>{
+      const b=e.target.closest('.fc-showanyway');
+      if(b&&b.dataset.tmzone)tmForceShow(b.dataset.tmzone);
+    });
+  }
+}
+
+const FINDINGS=[
+ {group:'A · General findings',items:[
+
+  {id:'corpus',title:'Overview of Corpus',eyebrow:'General finding · corpus',
+   body:`
+    <p style="margin-bottom:14px;line-height:1.65;">`+ 'What is in the data, what our sample is, geographical and historical distribution — also: limitations of sample.' +`</p>`
+    +ub('Overview of corpus: what is in the data, what our sample is, geographical and historical distribution; also the limitations of the sample.','draft · scope')
+    +loremP(0)+loremP(1)
+    +`<p style="margin:16px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">CORPUS AT A GLANCE (live)</p>`
+    +`<div class="fc-tmrow"><span class="tm-label">Case studies</span><span>${dynV('[N] cases')}</span></div>`
+    +`<div class="fc-tmrow"><span class="tm-label">With coordinates</span><span>${dynV('[N]')}</span></div>`
+    +`<div class="fc-tmrow"><span class="tm-label">Köppen zones represented</span><span>${dynV('[N] zones')}</span></div>`
+    +`<div class="fc-datatag">counts recomputed from the loaded corpus</div>`
+    +loremP(2)},
+
+  {id:'koppenshift',title:'Observed Köppen shifts & Vulnerabilities',eyebrow:'General finding · vulnerability',
+   body:`
+    `+ub('How do climates shift under which scenario, how do we morph, vernacular big brother. Vulnerabilities: which case studies, regions, typologies, construction types — based on overheating delta and simulation output.','draft · vulnerability')
+    +loremP(3)
+    +ub('Typological mismatches (vernacularBIGBROTHER): if the vernacular big brother is too different, this could imply false optimization for the future.','draft · typological mismatch')
+    +`<p style="margin:14px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">EXAMPLE — csXX (Cfb)</p>`
+    +`<div class="fc-tmrow"><span class="tm-label">2050 ${dynV('Cfa')}</span><span>vBB: ${dynV('csXX')} — ${dynV('marginal mismatch in morphological profile')}</span></div>`
+    +`<div class="fc-tmrow"><span class="tm-label">2080 ${dynV('Csa')}</span><span>vBB: ${dynV('csXX')} — ${dynV('major mismatch in morphological profile')} (could imply false optimization for the future)</span></div>`
+    +`<div class="fc-datatag">vernacularBIGBROTHER climate-analogue match</div>`
+    +loremP(4)},
+
+  {id:'culturalbias',title:'Cultural Bias vs Cross-Cultural Convergence',eyebrow:'General finding · culture',
+   body:`
+    `+ub('Showing that cross-cultural convergence is there, but also its limitations. Cultural factor in building morphology.','draft · culture')
+    +`<p style="margin-bottom:14px;line-height:1.65;">`+ dynV('47–76%') +` of morphological variance is explained simply by the country of the building (Rapoport verified: culture is the primary factor).</p>`
+    +loremP(5)
+    +`<p style="margin:14px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">METRICS THAT SURVIVE CULTURAL BIAS</p>`
+    +ub('Roof pitch','draft · surviving metric')
+    +ub('Wall thickness','draft · surviving metric')
+    +ub('[ further metric — to add ]','draft · surviving metric')
+    +loremP(6)}
+ ]},
+
+ {group:'B · Recommendations',items:[
+
+  {id:'disclaimer',title:'Disclaimer — naturalistic fallacy',eyebrow:'Recommendation · disclaimer',
+   body:`
+    `+ub('Not based on correlations and future climates alone. It may be true that “cities accustomed to warmer climates have already developed passive strategies to combat heat stress,” but that does NOT mean we should blindly rebuild vernacular architecture for a given climate. Simulation is required before prescription.','draft · naturalistic fallacy')
+    +loremP(7)+loremP(8)},
+
+  {id:'thermalmass',title:'1. The thermal mass problem',eyebrow:'Recommendation · strategy viability',
+   body:`
+    `+ub('With higher heat and warmer nights, the thermal-mass effect reverses — the “death of thermal mass” as a strategy (when it is no longer viable). Also consider insulation vs thermal mass.','draft · thermal mass')
+    +loremP(9)
+    +`<p style="margin:16px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">THERMAL-MASS THRESHOLD BY KÖPPEN ZONE</p>`
+    +`<p style="font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);margin-bottom:8px;">only zones with n&gt;${TM_MIN_N} are shown by default · smaller samples are gated behind “show anyway”</p>`
+    +thermalMassBlock()
+    +ub('(Probably viable where there is high diurnal swing.)','draft · caveat')
+    +`<div class="fc-tmrow" style="margin-top:14px;"><span class="tm-label">Problem by 2050</span><span>${dynV('cs00, cs00, cs00 …')}</span></div>`
+    +`<div class="fc-tmrow"><span class="tm-label">Problem by 2080 (incl. 2050)</span><span>${dynV('cs00, cs00, cs00, cs00 …')}</span></div>`
+    +`<div class="fc-datatag">case-study lists recomputed from simulation output</div>`},
+
+  {id:'wwr',title:'2. Low WWR & ventilation under warming',eyebrow:'Recommendation · openings',
+   body:`
+    `+ub('At what WWR, with what climate, is the optimal WWR / thermal-mass combination.','draft · WWR')
+    +loremP(0)
+    +`<p style="margin:14px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">EXAMPLE — ${dynV('csXX')} (chosen case study)</p>`
+    +`<div class="fc-tmrow"><span class="tm-label">Current WWR</span><span>${dynV('[SIM] %')}</span></div>`
+    +`<div class="fc-tmrow"><span class="tm-label">Optimized · Present</span><span>${dynV('[SIM] %')}</span></div>`
+    +`<div class="fc-tmrow"><span class="tm-label">Optimized · 2050</span><span>${dynV('[SIM] %')}</span></div>`
+    +`<div class="fc-tmrow"><span class="tm-label">Optimized · 2080</span><span>${dynV('[SIM] %')}</span></div>`
+    +`<div class="fc-datatag">WWR optimization from simulation sweep</div>`
+    +ub('Disclaimer: simplified. Does not account for orientation, wind (can we account for wind?), etc.','draft · disclaimer')},
+
+  {id:'evap',title:'3. Evaporation cooling viability (wet-bulb)',eyebrow:'Recommendation · wet-bulb',
+   body:`
+    `+ub('From TW &gt; xx°C, evaporation cooling fails. (Find academic source for the threshold value: at how many hours of TW &gt; xx°C is evaporation cooling viable.)','draft · wet-bulb threshold')
+    +loremP(1)
+    +`<p style="margin:14px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">HOURS ABOVE WET-BULB THRESHOLD</p>`
+    +`<div class="fc-tmrow"><span class="tm-label">Present</span><span>${dynV('[SIM] h')} — ${dynV('viable')}</span></div>`
+    +`<div class="fc-tmrow"><span class="tm-label">2050</span><span>${dynV('[SIM] h')} — ${dynV('marginal')}</span></div>`
+    +`<div class="fc-tmrow"><span class="tm-label">2080</span><span>${dynV('[SIM] h')} — ${dynV('failing')}</span></div>`
+    +`<div class="fc-datatag">wet-bulb hours from present + morphed EPW · threshold pending source</div>`},
+
+  {id:'eave',title:'4. Required eave depth (latitude)',eyebrow:'Recommendation · shading',
+   body:`
+    `+ub('Required eave depth for each case study (from latitude): at which case study is which eave depth required.','draft · eave depth')
+    +loremP(2)
+    +`<div class="fc-tmrow"><span class="tm-label">${dynV('csXX')}</span><span>required eave depth ${dynV('[SIM] m')}</span></div>`
+    +`<div class="fc-tmrow"><span class="tm-label">${dynV('csXX')}</span><span>required eave depth ${dynV('[SIM] m')}</span></div>`
+    +`<div class="fc-datatag">solar-geometry derived · latitude-fixed (not morphed)</div>`
+    +`<div class="fc-transparency">IT HAS TO BE COMPLETELY TRANSPARENT HOW ALL OF THIS DATA IS GENERATED.</div>`}
+ ]}
+];
 
 function loremParagraph(seed){
   const chunks=['Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
@@ -5762,9 +5941,56 @@ function loremParagraph(seed){
     'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores.'];
   return chunks[seed%chunks.length]+' '+chunks[(seed+2)%chunks.length];
 }
-function showFinding(id){let it;FINDINGS.forEach(g=>g.items.forEach(x=>{if(x.id===id)it=x;}));
+
+
+function buildFindings(){
+  const menu=document.getElementById('findingsMenu');
+  const fc=document.getElementById('findingsContent');
+  if(!menu||!fc)return;
+  menu.innerHTML='';
+  FINDINGS.forEach(g=>{
+    const l=document.createElement('div');l.className='fm-group-label';l.textContent=g.group;menu.appendChild(l);
+    g.items.forEach(it=>{
+      const b=document.createElement('button');b.className='fm-item';b.textContent=it.title;b.dataset.fid=it.id;
+      b.addEventListener('click',()=>showFinding(it.id));menu.appendChild(b);
+    });
+  });
+  showFinding(FINDINGS[0].items[0].id);
+}
+
+/* blink every dynamic value for ~3s (6 × 0.5s) so it's clear which numbers
+   are recomputed from the dataset vs the static prose around them */
+function blinkDynamicFindings(){
+  const btn=document.getElementById('dynFindBtn');
+  if(btn){btn.classList.add('active');setTimeout(()=>btn.classList.remove('active'),3000);}
+  document.querySelectorAll('#findingsContent .dyn-val').forEach(el=>{
+    el.classList.remove('dyn-blinking');
+    void el.offsetWidth; /* restart the animation */
+    el.classList.add('dyn-blinking');
+    setTimeout(()=>el.classList.remove('dyn-blinking'),3000);
+  });
+}
+
+function showFinding(id){
+  let it;FINDINGS.forEach(g=>g.items.forEach(x=>{if(x.id===id)it=x;}));
+  if(!it)return;
   document.querySelectorAll('.fm-item').forEach(b=>b.classList.toggle('active',b.dataset.fid===id));
-  document.getElementById('findingsContent').innerHTML=`<div class="fc-eyebrow">${it.eyebrow}</div><h2 class="fc-title">${it.title}</h2><div class="fc-body">${it.body}</div>`;}
+  /* action bar: >dynamicFINDINGS button + ⓘ (headline + lorem for now) */
+  const actionBar=`<div class="findings-actionbar">
+    <button class="dynfind-btn" id="dynFindBtn">&gt;dynamic<em>FINDINGS</em></button>
+    <span class="action-info-icon" id="dynFindInfoIcon" style="font-size:12px;position:relative;">ⓘ<div class="action-info-pop" id="dynFindInfoPop" style="width:320px;">
+      <div class="ai-head">dynamicFindings</div>
+      <div class="ai-body">${loremParagraph(1)}</div>
+    </div></span>
+  </div>`;
+  document.getElementById('findingsContent').innerHTML=
+    actionBar+`<div class="fc-eyebrow">${it.eyebrow}</div><h2 class="fc-title">${it.title}</h2><div class="fc-body">${it.body}</div>`;
+  /* wire interactions for this finding */
+  const db=document.getElementById('dynFindBtn');
+  if(db)db.addEventListener('click',blinkDynamicFindings);
+  wireInfoIcon('dynFindInfoIcon','dynFindInfoPop');
+  wireThermalMassDropdown();
+}
 
 /* TAB III */
 function buildCorpusStats(){
