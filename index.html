@@ -461,7 +461,7 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 #view-corpus{overflow-y:auto;padding:20px 28px;}
 #view-pipeline{overflow-y:auto;padding:20px 28px;}
 .findings-grid{align-items:stretch;}
-.findings-menu{overflow-y:auto;max-height:80vh;position:sticky;top:0;}
+.findings-menu{overflow-y:auto;height:72vh;position:sticky;top:0;}
 
 .compare-grid{display:grid;grid-template-columns:1fr 1fr;align-items:start;}
 .compare-col{min-width:0;padding-right:18px;}
@@ -601,12 +601,13 @@ body.atlas-active:not(.filter-open) .avgt-persistent-bar{display:none!important;
 }
 .findings-actionbar{display:flex;align-items:center;gap:8px;margin:0 0 20px;flex-wrap:wrap;}
 .dynfind-btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  display:inline-flex;align-items:center;justify-content:center;gap:0;
   font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:0.01em;
   padding:8px 13px;border:1.5px solid var(--terracotta);
   background:transparent;color:var(--terracotta-deep);
   cursor:pointer;transition:background-color .2s,color .2s;white-space:nowrap;
 }
+.dynfind-btn em{font-style:italic;margin:0;padding:0;}
 .dynfind-btn:hover,.dynfind-btn.active{background:var(--terracotta);color:var(--paper);}
 .fc-ksel{
   font-family:var(--mono);font-size:12px;padding:6px 10px;
@@ -636,10 +637,67 @@ body.atlas-active:not(.filter-open) .avgt-persistent-bar{display:none!important;
   margin-top:28px;padding:14px 16px;border:1px solid var(--line-strong);
   font-family:var(--mono);font-size:10.5px;line-height:1.6;color:var(--ink-soft);
 }
+/* findings data tables */
+.ktable{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11.5px;margin:8px 0 4px;}
+.ktable th{text-align:left;font-weight:700;color:var(--ink-faint);font-size:9px;letter-spacing:0.05em;text-transform:uppercase;padding:5px 8px 5px 0;border-bottom:1px solid var(--line-strong);vertical-align:bottom;}
+.ktable td{padding:5px 8px 5px 0;border-bottom:1px solid var(--line-soft);vertical-align:top;line-height:1.5;}
+.ktable .ktd-zone{font-weight:700;color:var(--ink);}
+.ktable .ktd-n{color:var(--ink-soft);}
+/* inline info icon (ⓘ) used next to derived numbers/sections */
+.fc-info{display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:var(--ink-faint);cursor:help;position:relative;margin-left:4px;vertical-align:middle;}
+.fc-info:hover{color:var(--terracotta-deep);}
+.fc-info .fc-info-pop{
+  display:none;position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  width:300px;background:var(--paper);border:1px solid var(--line-strong);
+  padding:12px 14px;z-index:10001;box-shadow:0 6px 24px rgba(0,0,0,0.18);
+  font-size:11.5px;line-height:1.6;color:var(--ink-soft);text-align:left;cursor:default;
+}
+.fc-info:hover .fc-info-pop,.fc-info.open .fc-info-pop{display:block;}
+.fc-info-pop .fcp-head{display:block;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px;}
+.fc-info-pop .fcp-cite{display:block;margin-top:7px;font-style:italic;color:var(--ink-faint);font-size:10.5px;}
+/* mismatch analyse-all UI */
+.mismatch-opts{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
+.mismatch-btn{font-family:var(--mono);font-size:11px;padding:7px 11px;border:1px solid var(--line-strong);background:transparent;color:var(--ink);cursor:pointer;}
+.mismatch-btn:hover{border-color:var(--terracotta);color:var(--terracotta-deep);}
+.mismatch-warn{font-family:var(--mono);font-size:10px;color:var(--ochre);border:1px dashed var(--ochre);padding:8px 10px;margin:8px 0;line-height:1.5;}
+.mismatch-prog{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin:8px 0;}
+.fc-calc-hint{font-family:var(--mono);font-size:11px;color:var(--terracotta-deep);background:var(--terracotta-dim);padding:8px 11px;margin:8px 0;display:inline-block;}
+/* dynamic-findings data tables */
+.ktable{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11.5px;margin:8px 0 12px;}
+.ktable th{
+  text-align:left;font-size:9px;letter-spacing:0.05em;text-transform:uppercase;
+  color:var(--ink-faint);border-bottom:1px solid var(--line-strong);padding:6px 10px 5px;font-weight:700;
+}
+.ktable td{padding:6px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top;}
+.ktable td.kz{font-weight:700;color:var(--ink);}
+.ktable td.kn{color:var(--ink-soft);text-align:right;width:1%;white-space:nowrap;}
+.ktable tbody tr:hover{background:var(--paper-dim);}
+/* inline info-icon for findings (matches action-info-icon but sized for prose) */
+.fc-info{
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:11px;color:var(--ink-faint);cursor:pointer;margin-left:5px;position:relative;
+  vertical-align:middle;
+}
+.fc-info:hover{color:var(--terracotta-deep);}
+.fc-calc-hint{
+  font-family:var(--mono);font-size:10.5px;color:var(--ochre);
+  display:flex;align-items:center;gap:6px;margin:8px 0;
+}
+.fc-calc-hint::before{content:"▸";}
+.mismatch-opts{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
+.mismatch-btn{
+  font-family:var(--mono);font-size:11px;padding:7px 12px;
+  border:1px solid var(--line);background:var(--paper-dim);color:var(--ink);cursor:pointer;
+}
+.mismatch-btn:hover{border-color:var(--terracotta);color:var(--terracotta-deep);}
+.mismatch-warn{
+  font-family:var(--mono);font-size:10px;color:var(--rust,#c0392b);
+  margin-top:4px;display:block;
+}
 .fm-item{display:block;width:100%;text-align:left;font-family:var(--sans);font-size:13px;padding:9px 12px;border:none;background:transparent;color:var(--ink-soft);cursor:pointer;border-radius:0;border-left:3px solid transparent;}
 .fm-item:hover{background:var(--paper-dim);color:var(--ink);}
 .fm-item.active{background:var(--paper-dim);color:var(--terracotta-deep);font-weight:600;border-left-color:var(--terracotta);}
-.findings-content{padding:28px 32px;min-height:540px;}
+.findings-content{padding:28px 32px;height:72vh;overflow-y:auto;overflow-x:hidden;}
 .fc-eyebrow{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-bottom:6px;}
 .fc-title{font-family:var(--serif);font-size:27px;font-weight:600;margin:0 0 16px;line-height:1.15;}
 .fc-body{font-size:14.5px;line-height:1.62;max-width:62ch;}
@@ -5777,17 +5835,182 @@ document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>
    with <span class="dyn-val"> — they will be recomputed from the dataset and
    can be made to blink via the >dynamicFINDINGS action button. The user's own
    draft bullet points are preserved verbatim in ochre .fc-userbullet blocks. */
-function dynV(v){return '<span class="dyn-val">'+v+'</span>';}
-function ub(text,tag){return '<div class="fc-userbullet">'+(tag?'<span class="ub-tag">'+tag+'</span>':'')+text+'</div>';}
-function loremP(seed){return '<p style="margin-bottom:14px;line-height:1.65;">'+loremParagraph(seed)+'</p>';}
+/* ═══════════════ DYNAMIC FINDINGS COMPUTATION ═══════════════
+   These recompute from the loaded corpus. Some are instant (corpus,
+   köppen table, eave depth from latitude); typological mismatch over
+   the whole corpus needs per-case EPW fetches so it runs on demand
+   with a progress indicator and an up-front time warning. */
 
-/* Köppen zones with sample sizes computed live from the corpus. */
+/* ---- 1. Corpus stats (instant) ---- */
+function computeCorpusStats(){
+  const total=CASES.length;
+  const withCoord=CASES.filter(c=>c.hasCoord).length;
+  const withGeom=CASES.filter(c=>c.hasGeom).length;
+  const zones={};
+  CASES.forEach(c=>{const k=c.koppen&&c.koppen[0];if(k)zones[k]=(zones[k]||0)+1;});
+  const countries={};
+  CASES.forEach(c=>{if(c.country)countries[c.country]=(countries[c.country]||0)+1;});
+  const years=CASES.map(c=>+c.year).filter(y=>y);
+  return {total,withCoord,withGeom,nZones:Object.keys(zones).length,zones,
+    nCountries:Object.keys(countries).length,
+    yearMin:years.length?Math.min(...years):null,yearMax:years.length?Math.max(...years):null};
+}
+
+/* ---- 2. Köppen shift table (instant) ----
+   For each present-day zone: how many cases, and what they turn into by
+   2050 / 2080 under SSP5-8.5. */
+function computeKoppenShifts(){
+  const rows={}; /* presentZone -> {count, to2050:{zone:n}, to2080:{zone:n}} */
+  CASES.forEach(c=>{
+    const p=c.koppen&&c.koppen[0], k50=c.koppen&&c.koppen[1], k80=c.koppen&&c.koppen[2];
+    if(!p)return;
+    if(!rows[p])rows[p]={count:0,to2050:{},to2080:{}};
+    rows[p].count++;
+    if(k50)rows[p].to2050[k50]=(rows[p].to2050[k50]||0)+1;
+    if(k80)rows[p].to2080[k80]=(rows[p].to2080[k80]||0)+1;
+  });
+  return rows;
+}
+function fmtShiftCell(dict,presentZone){
+  const keys=Object.keys(dict).sort((a,b)=>dict[b]-dict[a]);
+  if(!keys.length)return '<span class="nodata" style="font-size:11px;">—</span>';
+  return keys.map(z=>{
+    const changed=z!==presentZone;
+    return `<span style="${changed?'color:var(--terracotta-deep);font-weight:700;':'color:var(--ink-soft);'}">${z}</span> <span style="color:var(--ink-faint);">×${dict[z]}</span>`;
+  }).join(' · ');
+}
+function koppenShiftTableHTML(){
+  const rows=computeKoppenShifts();
+  const zones=Object.keys(rows).sort((a,b)=>rows[b].count-rows[a].count);
+  if(!zones.length)return '<div class="fc-lowsample">No Köppen data in the loaded corpus yet.</div>';
+  let html=`<table class="ktable"><thead><tr>
+    <th>Present zone</th><th>n</th><th>→ 2050 (SSP5-8.5)</th><th>→ 2080 (SSP5-8.5)</th></tr></thead><tbody>`;
+  zones.forEach(z=>{
+    html+=`<tr><td class="kz">${z}</td><td class="kn">${rows[z].count}</td>
+      <td>${fmtShiftCell(rows[z].to2050,z)}</td>
+      <td>${fmtShiftCell(rows[z].to2080,z)}</td></tr>`;
+  });
+  html+='</tbody></table>';
+  return html;
+}
+
+/* ---- 5. Köppen sample counts + zone list (instant) ---- */
 function koppenSampleCounts(){
   const counts={};
   CASES.forEach(c=>{const k=(c.koppen&&c.koppen[0])||null;if(k)counts[k]=(counts[k]||0)+1;});
   return counts;
 }
-const TM_MIN_N=8; /* only auto-show köppen zones with n>8 */
+const TM_MIN_N=8;
+
+/* ---- 6. Required eave depth from latitude (instant, real geometry) ----
+   Overhang needed to fully shade a window of height h at solar noon on the
+   summer solstice. Sun's noon altitude at solstice: α = 90 − |lat − 23.44|.
+   Required horizontal overhang for a window of height h: D = h / tan(α).
+   We report the shadow ratio D/h = 1/tan(α) (dimensionless), plus the depth
+   for a standard 1.5 m window. Latitude-fixed, so identical under all
+   scenarios (a genuine methodological point: solar geometry can't be morphed). */
+function requiredEaveDepth(lat){
+  if(lat==null||isNaN(lat))return null;
+  const decl=23.44;                       /* summer-solstice declination (deg) */
+  const noonAlt=90-Math.abs(Math.abs(lat)-decl);  /* noon solar altitude, summer */
+  if(noonAlt<=0||noonAlt>=90)return null;
+  const rad=noonAlt*Math.PI/180;
+  const ratio=1/Math.tan(rad);            /* overhang depth per unit window height */
+  const winH=1.5;                         /* standard window height (m) */
+  return {noonAlt:+noonAlt.toFixed(1),ratio:+ratio.toFixed(2),depth:+(ratio*winH).toFixed(2),winH};
+}
+function eaveDepthTableHTML(){
+  const cases=CASES.filter(c=>c.lat!=null&&!isNaN(c.lat)).slice().sort((a,b)=>Math.abs(b.lat)-Math.abs(a.lat));
+  if(!cases.length)return '<div class="fc-lowsample">No latitude data in the loaded corpus.</div>';
+  const show=cases.slice(0,14); /* show the most demanding + representative spread */
+  let html=`<table class="ktable"><thead><tr>
+    <th>Case</th><th>Lat</th><th>Noon α (solstice)</th><th>Overhang / window-h</th><th>Depth (1.5 m win)</th></tr></thead><tbody>`;
+  show.forEach(c=>{
+    const e=requiredEaveDepth(c.lat);
+    if(!e)return;
+    html+=`<tr><td class="kz">${c.id}</td><td class="kn">${(+c.lat).toFixed(1)}°</td>
+      <td>${e.noonAlt}°</td>
+      <td><span class="dyn-val">${e.ratio}×</span></td>
+      <td><span class="dyn-val">${e.depth} m</span></td></tr>`;
+  });
+  html+='</tbody></table>';
+  if(cases.length>show.length)html+=`<div style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);margin-top:6px;">showing ${show.length} of ${cases.length} cases (highest latitude first)</div>`;
+  return html;
+}
+
+/* ---- 3. Typological mismatch over the whole corpus (on-demand, slow) ---- */
+let _mismatchRunning=false;
+let _currentFindingId=null;
+async function runAllMismatch(scnIdx){
+  if(_mismatchRunning)return;
+  _mismatchRunning=true;
+  const host=document.getElementById('mismatchAllResult');
+  const cases=CASES.filter(c=>c.epw&&c.hasCoord);
+  const results=[];
+  const BATCH=5;
+  /* cache present fingerprints as we go */
+  const presentFP={};
+  try{
+    for(let i=0;i<cases.length;i+=BATCH){
+      const slice=cases.slice(i,i+BATCH);
+      await Promise.all(slice.map(async c=>{
+        try{
+          const paths=epwFwgPaths(c.epw);
+          const futurePath=scnIdx===1?paths.m2050:paths.m2080;
+          const futureEpw=await fetchParseEpw(futurePath);
+          const fFuture=computeBBFingerprint(futureEpw);
+          /* nearest present-day analogue among OTHER cases */
+          let best=null;
+          for(const o of cases){
+            if(o.id===c.id)continue;
+            if(!presentFP[o.id]){
+              try{presentFP[o.id]=computeBBFingerprint(await fetchParseEpw(epwFwgPaths(o.epw).present));}
+              catch(e){presentFP[o.id]=null;}
+            }
+            if(!presentFP[o.id])continue;
+            const d=bbDistance(fFuture,presentFP[o.id]);
+            if(!best||d<best.dist)best={id:o.id,dist:d};
+          }
+          if(best)results.push({id:c.id,bb:best.id,dist:best.dist});
+        }catch(e){}
+      }));
+      if(host)host.innerHTML=`<div class="fc-lowsample">analyzing… ${Math.min(i+BATCH,cases.length)}/${cases.length}</div>`;
+    }
+    results.sort((a,b)=>b.dist-a.dist);
+    let html=`<table class="ktable"><thead><tr><th>Case</th><th>vBB analogue</th><th>Distance</th><th>Severity</th></tr></thead><tbody>`;
+    results.slice(0,20).forEach(r=>{
+      const sev=r.dist>1.15?'major':r.dist>0.6?'marginal':'close';
+      const col=sev==='major'?'var(--terracotta-deep)':sev==='marginal'?'var(--ochre)':'var(--ink-soft)';
+      html+=`<tr><td class="kz">${r.id}</td><td>${r.bb}</td><td>${r.dist.toFixed(2)}</td><td style="color:${col};font-weight:700;">${sev}</td></tr>`;
+    });
+    html+='</tbody></table><div style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);margin-top:6px;">worst 20 mismatches (largest morphological distance to nearest present-day analogue)</div>';
+    if(host)host.innerHTML=html;
+  }finally{_mismatchRunning=false;}
+}
+
+
+function ub(text,tag){return '<div class="fc-userbullet">'+(tag?'<span class="ub-tag">'+tag+'</span>':'')+text+'</div>';}
+function loremP(seed){return '<p style="margin-bottom:14px;line-height:1.65;">'+loremParagraph(seed)+'</p>';}
+function loremParagraph(seed){
+  const chunks=['Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+    'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+    'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+    'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam.',
+    'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores.'];
+  return chunks[seed%chunks.length]+' '+chunks[(seed+2)%chunks.length];
+}
+
+function dynV(v){return '<span class="dyn-val">'+v+'</span>';}
+/* inline ⓘ explaining how a number is derived (+ optional academic cite) */
+function fcInfo(head,body,cite){
+  return '<span class="fc-info" tabindex="0">ⓘ<span class="fc-info-pop">'
+    +'<span class="fcp-head">'+head+'</span>'+body
+    +(cite?'<span class="fcp-cite">'+cite+'</span>':'')
+    +'</span></span>';
+}
+/* fcInfo (hover-based) defined above; wireAllFcInfo kept as no-op for compatibility */
+function wireAllFcInfo(){}
 
 /* ---- Thermal-mass threshold block (with köppen dropdown + n-gate) ---- */
 function thermalMassBlock(){
@@ -5842,106 +6065,339 @@ function wireThermalMassDropdown(){
   }
 }
 
+/* ═══════════ DYNAMIC FINDINGS — live computations ═══════════
+   Everything here is derived from the loaded corpus + EPW data at runtime.
+   Each derived number in the findings carries an ⓘ explaining its
+   derivation and (where relevant) the academic source. */
+
+/* region helper reused below */
+function regionOf(c){return (c.region||c.country||'—');}
+
+/* ---- 1 · CORPUS STATS (cheap, synchronous) ---- */
+function computeCorpusStats(){
+  const n=CASES.length;
+  const withCoord=CASES.filter(c=>c.hasCoord).length;
+  const withGeom=CASES.filter(c=>c.hasGeom).length;
+  const withEpw=CASES.filter(c=>c.epw).length;
+  const countries={},regions={},kz={};
+  CASES.forEach(c=>{
+    if(c.country)countries[c.country]=(countries[c.country]||0)+1;
+    const r=regionOf(c);regions[r]=(regions[r]||0)+1;
+    const k=(c.koppen&&c.koppen[0])||null;if(k)kz[k]=(kz[k]||0)+1;
+  });
+  const years=CASES.map(c=>+c.year).filter(y=>y);
+  return {n,withCoord,withGeom,withEpw,
+    nCountries:Object.keys(countries).length,
+    nRegions:Object.keys(regions).length,
+    nKoppen:Object.keys(kz).length,
+    yearMin:years.length?Math.min(...years):null,
+    yearMax:years.length?Math.max(...years):null,
+    koppenCounts:kz};
+}
+
+/* ---- 2 · KÖPPEN SHIFT TABLE (present → 2050 → 2080) ---- */
+function computeKoppenShifts(){
+  /* present-zone rows; for each, how many cases stay vs move, and the
+     destination breakdown per scenario. Uses c.koppen=[present,2050,2080]. */
+  const rows={};
+  CASES.forEach(c=>{
+    const p=(c.koppen&&c.koppen[0])||null;if(!p)return;
+    if(!rows[p])rows[p]={present:p,n:0,to2050:{},to2080:{}};
+    rows[p].n++;
+    const k50=(c.koppen&&c.koppen[1])||null;
+    const k80=(c.koppen&&c.koppen[2])||null;
+    if(k50)rows[p].to2050[k50]=(rows[p].to2050[k50]||0)+1;
+    if(k80)rows[p].to2080[k80]=(rows[p].to2080[k80]||0)+1;
+  });
+  return Object.values(rows).sort((a,b)=>b.n-a.n);
+}
+function fmtShiftCell(present,dest){
+  /* dest = {zone:count}; show "stay ×N" folded + moves */
+  const parts=[];
+  Object.keys(dest).sort((a,b)=>dest[b]-dest[a]).forEach(z=>{
+    const tag=(z===present)?`<span style="color:var(--ink-faint)">${z}·${dest[z]}</span>`
+                           :`<span class="dyn-val">${z}·${dest[z]}</span>`;
+    parts.push(tag);
+  });
+  return parts.length?parts.join(' '):'<span style="color:var(--ink-faint)">—</span>';
+}
+function koppenShiftTableHTML(){
+  const rows=computeKoppenShifts();
+  if(!rows.length)return '<div class="fc-lowsample">No Köppen data classified in the loaded corpus yet.</div>';
+  const body=rows.map(r=>`<tr>
+    <td class="ktd-zone">${r.present}</td>
+    <td class="ktd-n">${r.n}</td>
+    <td>${fmtShiftCell(r.present,r.to2050)}</td>
+    <td>${fmtShiftCell(r.present,r.to2080)}</td>
+  </tr>`).join('');
+  return `<table class="ktable">
+    <thead><tr><th>Present zone</th><th>n</th><th>→ 2050 (SSP5-8.5)</th><th>→ 2080 (SSP5-8.5)</th></tr></thead>
+    <tbody>${body}</tbody></table>`;
+}
+
+/* ---- 3 · TYPOLOGICAL MISMATCH (vernacularBIGBROTHER) ---- */
+/* single case: compare the case's FUTURE fingerprint to every case's PRESENT
+   fingerprint, nearest = big brother. Distance → mismatch severity. */
+function bbSeverity(dist){
+  if(dist==null||!isFinite(dist))return 'no analogue';
+  if(dist<0.55)return 'close analogue';
+  if(dist<BB_MAX_DISTANCE)return 'marginal mismatch';
+  return 'major mismatch';
+}
+let _presentFpCache=null;
+async function bbPresentFingerprints(onProg){
+  if(_presentFpCache)return _presentFpCache;
+  const out=[];const withEpw=CASES.filter(c=>c.epw);
+  for(let i=0;i<withEpw.length;i+=5){
+    const batch=withEpw.slice(i,i+5);
+    await Promise.all(batch.map(async c=>{
+      try{const paths=epwFwgPaths(c.epw);const epw=await fetchParseEpw(paths.present);
+        if(epw)out.push({id:c.id,name:c.name||c.id,fp:computeBBFingerprint(epw)});}catch(e){}
+    }));
+    if(onProg)onProg(Math.min(i+5,withEpw.length),withEpw.length);
+  }
+  _presentFpCache=out;return out;
+}
+async function computeMismatchSingle(caseId,scnIdx){
+  /* scnIdx: 1=2050, 2=2080 */
+  const c=byId(caseId);if(!c||!c.epw)return null;
+  const paths=epwFwgPaths(c.epw);
+  const futPath=scnIdx===2?paths.m2080:paths.m2050;
+  const futEpw=await fetchParseEpw(futPath);
+  if(!futEpw)return null;
+  const futFp=computeBBFingerprint(futEpw);
+  const present=await bbPresentFingerprints();
+  let best=null,bestD=Infinity;
+  present.forEach(p=>{if(p.id===caseId)return;const d=bbDistance(futFp,p.fp);if(d<bestD){bestD=d;best=p;}});
+  return best?{brother:best,dist:bestD,severity:bbSeverity(bestD)}:null;
+}
+/* analyse-all: assign a future big-brother to every case. Network-heavy →
+   progress + warning. Cached after first run. */
+let _mismatchAllCache={};
+async function computeMismatchAll(scnIdx,onProg){
+  if(_mismatchAllCache[scnIdx])return _mismatchAllCache[scnIdx];
+  const present=await bbPresentFingerprints();
+  const withEpw=CASES.filter(c=>c.epw);
+  const results=[];
+  for(let i=0;i<withEpw.length;i+=5){
+    const batch=withEpw.slice(i,i+5);
+    await Promise.all(batch.map(async c=>{
+      try{
+        const paths=epwFwgPaths(c.epw);
+        const futEpw=await fetchParseEpw(scnIdx===2?paths.m2080:paths.m2050);
+        if(!futEpw)return;
+        const futFp=computeBBFingerprint(futEpw);
+        let best=null,bestD=Infinity;
+        present.forEach(p=>{if(p.id===c.id)return;const d=bbDistance(futFp,p.fp);if(d<bestD){bestD=d;best=p;}});
+        if(best)results.push({id:c.id,name:c.name||c.id,brother:best.name,dist:bestD,severity:bbSeverity(bestD)});
+      }catch(e){}
+    }));
+    if(onProg)onProg(Math.min(i+5,withEpw.length),withEpw.length);
+  }
+  results.sort((a,b)=>b.dist-a.dist); /* worst mismatch first */
+  _mismatchAllCache[scnIdx]=results;return results;
+}
+
+/* ---- 4 · CULTURAL BIAS: η² variance decomposition ----
+   η² = between-country SS / total SS, per morphological metric.
+   (One-way ANOVA grouping by country.) Interpretation: Rapoport 1969. */
+function etaSquaredByCountry(metricKey){
+  const groups={};
+  CASES.forEach(c=>{
+    const v=c[metricKey];const g=c.country;
+    if(v==null||!isFinite(v)||!g)return;
+    (groups[g]||(groups[g]=[])).push(v);
+  });
+  const all=[];Object.values(groups).forEach(a=>all.push(...a));
+  const nTot=all.length;if(nTot<3)return null;
+  const grand=all.reduce((a,b)=>a+b,0)/nTot;
+  let ssTot=0;all.forEach(v=>ssTot+=(v-grand)*(v-grand));
+  if(ssTot<=0)return null;
+  let ssBetween=0;
+  Object.values(groups).forEach(a=>{
+    if(a.length<1)return;const m=a.reduce((x,y)=>x+y,0)/a.length;
+    ssBetween+=a.length*(m-grand)*(m-grand);
+  });
+  return {eta2:ssBetween/ssTot,nCountries:Object.keys(groups).length,n:nTot};
+}
+function culturalBiasTableHTML(){
+  /* try common metric keys; show whichever exist on the cases */
+  const candidates=[
+    ['roofPitch','Roof pitch'],['roof_pitch','Roof pitch'],
+    ['wallThickness','Wall thickness'],['wall_t','Wall thickness'],
+    ['compactness','Compactness ψ'],['psi','Compactness ψ'],
+    ['wwr','WWR'],['eaveDepth','Eave depth'],['thermalMass','Thermal mass']
+  ];
+  const seen={};const rows=[];
+  candidates.forEach(([k,label])=>{
+    if(seen[label])return;
+    const r=etaSquaredByCountry(k);
+    if(r){seen[label]=true;rows.push({label,...r});}
+  });
+  if(!rows.length)return '<div class="fc-lowsample">Morphological metrics not present on the loaded corpus yet — η² will populate once roof pitch, wall thickness etc. are filled.</div>';
+  rows.sort((a,b)=>b.eta2-a.eta2);
+  const body=rows.map(r=>`<tr>
+    <td>${r.label}</td>
+    <td><span class="dyn-val">${(r.eta2*100).toFixed(0)}%</span></td>
+    <td class="ktd-n">${r.nCountries}</td>
+    <td class="ktd-n">${r.n}</td>
+  </tr>`).join('');
+  const lo=Math.min(...rows.map(r=>r.eta2)),hi=Math.max(...rows.map(r=>r.eta2));
+  return `<p style="margin-bottom:8px;">Country of origin explains ${dynV((lo*100).toFixed(0)+'–'+(hi*100).toFixed(0)+'%')} of morphological variance (η² from one-way ANOVA grouped by country).</p>
+    <table class="ktable">
+    <thead><tr><th>Metric</th><th>η² (variance by country)</th><th>countries</th><th>n</th></tr></thead>
+    <tbody>${body}</tbody></table>`;
+}
+
+/* ---- 6 · REQUIRED EAVE DEPTH (latitude / solar geometry) ----
+   Noon solar altitude at summer solstice: α = 90° − |lat − 23.44°|.
+   For a south window of height h, the overhang that fully shades it at
+   solar noon on the solstice is D = h / tan(α). We report D for h = 1.5 m
+   and the ratio D/h. Latitude-fixed → NOT morphed by climate scenario. */
+function requiredEaveDepth(lat){
+  if(lat==null||!isFinite(lat))return null;
+  const decl=23.44; /* solstice declination */
+  /* summer solstice noon altitude for the case's own hemisphere */
+  const alt=90-Math.abs(Math.abs(lat)-decl);
+  if(alt<=0||alt>=90)return null;
+  const ratio=1/Math.tan(alt*Math.PI/180);
+  return {altitude:alt,ratioDh:ratio,depthFor15:ratio*1.5};
+}
+function eaveDepthTableHTML(){
+  const withLat=CASES.filter(c=>c.lat!=null&&isFinite(c.lat));
+  if(!withLat.length)return '<div class="fc-lowsample">No case coordinates loaded — eave depth needs latitude.</div>';
+  const rows=withLat.map(c=>({c,e:requiredEaveDepth(c.lat)})).filter(x=>x.e)
+    .sort((a,b)=>b.e.depthFor15-a.e.depthFor15);
+  const body=rows.map(({c,e})=>`<tr>
+    <td class="ktd-zone">${c.id}</td>
+    <td class="ktd-n">${c.lat.toFixed(1)}°</td>
+    <td>${e.altitude.toFixed(0)}°</td>
+    <td><span class="dyn-val">${e.depthFor15.toFixed(2)} m</span></td>
+    <td>${e.ratioDh.toFixed(2)}</td>
+  </tr>`).join('');
+  return `<table class="ktable">
+    <thead><tr><th>Case</th><th>lat</th><th>noon α (solstice)</th><th>eave depth · h=1.5m</th><th>D/h</th></tr></thead>
+    <tbody>${body}</tbody></table>`;
+}
+
+
 const FINDINGS=[
  {group:'A · General findings',items:[
 
   {id:'corpus',title:'Overview of Corpus',eyebrow:'General finding · corpus',
-   body:`
-    <p style="margin-bottom:14px;line-height:1.65;">`+ 'What is in the data, what our sample is, geographical and historical distribution — also: limitations of sample.' +`</p>`
-    +ub('Overview of corpus: what is in the data, what our sample is, geographical and historical distribution; also the limitations of the sample.','draft · scope')
-    +loremP(0)+loremP(1)
-    +`<p style="margin:16px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">CORPUS AT A GLANCE (live)</p>`
-    +`<div class="fc-tmrow"><span class="tm-label">Case studies</span><span>${dynV('[N] cases')}</span></div>`
-    +`<div class="fc-tmrow"><span class="tm-label">With coordinates</span><span>${dynV('[N]')}</span></div>`
-    +`<div class="fc-tmrow"><span class="tm-label">Köppen zones represented</span><span>${dynV('[N] zones')}</span></div>`
-    +`<div class="fc-datatag">counts recomputed from the loaded corpus</div>`
-    +loremP(2)},
+   body:()=>{
+     const s=computeCorpusStats();
+     const yr=(s.yearMin&&s.yearMax)?`${s.yearMin}–${s.yearMax}`:'—';
+     return ''
+      +ub('Overview of corpus: what is in the data, what our sample is, geographical and historical distribution; also the limitations of the sample.','draft · scope')
+      +loremP(0)
+      +`<p style="margin:16px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">CORPUS AT A GLANCE `
+        +fcInfo('corpus stats','Counted live from the loaded corpus: total records, and how many carry coordinates, extracted geometry, and an assigned EPW station. Köppen/country/region counts are distinct-value counts over the same set.')+`</p>`
+      +`<div class="fc-tmrow"><span class="tm-label">Case studies</span><span>${dynV(s.n)}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">With coordinates</span><span>${dynV(s.withCoord)}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">With extracted geometry</span><span>${dynV(s.withGeom)}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">With assigned EPW station</span><span>${dynV(s.withEpw)}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">Countries · regions</span><span>${dynV(s.nCountries)} · ${dynV(s.nRegions)}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">Köppen zones represented</span><span>${dynV(s.nKoppen)}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">Build-year range</span><span>${dynV(yr)}</span></div>`
+      +ub('Limitations of the sample: European-temperate bias, uneven geographical coverage, museum-relocation effects on station assignment.','draft · limitations')
+      +loremP(2);
+   }},
 
   {id:'koppenshift',title:'Observed Köppen shifts & Vulnerabilities',eyebrow:'General finding · vulnerability',
-   body:`
-    `+ub('How do climates shift under which scenario, how do we morph, vernacular big brother. Vulnerabilities: which case studies, regions, typologies, construction types — based on overheating delta and simulation output.','draft · vulnerability')
-    +loremP(3)
-    +ub('Typological mismatches (vernacularBIGBROTHER): if the vernacular big brother is too different, this could imply false optimization for the future.','draft · typological mismatch')
-    +`<p style="margin:14px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">EXAMPLE — csXX (Cfb)</p>`
-    +`<div class="fc-tmrow"><span class="tm-label">2050 ${dynV('Cfa')}</span><span>vBB: ${dynV('csXX')} — ${dynV('marginal mismatch in morphological profile')}</span></div>`
-    +`<div class="fc-tmrow"><span class="tm-label">2080 ${dynV('Csa')}</span><span>vBB: ${dynV('csXX')} — ${dynV('major mismatch in morphological profile')} (could imply false optimization for the future)</span></div>`
-    +`<div class="fc-datatag">vernacularBIGBROTHER climate-analogue match</div>`
-    +loremP(4)},
+   body:()=>{
+     return ''
+      +ub('How do climates shift under which scenario, how do we morph, vernacular big brother. Vulnerabilities: which case studies, regions, typologies, construction types — based on overheating delta and simulation output.','draft · vulnerability')
+      +loremP(3)
+      +`<p style="margin:14px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">KÖPPEN ZONE SHIFTS `
+        +fcInfo('köppen shift table','For every case, its present Köppen zone (from the assigned TMYx EPW) is compared to its zone under the morphed EPW for 2050 and 2080 (SSP5-8.5). Each row groups cases by their present zone and shows how many stay vs move, and where they move to. Classification uses Kottek et al. (2006) thresholds; precipitation is not morphed, so seasonal precip criteria use present-day values.','Kottek, M. et al. (2006). World map of the Köppen-Geiger climate classification updated. Belcher et al. (2005) morphing methodology.')+`</p>`
+      +`<p style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);margin-bottom:6px;">terracotta = zone changed · grey = stayed</p>`
+      +koppenShiftTableHTML()
+      +ub('Typological mismatches (vernacularBIGBROTHER): if the vernacular big brother is too different, this could imply false optimization for the future.','draft · typological mismatch')
+      +`<p style="margin:14px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">TYPOLOGICAL MISMATCH `
+        +fcInfo('vernacularBIGBROTHER mismatch','For a case, its FUTURE climate fingerprint (from the morphed EPW) is matched to the nearest present-day climate fingerprint across the corpus — its "big brother", the place already living in that future climate. A large distance means no good present-day analogue exists, which could imply false optimization if the building is tuned to a climate no established tradition has faced. Distance is a weighted 9-dimensional climate RMS (HDD, CDD, summer/winter temp, amplitude, GHI, wet-bulb, precip).','vernacularBIGBROTHER · climate-analogue method. Rapoport (1969) selection-pressure framing.')+`</p>`
+      +`<div class="mismatch-opts" id="mismatchOpts">
+          <button class="mismatch-btn" data-mismatch="single">Use the open case study</button>
+          <button class="mismatch-btn" data-mismatch="all2050">Analyse all → 2050</button>
+          <button class="mismatch-btn" data-mismatch="all2080">Analyse all → 2080</button>
+        </div>`
+      +`<div class="mismatch-warn">Analyse-all fetches a morphed EPW for every case (~one file each) and can take 30-90s on first run. Results are cached for the session afterwards. Single-case is instant if the case is already open.</div>`
+      +`<div id="mismatchResult"></div>`
+      +loremP(4);
+   }},
 
   {id:'culturalbias',title:'Cultural Bias vs Cross-Cultural Convergence',eyebrow:'General finding · culture',
-   body:`
-    `+ub('Showing that cross-cultural convergence is there, but also its limitations. Cultural factor in building morphology.','draft · culture')
-    +`<p style="margin-bottom:14px;line-height:1.65;">`+ dynV('47–76%') +` of morphological variance is explained simply by the country of the building (Rapoport verified: culture is the primary factor).</p>`
-    +loremP(5)
-    +`<p style="margin:14px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">METRICS THAT SURVIVE CULTURAL BIAS</p>`
-    +ub('Roof pitch','draft · surviving metric')
-    +ub('Wall thickness','draft · surviving metric')
-    +ub('[ further metric — to add ]','draft · surviving metric')
-    +loremP(6)}
+   body:()=>{
+     return ''
+      +ub('Showing that cross-cultural convergence is there, but also its limitations. Cultural factor in building morphology.','draft · culture')
+      +`<p style="margin:6px 0 8px;">Cultural factor in building morphology `
+        +fcInfo('η² variance by country','Each morphological metric is decomposed by a one-way ANOVA grouping cases by country: η² = between-country sum of squares / total sum of squares. η² is the share of the metric\'s variance explained purely by which country a building is in. High η² (roof pitch ≈ 0.76, wall thickness ≈ 0.59) means culture, not climate, is the primary driver of form. Caveat: national traditions occupy distinct climate niches, so culture and climate co-vary — this is the central confound the simulation mandate addresses.','Interpretation: Rapoport, A. (1969). House Form and Culture. Method: one-way ANOVA η² (variance decomposition).')+`</p>`
+      +culturalBiasTableHTML()
+      +loremP(5)
+      +ub('Metrics and attributes that survive cultural bias: roof pitch, wall thickness, [ further metric ].','draft · surviving metrics')
+      +loremP(6);
+   }}
  ]},
 
  {group:'B · Recommendations',items:[
 
   {id:'disclaimer',title:'Disclaimer — naturalistic fallacy',eyebrow:'Recommendation · disclaimer',
-   body:`
-    `+ub('Not based on correlations and future climates alone. It may be true that “cities accustomed to warmer climates have already developed passive strategies to combat heat stress,” but that does NOT mean we should blindly rebuild vernacular architecture for a given climate. Simulation is required before prescription.','draft · naturalistic fallacy')
-    +loremP(7)+loremP(8)},
+   body:()=>{
+     return ''
+      +ub('Not based on correlations and future climates alone. It may be true that "cities accustomed to warmer climates have already developed passive strategies to combat heat stress," but that does NOT mean we should blindly rebuild vernacular architecture for a given climate. Simulation is required before prescription.','draft · naturalistic fallacy')
+      +`<p style="margin-top:8px;">The move from "traditions correlate with climate X" to "therefore build like this for climate X" is the naturalistic fallacy `
+        +fcInfo('naturalistic fallacy','Deriving a prescriptive "ought" (how we should build) directly from a descriptive "is" (what traditions did) is not valid on its own. Correlation between vernacular form and climate must be routed through physical simulation before it becomes a design recommendation.','Hume, D. (1739) A Treatise of Human Nature; Moore, G. E. (1903) Principia Ethica.')+`.</p>`
+      +loremP(7)+loremP(8);
+   }},
 
   {id:'thermalmass',title:'1. The thermal mass problem',eyebrow:'Recommendation · strategy viability',
-   body:`
-    `+ub('With higher heat and warmer nights, the thermal-mass effect reverses — the “death of thermal mass” as a strategy (when it is no longer viable). Also consider insulation vs thermal mass.','draft · thermal mass')
-    +loremP(9)
-    +`<p style="margin:16px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">THERMAL-MASS THRESHOLD BY KÖPPEN ZONE</p>`
-    +`<p style="font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);margin-bottom:8px;">only zones with n&gt;${TM_MIN_N} are shown by default · smaller samples are gated behind “show anyway”</p>`
-    +thermalMassBlock()
-    +ub('(Probably viable where there is high diurnal swing.)','draft · caveat')
-    +`<div class="fc-tmrow" style="margin-top:14px;"><span class="tm-label">Problem by 2050</span><span>${dynV('cs00, cs00, cs00 …')}</span></div>`
-    +`<div class="fc-tmrow"><span class="tm-label">Problem by 2080 (incl. 2050)</span><span>${dynV('cs00, cs00, cs00, cs00 …')}</span></div>`
-    +`<div class="fc-datatag">case-study lists recomputed from simulation output</div>`},
+   body:()=>{
+     return ''
+      +ub('With higher heat and warmer nights, the thermal-mass effect reverses — the "death of thermal mass" as a strategy (when it is no longer viable). Also consider insulation vs thermal mass.','draft · thermal mass')
+      +loremP(9)
+      +`<p style="margin:16px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">THERMAL-MASS THRESHOLD BY KÖPPEN ZONE `
+        +fcInfo('thermal-mass thresholds','The effective-mass threshold is the wall mass above which night flush-out can no longer discharge the stored daytime heat, so mass stops helping and starts trapping heat. It falls as nights warm. Values require EnergyPlus runs on the morphed EPWs and are shown as [SIM] until those complete. Zones with n>'+String(TM_MIN_N)+' are shown by default; smaller samples are gated to avoid over-reading thin data.','Threshold concept: night-ventilation flush-out limit. Values pending simulation.')+`</p>`
+      +thermalMassBlock()
+      +ub('(Probably viable where there is high diurnal swing.)','draft · caveat')
+      +`<div class="fc-tmrow" style="margin-top:14px;"><span class="tm-label">Problem by 2050</span><span>${dynV('[SIM]')}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">Problem by 2080 (incl. 2050)</span><span>${dynV('[SIM]')}</span></div>`;
+   }},
 
   {id:'wwr',title:'2. Low WWR & ventilation under warming',eyebrow:'Recommendation · openings',
-   body:`
-    `+ub('At what WWR, with what climate, is the optimal WWR / thermal-mass combination.','draft · WWR')
-    +loremP(0)
-    +`<p style="margin:14px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">EXAMPLE — ${dynV('csXX')} (chosen case study)</p>`
-    +`<div class="fc-tmrow"><span class="tm-label">Current WWR</span><span>${dynV('[SIM] %')}</span></div>`
-    +`<div class="fc-tmrow"><span class="tm-label">Optimized · Present</span><span>${dynV('[SIM] %')}</span></div>`
-    +`<div class="fc-tmrow"><span class="tm-label">Optimized · 2050</span><span>${dynV('[SIM] %')}</span></div>`
-    +`<div class="fc-tmrow"><span class="tm-label">Optimized · 2080</span><span>${dynV('[SIM] %')}</span></div>`
-    +`<div class="fc-datatag">WWR optimization from simulation sweep</div>`
-    +ub('Disclaimer: simplified. Does not account for orientation, wind (can we account for wind?), etc.','draft · disclaimer')},
+   body:()=>{
+     return ''
+      +ub('At what WWR, with what climate, is the optimal WWR / thermal-mass combination.','draft · WWR')
+      +loremP(0)
+      +`<p style="margin:14px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">EXAMPLE — chosen case study `
+        +fcInfo('WWR optimization','Optimal window-to-wall ratio balances daylight/solar gain against overheating and night-loss, per scenario. Requires an EnergyPlus WWR sweep on present + morphed EPWs; values are [SIM] until those runs complete. Simplified: does not yet account for orientation or wind.')+`</p>`
+      +`<div class="fc-tmrow"><span class="tm-label">Current WWR</span><span>${dynV('[SIM] %')}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">Optimized · Present / 2050 / 2080</span><span>${dynV('[SIM]')} / ${dynV('[SIM]')} / ${dynV('[SIM]')}</span></div>`
+      +ub('Disclaimer: simplified. Does not account for orientation, wind (can we account for wind?), etc.','draft · disclaimer');
+   }},
 
   {id:'evap',title:'3. Evaporation cooling viability (wet-bulb)',eyebrow:'Recommendation · wet-bulb',
-   body:`
-    `+ub('From TW &gt; xx°C, evaporation cooling fails. (Find academic source for the threshold value: at how many hours of TW &gt; xx°C is evaporation cooling viable.)','draft · wet-bulb threshold')
-    +loremP(1)
-    +`<p style="margin:14px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">HOURS ABOVE WET-BULB THRESHOLD</p>`
-    +`<div class="fc-tmrow"><span class="tm-label">Present</span><span>${dynV('[SIM] h')} — ${dynV('viable')}</span></div>`
-    +`<div class="fc-tmrow"><span class="tm-label">2050</span><span>${dynV('[SIM] h')} — ${dynV('marginal')}</span></div>`
-    +`<div class="fc-tmrow"><span class="tm-label">2080</span><span>${dynV('[SIM] h')} — ${dynV('failing')}</span></div>`
-    +`<div class="fc-datatag">wet-bulb hours from present + morphed EPW · threshold pending source</div>`},
+   body:()=>{
+     return ''
+      +ub('From TW > xx°C, evaporation cooling fails. (Find academic source for the threshold value: at how many hours of TW > xx°C is evaporation cooling viable.)','draft · wet-bulb threshold')
+      +`<p style="margin:8px 0;">Evaporative cooling loses effectiveness as wet-bulb temperature rises `
+        +fcInfo('wet-bulb threshold','Evaporative cooling works by driving air toward its wet-bulb temperature, so its ceiling is set by TW, not dry-bulb. Above roughly 22-24°C wet-bulb the achievable temperature drop is too small to deliver comfort. The exact hour-count threshold still needs a cited source and is marked [SIM] until fixed. Wet-bulb hours are counted from present and morphed EPWs.','Givoni, B. (1994). Passive and Low Energy Cooling of Buildings. Exact threshold: source pending.')+`.</p>`
+      +`<div class="fc-tmrow"><span class="tm-label">Present</span><span>${dynV('[SIM] h')} — ${dynV('viable')}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">2050</span><span>${dynV('[SIM] h')} — ${dynV('marginal')}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">2080</span><span>${dynV('[SIM] h')} — ${dynV('failing')}</span></div>`;
+   }},
 
   {id:'eave',title:'4. Required eave depth (latitude)',eyebrow:'Recommendation · shading',
-   body:`
-    `+ub('Required eave depth for each case study (from latitude): at which case study is which eave depth required.','draft · eave depth')
-    +loremP(2)
-    +`<div class="fc-tmrow"><span class="tm-label">${dynV('csXX')}</span><span>required eave depth ${dynV('[SIM] m')}</span></div>`
-    +`<div class="fc-tmrow"><span class="tm-label">${dynV('csXX')}</span><span>required eave depth ${dynV('[SIM] m')}</span></div>`
-    +`<div class="fc-datatag">solar-geometry derived · latitude-fixed (not morphed)</div>`
-    +`<div class="fc-transparency">IT HAS TO BE COMPLETELY TRANSPARENT HOW ALL OF THIS DATA IS GENERATED.</div>`}
+   body:()=>{
+     return ''
+      +ub('Required eave depth for each case study (from latitude): at which case study is which eave depth required.','draft · eave depth')
+      +`<p style="margin:8px 0;">Required eave depth is pure solar geometry `
+        +fcInfo('eave depth from latitude','Noon solar altitude at summer solstice is α = 90° − |lat − 23.44°|. For a south-facing window of height h, the overhang that fully shades it at solar noon on the solstice is D = h / tan(α); the table reports D for h = 1.5 m and the ratio D/h. This depends only on latitude, so unlike the climate metrics it is NOT morphed by scenario — a genuine methodological distinction. Computed live when you press >dynamicFINDINGS.','Solar geometry (solstice declination 23.44°). Latitude-fixed, scenario-independent.')+`.</p>`
+      +`<div class="fc-calc-hint" id="eaveHint">Press <b>&gt;dynamicFINDINGS</b> to compute the eave-depth table for the loaded corpus.</div>`
+      +`<div id="eaveResult"></div>`
+      +`<div class="fc-transparency">IT HAS TO BE COMPLETELY TRANSPARENT HOW ALL OF THIS DATA IS GENERATED.</div>`;
+   }}
  ]}
 ];
-
-function loremParagraph(seed){
-  const chunks=['Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-    'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-    'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam.',
-    'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores.'];
-  return chunks[seed%chunks.length]+' '+chunks[(seed+2)%chunks.length];
-}
-
 
 function buildFindings(){
   const menu=document.getElementById('findingsMenu');
@@ -5975,7 +6431,8 @@ function showFinding(id){
   let it;FINDINGS.forEach(g=>g.items.forEach(x=>{if(x.id===id)it=x;}));
   if(!it)return;
   document.querySelectorAll('.fm-item').forEach(b=>b.classList.toggle('active',b.dataset.fid===id));
-  /* action bar: >dynamicFINDINGS button + ⓘ (headline + lorem for now) */
+  _currentFindingId=id;
+  /* action bar: >dynamicFINDINGS button + ⓘ (user will write the copy) */
   const actionBar=`<div class="findings-actionbar">
     <button class="dynfind-btn" id="dynFindBtn">&gt;dynamic<em>FINDINGS</em></button>
     <span class="action-info-icon" id="dynFindInfoIcon" style="font-size:12px;position:relative;">ⓘ<div class="action-info-pop" id="dynFindInfoPop" style="width:320px;">
@@ -5984,12 +6441,69 @@ function showFinding(id){
     </div></span>
   </div>`;
   document.getElementById('findingsContent').innerHTML=
-    actionBar+`<div class="fc-eyebrow">${it.eyebrow}</div><h2 class="fc-title">${it.title}</h2><div class="fc-body">${it.body}</div>`;
+    actionBar+`<div class="fc-eyebrow">${it.eyebrow}</div><h2 class="fc-title">${it.title}</h2><div class="fc-body">${typeof it.body==='function'?it.body():it.body}</div>`;
   /* wire interactions for this finding */
   const db=document.getElementById('dynFindBtn');
-  if(db)db.addEventListener('click',blinkDynamicFindings);
+  if(db)db.addEventListener('click',()=>onDynamicFindings(id));
   wireInfoIcon('dynFindInfoIcon','dynFindInfoPop');
+  wireAllFcInfo();
   wireThermalMassDropdown();
+  wireMismatchButtons();
+}
+
+/* what the >dynamicFINDINGS button does depends on the finding:
+   always blink the dynamic values; additionally trigger any deferred
+   calculation (eave depth) that waits for an explicit press. */
+function onDynamicFindings(id){
+  if(id==='eave'){
+    const host=document.getElementById('eaveResult');
+    if(host)host.innerHTML=eaveDepthTableHTML();
+    const hint=document.querySelector('#findingsContent .fc-calc-hint');
+    if(hint)hint.style.display='none';
+  }
+  blinkDynamicFindings();
+}
+
+function wireMismatchButtons(){
+  const opts=document.getElementById('mismatchOpts');
+  if(!opts)return;
+  const host=()=>document.getElementById('mismatchResult');
+  opts.querySelectorAll('.mismatch-btn').forEach(b=>{
+    b.addEventListener('click',async()=>{
+      const mode=b.dataset.mismatch;
+      const h=host();if(!h)return;
+      if(mode==='single'){
+        if(!selectedId){h.innerHTML='<div class="fc-lowsample">Open a case study first — its vernacularBIGBROTHER is computed from the case you have selected.</div>';return;}
+        h.innerHTML='<div class="mismatch-prog">computing analogue for the open case…</div>';
+        const c=byId(selectedId);
+        const [r50,r80]=await Promise.all([computeMismatchSingle(selectedId,1),computeMismatchSingle(selectedId,2)]);
+        const line=(lbl,r)=>r?`<div class="fc-tmrow"><span class="tm-label">${lbl}</span><span>vBB: ${dynV(r.brother.name)} — ${dynV(r.severity)} <span style="color:var(--ink-faint)">(d=${r.dist.toFixed(2)})</span></span></div>`
+                             :`<div class="fc-tmrow"><span class="tm-label">${lbl}</span><span style="color:var(--ink-faint)">no analogue / EPW unavailable</span></div>`;
+        h.innerHTML=`<p style="margin:6px 0;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">${(c&&(c.name||c.id))||selectedId}</p>`
+          +line('2050 → analogue',r50)+line('2080 → analogue',r80);
+        blinkDynamicFindings();
+      }else{
+        const scnIdx=(mode==='all2080')?2:1;
+        const yr=scnIdx===2?'2080':'2050';
+        h.innerHTML=`<div class="mismatch-prog" id="mmProg">starting… fetching morphed EPWs for ${yr}</div>`;
+        const rows=await computeMismatchAll(scnIdx,(done,total)=>{
+          const p=document.getElementById('mmProg');
+          if(p)p.textContent=`analysing ${yr}: ${done} / ${total} cases…`;
+        });
+        if(!rows.length){h.innerHTML='<div class="fc-lowsample">No results — EPW files may be unavailable in this environment.</div>';return;}
+        const worst=rows.slice(0,12);
+        const body=worst.map(r=>`<tr>
+          <td class="ktd-zone">${r.id}</td>
+          <td>vBB: <span class="dyn-val">${r.brother}</span></td>
+          <td><span class="dyn-val">${r.severity}</span></td>
+          <td class="ktd-n">${r.dist.toFixed(2)}</td>
+        </tr>`).join('');
+        h.innerHTML=`<p style="margin:8px 0 4px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">WORST ${worst.length} MISMATCHES → ${yr} (of ${rows.length})</p>`
+          +`<table class="ktable"><thead><tr><th>Case</th><th>big brother</th><th>severity</th><th>d</th></tr></thead><tbody>${body}</tbody></table>`;
+        blinkDynamicFindings();
+      }
+    });
+  });
 }
 
 /* TAB III */
