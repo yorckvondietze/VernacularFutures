@@ -1560,6 +1560,21 @@ html[data-theme="dark"] .leaflet-control-zoom a:hover{background:var(--paper)!im
    drawer) — an inherited `transition:all` was animating/chasing them */
 body.atlas-active .leaflet-top.leaflet-left,
 body.atlas-active .map-legend{transition-property:background-color,border-color,color;}
+/* line legend — bottom-right, explains the connector lines on the map */
+.map-line-legend{
+  position:absolute;bottom:12px;right:12px;z-index:500;
+  background:rgba(255,255,255,0.94);border:1px solid var(--line);
+  padding:8px 10px;font-family:var(--mono);font-size:10px;line-height:1.5;
+  max-width:210px;transition:background-color .3s,border-color .3s,color .3s;
+}
+[data-theme="dark"] .map-line-legend{background:rgba(11,10,22,0.9);}
+.map-line-legend .mll-head{font-weight:700;font-size:9px;letter-spacing:0.05em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:5px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.map-line-legend .mll-body{display:grid;gap:5px;}
+.map-line-legend.collapsed .mll-body{display:none;}
+.map-line-legend .mll-row{display:grid;grid-template-columns:26px 1fr;align-items:center;gap:7px;color:var(--ink-soft);}
+.map-line-legend .mll-swatch{height:0;border-top-width:2.5px;border-top-style:solid;width:26px;}
+.map-line-legend .mll-chevron{transition:transform .2s;font-size:8px;}
+.map-line-legend.collapsed .mll-chevron{transform:rotate(180deg);}
 
 
 /* ═══════════════════════════════════════════════════════
@@ -1717,7 +1732,7 @@ html[data-theme="dark"] .loader-status{
   <section class="view active" id="view-cases">
     <div class="filter-bar">
       <div class="mobile-sheet-close" id="filterSheetClose">✕ &nbsp;close filters</div>
-      <div class="filter-group"><span class="fl">Region</span><select id="fRegion"><option value="">All regions</option></select></div>
+      <div class="filter-group"><span class="fl">Country</span><select id="fRegion"><option value="">All countries</option></select></div>
       <div class="filter-group"><span class="fl">Köppen zone</span><select id="fKoppen"><option value="">All</option></select></div>
       <div class="filter-group"><span class="fl">Roof pitch</span><select id="fRoof"><option value="">All</option><option value="steep">Steep · ≥35°</option><option value="shallow">Shallow · &lt;35°</option></select></div>
       <div class="filter-group"><span class="fl">Construction type</span><select id="fConstruction"><option value="">All</option><option value="timber_frame">Timber frame</option><option value="wood">Wood</option><option value="clay">Clay</option><option value="stone/masonry">Stone masonry</option><option value="log_construction">Log</option></select></div>
@@ -1765,6 +1780,7 @@ html[data-theme="dark"] .loader-status{
           <div id="map"></div>
           <div class="map-safe-msg" id="mapSafeMsg"></div>
           <div class="map-legend" id="mapLegend"></div>
+          <div class="map-line-legend" id="mapLineLegend"></div>
         </div>
         </div>
       <div class="card-window" id="csCardWindow"><div class="cs-resize-handle" id="csResizeHandle" title="Drag to resize"></div>
@@ -2204,6 +2220,35 @@ function rebuildMarkers(){
   });
   if(bounds.length)map.fitBounds(bounds,{padding:[30,30]});
   renderLegend();
+  renderLineLegend();
+}
+/* line legend: explains each connector line type. Colours track the current
+   scenario palette so the legend matches what's actually drawn on the map. */
+function renderLineLegend(){
+  const el=document.getElementById('mapLineLegend');
+  if(!el)return;
+  const ink=cssVar('--ink')||'#333';
+  const terra=cssVar('--terracotta')||'#E07010';
+  const bbCol=scn===1?'#9A7870':(scn===2?'#E07010':terra);
+  const collapsed=el.classList.contains('collapsed');
+  const rows=[
+    {col:ink,dash:'dotted',label:'EPW station link'},
+    {col:bbCol,dash:'solid',label:'vernacularBIGBROTHER'},
+    {col:terra,dash:'dashed',label:'cross-climate convergence'},
+    {col:terra,dash:'dotted-fine',label:'similar morphology / region'},
+  ];
+  const styleFor=d=>{
+    if(d==='dotted')return 'border-top-style:dotted;';
+    if(d==='dashed')return 'border-top-style:dashed;';
+    if(d==='dotted-fine')return 'border-top-style:dotted;opacity:0.7;';
+    return 'border-top-style:solid;';
+  };
+  el.innerHTML=`<div class="mll-head" id="mllHead"><span>map lines</span><span class="mll-chevron">▾</span></div>
+    <div class="mll-body">`
+    +rows.map(r=>`<div class="mll-row"><span class="mll-swatch" style="border-top-color:${r.col};${styleFor(r.dash)}"></span><span>${r.label}</span></div>`).join('')
+    +`</div>`;
+  const head=document.getElementById('mllHead');
+  if(head)head.addEventListener('click',()=>el.classList.toggle('collapsed'));
 }
 function renderLegend(){
   const codes=[...new Set(CASES.flatMap(c=>c.koppen).filter(Boolean))]
@@ -2226,7 +2271,7 @@ function refreshMap(){
   scheduleKoppenOverlay();
 }
 function pass(c){
-  if(fRegion&&c.region!==fRegion)return false;
+  if(fRegion&&c.country!==fRegion)return false;
   if(fKoppen&&c.koppen[scn]!==fKoppen)return false;
   if(fRoof==='steep'&&!(c.roofPitch!=null&&c.roofPitch>=35))return false;
   if(fRoof==='shallow'&&!(c.roofPitch!=null&&c.roofPitch<35))return false;
@@ -2278,8 +2323,8 @@ function renderUnmapped(vis){
 function refreshRegionOptions(){
   const rs=document.getElementById('fRegion');
   rs.querySelectorAll('option:not(:first-child)').forEach(o=>o.remove());
-  const regions=[...new Set(CASES.map(c=>c.region))].sort();
-  regions.forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;rs.appendChild(o);});
+  const countries=[...new Set(CASES.map(c=>c.country).filter(Boolean))].sort();
+  countries.forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;rs.appendChild(o);});
 }
 function refreshKoppenOptions(){
   const ks=document.getElementById('fKoppen');
@@ -3174,7 +3219,7 @@ function zoomToCase(id,thumbEl,planUrl){
 }
 
 function selectCaseCore(id){
-  if(pickingCompare&&selectedId&&id!==selectedId){compareId=id;pickingCompare=false;renderPanel();return;}
+  if(pickingCompare&&selectedId&&id!==selectedId){compareId=id;pickingCompare=false;if(window._maximizeCsWidth)window._maximizeCsWidth();renderPanel();return;}
   selectedId=id;compareId=null;pickingCompare=false;
   renderPanel();
 }
@@ -3409,7 +3454,7 @@ async function fetchStationCoord(epwFilename){
 
 function clearStationMarker(){
   if(stationMarker&&map){try{map.removeLayer(stationMarker);}catch(e){}}
-  if(stationLine&&map){try{map.removeLayer(stationLine);}catch(e){}}
+  if(stationLine&&map){try{if(stationLine._stHit)map.removeLayer(stationLine._stHit);}catch(e){}try{map.removeLayer(stationLine);}catch(e){}}
   stationMarker=null;stationLine=null;
 }
 
@@ -3436,9 +3481,15 @@ async function updateStationMarker(c){
     .bindTooltip(`EPW station: ${c.epw.replace(/_TMYx\.\d{4}-\d{4}\.epw/,'').replace(/_/g,' ')}`,{permanent:false,direction:'top'});
   /* dotted connecting line — read the theme colour from CSS vars */
   const lineColor=getComputedStyle(document.documentElement).getPropertyValue('--ink').trim()||'#ccc';
-  stationLine=L.polyline([[c.lat,c.lon],[coord.lat,coord.lon]],{
+  const stLatLngs=[[c.lat,c.lon],[coord.lat,coord.lon]];
+  const stTip=`EPW station link${coord.name?' · '+coord.name:''}`;
+  const stHit=L.polyline(stLatLngs,{color:'#000',weight:12,opacity:0,interactive:true}).addTo(map);
+  stHit.bindTooltip(stTip,{sticky:true});
+  stationLine=L.polyline(stLatLngs,{
     color:lineColor,weight:1,opacity:0.5,dashArray:'4 7',
   }).addTo(map);
+  stationLine.bindTooltip(stTip,{sticky:true});
+  stationLine._stHit=stHit;
   /* update the distance + station elevation kvlines in the panel */
   const distEl=document.getElementById('stationDist-A');
   const stElevEl=document.getElementById('stationElev-A');
@@ -3629,9 +3680,28 @@ function wirePhotoCarousel(containerEl,urls,caseId){
    pulsing house outline (photo/plan carousels, mosaic thumbnails) ── */
 const UFO_MINI_FRAMES=["<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .cls-1 {\n        fill: currentColor;\n        fill-opacity: 0.1;\n      }\n\n      .cls-1, .cls-2, .cls-3, .cls-4 {\n        stroke: currentColor;\n        stroke-miterlimit: 10;\n      }\n\n      .cls-1, .cls-2, .cls-4 {\n        stroke-width: 2px;\n      }\n\n      .cls-2 {\n        fill: none;\n      }\n\n      .cls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <g>\n      <path class=\"cls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n      <ellipse class=\"cls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n      <path class=\"cls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n      <path class=\"cls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n      <path class=\"cls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n    </g>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"cls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <polygon points=\"776.8 485.25 773.64 492.27 757.54 480.36 757.54 552.62 645.99 552.62 645.99 480.31 629.86 492.24 626.73 485.28 695.46 434.44 701.79 429.77 708.05 434.4 737.69 456.32 737.69 442.37 750.83 442.37 750.83 466.04 776.8 485.25\"/>\n    <path class=\"cls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"cls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n  </g>\n</svg>", "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .cls-1 {\n        fill: currentColor;\n        fill-opacity: 0.1;\n      }\n\n      .cls-1, .cls-2, .cls-3, .cls-4 {\n        stroke: currentColor;\n        stroke-miterlimit: 10;\n      }\n\n      .cls-1, .cls-2, .cls-4 {\n        stroke-width: 2px;\n      }\n\n      .cls-2 {\n        fill: none;\n      }\n\n      .cls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <g>\n      <path class=\"cls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n      <ellipse class=\"cls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n      <path class=\"cls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n      <path class=\"cls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n      <path class=\"cls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n    </g>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"cls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <polygon points=\"773.34 420.42 771.91 427.98 753.47 420.16 770.35 490.42 661.89 516.49 645 446.18 632.1 461.55 627.43 455.51 682.38 390.02 687.44 384 694.61 387.04 728.55 401.43 725.29 387.86 738.07 384.79 743.6 407.81 773.34 420.42\"/>\n    <path class=\"cls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"cls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n  </g>\n</svg>", "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .cls-1 {\n        fill: currentColor;\n        fill-opacity: 0.1;\n      }\n\n      .cls-1, .cls-2, .cls-3, .cls-4 {\n        stroke: currentColor;\n        stroke-miterlimit: 10;\n      }\n\n      .cls-1, .cls-2, .cls-4 {\n        stroke-width: 2px;\n      }\n\n      .cls-2 {\n        fill: none;\n      }\n\n      .cls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <g>\n      <path class=\"cls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n      <ellipse class=\"cls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n      <path class=\"cls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n      <path class=\"cls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n      <path class=\"cls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n    </g>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"cls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <polygon points=\"780.13 409.07 777.67 416.36 760.49 406.07 767.52 477.99 656.5 488.84 649.46 416.88 634.57 430.32 630.78 423.7 694.24 366.41 700.08 361.15 706.76 365.15 738.39 384.08 737.04 370.2 750.11 368.92 752.42 392.47 780.13 409.07\"/>\n    <path class=\"cls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"cls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n  </g>\n</svg>", "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .cls-1 {\n        fill: currentColor;\n        fill-opacity: 0.1;\n      }\n\n      .cls-1, .cls-2, .cls-3, .cls-4 {\n        stroke: currentColor;\n        stroke-miterlimit: 10;\n      }\n\n      .cls-1, .cls-2, .cls-4 {\n        stroke-width: 2px;\n      }\n\n      .cls-2 {\n        fill: none;\n      }\n\n      .cls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <g>\n      <path class=\"cls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n      <ellipse class=\"cls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n      <path class=\"cls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n      <path class=\"cls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n      <path class=\"cls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n    </g>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"cls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <polygon points=\"768.24 380.81 763.59 386.95 750.55 371.75 734.43 442.18 625.69 417.3 641.82 346.81 623.44 354.85 621.94 347.36 700.28 313.14 707.49 309.99 712.56 315.9 736.56 343.88 739.68 330.29 752.48 333.22 747.2 356.29 768.24 380.81\"/>\n    <path class=\"cls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"cls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n  </g>\n</svg>", "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .cls-1 {\n        fill: currentColor;\n        fill-opacity: 0.1;\n      }\n\n      .cls-1, .cls-2, .cls-3, .cls-4 {\n        stroke: currentColor;\n        stroke-miterlimit: 10;\n      }\n\n      .cls-1, .cls-2, .cls-4 {\n        stroke-width: 2px;\n      }\n\n      .cls-2 {\n        fill: none;\n      }\n\n      .cls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <path class=\"cls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n    <ellipse class=\"cls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n    <path class=\"cls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n    <path class=\"cls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"cls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <path class=\"cls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"cls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n    <path class=\"cls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n    <path d=\"M700.49,291.79c-21.69,0-41.16,1.27-54.49,3.28v56.36h111.55v-55.95c-13.33-2.25-33.92-3.69-57.06-3.69Z\"/>\n  </g>\n</svg>"];
 let _ufoMiniIndex=0;
+/* dxf/photo loader now mirrors the scenario-slider UFO animation: same 5
+   frames, same forward + house-gone + backward ping-pong sequence. */
+const _MINI_SEQ=(function(){
+  const last=UFO_MINI_FRAMES.length-1,seq=[];
+  for(let s=0;s<=last;s++)seq.push(s);
+  seq.push('h','h');
+  for(let s=last;s>=1;s--)seq.push(s);
+  return seq;
+})();
+let _miniSeqPos=0;
 setInterval(()=>{
-  _ufoMiniIndex=(_ufoMiniIndex+1)%UFO_MINI_FRAMES.length;
-  document.querySelectorAll('.ufo-mini-host').forEach(host=>{host.innerHTML=UFO_MINI_FRAMES[_ufoMiniIndex];});
+  _miniSeqPos=(_miniSeqPos+1)%_MINI_SEQ.length;
+  const step=_MINI_SEQ[_miniSeqPos];
+  const hidden=(step==='h');
+  const frame=UFO_MINI_FRAMES[hidden?0:step];
+  document.querySelectorAll('.ufo-mini-host').forEach(host=>{
+    host.innerHTML=frame;
+    if(hidden){
+      const svg=host.querySelector('svg');
+      if(svg)svg.querySelectorAll('polygon,path:not([class])').forEach(n=>{n.style.display='none';});
+    }
+  });
 },220);
 function loadingHouseHTML(){
   return `<div class="photo-loading"><div class="ufo-mini-loader"><div class="ufo-mini-host">${UFO_MINI_FRAMES[0]}</div></div></div>`;
@@ -3765,23 +3835,33 @@ function tempPrecipChart(c,s,epwData){
   const fullMode=!MOCK;
   if(fullMode&&!epwData)return noDataChart(300,140,'temperature: EPW not loaded');
   const temp=epwData?epwData.temp:monthlyTemp(c,s);
-  /* Precipitation: real EPW col 33 (FWG ensemble does scale it slightly via
-     CMIP6; present values verified at 577mm/yr for Praha). Synthetic in demo. */
   const precip=epwData&&epwData.precip?epwData.precip:(fullMode?null:monthlyPrecip(c,s));
-  /* absolute axis: AX.T_MIN to AX.T_MAX, always the same scale */
-  const W=300,H=140,pad=32;
+  /* padL: temperature axis (°C), padR: precipitation axis (mm) */
+  const W=300,H=140,padL=40,padR=precip?40:12,padB=26,padT=12;
   const tLo=AX.T_MIN,tHi=AX.T_MAX;
-  const x=i=>pad+i*(W-pad-8)/11,yT=v=>H-pad-((v-tLo)/(tHi-tLo))*(H-pad-28),baseY=H-pad;
-  const barW=((W-pad-8)/11)*0.55;
+  const plotW=W-padL-padR;
+  const x=i=>padL+i*plotW/11,yT=v=>H-padB-((v-tLo)/(tHi-tLo))*(H-padB-padT),baseY=H-padB;
+  const barW=(plotW/11)*0.55;
   let g='';
+  /* left axis: temperature */
   for(let v=tLo;v<=tHi;v+=10){
-    g+=`<line x1="${pad}" y1="${yT(v)}" x2="${W-6}" y2="${yT(v)}" stroke="var(--line-soft)" stroke-width="${v===0?1.5:1}"/>`
-      +`<text x="${pad-5}" y="${yT(v)+3}" font-family="IBM Plex Mono" font-size="7.5" fill="var(--ink-faint)" text-anchor="end">${v}°</text>`;
+    g+=`<line x1="${padL}" y1="${yT(v)}" x2="${W-padR}" y2="${yT(v)}" stroke="var(--line-soft)" stroke-width="${v===0?1.5:1}"/>`
+      +`<text x="${padL-6}" y="${yT(v)+3}" font-family="IBM Plex Mono" font-size="7.5" fill="var(--ink-faint)" text-anchor="end">${v}°</text>`;
   }
+  /* precipitation bars on their own (right) scale + right axis labels */
   if(precip){
-    const pMax=Math.max(...precip.filter(v=>v!=null),20);
-    precip.forEach((p,i)=>{if(p==null)return;const bh=(p/pMax)*(H-pad-28)*0.62;
-      g+=`<rect x="${(x(i)-barW/2).toFixed(1)}" y="${(baseY-bh).toFixed(1)}" width="${barW.toFixed(1)}" height="${bh.toFixed(1)}" fill="var(--slate)" opacity="0.55" rx="0" data-tip="${MONTHS_FULL[i]}: ${p.toFixed(0)} mm precip" style="cursor:pointer;"/>`;});
+    const rawMax=Math.max(...precip.filter(v=>v!=null),20);
+    /* round the precip axis max up to a clean number for readable ticks */
+    const step=rawMax<=50?10:rawMax<=120?25:rawMax<=250?50:100;
+    const pMax=Math.ceil(rawMax/step)*step;
+    const yP=v=>baseY-(v/pMax)*(H-padB-padT);
+    precip.forEach((p,i)=>{if(p==null)return;
+      g+=`<rect x="${(x(i)-barW/2).toFixed(1)}" y="${yP(p).toFixed(1)}" width="${barW.toFixed(1)}" height="${(baseY-yP(p)).toFixed(1)}" fill="var(--slate)" opacity="0.55" rx="0" data-tip="${MONTHS_FULL[i]}: ${p.toFixed(0)} mm precip" style="cursor:pointer;"/>`;});
+    /* right axis ticks + labels (mm) */
+    for(let v=0;v<=pMax;v+=step){
+      g+=`<text x="${W-padR+6}" y="${yP(v)+3}" font-family="IBM Plex Mono" font-size="7.5" fill="var(--ink-faint)" text-anchor="start">${v}</text>`
+        +`<line x1="${W-padR}" y1="${yP(v)}" x2="${W-padR+3}" y2="${yP(v)}" stroke="var(--line-soft)" stroke-width="1"/>`;
+    }
   }
   g+=MONTHS.map((m,i)=>`<text x="${x(i)}" y="${H-6}" font-family="IBM Plex Mono" font-size="7.5" fill="var(--ink-faint)" text-anchor="middle">${m}</text>`).join('');
   const validPts=temp.map((v,i)=>({v,i})).filter(p=>p.v!=null);
@@ -3800,10 +3880,18 @@ function solarBreakdownChart(c,s,epwData){
     if(MOCK)return `<div class="admin-note" style="padding:8px;">DNI/DHI breakdown not available in demo mode.</div>`;
     return noDataChart(300,86,'direct/diffuse breakdown: no DNI/DHI data');
   }
-  const W=300,H=86,pad=22,maxG=AX.GHI_MAX,x=i=>pad+i*(W-pad-6)/11,barW=((W-pad-6)/11)*0.6,baseY=H-18;
+  const W=300,H=86,pad=34,maxG=AX.GHI_MAX,x=i=>pad+i*(W-pad-6)/11,barW=((W-pad-6)/11)*0.6,baseY=H-18;
   const DIRECT_COL='#D4880F';  /* warm amber — direct beam */
   const DIFF_COL='var(--slate)'; /* cool grey-blue — diffuse sky */
-  let g=MONTHS.map((m,i)=>`<text x="${x(i)}" y="${H-4}" font-family="IBM Plex Mono" font-size="7" fill="var(--ink-faint)" text-anchor="middle">${m}</text>`).join('');
+  let g='';
+  /* y-axis: same kWh/m²/day scale as the GHI chart, with ticks + labels */
+  [0,3,6,9].forEach(v=>{
+    const yv=baseY-v/maxG*(H-34);
+    g+=`<line x1="${pad}" y1="${yv.toFixed(1)}" x2="${W-6}" y2="${yv.toFixed(1)}" stroke="var(--line-soft)" stroke-width="1"/>`
+      +`<line x1="${pad-3}" y1="${yv.toFixed(1)}" x2="${pad}" y2="${yv.toFixed(1)}" stroke="var(--line-soft)" stroke-width="1"/>`
+      +`<text x="${pad-6}" y="${(yv+3).toFixed(1)}" font-family="IBM Plex Mono" font-size="7.5" fill="var(--ink-faint)" text-anchor="end">${v}</text>`;
+  });
+  g+=MONTHS.map((m,i)=>`<text x="${x(i)}" y="${H-4}" font-family="IBM Plex Mono" font-size="7" fill="var(--ink-faint)" text-anchor="middle">${m}</text>`).join('');
   epwData.dhi.forEach((dhi,i)=>{
     const dni=epwData.dni[i]; const ghi=epwData.ghi[i];
     if(dhi==null||dni==null)return;
@@ -3816,7 +3904,7 @@ function solarBreakdownChart(c,s,epwData){
     g+=`<rect x="${(x(i)-barW/2).toFixed(1)}" y="${(baseY-dhBar).toFixed(1)}" width="${barW.toFixed(1)}" height="${dhBar.toFixed(1)}" fill="${DIFF_COL}" opacity="0.7" rx="0" data-tip="${MONTHS_FULL[i]}: ${dhi.toFixed(1)} kWh/m²/day diffuse" style="cursor:pointer;"/>`;
     if(dBar>0.5)g+=`<rect x="${(x(i)-barW/2).toFixed(1)}" y="${(baseY-totalBar).toFixed(1)}" width="${barW.toFixed(1)}" height="${dBar.toFixed(1)}" fill="${DIRECT_COL}" opacity="0.85" rx="0" data-tip="${MONTHS_FULL[i]}: ${direct.toFixed(1)} kWh/m²/day direct" style="cursor:pointer;"/>`;
   });
-  g+=`<text x="2" y="12" font-family="IBM Plex Mono" font-size="7.5" fill="var(--ink-faint)">▮ direct (GHI−DHI) ▮ diffuse (DHI) · EPW</text>`;
+  g+=`<text x="${pad}" y="10" font-family="IBM Plex Mono" font-size="7" fill="var(--ink-faint)">kWh/m²/day · ▮ direct ▮ diffuse</text>`;
   return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="direct vs diffuse solar radiation">${g}</svg>`;
 }
 function rhChart(c,s,epwData){
@@ -3835,13 +3923,13 @@ function rhChart(c,s,epwData){
 function ghiChart(c,s,epwData){
   if(!MOCK&&!epwData)return noDataChart(300,86,'solar radiation: EPW not loaded');
   const ghi=epwData?epwData.ghi:monthlyGHI(c,s);
-  const W=300,H=86,pad=28,maxG=AX.GHI_MAX;
+  const W=300,H=86,pad=34,maxG=AX.GHI_MAX;
   const x=i=>pad+i*(W-pad-6)/11,barW=((W-pad-6)/11)*0.6,baseY=H-18;
   let g='';
   [0,3,6,9].forEach(v=>{
     const yv=baseY-v/maxG*(H-34);
     g+=`<line x1="${pad}" y1="${yv.toFixed(1)}" x2="${W-6}" y2="${yv.toFixed(1)}" stroke="var(--line-soft)" stroke-width="1"/>`;
-    g+=`<text x="${pad-3}" y="${(yv+3).toFixed(1)}" font-family="IBM Plex Mono" font-size="7.5" fill="var(--ink-faint)" text-anchor="end">${v}</text>`;
+    g+=`<text x="${pad-6}" y="${(yv+3).toFixed(1)}" font-family="IBM Plex Mono" font-size="7.5" fill="var(--ink-faint)" text-anchor="end">${v}</text>`;
   });
   g+=MONTHS.map((m,i)=>`<text x="${x(i)}" y="${H-4}" font-family="IBM Plex Mono" font-size="7" fill="var(--ink-faint)" text-anchor="middle">${m}</text>`).join('');
   ghi.forEach((v,i)=>{if(v==null)return;const bh=Math.min(1,v/maxG)*(H-34);
@@ -4821,6 +4909,7 @@ function bbDistance(f1,f2){
 function clearBBLine(){
   if(bbLine&&map){
     try{(bbLine._bbArrows||[]).forEach(m=>map.removeLayer(m));}catch(e){}
+    try{if(bbLine._bbHit)map.removeLayer(bbLine._bbHit);}catch(e){}
     try{map.removeLayer(bbLine);}catch(e){}
     bbLine=null;
   }
@@ -4833,6 +4922,19 @@ function clearBigBrother(){
     b.innerHTML='&gt;vernacular<em>BIGBROTHER</em>';
     b.classList.remove('active');
   });
+}
+/* when the scenario slider changes WHILE vernacularBIGBROTHER is showing,
+   recompute the big brother for the new future scenario (2050 <-> 2080)
+   instead of just clearing it. Called from onScenarioChange. */
+let _bbRerunPending=false;
+async function rerunBigBrotherForScenario(){
+  if(!selectedId||scn===0||_bbRerunPending)return;
+  _bbRerunPending=true;
+  /* clear current BB result but keep the selected case, then recompute */
+  clearBigBrother();
+  bbNoMatch=false;bbCousin=null;bbCousinDist=null;
+  await runBigBrother();
+  _bbRerunPending=false;
 }
 async function runBigBrother(){
   if(!selectedId||scn===0)return;
@@ -4903,14 +5005,23 @@ function applyBigBrotherResult(a,targetCase,dist){
   bbResultId=targetCase.id;
   /* open winner in compare slot B */
   compareId=bbResultId; pickingCompare=false; bigBrotherActive=true;
+  if(window._maximizeCsWidth)window._maximizeCsWidth();
   renderPanel();
   /* draw dashed line on map */
   clearBBLine();
   if(map&&a.hasCoord&&targetCase.hasCoord){
     const lineCol=scn===1?'#9A7870':'#E07010';
-    bbLine=L.polyline([[a.lat,a.lon],[targetCase.lat,targetCase.lon]],{
+    const bbLatLngs=[[a.lat,a.lon],[targetCase.lat,targetCase.lon]];
+    const bbTip=`${targetCase.name||targetCase.id} · vernacularBIGBROTHER${dist!=null?' · climate distance '+dist.toFixed(2):''}`;
+    /* invisible fat hit-area so the line is easy to catch/hover */
+    const bbHit=L.polyline(bbLatLngs,{color:'#000',weight:16,opacity:0,interactive:true}).addTo(map);
+    bbHit.bindTooltip(bbTip,{sticky:true});
+    bbHit.on('click',()=>selectCase(targetCase.id));
+    bbLine=L.polyline(bbLatLngs,{
       color:lineCol,weight:3.5,opacity:0.95
     }).addTo(map);
+    bbLine.bindTooltip(bbTip,{sticky:true});
+    bbLine._bbHit=bbHit;
     /* ── directed chevrons along the great-circle path ─────────── */
     (function(){
       const toRad=d=>d*Math.PI/180, toDeg=r=>r*180/Math.PI;
@@ -5763,17 +5874,23 @@ function drawSimilarityLines(){
   if(!scored.length)return;
   const maxS=scored[0].r.score;
   scored.forEach(({c,r})=>{
-    const line=L.polyline([[a.lat,a.lon],[c.lat,c.lon]],{
+    const latlngs=[[a.lat,a.lon],[c.lat,c.lon]];
+    const tag=r.convergence?'cross-climate convergence':r.sameRegion?'similar morphology · same region':'similar morphology';
+    const tipText=`${c.name||c.id} · ${tag} · match ${r.score.toFixed(1)}`;
+    /* invisible fat hit-area first, so the thin visible line is easy to catch */
+    const hit=L.polyline(latlngs,{color:'#000',weight:14,opacity:0,interactive:true}).addTo(map);
+    hit.bindTooltip(tipText,{sticky:true});
+    hit.on('click',()=>selectCase(c.id));
+    const line=L.polyline(latlngs,{
       color:cssVar('--terracotta'),
       weight:r.convergence?2:1.3,
       opacity:0.4+0.5*(r.score/maxS),
       dashArray:r.convergence?'8,5':'1,5',
     });
-    const tag=r.convergence?'cross-climate convergence':r.sameRegion?'similar morphology · same region':'similar morphology';
-    line.bindTooltip(`${c.name||c.id} · ${tag} · match ${r.score.toFixed(1)}`,{sticky:true});
+    line.bindTooltip(tipText,{sticky:true});
     line.on('click',()=>selectCase(c.id));
     line.addTo(map);
-    simLines.push(line);
+    simLines.push(hit);simLines.push(line);
   });
 }
 
@@ -5853,8 +5970,14 @@ function renderSlider(){
   const onScenarioChange=()=>{
     const panel=document.getElementById('csPanel');
     _preserveScroll=panel?panel.scrollTop:null;
+    /* remember if BB was showing BEFORE the palette step (which clears it
+       when sliding to Present) so we can recompute for the new future. */
+    const bbWasActive=bigBrotherActive||bbNoMatch;
     fKoppen='';const ks=document.getElementById('fKoppen');if(ks)ks.value='';
-    refreshKoppenOptions();applyScenarioPalette();refreshMap();applyFilter();renderPanel();renderLegend();
+    refreshKoppenOptions();applyScenarioPalette();refreshMap();applyFilter();renderPanel();renderLegend();renderLineLegend();
+    /* if BB was showing and we're still on a future scenario, recompute it
+       for the newly selected year (2050 <-> 2080). */
+    if(bbWasActive&&scn!==0&&selectedId){rerunBigBrotherForScenario();}
     /* triple-RAF ensures scroll is restored after all synchronous reflows + first async paints */
     if(panel&&_preserveScroll){
       const s=_preserveScroll;
@@ -7500,6 +7623,21 @@ else if(window._hideLoader)window._hideLoader();
        toggling the drawer via the right column, per design. */
     window._resetCsWidth=function(){
       document.documentElement.style.removeProperty('--cs-width');
+      if(map&&map.invalidateSize)setTimeout(()=>map.invalidateSize(),260);
+    };
+    /* expand the case-study drawer to its maximum width (used when a
+       comparison or vernacularBIGBROTHER view opens, so both columns / the
+       long info text fit). Closes the filter drawer first if it is open,
+       per design — then the max is computed without the filter's left
+       inset, giving the drawer the full span. Works in atlas + fullscreen. */
+    window._maximizeCsWidth=function(){
+      if(document.body.classList.contains('filter-open')){
+        const fb=document.getElementById('filterBtn');
+        document.body.classList.remove('filter-open');
+        if(fb)fb.classList.remove('active');
+      }
+      const max=window.innerWidth-40-mapLeftEdge()-MAP_MIN-16;
+      document.documentElement.style.setProperty('--cs-width',Math.max(340,max)+'px');
       if(map&&map.invalidateSize)setTimeout(()=>map.invalidateSize(),260);
     };
     /* re-clamp the current width against the present constraints (used
