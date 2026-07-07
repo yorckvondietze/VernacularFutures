@@ -335,7 +335,7 @@ main{padding:6px 28px 50px;max-width:1500px;margin:0 auto;}
 @keyframes house-pulse{0%,100%{opacity:0.18;}50%{opacity:0.45;}}
 .loading-house-svg{animation:house-pulse 1.6s ease-in-out infinite;color:var(--ink);}
 .loading-house-label{font-family:var(--mono);font-size:9px;color:var(--ink-faint);animation:house-pulse 1.6s ease-in-out infinite;}
-.ufo-mini-loader{display:flex;align-items:center;justify-content:center;color:var(--ink-faint);opacity:0.45;}
+.ufo-mini-loader{display:flex;align-items:center;justify-content:center;color:var(--ink);opacity:0.4;}
 .ufo-mini-host{width:52px;height:auto;}
 .ufo-mini-host svg{width:100%;height:auto;display:block;}
 .ufo-mini-host svg .cls-1,.ufo-mini-host svg .cls-2,.ufo-mini-host svg .cls-4{stroke-width:1px!important;}
@@ -2265,9 +2265,25 @@ function renderLegend(){
     el.classList.toggle('legend-open');
   });
 }
+function selectedMarkerBorder(){
+  /* white outline in dark mode, black in light mode, so the open case's
+     marker is always locatable even when the mosaic (no highlight) is up */
+  return document.documentElement.getAttribute('data-theme')==='dark'?'#FFFFFF':'#000000';
+}
 function refreshMap(){
+  const bCol=selectedMarkerBorder();
   markers.forEach(mk=>{const c=byId(mk._cid),vis=pass(c);
-    mk.setStyle({fillColor:kcolor(c.koppen[scn]),opacity:vis?1:0.12,fillOpacity:vis?0.92:0.07});});
+    const isSel=(mk._cid===selectedId||mk._cid===compareId);
+    mk.setStyle({
+      fillColor:kcolor(c.koppen[scn]),
+      opacity:vis?1:0.12,
+      fillOpacity:vis?0.92:0.07,
+      /* selected/compared cases get a solid contrasting ring */
+      color:isSel?bCol:kcolor(c.koppen[scn]),
+      weight:isSel?2.5:0,
+    });
+    if(isSel&&mk.bringToFront)mk.bringToFront();
+  });
   scheduleKoppenOverlay();
 }
 function pass(c){
@@ -3219,9 +3235,10 @@ function zoomToCase(id,thumbEl,planUrl){
 }
 
 function selectCaseCore(id){
-  if(pickingCompare&&selectedId&&id!==selectedId){compareId=id;pickingCompare=false;if(window._maximizeCsWidth)window._maximizeCsWidth();renderPanel();return;}
+  if(pickingCompare&&selectedId&&id!==selectedId){compareId=id;pickingCompare=false;if(window._maximizeCsWidth)window._maximizeCsWidth();renderPanel();if(map)refreshMap();return;}
   selectedId=id;compareId=null;pickingCompare=false;
   renderPanel();
+  if(map)refreshMap();
 }
 
 function selectCase(id){
@@ -6935,6 +6952,7 @@ function applyTheme(theme){
   if(loaderBtn)loaderBtn.textContent=theme==='dark'?'☀':'☾';
   if(tileLayer)tileLayer.setUrl(theme==='dark'?DARK_TILE_URL:LIGHT_TILE_URL);
   applyScenarioPalette();
+  if(map&&markers&&markers.length)refreshMap();
   /* if the elevation-runner is open, rebuild its saucer sprite so its
      colours follow the new theme immediately (not just on next open).
      Check the overlay's visibility rather than the eggOpen variable:
@@ -7410,6 +7428,7 @@ else if(window._hideLoader)window._hideLoader();
   const csClose=document.getElementById('csPanelCloseBtn');
   if(csClose)csClose.addEventListener('click',()=>{
     _activeAvgZone=null;selectedId=null;renderPanel();
+    if(map)refreshMap();
     if(window._resetCsWidth)window._resetCsWidth();
     /* mobile: X also collapses the bottom sheet (no persistent
        side-drawer state to "reset" the way desktop has) */
@@ -7440,6 +7459,7 @@ else if(window._hideLoader)window._hideLoader();
     /* reset to the mosaic (clear any selected case / typology zone) */
     selectedId=null;compareId=null;_activeAvgZone=null;_selectedZoneId=0;
     if(typeof renderPanel==='function')renderPanel();
+    if(map)refreshMap();
     /* on desktop, ensure the case study drawer is open showing the mosaic */
     const isMobile=window.innerWidth<768||(('ontouchstart' in window||navigator.maxTouchPoints>0)&&window.innerWidth<1024);
     if(!isMobile){
