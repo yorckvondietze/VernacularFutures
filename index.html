@@ -4049,6 +4049,24 @@ const DIN1946_POLY=[
   [20, null,'hi'],  /* upper left:  20°C, 65% RH */
 ];
 
+/* ASHRAE 55-2017 §5.2.1 Graphical Comfort Zone Method.
+   Sources used:
+     - Upper humidity limit: 12 g/kg — explicitly stated in §5.2.1
+     - Temperature range: Table 5.2.1.1
+         Winter (1.0 clo, 1.1 met): 20.0–23.6°C operative temp
+         Summer (0.5 clo, 1.1 met): 23.6–26.8°C operative temp
+     - Operative temp ≈ dry-bulb (standard assumption, still air, Trad ≈ Tair)
+     - Right boundary slope: at W=12 g/kg the warm limit is ~25.5°C
+       (standard Figure 5.2.1.1 — the upper temp decreases with humidity
+       because evaporative cooling capacity drops)
+     - No lower humidity limit in ASHRAE 55; polygon drawn to chart floor (0 g/kg) */
+const ASHRAE55_POLY=[
+  [20.0,  0,   null], /* lower left:  20°C, 0 g/kg (no lower W limit) */
+  [26.8,  0,   null], /* lower right: 26.8°C operative upper limit (summer) */
+  [25.5, 12.0, null], /* upper right: 12 g/kg explicit limit, ~25.5°C at high W */
+  [20.0, 12.0, null], /* upper left:  12 g/kg explicit limit, 20°C */
+];
+
 function drawPsychroCanvas(canvasId,epwData){
   const cv=document.getElementById(canvasId);
   if(!cv)return;
@@ -4125,7 +4143,27 @@ function drawPsychroCanvas(canvasId,epwData){
     ctx.strokeStyle=dark?'rgba(255,255,255,0.5)':'rgba(0,0,0,0.5)';ctx.lineWidth=0.6;
   }
 
-  /* DIN 1946-2 comfort zone — build path once, reuse for fill + hatch + stroke */
+  /* ── ASHRAE 55-2017 §5.2.1 comfort zone ── */
+  const a55Col=dark?'rgba(80,160,255,0.9)':'rgba(20,90,210,0.9)';
+  const a55Poly=ASHRAE55_POLY.map(([T,w])=>[tx(T),wy(w)]);
+  function buildA55Path(){
+    ctx.beginPath();
+    a55Poly.forEach(([px,py],i)=>i===0?ctx.moveTo(px,py):ctx.lineTo(px,py));
+    ctx.closePath();
+  }
+  buildA55Path();
+  ctx.fillStyle=dark?'rgba(80,160,255,0.05)':'rgba(20,90,210,0.04)';
+  ctx.fill();
+  ctx.strokeStyle=a55Col;ctx.lineWidth=1.8;ctx.setLineDash([4,3]);
+  ctx.stroke();ctx.setLineDash([]);
+  /* label */
+  const a55LabelX=tx(23.5),a55LabelY=wy(12.0)-7;
+  ctx.font=`bold 10px "IBM Plex Mono",monospace`;ctx.textAlign='center';
+  ctx.strokeStyle=dark?'rgba(18,18,20,0.8)':'rgba(245,242,237,0.85)';
+  ctx.lineWidth=3;ctx.strokeText('ASHRAE 55',a55LabelX,a55LabelY);
+  ctx.fillStyle=a55Col;ctx.fillText('ASHRAE 55',a55LabelX,a55LabelY);
+
+  /* ── DIN 1946-2 comfort zone — build path once, reuse for fill + hatch + stroke */
   const dinCol=dark?'rgba(80,210,110,0.9)':'rgba(0,150,50,0.9)';
   const poly=DIN1946_POLY.map(([T,wVal,rhi])=>{
     const w=wVal!=null?wVal:humidityRatio(T,rhi==='lo'?0.30:0.65);
@@ -7959,6 +7997,74 @@ function buildPipeline(){
   const pan=document.getElementById('pipePan');
   if(pan){pan.innerHTML=svg;}
   setupPipelineInteractions();
+  /* ── pipeline tag filter ─────────────────────────────────────────
+     Three mutually-exclusive tags; clicking a tag dims unrelated
+     nodes to 30% opacity and highlights matching ones.
+     Click the active tag again to reset. */
+  (function setupPipelineTags(){
+    const vp=document.getElementById('pipeViewport');
+    if(!vp)return;
+    const TAGS={
+      human:{label:'Human input',color:'#7722CC',
+        ids:['Archival_Research','Mannual_annotation','Digitizing_plans',
+             'Data_evaluation','Findings','Visual_Documentation']},
+      script:{label:'Script',color:'#E07010',
+        ids:['DXF_analysis','Future_weather_generation_cleanup','translation',
+             'Köppen-geiger_classification','Extracting_images',
+             'weather_data_assignment','Building_somulations',
+             'climate_data_visualization','simulation_analysis',
+             'Structured_data_collection']},
+      external:{label:'Outside sources',color:'#22BB44',
+        ids:['Worldwide_climate_data','Future_weather_generator',
+             'Java_script_library','cloudflare','Morped_epw_file']}
+    };
+    /* groups that never dim — connectors, backgrounds, decorative */
+    const NEUTRAL=new Set(['lines','world','Layer_1','Layer_3','Brain','Brain-2',
+      'Vernacular_futures','Vernacular_futures-2']);
+    let activeTag=null;
+    /* build the tag bar */
+    const bar=document.createElement('div');
+    bar.id='pipeTagBar';
+    bar.style.cssText='position:absolute;top:12px;left:50%;transform:translateX(-50%);'
+      +'z-index:20;display:flex;gap:8px;pointer-events:all;white-space:nowrap;';
+    Object.entries(TAGS).forEach(([key,tag])=>{
+      const btn=document.createElement('button');
+      btn.textContent=tag.label;
+      btn.dataset.ptag=key;
+      btn.style.cssText=`font-family:var(--mono);font-size:10.5px;padding:4px 14px;`
+        +`border:1.5px solid ${tag.color};border-radius:3px;background:var(--paper);`
+        +`color:${tag.color};cursor:pointer;transition:background .18s,color .18s,opacity .18s;`;
+      btn.addEventListener('pointerdown',e=>e.stopPropagation());
+      btn.addEventListener('click',()=>{
+        const svgEl=document.querySelector('#pipePan svg');
+        if(!svgEl)return;
+        if(activeTag===key){
+          /* deselect — reset all */
+          activeTag=null;
+          svgEl.querySelectorAll('g[id]').forEach(g=>{g.style.opacity='';});
+          bar.querySelectorAll('button').forEach(b=>{
+            const t=TAGS[b.dataset.ptag];
+            b.style.background='var(--paper)';b.style.color=t.color;b.style.opacity='1';
+          });
+        }else{
+          activeTag=key;
+          const activeIds=new Set(tag.ids);
+          svgEl.querySelectorAll('g[id]').forEach(g=>{
+            if(NEUTRAL.has(g.id)){g.style.opacity='';return;}
+            g.style.opacity=activeIds.has(g.id)?'1':'0.3';
+          });
+          bar.querySelectorAll('button').forEach(b=>{
+            const t=TAGS[b.dataset.ptag];const isActive=b.dataset.ptag===key;
+            b.style.background=isActive?t.color:'var(--paper)';
+            b.style.color=isActive?'var(--paper)':t.color;
+            b.style.opacity=isActive?'1':'0.55';
+          });
+        }
+      });
+      tag._btn=btn;bar.appendChild(btn);
+    });
+    vp.appendChild(bar);
+  })();
 }
 
 document.getElementById('openGameBtn').addEventListener('click',()=>openEggGame());
