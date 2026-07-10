@@ -1799,7 +1799,6 @@ html[data-theme="dark"] .loader-status{
       <div class="filter-group"><span class="fl">Köppen zone shift</span><select id="fKoppenDelta"><option value="">All</option><option value="yes">Shifts by 2080</option></select></div>
       <div class="filter-group"><span class="fl">Compactness ψ</span><select id="fCompact"><option value="">All</option><option value="cubey">Compact · ψ≥0.85</option><option value="rectangly">Elongated · ψ&lt;0.85</option></select></div>
       <div class="filter-group"><span class="fl">WWR</span><select id="fWwr"><option value="">All</option><option value="high">High · ≥ median</option><option value="low">Low · &lt; median</option></select></div>
-      <div class="filter-group"><span class="fl">Pentice · cultural</span><select id="fPentice"><option value="">All</option><option value="yes">Has pentice</option><option value="no">No pentice</option></select></div>
       <div class="filter-group"><span class="fl">Diurnal swing<span class="action-info-icon" id="fDiurnalInfoIcon" style="font-size:10px;margin-left:4px;">ⓘ<div class="action-info-pop" id="fDiurnalInfoPop" style="width:290px;"><div class="ai-head">_diurnal swing threshold</div><div class="ai-body">Annual mean of daily (T<sub>max</sub> − T<sub>min</sub>). High-mass construction is desirable above roughly <b>10°C</b>; below <b>6°C</b>, low-mass construction generally performs best, and high mass can cause overheating in humid climates with limited night-time cooling. This filter uses 10°C as the high/low split.</div><div class="ai-cite">Reardon, C., McGee, C. &amp; Milne, G. (2020). Thermal mass. <em>YourHome: Australia's guide to environmentally sustainable homes</em>, Australian Government.</div></div></span></span><select id="fDiurnal"><option value="">All</option><option value="high">High · ≥10°C</option><option value="low">Low · &lt;10°C</option></select></div>
       <div class="filter-group"><span class="fl">Construction period</span><select id="fPeriod"><option value="">All</option><option value="pre1500">Pre-1500</option><option value="1500-1700">1500–1700</option><option value="1700-1850">1700–1850</option><option value="1850-1920">1850–1920</option><option value="1920-1970">1920–1970</option><option value="1970-now">1970–present</option></select></div>
       <span class="filter-count" id="filterCount"></span>
@@ -2135,7 +2134,6 @@ function mockFill(c){
   if(!c.gableClad)c.gableClad=rnd()<0.4?'yes':'no';
   if(!c.facadeColor)c.facadeColor=['whitewash','natural stone','timber brown','ochre render','grey render'][Math.floor(rnd()*5)];
   if(!c.jettying)c.jettying=rnd()<0.25?'yes':'no';
-  if(!c.pentice)c.pentice=rnd()<0.2?'yes':'no';
   if(!c.elevGF)c.elevGF=rnd()<0.3?'yes':'no';
   if(!c.shutters)c.shutters=rnd()<0.45?'yes':'no';
   if(!c.courtyard)c.courtyard=rnd()<0.2?'yes':'no';
@@ -2181,7 +2179,7 @@ let _zoomAnimating=false;   /* prevent re-entrant zoom on rapid clicks */
 let _mosaicPaused=false;    /* pause mosaic batch probing while a case panel is loading */
 const LIGHT_TILE_URL='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 const DARK_TILE_URL='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-let fRegion='',fKoppen='',fRoof='',fConstruction='',fMass='',fOhDelta='',fComfortDelta='',fSolarDelta='',fKoppenDelta='',fCompact='',fWwr='',fPentice='',fDiurnal='',fPeriod='';
+let fRegion='',fKoppen='',fRoof='',fConstruction='',fMass='',fOhDelta='',fComfortDelta='',fSolarDelta='',fKoppenDelta='',fCompact='',fWwr='',fDiurnal='',fPeriod='';
 const byId=id=>CASES.find(c=>c.id===id);
 const grp=code=>code?code[0]:null;
 const noData='<span class="nodata">NO_DATA</span>';
@@ -2374,8 +2372,6 @@ function pass(c){
   if(fCompact==='rectangly'&&!(c.psi!=null&&c.psi<0.85))return false;
   if(fWwr==='high'&&!(c.wwr!=null&&c.wwr>=DYN.wwrMed))return false;
   if(fWwr==='low'&&!(c.wwr!=null&&c.wwr<DYN.wwrMed))return false;
-  if(fPentice==='yes'&&c.pentice!=='yes')return false;
-  if(fPentice==='no'&&c.pentice==='yes')return false;
   if(fDiurnal==='high'&&!(c.diurnalSwing!=null&&c.diurnalSwing>=10))return false;
   if(fDiurnal==='low'&&!(c.diurnalSwing!=null&&c.diurnalSwing<10))return false;
   if(fPeriod){
@@ -2420,7 +2416,7 @@ function refreshKoppenOptions(){
     .sort((a,b)=> a[0]===b[0] ? a.localeCompare(b) : 'ABCDE'.indexOf(a[0])-'ABCDE'.indexOf(b[0]));
   codes.forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k+(KOPPEN_LABEL[k]?' · '+KOPPEN_LABEL[k]:'');ks.appendChild(o);});
 }
-const FILTER_SELECT_IDS=['fRoof','fConstruction','fMass','fOhDelta','fComfortDelta','fSolarDelta','fKoppenDelta','fCompact','fWwr','fPentice','fDiurnal','fPeriod'];
+const FILTER_SELECT_IDS=['fRoof','fConstruction','fMass','fOhDelta','fComfortDelta','fSolarDelta','fKoppenDelta','fCompact','fWwr','fDiurnal','fPeriod'];
 function buildFilters(){
   computeDynamicThresholds();
   refreshRegionOptions();
@@ -2437,12 +2433,11 @@ function buildFilters(){
   document.getElementById('fKoppenDelta').addEventListener('change',e=>{fKoppenDelta=e.target.value;applyFilter();});
   document.getElementById('fCompact').addEventListener('change',e=>{fCompact=e.target.value;applyFilter();});
   document.getElementById('fWwr').addEventListener('change',e=>{fWwr=e.target.value;applyFilter();});
-  document.getElementById('fPentice').addEventListener('change',e=>{fPentice=e.target.value;applyFilter();});
   document.getElementById('fDiurnal').addEventListener('change',e=>{fDiurnal=e.target.value;applyFilter();});
   document.getElementById('fPeriod').addEventListener('change',e=>{fPeriod=e.target.value;applyFilter();});
   wireInfoIcon('fDiurnalInfoIcon','fDiurnalInfoPop');
   document.getElementById('filterReset').addEventListener('click',()=>{
-    fRegion='';fKoppen='';fRoof='';fConstruction='';fMass='';fOhDelta='';fComfortDelta='';fSolarDelta='';fKoppenDelta='';fCompact='';fWwr='';fPentice='';
+    fRegion='';fKoppen='';fRoof='';fConstruction='';fMass='';fOhDelta='';fComfortDelta='';fSolarDelta='';fKoppenDelta='';fCompact='';fWwr='';
     document.getElementById('fRegion').value='';document.getElementById('fKoppen').value='';
     FILTER_SELECT_IDS.forEach(id=>{document.getElementById(id).value='';});
     applyFilter();
@@ -2530,7 +2525,7 @@ function rebuildAppFromCases(newCases){
   clearSimLines();
   CASES=processCases(newCases);
   selectedId=null;compareId=null;pickingCompare=false;
-  fRegion='';fKoppen='';fRoof='';fConstruction='';fMass='';fOhDelta='';fComfortDelta='';fSolarDelta='';fKoppenDelta='';fCompact='';fWwr='';fPentice='';
+  fRegion='';fKoppen='';fRoof='';fConstruction='';fMass='';fOhDelta='';fComfortDelta='';fSolarDelta='';fKoppenDelta='';fCompact='';fWwr='';
   document.getElementById('fRegion').value='';document.getElementById('fKoppen').value='';
   FILTER_SELECT_IDS.forEach(id=>{document.getElementById(id).value='';});
   computeDynamicThresholds();
@@ -2740,7 +2735,7 @@ const yearNum=v=>{if(!v)return 0;const m=String(v).match(/\d{3,4}/);return m?+m[
       structure,plinth:numOf(get('plinth')),wallThk:numOf(get('wallThk')),
       wallThkNS:numOf(get('wallThkNS')),wallThkEW:numOf(get('wallThkEW')),uWall:numOf(get('uWall')),
       volume:numOf(get('volume')),va:numOf(get('va')),psi:numOf(get('psi')),
-      thermalMass:numOf(get('thermalMass')),wwr:numOf(get('wwr')),
+      thermalMass:numOf(get('thermalMass')),wwr:(v=>v!=null?+( v*100).toFixed(1):null)(numOf(get('wwr'))),
       windowOrient:get('windowOrient')||null,avgWinSize:numOf(get('avgWinSize')),avgWinWH:get('avgWinWH')||null,
       hearth:numOf(get('hearth')),roofForm:get('roofForm')||null,roofMat:get('roofMat')||null,
       roofPitch:numOf(get('roofPitch')),uRoof:numOf(get('uRoof')),atticH:numOf(get('atticH')),
@@ -2808,7 +2803,6 @@ const EDIT_FIELDS=[
   {key:'gableClad',label:'Gable cladding',type:'text'},
   {key:'facadeColor',label:'Facade color',type:'text'},
   {key:'jettying',label:'Jettying',type:'text'},
-  {key:'pentice',label:'Pentice',type:'text'},
   {key:'elevGF',label:'Elevated GF',type:'text'},
   {key:'shutters',label:'Shutters',type:'text'},
   {key:'courtyard',label:'Courtyard',type:'text'},
@@ -3311,6 +3305,7 @@ function zoomToCase(id,thumbEl,planUrl){
 
 function selectCaseCore(id){
   if(pickingCompare&&selectedId&&id!==selectedId){compareId=id;pickingCompare=false;if(window._maximizeCsWidth)window._maximizeCsWidth();renderPanel();if(map)refreshMap();return;}
+  if(id!==selectedId)clearBigBrother();
   selectedId=id;compareId=null;pickingCompare=false;
   renderPanel();
   if(map)refreshMap();
@@ -5146,7 +5141,7 @@ function applyBigBrotherResult(a,targetCase,dist){
              </svg>`,
         iconSize:[16,16],iconAnchor:[8,8]
       });
-      const arrow=L.marker([p.lat,p.lon],{icon,interactive:false}).addTo(map);
+      const arrow=L.marker([targetCase.lat,targetCase.lon],{icon,interactive:false}).addTo(map);
       bbLine._bbArrows=[arrow];
     })();
     const farNote=dist>BB_MAX_DISTANCE
@@ -5265,7 +5260,7 @@ function computeAvgTypology(zone){
   /* average WWR */
   const wwrVals=members.map(c=>c.wwr).filter(v=>v!=null&&!isNaN(v));
   const avgWWR=wwrVals.length?wwrVals.reduce((a,b)=>a+b,0)/wwrVals.length:null;
-  const wwrTag=avgWWR!=null?(avgWWR<0.2?'lowwwr':'highwwr'):null;
+  const wwrTag=avgWWR!=null?(avgWWR<20?'lowwwr':'highwwr'):null;
   /* most central EPW: station with min avg haversine to all other members */
   let bestEpw=null;
   if(members.length===1){
@@ -5460,7 +5455,6 @@ function renderAvgTypologyDetailPanel(zone){
       ['Dominant facade colour',pluralFmt(c=>c.facadeColor)],
       ['Dominant gable cladding',pluralFmt(c=>c.gableClad)],
       ['Jettying (plurality)',pluralFmt(c=>c.jettying)],
-      ['Pentice roof (plurality)',pluralFmt(c=>c.pentice)],
       ['Elevated ground floor (plurality)',pluralFmt(c=>c.elevGF)],
       ['Shutters (plurality)',pluralFmt(c=>c.shutters)],
       ['Courtyard (plurality)',pluralFmt(c=>c.courtyard)],
@@ -5730,7 +5724,6 @@ const METRIC_PAGES=[
    ['Facade colour / finish',mv(c.facadeColor)],
    ['Gable cladding',mv(c.gableClad)],
    ['Jettying',mv(c.jettying)],
-   ['Pentice roof',mv(c.pentice)],
    ['Elevated ground floor',mv(c.elevGF)],
    ['Shutters',mv(c.shutters)],
    ['Courtyard',mv(c.courtyard)],
@@ -5811,7 +5804,7 @@ function caseDetailHTML(c,slot){
         <div class="kvline" id="stationDist-${slot}" style="${!MOCK&&c.epw?'':'display:none;'}"></div>
         ${bigBrotherActive&&slot==='B'?`<div style="background:var(--terracotta);color:#fff;font-family:var(--mono);font-size:10px;padding:6px 9px;margin:8px 0 0;display:flex;align-items:flex-start;gap:7px;line-height:1.4;"><span style="font-size:12px;flex:none;">◉</span><span><b>PRESENT-DAY CLIMATE SHOWN</b> for this side, regardless of the slider. Compare it against ${c.id===selectedId?'':(byId(selectedId)?byId(selectedId).name||byId(selectedId).id:'the selected case')}'s projected ${SCENARIOS_LONG[scn]} climate on the left.</span></div>`:''}
         <div class="koppen-strip">
-          ${c.koppen.map((k,i)=>`<div class="koppen-box ${i===displayScn?'current':''}"><div class="scn">${SCENARIOS[i]}</div><div class="code">${k||'<span class="nodata" style="font-size:10px">–</span>'}</div></div>`).join('')}
+          ${c.koppen.map((k,i)=>`<div class="koppen-box ${i===displayScn?'current':''}" style="cursor:pointer;" title="Switch to ${SCENARIOS[i]}" onclick="scn=${i};if(typeof renderSlider==='function')renderSlider();if(typeof onScenarioChange==='function')onScenarioChange();"><div class="scn">${SCENARIOS[i]}</div><div class="code">${k||'<span class="nodata" style="font-size:10px">–</span>'}</div></div>`).join('')}
         </div>
         <div class="climate-tabs-row">
           <div class="diagram-tabs climate-tabs-sidebar">${CLIMATE_TABS.map(k=>`<button class="diagram-tab climate-tab climate-tab-square ${k===ctab?'active':''} ${k==='extremes'?'climate-tab-favorite':''}" data-ctab="${k}" data-slot="${slot}">${CLIMATE_LABEL[k]}</button>`).join('')}</div>
