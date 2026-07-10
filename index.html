@@ -8007,16 +8007,18 @@ function buildPipeline(){
     const TAGS={
       human:{label:'Human input',color:'#7722CC',
         ids:['Archival_Research','Mannual_annotation','Digitizing_plans',
-             'Data_evaluation','Findings','Visual_Documentation']},
-      script:{label:'Script',color:'#E07010',
+             'Data_evaluation','Findings']},
+      script:{label:'Script task',color:'#E07010',
         ids:['DXF_analysis','Future_weather_generation_cleanup','translation',
              'Köppen-geiger_classification','Extracting_images',
-             'weather_data_assignment','Building_somulations',
-             'climate_data_visualization','simulation_analysis',
-             'Structured_data_collection']},
+             'weather_data_assignment','climate_data_visualization',
+             'simulation_analysis']},
+      output:{label:'Script output',color:'#0088CC',
+        ids:['Morped_epw_file','Building_somulations','Structured_data_collection',
+             'Visual_Documentation','Vernacular_futures','Vernacular_futures-2']},
       external:{label:'Outside sources',color:'#22BB44',
         ids:['Worldwide_climate_data','Future_weather_generator',
-             'Java_script_library','cloudflare','Morped_epw_file']}
+             'Java_script_library','cloudflare']}
     };
     /* groups that never dim — connectors, backgrounds, decorative */
     const NEUTRAL=new Set(['lines','world','Layer_1','Layer_3','Brain','Brain-2',
