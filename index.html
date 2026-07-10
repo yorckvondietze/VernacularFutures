@@ -1699,7 +1699,7 @@ html[data-theme="dark"] .loader-status{
 <div id="siteLoader">
   <div class="loader-controls">
     <button class="theme-toggle" id="loaderThemeToggle" title="Toggle dark mode">☾</button>
-    <span class="c-game" id="loaderGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg></span>
+    <span class="c-game" id="loaderGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span>
   </div>
   <div class="loader-inner">
     <div id="loaderSvgHost" class="loader-svg-host"></div>
@@ -1713,7 +1713,7 @@ html[data-theme="dark"] .loader-status{
   <span class="win-title">vernacularfutures</span>
   <span class="win-controls">
     <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">☾</button>
-    <span class="c-game" id="openGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg></span></span>
+    <span class="c-game" id="openGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span></span>
 </div>
 <header class="app-header">
   <div style="display:flex;align-items:center;gap:14px;">
@@ -2008,12 +2008,12 @@ const KOPPEN_COLOR={
  BWh:'#8B0000',BWk:'#AA6600',BSh:'#FF9900',BSk:'#FFCC00',
  Csa:'#FFEE00',Csb:'#CCDD00',Csc:'#99BB00',
  Cwa:'#FF8833',Cwb:'#FF6611',Cwc:'#FF4400',
- Cfa:'#FF7700',Cfb:'#00BBAA',Cfc:'#008877',
+ Cfa:'#AACC00',Cfb:'#22BB44',Cfc:'#007733',
  Dsa:'#FF0066',Dsb:'#CC0088',Dsc:'#990066',Dsd:'#770044',
  Dwa:'#5500FF',Dwb:'#4400DD',Dwc:'#3300BB',Dwd:'#220099',
  Dfa:'#0066FF',Dfb:'#3300CC',Dfc:'#000088',Dfd:'#000055',
  ET:'#7DFFFF',EF:'#F0F0F0'};
-const KG_FALLBACK={A:'#FF5500',B:'#FFCC00',C:'#00BBAA',D:'#0066FF',E:'#7DFFFF'};
+const KG_FALLBACK={A:'#FF5500',B:'#FFCC00',C:'#22BB44',D:'#0066FF',E:'#7DFFFF'};
 const KOPPEN_LABEL={Af:'Tropical rainforest',Am:'Tropical monsoon',Aw:'Tropical savanna',
  BWh:'Hot desert',BWk:'Cold desert',BSh:'Hot steppe',BSk:'Cold steppe',
  Csa:'Hot-summer Mediterranean',Csb:'Warm-summer Mediterranean',
@@ -2379,7 +2379,7 @@ function pass(c){
   if(fDiurnal==='high'&&!(c.diurnalSwing!=null&&c.diurnalSwing>=10))return false;
   if(fDiurnal==='low'&&!(c.diurnalSwing!=null&&c.diurnalSwing<10))return false;
   if(fPeriod){
-    const y=+c.year;
+    const y=yearNum(c.year);
     if(!y)return false;
     if(fPeriod==='pre1500'&&!(y<1500))return false;
     if(fPeriod==='1500-1700'&&!(y>=1500&&y<1700))return false;
@@ -2717,6 +2717,7 @@ function parseWorkbookToCases(workbook){
   const headers=(rows[headerRowIdx]||[]).map(h=>(h||'').toString());
   const idx={};Object.keys(COLMAP_DEF).forEach(k=>idx[k]=findCol(headers,COLMAP_DEF[k]));
   const numOf=v=>{if(v==null||v==='')return null;const n=parseFloat(v);return Number.isFinite(n)?n:null;};
+const yearNum=v=>{if(!v)return 0;const m=String(v).match(/\d{3,4}/);return m?+m[0]:0;};
   const out=[];
   for(let r=headerRowIdx+1;r<rows.length;r++){
     const row=rows[r];if(!row)continue;
@@ -2731,7 +2732,7 @@ function parseWorkbookToCases(workbook){
     if(isApproxRe.test(String(elevRawVal||'')))approxFlags.push('Elevation approximate');
     const structure=get('structure');
     out.push({
-      id:String(id),name:get('name')||null,country:get('country')||null,year:get('year')||null,
+      id:String(id),name:get('name')||null,country:get('country')||null,year:(()=>{const raw=get('year');if(!raw||String(raw).trim()==='-')return null;const nm=String(raw).match(/\d{3,4}/);if(!nm)return null;return /approx/i.test(String(raw))?'c.\u00a0'+nm[0]:nm[0];})(),
       coordRaw:get('coordinates')||null,lat,lon,elev:numOf(get('elevation')),epw:get('epw')||null,
       koppen:[get('koppenPresent')||null,get('koppen2050')||null,get('koppen2080')||null],
       orientation:numOf(get('orientation')),context:get('context')||null,terrain:get('terrain')||null,
@@ -5425,7 +5426,7 @@ function renderAvgTypologyDetailPanel(zone){
       ['Countries',[...new Set(members.map(c=>c.country).filter(Boolean))].join(', ')||'–'],
       ['Radius',zone.radius_km+' km'],
       ['Pin coordinates',zone.pinLat.toFixed(3)+'°, '+zone.pinLon.toFixed(3)+'°'],
-      ['Construction period',(()=>{const ys=members.map(c=>+c.year).filter(y=>y);return ys.length?('c. '+Math.min(...ys)+'–'+Math.max(...ys)):'–';})()],
+      ['Construction period',(()=>{const ys=members.map(c=>yearNum(c.year)).filter(y=>y);return ys.length?(Math.min(...ys)+'–'+Math.max(...ys)):'–';})()],
     ]},
     {label:'Dimensions & structure',rows:()=>[
       ['Dominant wall type',(()=>{const wt=pluralOf(c=>c.wallType);return wt?(WALL_LABEL[wt]||wt):'–';})()],
@@ -5689,7 +5690,7 @@ const METRIC_PAGES=[
    ['Country',mv(c.country)],
    ['Coordinates',c.hasCoord?c.lat.toFixed(3)+'°, '+c.lon.toFixed(3)+'°':noData],
    ['Elevation',fmt(c.elev,' m',0)],
-   ['Construction period',c.year?('c. '+c.year):noData],
+   ['Construction period',c.year?(c.year):noData],
    ['Name',mv(c.name)],
    ['Case study ID',mv(c.id)],
    ['Assigned EPW station',c.epw?(c.epw+(c.distToStation!=null?' · ≈'+c.distToStation+' km':'')):noData],
@@ -6108,7 +6109,7 @@ function computeCorpusStats(){
   CASES.forEach(c=>{const k=c.koppen&&c.koppen[0];if(k)zones[k]=(zones[k]||0)+1;});
   const countries={};
   CASES.forEach(c=>{if(c.country)countries[c.country]=(countries[c.country]||0)+1;});
-  const years=CASES.map(c=>+c.year).filter(y=>y);
+  const years=CASES.map(c=>yearNum(c.year)).filter(y=>y);
   return {total,withCoord,withGeom,nZones:Object.keys(zones).length,zones,
     nCountries:Object.keys(countries).length,
     yearMin:years.length?Math.min(...years):null,yearMax:years.length?Math.max(...years):null};
@@ -6262,7 +6263,7 @@ function computeCorpusStats(){
     const r=regionOf(c);regions[r]=(regions[r]||0)+1;
     const k=(c.koppen&&c.koppen[0])||null;if(k)kz[k]=(kz[k]||0)+1;
   });
-  const years=CASES.map(c=>+c.year).filter(y=>y);
+  const years=CASES.map(c=>yearNum(c.year)).filter(y=>y);
   return {n,withCoord,withGeom,withEpw,
     nCountries:Object.keys(countries).length,
     nRegions:Object.keys(regions).length,
