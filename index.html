@@ -2152,9 +2152,11 @@ function processCases(rawArray){
     /* guarantee c.sim always exists — mockFill skips this in full mode since
        EnergyPlus results aren't in the Excel yet; guard every access so the
        panel renders with NO_DATA rather than crashing. */
-    c.sim=c.sim||{oh:[null,null,null],comfort:[null,null,null]};
+    c.sim=c.sim||{oh:[null,null,null],comfort:[null,null,null],ndp:[null,null,null],topMean:[null,null,null]};
     if(!c.sim.oh)c.sim.oh=[null,null,null];
     if(!c.sim.comfort)c.sim.comfort=[null,null,null];
+    if(!c.sim.ndp)c.sim.ndp=[null,null,null];
+    if(!c.sim.topMean)c.sim.topMean=[null,null,null];
     /* c.tags always computed from real (or null-safe) field values — was
        previously only set inside mockFill, so full-mode cases had no tags. */
     c.tags={
@@ -2635,12 +2637,13 @@ const COLMAP_DEF={
   volume:[h=>h.startsWith('volume')],
   va:[h=>h==='v/a'],
   psi:[h=>h.includes('compactness')],
-  thermalMass:[h=>h.includes('thermal_mass')],
+  thermalMass:[h=>h.includes('thermal_mass_walls')],
   wwr:[h=>h.startsWith('wwr')],
   hearth:[h=>h.includes('hearth')],
   roofPitch:[h=>h.startsWith('roof_pitch')],
   uRoof:[h=>h.includes('u-value')&&h.includes('roof')],
-  atticH:[h=>h.includes('attic')],
+  atticH:[h=>h.includes('attic/gable_height')],
+  terrain:[h=>h.startsWith('terrain')],
   eaveDepth:[h=>h.includes('eave_depth')],
   rakeDepth:[h=>h.includes('rake_depth')],
   flags:[h=>h.startsWith('flags')],
@@ -2670,6 +2673,8 @@ const COLMAP_DEF={
   source:[h=>h==='source'],
   oh00:[h=>h.includes('overheating')&&h.includes('_00')],oh50:[h=>h.includes('overheating')&&h.includes('_50')],oh80:[h=>h.includes('overheating')&&h.includes('_80')],
   cf00:[h=>h.includes('adaptive_comfort')&&h.includes('_00')],cf50:[h=>h.includes('adaptive_comfort')&&h.includes('_50')],cf80:[h=>h.includes('adaptive_comfort')&&h.includes('_80')],
+  ndp00:[h=>h.includes('ndp')&&h.includes('_00')],ndp50:[h=>h.includes('ndp')&&h.includes('_50')],ndp80:[h=>h.includes('ndp')&&h.includes('_80')],
+  topMean00:[h=>h.includes('t_op_mean')&&h.includes('_00')],topMean50:[h=>h.includes('t_op_mean')&&h.includes('_50')],topMean80:[h=>h.includes('t_op_mean')&&h.includes('_80')],
 };
 function findCol(headers,matchers){
   for(const m of matchers){for(let i=0;i<headers.length;i++){if(m((headers[i]||'').toString().trim().toLowerCase()))return i;}}
@@ -2729,7 +2734,7 @@ function parseWorkbookToCases(workbook){
       id:String(id),name:get('name')||null,country:get('country')||null,year:get('year')||null,
       coordRaw:get('coordinates')||null,lat,lon,elev:numOf(get('elevation')),epw:get('epw')||null,
       koppen:[get('koppenPresent')||null,get('koppen2050')||null,get('koppen2080')||null],
-      orientation:numOf(get('orientation')),context:get('context')||null,
+      orientation:numOf(get('orientation')),context:get('context')||null,terrain:get('terrain')||null,
       area:numOf(get('area')),height:numOf(get('height')),floors:numOf(get('floors')),
       structure,plinth:numOf(get('plinth')),wallThk:numOf(get('wallThk')),
       wallThkNS:numOf(get('wallThkNS')),wallThkEW:numOf(get('wallThkEW')),uWall:numOf(get('uWall')),
@@ -2745,7 +2750,7 @@ function parseWorkbookToCases(workbook){
       balconies:get('balconies')||null,special:get('special')||null,
       flags:[get('flags')||null,...approxFlags].filter(Boolean).join('; ')||null,
       notes:get('notes')||null,source:get('source')||null,
-      sim:{oh:[numOf(get('oh00')),numOf(get('oh50')),numOf(get('oh80'))],comfort:[numOf(get('cf00')),numOf(get('cf50')),numOf(get('cf80'))]},
+      sim:{oh:[numOf(get('oh00')),numOf(get('oh50')),numOf(get('oh80'))],comfort:[numOf(get('cf00')),numOf(get('cf50')),numOf(get('cf80'))],ndp:[numOf(get('ndp00')),numOf(get('ndp50')),numOf(get('ndp80'))],topMean:[numOf(get('topMean00')),numOf(get('topMean50')),numOf(get('topMean80'))]},
       wallType:wallTypeFromStructure(structure),
       hasGeom:numOf(get('psi'))!=null,
       hasCoord:lat!=null,
