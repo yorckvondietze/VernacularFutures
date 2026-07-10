@@ -2541,6 +2541,8 @@ function rebuildAppFromCases(newCases){
   renderPhotoTable(dirHandlePhotos?[]:sessionPhotoFiles,!!dirHandlePhotos);
   renderEditGrid();
   renderAdminStatus();
+  /* refresh findings panel with real corpus data */
+  if(_currentFindingId)showFinding(_currentFindingId);
 }
 
 /* ---- full mode: fetch the real workbook from data/, parse with the same
@@ -6788,9 +6790,9 @@ function onDynamicFindings(id){
     blinkDynamicFindings();
     return;
   }
-  /* For all other findings: re-render the body from live CASES data, then blink */
+  /* Re-render body with current CASES, then blink the updated values */
   showFinding(id);
-  blinkDynamicFindings();
+  requestAnimationFrame(()=>blinkDynamicFindings());
 }
 function currentEaveOrient(){
   const active=document.querySelector('#eaveOrientTabs .climate-tab-square.active');
