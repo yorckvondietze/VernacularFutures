@@ -2302,7 +2302,7 @@ function renderLineLegend(){
   const collapsed=el.classList.contains('collapsed');
   const rows=[
     {col:ink,dash:'dotted',label:'EPW station link'},
-    {col:bbCol,dash:'solid',label:'vernacularBIGBROTHER'},
+    {col:bbCol,dash:'solid',label:'vernacularBIGBROTHER',arrowEnd:true},
     {col:terra,dash:'dashed',label:'cross-climate convergence'},
     {col:terra,dash:'dotted-fine',label:'similar morphology / region'},
   ];
@@ -2314,7 +2314,7 @@ function renderLineLegend(){
   };
   el.innerHTML=`<div class="mll-head" id="mllHead"><span>map lines</span><span class="mll-chevron">▾</span></div>
     <div class="mll-body">`
-    +rows.map(r=>`<div class="mll-row"><span class="mll-swatch" style="border-top-color:${r.col};${styleFor(r.dash)}"></span><span>${r.label}</span></div>`).join('')
+    +rows.map(r=>`<div class="mll-row">${r.arrowEnd?`<span class="mll-swatch" style="border-top:none;overflow:visible;display:inline-flex;align-items:center;"><svg width="24" height="10" viewBox="0 0 24 10" style="overflow:visible;display:block;"><line x1="0" y1="5" x2="17" y2="5" stroke="${r.col}" stroke-width="1.5"/><polygon points="17,2.5 23,5 17,7.5" fill="${r.col}"/></svg></span>`:`<span class="mll-swatch" style="border-top-color:${r.col};${styleFor(r.dash)}"></span>`}<span>${r.label}</span></div>`).join('')
     +`</div>`;
   const head=document.getElementById('mllHead');
   if(head)head.addEventListener('click',()=>el.classList.toggle('collapsed'));
@@ -5141,7 +5141,15 @@ function applyBigBrotherResult(a,targetCase,dist){
              </svg>`,
         iconSize:[16,16],iconAnchor:[8,8]
       });
-      const arrow=L.marker([targetCase.lat,targetCase.lon],{icon,interactive:false}).addTo(map);
+      const MARKER_R=8; /* circleMarker radius (7px) + 1px visual margin */
+      const targetPx=map.latLngToContainerPoint([targetCase.lat,targetCase.lon]);
+      const b_rad=b*Math.PI/180;
+      const arrowPx=L.point(
+        targetPx.x - MARKER_R*Math.sin(b_rad),
+        targetPx.y + MARKER_R*Math.cos(b_rad)
+      );
+      const arrowLatLon=map.containerPointToLatLng(arrowPx);
+      const arrow=L.marker([arrowLatLon.lat,arrowLatLon.lng],{icon,interactive:false}).addTo(map);
       bbLine._bbArrows=[arrow];
     })();
     const farNote=dist>BB_MAX_DISTANCE
@@ -6072,7 +6080,8 @@ document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   b.classList.add('active');document.getElementById('view-'+b.dataset.tab).classList.add('active');
   if(b.dataset.tab==='cases'&&map)setTimeout(()=>map.invalidateSize(),60);
-  if(b.dataset.tab==='method'&&typeof _pipeFit==='function')setTimeout(_pipeFit,60);}));
+  if(b.dataset.tab==='method'&&typeof _pipeFit==='function')setTimeout(_pipeFit,60);
+  if(b.dataset.tab==='findings'){const fid=_currentFindingId||(FINDINGS[0]&&FINDINGS[0].items[0]&&FINDINGS[0].items[0].id);if(fid)setTimeout(()=>showFinding(fid),0);}}))
 
 /* TAB II */
 /* TAB II — FINDINGS / RECOMMENDATIONS
@@ -6776,7 +6785,11 @@ function onDynamicFindings(id){
     if(interactive)interactive.style.display='';
     renderEaveTable();
     wireEaveControls();
+    blinkDynamicFindings();
+    return;
   }
+  /* For all other findings: re-render the body from live CASES data, then blink */
+  showFinding(id);
   blinkDynamicFindings();
 }
 function currentEaveOrient(){
