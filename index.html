@@ -5289,7 +5289,39 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
     /* centroid of actual polygon for camera target */
     const pcx=poly.reduce((s,p)=>s+p[0],0)/poly.length;
     const pcy=poly.reduce((s,p)=>s+p[1],0)/poly.length;
-    function place(){camera.position.set(pcx+rad*Math.sin(pol)*Math.sin(az),rad*Math.cos(pol)+eH*0.6,-pcy+rad*Math.sin(pol)*Math.cos(az));camera.lookAt(pcx,eH*0.5,-pcy);}
+    /* North angle from viz JSON — radians, clockwise from DXF +Y to true north */
+    const _northRad=(_vizBld&&_vizBld.building&&_vizBld.building.north_angle_rad!=null)
+      ?_vizBld.building.north_angle_rad:null;
+    /* Compass overlay canvas */
+    const _cc=document.createElement('canvas');
+    _cc.width=44;_cc.height=44;
+    _cc.style.cssText='position:absolute;bottom:10px;right:10px;pointer-events:none;opacity:0.9;z-index:2;';
+    container.appendChild(_cc);
+    function _drawCompass(){
+      const ctx=_cc.getContext('2d');
+      const cx=22,cy=22,r=14;
+      ctx.clearRect(0,0,44,44);
+      if(_northRad===null)return; /* no north arrow in DXF — hide compass */
+      /* screen angle of north: clockwise from screen-up = -az + northRad */
+      const a=-az+_northRad;
+      /* circle background */
+      ctx.beginPath();ctx.arc(cx,cy,r+3,0,Math.PI*2);
+      ctx.fillStyle='rgba(15,15,15,0.55)';ctx.fill();
+      ctx.save();ctx.translate(cx,cy);ctx.rotate(a);
+      /* north half — terracotta */
+      ctx.beginPath();ctx.moveTo(0,-(r-1));ctx.lineTo(-4,3);ctx.lineTo(4,3);ctx.closePath();
+      ctx.fillStyle='#c4542a';ctx.fill();
+      /* south half — grey */
+      ctx.beginPath();ctx.moveTo(0,(r-1));ctx.lineTo(-4,-3);ctx.lineTo(4,-3);ctx.closePath();
+      ctx.fillStyle='#888';ctx.fill();
+      ctx.restore();
+      /* N label */
+      const nx=cx+Math.sin(a)*(r+8),ny=cy-Math.cos(a)*(r+8);
+      ctx.font='bold 8px monospace';ctx.fillStyle='#fff';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText('N',nx,ny);
+    }
+    function place(){camera.position.set(pcx+rad*Math.sin(pol)*Math.sin(az),rad*Math.cos(pol)+eH*0.6,-pcy+rad*Math.sin(pol)*Math.cos(az));camera.lookAt(pcx,eH*0.5,-pcy);renderer.render(scene,camera);_drawCompass();}
     place();
     const onDown=e=>{drag=true;lx=e.clientX;ly=e.clientY;};
     const onMove=e=>{if(!drag)return;az-=(e.clientX-lx)*0.006;pol=Math.max(0.15,Math.min(1.45,pol-(e.clientY-ly)*0.006));lx=e.clientX;ly=e.clientY;place();};
