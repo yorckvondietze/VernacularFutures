@@ -583,6 +583,21 @@ body.atlas-active:not(.filter-open) .avgt-persistent-bar{display:none!important;
 .rec-block.active{background:var(--ochre-dim);}
 .rec-head{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.05em;color:var(--ochre);font-weight:600;margin-bottom:5px;display:flex;justify-content:space-between;}
 .rec-text{font-size:12.5px;line-height:1.5;}
+.ar-wrap{padding:4px 14px 14px;font-size:12px;line-height:1.65;color:var(--ink)}
+.ar-head{font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--terracotta,#c4542a);margin:18px 0 7px;padding-top:12px;border-top:1px solid var(--line)}
+.ar-head:first-child{margin-top:8px;border-top:none}
+.ar-p{margin:0 0 8px;font-size:12px;line-height:1.65}
+.ar-warn{color:#c42020;font-weight:600}
+.ar-ok{color:#1a7a40}
+.ar-note{color:var(--ochre-deep,#7a6010)}
+.ar-nodata{font-family:var(--mono);font-size:10px;color:var(--ink-faint);font-style:italic;margin:2px 0 10px}
+.ar-cite{font-size:8px;color:var(--terracotta,#c4542a);cursor:pointer;border:none;background:none;padding:0 1px;vertical-align:super;line-height:1}
+.ar-adapt{border-left:2px solid #c42020;padding:5px 0 5px 10px;margin:6px 0 4px}
+.ar-adapt ul{margin:4px 0 0 14px;padding:0;line-height:1.7;font-size:11.5px}
+.ar-srcs{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+.ar-srcs summary{font-family:var(--mono);font-size:9px;color:var(--ink-faint);cursor:pointer;user-select:none;list-style:none}
+.ar-srcs summary::-webkit-details-marker{display:none}
+.ar-src-e{font-size:9.5px;line-height:1.55;color:var(--ink-soft);margin:0 0 5px;padding-left:14px;text-indent:-14px}
 
 .findings-grid{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start;}
 .findings-menu{background:var(--paper);border:1px solid var(--line);border-radius:0;padding:8px;position:sticky;top:14px;}
@@ -3147,361 +3162,300 @@ function wireAdminInteractions(){
   const exportBtn=document.getElementById('exportWorkbookBtn');
   if(exportBtn)exportBtn.addEventListener('click',exportEditedWorkbook);
 }
+
 // ═══════════════════════════════════════════════════════════════════════════
-// ADAPTIVE RECOMMENDATIONS ENGINE  (v2 — three-section, evidence-based)
+// ADAPTIVE RECOMMENDATIONS ENGINE  v3
 // ═══════════════════════════════════════════════════════════════════════════
 
+/* Citation references — shown in popover on ⓘ click */
 const AR_REFS={
-ashrae55:'ASHRAE. (2020). <em>ASHRAE Standard 55-2020: Thermal Environmental Conditions for Human Occupancy</em>. American Society of Heating, Refrigerating and Air-Conditioning Engineers.',
-artmann2007:'Artmann, N., Manz, H., &amp; Heiselberg, P. (2007). Climatic potential for passive cooling of buildings by night-time ventilation in Europe. <em>Applied Energy</em>, 84(2), 187–201. https://doi.org/10.1016/j.apenergy.2006.05.004',
-olgyay1963:'Olgyay, V. (1963). <em>Design with Climate: Bioclimatic Approach to Architectural Regionalism</em>. Princeton University Press.',
-givoni1976:'Givoni, B. (1976). <em>Man, Climate and Architecture</em> (2nd ed.). Applied Science Publishers.',
-rapoport1969:'Rapoport, A. (1969). <em>House Form and Culture</em>. Prentice-Hall.',
-ipcc2021:'IPCC. (2021). <em>Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth Assessment Report</em>. Cambridge University Press.',
-kottek2006:'Kottek, M., Grieser, J., Beck, C., Rudolf, B., &amp; Rubel, F. (2006). World map of the Köppen-Geiger climate classification updated. <em>Meteorologische Zeitschrift</em>, 15(3), 259–263.',
-rodrigues2023:'Rodrigues, E., Teixeira, J., Gaspar, A. R., &amp; Gomes, Á. (2023). Future weather generator tool. <em>Energy Reports</em>, 9, 280–292.',
-szokolay2008:'Szokolay, S. V. (2008). <em>Introduction to Architectural Science: The Basis of Sustainable Design</em> (2nd ed.). Architectural Press.',
-dear2002:'de Dear, R. J., &amp; Brager, G. S. (2002). Thermal comfort in naturally ventilated buildings: revisions to ASHRAE Standard 55. <em>Energy and Buildings</em>, 34(6), 549–561.',
-belcher2005:'Belcher, S. E., Hacker, J. N., &amp; Powell, D. S. (2005). Constructing design weather data for future climates. <em>Building Services Engineering Research and Technology</em>, 26(1), 49–61.',
-hensen2011:'Hensen, J. L. M., &amp; Lamberts, R. (Eds.). (2011). <em>Building Performance Simulation for Design and Operation</em>. Routledge.',
+  ashrae55:'ASHRAE. (2020). ASHRAE Standard 55-2020: Thermal Environmental Conditions for Human Occupancy. ASHRAE.',
+  artmann2007:'Artmann, N., Manz, H., & Heiselberg, P. (2007). Climatic potential for passive cooling of buildings by night-time ventilation in Europe. Applied Energy, 84(2), 187–201.',
+  olgyay1963:'Olgyay, V. (1963). Design with Climate: Bioclimatic Approach to Architectural Regionalism. Princeton University Press.',
+  givoni1976:'Givoni, B. (1976). Man, Climate and Architecture (2nd ed.). Applied Science Publishers.',
+  rapoport1969:'Rapoport, A. (1969). House Form and Culture. Prentice-Hall.',
+  ipcc2021:'IPCC. (2021). Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth Assessment Report. Cambridge University Press.',
+  kottek2006:'Kottek, M., Grieser, J., Beck, C., Rudolf, B., & Rubel, F. (2006). World map of the Köppen-Geiger climate classification updated. Meteorologische Zeitschrift, 15(3), 259–263.',
+  szokolay2008:'Szokolay, S. V. (2008). Introduction to Architectural Science: The Basis of Sustainable Design (2nd ed.). Architectural Press.',
+  dear2002:'de Dear, R. J., & Brager, G. S. (2002). Thermal comfort in naturally ventilated buildings: revisions to ASHRAE Standard 55. Energy and Buildings, 34(6), 549–561.',
+  belcher2005:'Belcher, S. E., Hacker, J. N., & Powell, D. S. (2005). Constructing design weather data for future climates. Building Services Engineering Research and Technology, 26(1), 49–61.',
 };
 
-function arRef(k){const t=(AR_REFS[k]||k).replace(/"/g,'&quot;');return `<button class="ar-cite" title="${t}" aria-label="Citation">ⓘ</button>`;}
+/* Popover for ⓘ */
+let _arPop=null;
+function arShowCite(btn,key){
+  if(_arPop){_arPop.remove();_arPop=null;if(_arPop===null&&btn._arKey===key)return;}
+  btn._arKey=key;
+  const txt=AR_REFS[key]||key;
+  const pop=document.createElement('div');
+  pop.style.cssText='position:fixed;z-index:9999;max-width:280px;padding:8px 10px;background:var(--paper);border:1px solid var(--line);border-radius:3px;font-size:10px;line-height:1.55;color:var(--ink-soft);box-shadow:0 3px 10px rgba(0,0,0,.2)';
+  pop.innerHTML=txt;document.body.appendChild(pop);_arPop=pop;
+  const r=btn.getBoundingClientRect();
+  pop.style.left=Math.min(r.left,window.innerWidth-290)+'px';
+  pop.style.top=(r.bottom+4)+'px';
+  setTimeout(()=>document.addEventListener('click',()=>{if(_arPop){_arPop.remove();_arPop=null;}},{once:true}),0);
+}
+
+function arRef(k){return `<button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,'${k}')">ⓘ</button>`;}
 function arWarn(t){return `<span class="ar-warn">⚠ ${t}</span>`;}
 function arOk(t){return `<span class="ar-ok">✓ ${t}</span>`;}
-function arNote(t){return `<span class="ar-note">◆ ${t}</span>`;}
+function arNote(t){return `<span class="ar-note">${t}</span>`;}
 
-const AR_KLABEL={
-  Af:'Tropical rainforest (Af)',Am:'Tropical monsoon (Am)',Aw:'Tropical savanna (Aw)',
-  BWh:'Hot desert (BWh)',BWk:'Cold desert (BWk)',BSh:'Hot semi-arid steppe (BSh)',BSk:'Cold semi-arid steppe (BSk)',
-  Cfa:'Humid subtropical (Cfa)',Cfb:'Temperate oceanic (Cfb)',Cfc:'Subpolar oceanic (Cfc)',
-  Csa:'Hot-summer Mediterranean (Csa)',Csb:'Warm-summer Mediterranean (Csb)',
-  Cwa:'Monsoon-influenced subtropical (Cwa)',Cwb:'Subtropical highland monsoon (Cwb)',
-  Dfa:'Hot continental (Dfa)',Dfb:'Warm continental (Dfb)',Dfc:'Subarctic (Dfc)',
-  Dwa:'Hot monsoon continental (Dwa)',Dwb:'Warm monsoon continental (Dwb)',
-  ET:'Tundra (ET)',EF:'Ice cap (EF)',
+/* Köppen helpers */
+const AR_KL={
+  Af:'Tropical rainforest',Am:'Tropical monsoon',Aw:'Tropical savanna',
+  BWh:'Hot desert',BWk:'Cold desert',BSh:'Hot semi-arid steppe',BSk:'Cold semi-arid steppe',
+  Cfa:'Humid subtropical',Cfb:'Temperate oceanic',Cfc:'Subpolar oceanic',
+  Csa:'Hot-summer Mediterranean',Csb:'Warm-summer Mediterranean',
+  Cwa:'Monsoon subtropical',Cwb:'Subtropical highland monsoon',
+  Dfa:'Hot continental',Dfb:'Warm continental',Dfc:'Subarctic',ET:'Tundra',
 };
-
 function arKFam(z){
-  if(!z)return'?';
-  if(z[0]==='A')return'tropical';
-  if(z==='BWh'||z==='BWk')return'desert';
-  if(z[0]==='B')return'steppe';
-  if(z.length>1&&z[1]==='s')return'mediterranean';
-  if(z[0]==='C')return'temperate';
-  if(z[0]==='D')return'continental';
-  if(z[0]==='E')return'polar';
-  return'other';
+  if(!z||typeof z!=='string')return'?';
+  if(z[0]==='A')return'tropical';if(z==='BWh'||z==='BWk')return'desert';
+  if(z[0]==='B')return'steppe';if(z[1]==='s')return'mediterranean';
+  if(z[0]==='C')return'temperate';if(z[0]==='D')return'continental';
+  if(z[0]==='E')return'polar';return'other';
 }
 function arKHeat(z){
-  if(!z)return 2;
+  if(!z||typeof z!=='string')return 2;
   if(z==='BWh'||z==='BSh')return 5;
-  if(z.startsWith('A')||z==='Cfa'||z==='Dfa'||z==='Cwa')return 4;
+  if(z[0]==='A'||z==='Cfa'||z==='Dfa'||z==='Cwa')return 4;
   if(z==='Csa'||z==='BWk'||z==='Dfb'||z==='Csb'||z==='Cwb')return 3;
-  if(z==='Cfb'||z==='BSk'||z==='Dwa'||z==='Dwb')return 2;
+  if(z==='Cfb'||z==='BSk')return 2;
   if(z==='Cfc'||z==='Dfc')return 1;
-  if(z.startsWith('E'))return 0;
-  return 2;
+  if(z[0]==='E')return 0;return 2;
 }
 function arKDesc(z){
   const d={
-    Af:'Hot and wet year-round, no dry season; mean temperature ~26–28°C throughout; humidity dominates comfort rather than temperature.',
-    Am:'Hot monsoon; abundant annual rainfall concentrated in monsoon season; brief dry period; heat and humidity prevalent throughout.',
-    Aw:'Hot tropical with pronounced dry season; temperatures regularly exceed 35°C in dry season; intense solar radiation.',
-    BWh:'Hot desert; daytime temperatures regularly exceed 40°C with diurnal swings of 15–25°C; very low humidity enables significant night cooling.',
-    BWk:'Cold desert; extreme temperature range between seasons; hot dry summers and cold winters; largest diurnal swings of any climate.',
-    BSh:'Hot semi-arid steppe; warm to hot year-round; moderate diurnal variation; low but seasonally concentrated precipitation.',
-    BSk:'Cold semi-arid steppe; warm dry summers, cold winters; limited precipitation throughout.',
-    Cfa:'Humid subtropical; hot humid summers (mean >22°C), mild winters; rainfall distributed year-round; both heat and moisture present simultaneously.',
-    Cfb:'Temperate oceanic; mild summers (mean <22°C), mild cool winters; persistent moderate precipitation; limited extremes.',
-    Cfc:'Subpolar oceanic; cool short summers, mild but damp winters; overheating risk presently negligible.',
-    Csa:'Hot-summer Mediterranean; hot dry summers (mean >22°C), mild wet winters; significant seasonal temperature swing; water stress in summer.',
-    Csb:'Warm-summer Mediterranean; warm dry summers (mean <22°C), mild wet winters; solar radiation high but peak temperatures moderate.',
-    Cwa:'Monsoon-influenced subtropical; hot wet summers, dry mild winters; heat and humidity concentrated in wet season.',
-    Cwb:'Subtropical highland monsoon; warm wet summers, dry mild winters; altitude moderates absolute temperatures.',
-    Dfa:'Hot continental; hot summers (mean >22°C), cold winters; wide annual temperature range; no dry season.',
-    Dfb:'Warm continental; warm summers (mean <22°C), cold winters; precipitation year-round; large annual range.',
-    Dfc:'Subarctic; short cool summers, very cold winters; heating dominates; overheating historically minimal.',
-    ET:'Tundra; temperatures below 10°C for most of year; building thermal challenge is almost exclusively cold.',
+    Af:'No dry season; mean temperature ~26–28°C year-round; humidity drives discomfort.',
+    Am:'Monsoon rainfall pattern; brief dry season; persistent heat and humidity.',
+    Aw:'Pronounced dry season; temperatures regularly exceed 35°C; high solar radiation.',
+    BWh:'Extreme heat (>40°C daytime); diurnal swings of 15–25°C; very low humidity.',
+    BWk:'Wide seasonal range; hot dry summers, cold winters; large diurnal swings.',
+    BSh:'Warm to hot year-round; moderate diurnal variation; low seasonal precipitation.',
+    BSk:'Warm dry summers, cold winters; limited precipitation.',
+    Cfa:'Hot humid summers (mean >22°C); mild winters; rainfall year-round.',
+    Cfb:'Mild summers (mean <22°C); mild cool winters; moderate precipitation.',
+    Cfc:'Cool short summers; mild damp winters; overheating historically negligible.',
+    Csa:'Hot dry summers (mean >22°C); mild wet winters; significant water stress in summer.',
+    Csb:'Warm dry summers (mean <22°C); mild wet winters; moderate solar radiation.',
+    Cwa:'Hot wet summers; dry mild winters; heat and humidity concentrated in wet season.',
+    Dfb:'Warm summers; cold winters; precipitation year-round; large annual range.',
+    Dfc:'Short cool summers; very cold winters; heating dominated.',
+    ET:'Below 10°C for most of year; overheating risk negligible.',
   };
-  return d[z]||`${z} climate zone — characteristics require site-specific assessment.`;
+  return d[z]||`${z} — characteristics require site-specific assessment.`;
 }
+const AR_SHIFT={
+  'Cfb→Cfa':'shift to humid subtropical: summers significantly hotter and more humid.',
+  'Cfb→Csa':'major shift to hot-summer Mediterranean: hot dry summers, formerly mild cooling season regularly exceeds 30°C.',
+  'Cfb→Csb':'shift to warm-summer Mediterranean: drier and warmer summers, precipitation concentrated in winter.',
+  'Cfa→Csa':'drier summer profile; absolute heat intensifies.',
+  'Cfa→BSh':'significant aridification to semi-arid; year-round heat with declining precipitation.',
+  'Csa→BSh':'critical aridification: peak summer temperatures increase by ~3–5°C.',
+  'Csb→Csa':'hotter and longer dry season.',
+  'BSh→BWh':'extreme aridification to full desert; summer extremes may exceed 45°C regularly.',
+  'BSk→BSh':'warm steppe to hot steppe; heat stress becomes year-round.',
+  'Dfb→Cfb':'milder winters; summers warm modestly.',
+  'Dfb→Cfa':'continental to humid subtropical: hot summers become dominant.',
+  'Dfc→Dfb':'short summers extend; summer heat stress emerges.',
+  'Aw→BSh':'dry season extends and intensifies.',
+};
 function arKShift(from,to){
-  const pairs={
-    'Cfb→Cfa':'shift from cool oceanic to humid subtropical conditions. Summers will become significantly hotter and more humid; cooling demand increases substantially.',
-    'Cfb→Csa':'major shift from mild oceanic to hot-summer Mediterranean. Summers will be hot and dry; previously mild cooling seasons replaced by periods regularly exceeding 30°C with drought conditions.',
-    'Cfb→Csb':'transition from oceanic to warm Mediterranean. Summers become drier and warmer; precipitation increasingly concentrated in winter months.',
-    'Cfa→Csa':'shift toward a drier summer profile. Absolute humidity decreases seasonally, but heat stress intensifies.',
-    'Cfa→BSh':'significant aridification — transition from humid to semi-arid. Year-round heat intensifies alongside declining precipitation.',
-    'Csa→BSh':'critical aridification. Mediterranean conditions pushed to hot semi-arid steppe; summer peak temperatures increase by an estimated 3–5°C.',
-    'Csb→Csa':'hotter summer profile with no fundamental change in seasonality; dry season lengthens and peak temperatures rise.',
-    'BSh→BWh':'extreme aridification — transition from hot steppe to full desert conditions. Summer extremes may regularly exceed 45°C.',
-    'BSk→BSh':'warming from cold to hot steppe; formerly cool winters shrink; heat stress becomes year-round.',
-    'Dfb→Cfb':'warming from warm continental toward oceanic conditions. Winters moderate significantly; summers warm modestly.',
-    'Dfb→Cfa':'major warming. Continental cold winters replaced by mild conditions; summers become hot and humid.',
-    'Dfc→Dfb':'subarctic warming toward warm continental. Short growing season extends; summer heat stress emerges for first time.',
-    'Aw→BSh':'aridification of tropical savanna. Dry season extends and intensifies; heat events become more frequent.',
-    'Am→Aw':'monsoon pattern weakens; dry season becomes more pronounced and heat stress during dry months increases.',
-    'Af→Am':'slight seasonality introduced into previously perennially wet climate; heat stress remains but moisture stress emerges.',
-  };
-  return pairs[`${from}→${to}`]||`transition from ${from} to ${to} — represents a ${arKHeat(to)>arKHeat(from)?'warmer and generally drier':'altered thermal'} trajectory under SSP5-8.5.`;
+  return AR_SHIFT[from+'→'+to]||`transition from ${from} to ${to}: ${arKHeat(to)>arKHeat(from)?'warmer, drier trajectory':'altered thermal regime'} under SSP5-8.5.`;
 }
 
-// ─── SECTION 1: CLIMATE ──────────────────────────────────────────────────────
-function arClimateSection(c){
-  /* c.koppen is [present,2050,2080] array */
-  const _kp=Array.isArray(c.koppen)?c.koppen:[c.koppen,c.koppen50,c.koppen80];
-  const k0=_kp[0],k1=_kp[1],k2=_kp[2];
-  if(!k0) return '<p class="ar-nodata">no_climate_data</p>';
-  const h0=arKHeat(k0),h2=arKHeat(k2||k1||k0);
-  const shift80=k2&&k2!==k0,shift50=k1&&k1!==k0;
-  const deltaHeat=h2-h0;
-  const items=[];
+// ─── SECTION BUILDERS ────────────────────────────────────────────────────────
 
-  // Present baseline
-  items.push(`<div class="ar-item"><strong>Present (${k0} — ${AR_KLABEL[k0]||k0}):</strong> ${arKDesc(k0)} ${arRef('kottek2006')}</div>`);
+function arClimate(c){
+  const kp=Array.isArray(c.koppen)?c.koppen:[c.koppen,c.koppen50,c.koppen80];
+  const k0=kp[0],k1=kp[1],k2=kp[2];
+  if(!k0) return [{t:'nodata',h:'<p class="ar-nodata">no_climate_data</p>'}];
+  const h0=arKHeat(k0),h2=arKHeat(k2||k1||k0),dh=h2-h0;
+  const chunks=[];
 
-  // 2050
+  chunks.push({t:'p',h:`<strong>${k0} — ${AR_KL[k0]||k0}:</strong> ${arKDesc(k0)} ${arRef('kottek2006')}`});
+
   if(k1){
-    let s50;
-    if(!shift50){
-      s50=`<strong>2050 (SSP5-8.5):</strong> ${arRef('ipcc2021')} Köppen zone unchanged (${k1}). Within-zone warming of 0.5–1.5°C is nonetheless projected ${arRef('belcher2005')} — mean summer temperatures rise and extreme-heat event frequency increases non-linearly with baseline temperature.`;
-      if(h0>=4) s50+=` ${arNote('Even without zone reclassification, an already-hot climate will experience meaningfully higher peak temperatures by mid-century.')}`;
-    } else {
-      s50=`<strong>2050 (SSP5-8.5):</strong> ${arRef('ipcc2021')} Climate projected to shift to <strong>${k1}</strong> (${AR_KLABEL[k1]||k1}) — ${arKShift(k0,k1)} ${arKDesc(k1)}`;
-    }
-    items.push(`<div class="ar-item">${s50}</div>`);
+    if(k1===k0) chunks.push({t:'p',h:`<strong>2050 (SSP5-8.5):</strong> ${arRef('ipcc2021')} Zone unchanged (${k1}). Within-zone warming of 0.5–1.5°C projected. ${arRef('belcher2005')}${h0>=3?' '+arNote('Rising event frequency even without zone reclassification.'):''}` });
+    else chunks.push({t:'p',h:`<strong>2050 (SSP5-8.5):</strong> ${arRef('ipcc2021')} Shift to <strong>${k1}</strong> (${AR_KL[k1]||k1}) — ${arKShift(k0,k1)}`});
   }
-
-  // 2080
   if(k2){
-    let s80,severe=deltaHeat>=2;
-    if(k2===k0&&(!k1||k1===k0)){
-      s80=`<strong>2080:</strong> Zone stable throughout (${k2}). Cumulative warming continues — under SSP5-8.5, global mean surface temperature is projected to exceed pre-industrial levels by 3.3–5.7°C by 2100. ${arRef('ipcc2021')}`;
-      if(h0>=3) s80+=` ${arWarn('In an already warm or hot climate, this level of warming implies chronic heat stress and significant increase in dangerous heat events.')}`;
-    } else if(k2!==k0){
-      s80=`<strong>2080 — ${severe?arWarn('Major climate zone shift'):arNote('Climate zone shift')}:</strong> Transition to <strong>${k2}</strong> (${AR_KLABEL[k2]||k2}) — ${arKShift(k0,k2)} ${arRef('ipcc2021')}`;
-    } else {
-      s80=`<strong>2080:</strong> Reverts to ${k2} by end of century after 2050 transition — zone boundary crossed and recrossed, indicating the site sits near a Köppen boundary and is highly sensitive to inter-annual variability.`;
-    }
-    items.push(`<div class="ar-item">${s80}</div>`);
+    const big=k2!==k0&&arKFam(k0)!==arKFam(k2);
+    if(k2===k0&&(!k1||k1===k0)) chunks.push({t:'p',h:`<strong>2080:</strong> Zone stable. Cumulative warming continues under SSP5-8.5. ${arRef('ipcc2021')}${h0>=3?' '+arWarn('In an already warm climate, cumulative warming raises extreme-event frequency non-linearly.'):''}` });
+    else if(k2!==k0) chunks.push({t:'p',h:`<strong>2080${big?' — '+arWarn('major zone shift'):''}:</strong> Shift to <strong>${k2}</strong> (${AR_KL[k2]||k2}) — ${arKShift(k0,k2)} ${arRef('ipcc2021')}`});
   }
-
-  // Overall verdict
-  let verdict;
-  if(deltaHeat>=2) verdict=arWarn(`Substantial climate transition expected by 2080. The thermal environment under which this building type was developed and validated is likely to be fundamentally different from projected 2080 conditions. Passive strategies valid under present-day climate may require significant reconsideration. ${arRef('ipcc2021')}`);
-  else if(deltaHeat>=1) verdict=arNote(`Moderate climate intensification projected. Within-zone warming and increased frequency of extreme heat events will progressively test the limits of the original passive design strategy. Adaptation measures should be planned for mid-century. ${arRef('olgyay1963')}`);
-  else if(h0>=4) verdict=arNote(`Climate zone stable but absolute temperatures rising. In an already extreme thermal environment, even modest warming amplifies heat stress disproportionately — a 1°C mean increase raises extreme-day frequencies non-linearly. ${arRef('ipcc2021')}`);
-  else verdict=arOk(`Climate trajectory relatively stable. Primary concern is within-zone intensification rather than categorical change. Passive strategies remain broadly applicable with moderate adaptation. ${arRef('olgyay1963')}`);
-  items.push(`<div class="ar-item">${verdict}</div>`);
-
-  return items.join('');
+  let v;
+  if(dh>=2) v=arWarn(`Major climate transition by 2080. Passive strategies calibrated to present conditions may not remain viable without adaptation.`)+' '+arRef('ipcc2021');
+  else if(dh>=1) v=arNote(`Moderate intensification. Existing passive strategy will face increasing pressure; plan adaptation measures by mid-century.`)+' '+arRef('olgyay1963');
+  else if(h0>=4) v=arNote(`Zone stable but temperatures rising. Even small increments amplify extreme-day frequency in hot climates.`)+' '+arRef('ipcc2021');
+  else v=arOk(`Trajectory relatively stable. Passive strategies remain broadly applicable.`)+' '+arRef('olgyay1963');
+  chunks.push({t:'p',h:v});
+  return chunks;
 }
 
-// ─── SECTION 2: MORPHOLOGY ───────────────────────────────────────────────────
-function arMorphSection(c){
-  const hasGeom=(c.wallThk||c.area||c.roofPitch||c.thermalMass)&&(c.wallThk||c.thermalMass);
-  if(!hasGeom) return '<p class="ar-nodata">no_geometry</p>';
-  const _kp2=Array.isArray(c.koppen)?c.koppen:[c.koppen,c.koppen50,c.koppen80];
-  const k0=_kp2[0],k2=_kp2[2]||_kp2[1]||_kp2[0];
-  const fam0=arKFam(k0),fam2=arKFam(k2);
-  const h0=arKHeat(k0),h2=arKHeat(k2);
-  const items=[];
+function arMorph(c){
+  const hasGeom=(c.wallThk||c.thermalMass||c.area);
+  if(!hasGeom) return [{t:'nodata',h:'<p class="ar-nodata">no_geometry</p>'}];
+  const kp=Array.isArray(c.koppen)?c.koppen:[c.koppen,c.koppen50,c.koppen80];
+  const k0=kp[0],k2=kp[2]||kp[1]||kp[0];
+  const fam0=arKFam(k0),fam2=arKFam(k2),h0=arKHeat(k0),h2=arKHeat(k2);
+  const chunks=[];
 
-  // Thermal mass
   if(c.thermalMass!=null){
-    const tm=+c.thermalMass;
-    const tmpm2=c.area&&+c.area>0?tm/+c.area:null;
-    const highTM=tmpm2?tmpm2>120:tm>4000;
-    const massGoodClimate=['desert','steppe','mediterranean'].includes(fam2)||(fam2==='temperate'&&h2>=3);
-    const massHotHumid=(['tropical'].includes(fam2)&&h2>=4);
-    if(highTM&&massGoodClimate){
-      items.push(`<div class="ar-item">${arOk(`High thermal mass${tmpm2?` (≈${Math.round(tmpm2)} kJ/m²K)`:''} is well-suited to ${AR_KLABEL[k0]||k0} conditions, enabling effective day/night temperature buffering. Massive vernacular constructions in arid and Mediterranean climates have demonstrated strong passive cooling performance precisely through this mechanism. ${arRef('szokolay2008')} ${arRef('givoni1976')}`)}</div>`);
-    } else if(highTM&&massHotHumid){
-      items.push(`<div class="ar-item">${arWarn(`High thermal mass in a hot humid climate (${k2}) risks accumulating heat when night-time temperatures are insufficiently cool to discharge the stored daytime heat. As warming progresses under SSP5-8.5, this risk intensifies — night temperatures in tropical zones are projected to rise faster than day temperatures. ${arRef('artmann2007')} ${arRef('givoni1976')}`)}</div>`);
-    } else if(!highTM&&h2<=2){
-      items.push(`<div class="ar-item">${arNote(`Lower thermal mass in a cool climate (${k0}) prioritises rapid warm-up in winter. As warming reduces heating demand and introduces moderate summer heat stress, the lack of thermal buffering capacity may become a limitation for passive summer cooling. ${arRef('szokolay2008')}`)}</div>`);
-    }
-    // NDP foreshadowing (if high TM in warm climate)
-    if(highTM&&h2>=3){
-      items.push(`<div class="ar-item">${arNote(`For thermally massive construction, night ventilation capacity is the critical enabling variable. Artmann et al. (2007) establish a minimum threshold of 1,000 Night Discharge Potential hours per year (NDP) for thermal mass to operate effectively — this threshold risks being approached or crossed under 2080 SSP5-8.5 projections in ${k2}. ${arRef('artmann2007')}`)}</div>`);
-    }
+    const tm=+c.thermalMass,area=+c.area||0;
+    const tmpm2=area>0?tm/area:null;
+    const hi=tmpm2?tmpm2>120:tm>4000;
+    const diurnal=['desert','steppe','mediterranean'].includes(fam2)||(fam2==='temperate'&&h2>=3);
+    if(hi&&diurnal) chunks.push({t:'p',h:arOk(`High thermal mass${tmpm2?` (≈${Math.round(tmpm2)} kJ/m²K)`:''}. Well-matched to ${AR_KL[k0]||k0}: effective day/night buffering in climates with diurnal swings. `)+arRef('szokolay2008')+arRef('givoni1976')});
+    else if(hi&&['tropical'].includes(fam2)&&h2>=4) chunks.push({t:'p',h:arWarn(`High thermal mass in a hot humid climate (${k2}) risks heat accumulation when nights remain warm. As warming continues, this risk grows. `)+arRef('artmann2007')});
+    else if(!hi&&h2<=2) chunks.push({t:'p',h:arNote(`Lower thermal mass in a cool climate: suited to rapid warm-up. As summer heat stress emerges under warming, thermal buffering capacity may become limiting. `)+arRef('szokolay2008')});
+    if(hi&&h2>=3) chunks.push({t:'p',h:arNote(`For massive construction, night ventilation is the critical enabler. Artmann et al. (2007) set 1,000 h/yr Night Discharge Potential as the minimum for effective thermal mass operation — a threshold increasingly at risk under 2080 SSP5-8.5 in ${k2}. `)+arRef('artmann2007')});
   }
 
-  // WWR
   if(c.wwr!=null){
-    const wwr=+c.wwr;
-    const wwrp=wwr>1?wwr:wwr*100;
-    if(wwrp<8){
-      if(h2>=4) items.push(`<div class="ar-item">${arOk(`Very low WWR (${wwrp.toFixed(0)}%) is highly appropriate for the hot climate context — minimal solar heat gain, reduced glare and lower cooling load. ${arRef('olgyay1963')}`)}</div>`);
-      else items.push(`<div class="ar-item">${arNote(`Very low WWR (${wwrp.toFixed(0)}%) limits daylighting but minimises heat gain. As climate warms this becomes increasingly advantageous; verify that natural light levels are adequate. ${arRef('olgyay1963')}`)}</div>`);
-    } else if(wwrp<20){
-      items.push(`<div class="ar-item">${arOk(`Moderate-low WWR (${wwrp.toFixed(0)}%) is within the range appropriate for the climate type. Olgyay (1963) recommends this range for climates where solar gain management is a priority. ${arRef('olgyay1963')}`)}</div>`);
-    } else if(wwrp<35){
-      if(h2>=3) items.push(`<div class="ar-item">${arNote(`WWR of ${wwrp.toFixed(0)}% requires adequate solar shading to prevent overheating. As temperatures rise under SSP5-8.5, the adequacy of existing shading strategies should be reassessed quantitatively. ${arRef('szokolay2008')}`)}</div>`);
-    } else {
-      items.push(`<div class="ar-item">${arWarn(`High WWR (${wwrp.toFixed(0)}%) poses a significant solar gain and overheating risk in the context of projected warming. East- and west-facing openings in particular drive afternoon peak heat gain. Shading or WWR reduction is recommended before the 2050 climate transition. ${arRef('givoni1976')} ${arRef('olgyay1963')}`)}</div>`);
-    }
+    const wp=+c.wwr>1?+c.wwr:+c.wwr*100;
+    if(wp<8) chunks.push({t:'p',h:(h2>=4?arOk:arNote)(`WWR ${wp.toFixed(0)}% — very low. Minimises solar heat gain; well-suited to a hot climate context. `)+arRef('olgyay1963')});
+    else if(wp<20) chunks.push({t:'p',h:arOk(`WWR ${wp.toFixed(0)}% — moderate-low. Appropriate for the climate; limits solar gain without compromising daylighting. `)+arRef('olgyay1963')});
+    else if(wp<35&&h2>=3) chunks.push({t:'p',h:arNote(`WWR ${wp.toFixed(0)}% — adequate shading required to prevent overheating under projected warming. Reassess at mid-century. `)+arRef('szokolay2008')});
+    else if(wp>=35) chunks.push({t:'p',h:arWarn(`WWR ${wp.toFixed(0)}% — high. Significant solar gain risk under projected warming. East and west facades most critical. `)+arRef('givoni1976')});
   }
 
-  // Eave depth
   if(c.eaveDepth!=null){
-    const ed=+c.eaveDepth;
-    const lat=Math.abs(c.lat||45);
-    if(ed<0.05){
-      if(h2>=3) items.push(`<div class="ar-item">${arWarn(`No significant eave overhang. In a warming climate (${k2}), unshaded south- and west-facing glazing becomes a critical overheating pathway. External shading is among the most cost-effective passive adaptations available. ${arRef('olgyay1963')}`)}</div>`);
-    } else if(ed<0.4){
-      if(h2>=3) items.push(`<div class="ar-item">${arNote(`Shallow eave depth (≈${ed.toFixed(2)} m). Olgyay (1963) recommends overhang depths calibrated to local solar angles — at latitude ${lat.toFixed(0)}°, a depth of ≥0.4–0.6 m is typically required for effective summer shading of a south-facing window at standard height. As summer intensity increases, the adequacy of existing overhangs decreases. ${arRef('olgyay1963')}`)}</div>`);
-    } else {
-      items.push(`<div class="ar-item">${arOk(`Generous eave depth (≈${ed.toFixed(2)} m) provides effective solar shading — one of the most thermally robust passive strategies across all projected scenarios. This is a core adaptation asset. ${arRef('olgyay1963')}`)}</div>`);
-    }
+    const ed=+c.eaveDepth,lat=Math.abs(c.lat||45);
+    if(ed<0.05&&h2>=3) chunks.push({t:'p',h:arWarn(`No significant eave overhang. In a warming climate, unshaded south- and west-facing glazing becomes a primary overheating pathway. `)+arRef('olgyay1963')});
+    else if(ed<0.4&&h2>=3) chunks.push({t:'p',h:arNote(`Eave depth ≈${ed.toFixed(2)} m — shallow for lat ${lat.toFixed(0)}°. A depth of ≥0.4–0.6 m is typically required for effective summer shading at standard window heights. `)+arRef('olgyay1963')});
+    else if(ed>=0.4) chunks.push({t:'p',h:arOk(`Eave depth ≈${ed.toFixed(2)} m — effective solar shading. Remains the most robust passive strategy under rising temperatures. `)+arRef('olgyay1963')});
   }
 
-  // Construction type
   if(c.constrMethod){
     const cm=String(c.constrMethod).toLowerCase();
-    if(cm.includes('log')||cm.includes('timber_solid')){
-      items.push(`<div class="ar-item">${arNote(`Log or solid timber construction provides moderate thermal mass and good insulation per unit thickness. As climate warms, the insulating quality (resisting external heat) becomes as important as buffering capacity — this balance is well-served by solid timber vernaculars. ${arRef('szokolay2008')} ${arRef('rapoport1969')}`)}</div>`);
-    } else if(cm.includes('stone')||cm.includes('masonry')||cm.includes('brick')){
-      items.push(`<div class="ar-item">${arOk(`Massive stone or masonry construction provides high thermal inertia. In climates retaining adequate night cooling, this is highly effective for passive temperature stabilisation — a defining feature of vernacular adaptation in arid and Mediterranean environments. ${arRef('givoni1976')} ${arRef('rapoport1969')}`)}</div>`);
-    } else if(cm.includes('earth')||cm.includes('clay')||cm.includes('adobe')||cm.includes('rammed')){
-      items.push(`<div class="ar-item">${arNote(`Earth and clay construction combines moderate-high thermal mass with hygroscopic moisture buffering — an advantage in climates with moderate humidity swings. Vulnerability: under SSP5-8.5, more intense precipitation events projected in some regions could compromise structural performance of untreated earth walls. ${arRef('szokolay2008')}`)}</div>`);
-    } else if(cm.includes('thatch')||cm.includes('organic')||cm.includes('wool')||cm.includes('bamboo')){
-      items.push(`<div class="ar-item">${arNote(`Lightweight organic construction (thatch, bamboo, felt) provides minimal thermal mass but excellent ventilation compatibility. Well-adapted to hot humid climates where air movement rather than mass is the primary comfort mechanism. Under warming, maintaining cross-ventilation pathways becomes increasingly critical. ${arRef('olgyay1963')} ${arRef('givoni1976')}`)}</div>`);
-    }
+    if(cm.includes('stone')||cm.includes('masonry')) chunks.push({t:'p',h:arOk(`Massive stone/masonry construction. High thermal inertia; well-adapted to climates with diurnal temperature swings. `)+arRef('givoni1976')+arRef('rapoport1969')});
+    else if(cm.includes('log')||cm.includes('timber_solid')) chunks.push({t:'p',h:arNote(`Solid timber: moderate thermal mass, good insulation per unit thickness. Balance of buffering and insulation becomes more important as summers warm. `)+arRef('szokolay2008')});
+    else if(cm.includes('earth')||cm.includes('clay')) chunks.push({t:'p',h:arNote(`Earth/clay construction: hygroscopic buffering in addition to thermal mass. Vulnerability: more intense precipitation events projected under SSP5-8.5 in some regions may compromise untreated earth walls. `)+arRef('szokolay2008')});
+    else if(cm.includes('thatch')||cm.includes('organic')||cm.includes('wool')||cm.includes('bamboo')) chunks.push({t:'p',h:arNote(`Lightweight organic construction: low mass, high ventilation compatibility. Cross-ventilation pathway maintenance becomes increasingly critical under warming. `)+arRef('olgyay1963')});
   }
 
-  // Roof form
-  if(c.roofPitch){
-    const pitch=+c.roofPitch;
-    if(pitch>38){
-      items.push(`<div class="ar-item">${arOk(`Steep roof pitch (${pitch.toFixed(0)}°) creates a large naturally ventilated attic buffer — the Kaltdach principle — that thermally decouples living space from direct solar radiation on the roof surface. This is among the most durable passive strategies as temperatures rise. ${arRef('szokolay2008')}`)}</div>`);
-    }
-  }
-  if(c.roofForm&&String(c.roofForm).toLowerCase().includes('flat')){
-    if(h2>=3) items.push(`<div class="ar-item">${arNote(`Flat roof has high solar absorption potential. Under increasing summer temperatures, roof surface albedo becomes a critical variable — raising albedo from 0.15 to 0.75 (white coating) can reduce roof surface temperature by 20–30°C and indoor temperature by 2–4°C. ${arRef('givoni1976')}`)}</div>`);
-  }
+  if(c.roofPitch&&+c.roofPitch>38) chunks.push({t:'p',h:arOk(`Steep pitch (${(+c.roofPitch).toFixed(0)}°) creates a ventilated attic buffer (Kaltdach principle) — decouples living space from direct roof solar gain. `)+arRef('szokolay2008')});
+  if(c.roofForm&&String(c.roofForm).toLowerCase().includes('flat')&&h2>=3) chunks.push({t:'p',h:arNote(`Flat roof. Roof surface albedo becomes significant under warming — raising albedo from ~0.15 to ~0.75 (white coating) can reduce indoor temperature by 2–4°C. `)+arRef('givoni1976')});
+  if(c.wallThk){const wt=+c.wallThk;if(wt>0.5)chunks.push({t:'p',h:arOk(`Wall thickness ${(wt*100).toFixed(0)} cm — substantial. Strong thermal inertia characteristic of vernacular adaptation to temperature extremes. `)+arRef('rapoport1969')});}
 
-  // Wall thickness
-  if(c.wallThk){
-    const wt=+c.wallThk;
-    if(wt>0.5) items.push(`<div class="ar-item">${arOk(`Substantial wall thickness (${(wt*100).toFixed(0)} cm) provides strong thermal inertia and moderate insulation, characteristic of vernacular constructions adapted to significant temperature extremes. ${arRef('rapoport1969')}`)}</div>`);
-    else if(wt<0.2&&h2<=2) items.push(`<div class="ar-item">${arNote(`Thin walls (${(wt*100).toFixed(0)} cm) indicate construction primarily weather-tight rather than thermally buffered. As warming introduces summer heat stress into presently cool climates, envelope thermal performance becomes more critical. ${arRef('szokolay2008')}`)}</div>`);
-  }
-
-  if(items.length===0) items.push('<div class="ar-item" style="color:var(--ink-faint)">Insufficient morphological data for detailed assessment.</div>');
-  return items.join('');
+  if(!chunks.length) chunks.push({t:'nodata',h:'<p class="ar-nodata">Insufficient morphological data.</p>'});
+  return chunks;
 }
 
-// ─── SECTION 3: SIMULATION ───────────────────────────────────────────────────
-function arSimSection(c){
+function arSim(c){
   const hasSim=c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null||c.sim.oh[0]!=null);
-  if(!hasSim) return '<p class="ar-nodata">no_simulations</p>';
+  if(!hasSim) return [{t:'nodata',h:'<p class="ar-nodata">no_simulations</p>'}];
   const tcp=c.sim.comfort,hsp=c.sim.oh,ndp=c.sim.ndp,top=c.sim.topMean;
-  const NDP_T=1000;
-  const items=[];
+  const NT=1000;const chunks=[];
 
-  // ── TCP baseline + trend ──
   if(tcp&&tcp[0]!=null){
     const t0=+tcp[0],t1=tcp[1]!=null?+tcp[1]:null,t2=tcp[2]!=null?+tcp[2]:null;
-    let base;
-    if(t0>75) base=arOk(`Present thermal comfort (TCP = ${t0}%) is high — the majority of occupied hours meet ASHRAE 55-2020 adaptive comfort criteria for naturally ventilated buildings. ${arRef('ashrae55')} ${arRef('dear2002')}`);
-    else if(t0>60) base=arNote(`Present TCP of ${t0}% indicates moderate thermal comfort — thermally adequate for much of the year, though a substantial minority of hours fall outside the comfort range. ${arRef('dear2002')}`);
-    else if(t0>45) base=arNote(`Present TCP of ${t0}% is marginal — less than two-thirds of hours are comfortable. Even under present climate conditions the passive strategy delivers limited comfort assurance. ${arRef('ashrae55')}`);
-    else base=arWarn(`Present TCP of ${t0}% is poor — fewer than half of occupied hours meet adaptive comfort criteria. ${arRef('ashrae55')} ${arRef('dear2002')}`);
-    items.push(`<div class="ar-item">${base}</div>`);
-
+    const base= t0>75?arOk(`Present TCP ${t0}% — high. `)+arRef('ashrae55'):
+                t0>60?arNote(`Present TCP ${t0}% — moderate. `)+arRef('ashrae55'):
+                t0>45?arNote(`Present TCP ${t0}% — marginal. `)+arRef('dear2002'):
+                arWarn(`Present TCP ${t0}% — poor; under half of occupied hours meet adaptive comfort criteria. `)+arRef('ashrae55');
+    let trend='';
     if(t2!=null){
-      const delta=+(t0-t2).toFixed(1);
-      let trend;
-      if(delta>25) trend=arWarn(`Critical TCP decline of ${delta} percentage points present → 2080 (${t0}% → ${t2}%). The passive strategy faces fundamental viability challenges under SSP5-8.5. Substantial adaptation measures will be necessary before mid-century to maintain acceptable habitability without mechanical cooling. ${arRef('ipcc2021')}`);
-      else if(delta>15) trend=arWarn(`Significant TCP decline of ${delta} pp present → 2080 (${t0}% → ${t2}%). Passive performance is substantially degraded by 2080; adaptation interventions should be planned for the 2050 horizon. ${arRef('ipcc2021')}`);
-      else if(delta>8) trend=arNote(`Moderate TCP decline of ${delta} pp present → 2080 (${t0}% → ${t2}%). Existing passive strategy partially addresses future conditions but will require supplementary measures. ${arRef('olgyay1963')}`);
-      else if(delta>0) trend=arOk(`Modest TCP decline of ${delta} pp present → 2080 (${t0}% → ${t2}%). Passive strategies retain substantial effectiveness across all projected scenarios. ${arRef('olgyay1963')}`);
-      else trend=arNote(`TCP trajectory non-monotonic or stable. Check morphology interaction — if NDP is also falling, mass accumulation effects may be introducing compensatory patterns.`);
-      items.push(`<div class="ar-item">${trend}</div>`);
-
-      if(t1!=null){
-        const delta50=+(t0-t1).toFixed(1);
-        items.push(`<div class="ar-item" style="font-size:11px;color:var(--ink-soft)">2050 intermediate: TCP = ${t1}% (−${delta50} pp from present). ${t2<t1?arNote(`Deterioration continues through to 2080 — no stabilisation trend.`):arNote(`Rate of deterioration diminishes in second half of century.`)}</div>`);
-      }
+      const d=+(t0-t2).toFixed(1);
+      trend= d>25?' '+arWarn(`2080: ${t2}% (−${d} pp). Critical decline; passive strategy fundamentally challenged.`)+' '+arRef('ipcc2021'):
+             d>15?' '+arWarn(`2080: ${t2}% (−${d} pp). Significant degradation; adaptation required by mid-century.`)+' '+arRef('ipcc2021'):
+             d>8 ?' '+arNote(`2080: ${t2}% (−${d} pp). Moderate decline; supplementary measures needed.`):
+             d>0 ?' '+arOk(`2080: ${t2}% (−${d} pp). Modest decline; passive strategy retains effectiveness.`):'';
     }
+    if(t1!=null&&t2!=null) trend+=` 2050: ${t1}% (−${+(t0-t1).toFixed(1)} pp).`;
+    chunks.push({t:'p',h:base+trend});
   }
 
-  // ── NDP threshold ──
   if(ndp&&ndp[0]!=null){
     const n0=+ndp[0],n1=ndp[1]!=null?+ndp[1]:null,n2=ndp[2]!=null?+ndp[2]:null;
-    const b0=n0<NDP_T,b1=n1!=null&&n1<NDP_T,b2=n2!=null&&n2<NDP_T;
-    if(n0===0||n2===0){
-      items.push(`<div class="ar-item">${arWarn(`Night Discharge Potential reaches zero ${n0===0?'already under present conditions':'by 2080'} — night-time temperatures are never sufficiently cool to discharge thermal mass. The passive cooling strategy fails entirely under these conditions. For thermally massive buildings this represents a critical tipping point: the thermal mass becomes a heat trap rather than a buffer. ${arRef('artmann2007')}`)}</div>`);
-    } else if(b0){
-      items.push(`<div class="ar-item">${arWarn(`Night Discharge Potential already below the critical 1,000 h/yr threshold (NDP = ${Math.round(n0)} h/yr). Thermal mass is not being effectively discharged on enough nights under present conditions — the building risks accumulating heat. Artmann et al. (2007) identify this threshold as the minimum for passive night cooling to meaningfully reduce thermal mass temperature. ${arRef('artmann2007')}`)}</div>`);
-    } else if(b2&&!b1){
-      items.push(`<div class="ar-item">${arWarn(`NDP threshold crossed by 2080 (${n2!=null?Math.round(n2):'<1000'} h/yr < 1,000 h/yr). Thermal mass strategy viable to mid-century but loses fundamental effectiveness under 2080 SSP5-8.5 conditions. Adaptation planning should account for this transition. ${arRef('artmann2007')}`)}</div>`);
-    } else if(b1){
-      items.push(`<div class="ar-item">${arWarn(`NDP threshold already crossed by 2050 (${n1!=null?Math.round(n1):'<1000'} h/yr). Thermal mass strategy loses effectiveness within this generation's lifespan. Passive night cooling must be supplemented or replaced by 2050. ${arRef('artmann2007')}`)}</div>`);
-    } else {
-      const drop=n2!=null?(n0-n2):0;
-      if(drop>600) items.push(`<div class="ar-item">${arNote(`NDP remains above threshold in 2080 (${n2!=null?Math.round(n2):'—'} h/yr) but has declined by ${Math.round(drop)} h/yr since present. The margin above the 1,000 h/yr tipping point is narrowing and should be monitored as projections are updated. ${arRef('artmann2007')}`)}</div>`);
-      else items.push(`<div class="ar-item">${arOk(`Night Discharge Potential remains robust across all scenarios (${Math.round(n0)} h/yr present${n2!=null?' → '+Math.round(n2)+' h/yr in 2080':''}), well above the 1,000 h/yr threshold. Thermal mass strategy remains climatically viable throughout the projected period. ${arRef('artmann2007')}`)}</div>`);
-    }
+    let h;
+    if(n0===0) h=arWarn(`NDP = 0 h/yr under present conditions. Night temperatures never sufficient to discharge thermal mass — mass acts as heat trap. `)+arRef('artmann2007');
+    else if(n0<NT) h=arWarn(`NDP = ${Math.round(n0)} h/yr — already below 1,000 h/yr threshold. Thermal mass not effectively discharged. `)+arRef('artmann2007');
+    else if(n2!=null&&n2<NT&&(n1==null||n1>=NT)) h=arWarn(`NDP crosses 1,000 h/yr threshold by 2080 (${Math.round(n2)} h/yr). Thermal mass strategy viable to mid-century; loses effectiveness by 2080. `)+arRef('artmann2007');
+    else if(n1!=null&&n1<NT) h=arWarn(`NDP threshold crossed by 2050 (${Math.round(n1)} h/yr). Thermal mass strategy loses effectiveness within this generation's lifespan. `)+arRef('artmann2007');
+    else{const drop=n2!=null?n0-n2:0; h=drop>600?arNote(`NDP ${Math.round(n0)} h/yr → ${n2!=null?Math.round(n2):'—'} h/yr 2080. Margin above 1,000 h/yr threshold narrowing. `)+arRef('artmann2007'):arOk(`NDP robust across all scenarios (${Math.round(n0)} h/yr → ${n2!=null?Math.round(n2)+'h/yr 2080':'-'}). Thermal mass strategy remains viable. `)+arRef('artmann2007');}
+    chunks.push({t:'p',h});
   }
 
-  // ── HSP overheating ──
   if(hsp&&hsp[0]!=null&&hsp[2]!=null){
-    const h0=+hsp[0],h2=+hsp[2];
+    const h0=+hsp[0],h2=+hsp[2],inc=Math.round(h2-h0);
     const h0p=(h0/8760*100).toFixed(1),h2p=(h2/8760*100).toFixed(1);
-    const inc=Math.round(h2-h0);
-    if(h2>4000) items.push(`<div class="ar-item">${arWarn(`Severe overheating in 2080: ${Math.round(h2)} h/yr (${h2p}% of year) above the ASHRAE 55 upper comfort boundary, up from ${Math.round(h0)} h/yr (${h0p}%) at present (+${inc} h/yr). At this level, habitation without mechanical cooling constitutes a thermal health risk during extreme heat events. ${arRef('ashrae55')}`)}</div>`);
-    else if(h2>1500) items.push(`<div class="ar-item">${arWarn(`Significant overheating by 2080: ${Math.round(h2)} h/yr (${h2p}%), up from ${Math.round(h0)} h/yr (${h0p}%) today (+${inc} h/yr). Enhanced cross-ventilation, augmented external shading on east and west facades, and high-reflectance roof surfaces should be considered. ${arRef('szokolay2008')} ${arRef('olgyay1963')}`)}</div>`);
-    else if(inc>300) items.push(`<div class="ar-item">${arNote(`Moderate increase in overheating hours by 2080 (+${inc} h/yr; ${h0p}% → ${h2p}% of year). Current passive strategy manages adequately but faces increasing pressure. Review shading and ventilation adequacy at mid-century. ${arRef('szokolay2008')}`)}</div>`);
-    else items.push(`<div class="ar-item">${arOk(`Overheating hours remain limited across all scenarios (${Math.round(h2)} h/yr, ${h2p}% of year in 2080), indicating robust solar and thermal management. ${arRef('olgyay1963')}`)}</div>`);
+    let h;
+    if(h2>4000) h=arWarn(`Overheating 2080: ${Math.round(h2)} h/yr (${h2p}% of year), up from ${Math.round(h0)} h/yr. Habitability without mechanical cooling compromised. `)+arRef('ashrae55');
+    else if(h2>1500) h=arWarn(`Overheating 2080: ${Math.round(h2)} h/yr (${h2p}%), up +${inc} h/yr from present. Enhanced shading and cross-ventilation required. `)+arRef('szokolay2008');
+    else if(inc>300) h=arNote(`Overheating up +${inc} h/yr by 2080 (${h0p}% → ${h2p}%). Current passive strategy manages but faces rising pressure.`);
+    else h=arOk(`Overheating limited across all scenarios (${Math.round(h2)} h/yr, ${h2p}% of year in 2080). `)+arRef('olgyay1963');
+    chunks.push({t:'p',h});
   }
 
-  // ── T_op mean ──
   if(top&&top[0]!=null&&top[2]!=null){
-    const t0=+top[0],t2=+top[2];
-    const rise=(t2-t0).toFixed(1);
-    if(t2>30) items.push(`<div class="ar-item">${arWarn(`Mean operative temperature reaches ${t2.toFixed(1)}°C by 2080 (up from ${t0.toFixed(1)}°C, +${rise}°C). Chronic exposure at this level exceeds adaptive comfort thresholds for most populations without behavioural or technical mitigation. ${arRef('dear2002')}`)}</div>`);
-    else if(t2>26) items.push(`<div class="ar-item">${arNote(`Mean operative temperature rises to ${t2.toFixed(1)}°C by 2080 (+${rise}°C from ${t0.toFixed(1)}°C). Adaptive comfort remains achievable via enhanced natural ventilation and behavioural adjustment, but margins become narrow. ${arRef('dear2002')} ${arRef('ashrae55')}`)}</div>`);
-    else items.push(`<div class="ar-item">${arOk(`Mean operative temperature of ${t2.toFixed(1)}°C in 2080 (+${rise}°C from ${t0.toFixed(1)}°C) remains within the adaptive comfort envelope for naturally ventilated buildings under ASHRAE 55. ${arRef('ashrae55')}`)}</div>`);
+    const t0=+top[0],t2=+top[2],rise=(t2-t0).toFixed(1);
+    let h;
+    if(t2>30) h=arWarn(`Mean T_op reaches ${t2.toFixed(1)}°C in 2080 (+${rise}°C from ${t0.toFixed(1)}°C). Exceeds adaptive comfort capacity for most occupants without intervention. `)+arRef('dear2002');
+    else if(t2>26) h=arNote(`Mean T_op ${t2.toFixed(1)}°C in 2080 (+${rise}°C). Adaptive comfort achievable with enhanced natural ventilation; margins narrow. `)+arRef('dear2002');
+    else h=arOk(`Mean T_op ${t2.toFixed(1)}°C in 2080 (+${rise}°C). Within adaptive comfort envelope for naturally ventilated buildings. `)+arRef('ashrae55');
+    chunks.push({t:'p',h});
   }
 
-  // ── Adaptation priorities ──
   const tcpCrit=tcp&&tcp[2]!=null&&+tcp[2]<50;
-  const ndpFail=ndp&&ndp[2]!=null&&+ndp[2]<NDP_T;
-  const hspCrit=hsp&&hsp[2]!=null&&+hsp[2]>2000;
+  const ndpFail=ndp&&ndp[2]!=null&&+ndp[2]<NT;
+  const hspCrit=hsp&&hsp[2]!=null&&+hsp[2]>1500;
   const topHot=top&&top[2]!=null&&+top[2]>28;
   if(tcpCrit||ndpFail||hspCrit||topHot){
-    let adp=`<div class="ar-item" style="border-left:3px solid #c92020;padding-left:10px;margin-top:4px"><strong>2050–2080 adaptation priorities:</strong><ul style="margin:5px 0 0 16px;line-height:1.75;font-size:11.5px">`;
-    if(ndpFail) adp+=`<li>Enhance night-time ventilation capacity — if passive night-flush becomes insufficient as NDP declines, mechanical night ventilation should be evaluated as a low-energy bridge strategy. ${arRef('artmann2007')}</li>`;
-    if(hspCrit) adp+=`<li>Augment solar shading on east and west facades; increase roof surface albedo to reduce daytime peak temperatures. ${arRef('olgyay1963')}</li>`;
-    if(topHot) adp+=`<li>Consider earth-contact cooling or evaporative cooling if local hydrogeology and humidity conditions permit. ${arRef('givoni1976')}</li>`;
-    if(tcpCrit) adp+=`<li>Reassess the fundamental passive strategy for 2080 conditions. If NDP is declining and TCP falls below 50%, lightweight breathable construction paired with active night ventilation may outperform the original massive passive approach. ${arRef('szokolay2008')}</li>`;
-    adp+=`</ul></div>`;
-    items.push(adp);
+    let li='';
+    if(ndpFail) li+=`<li>Supplement night ventilation capacity as NDP declines — mechanical night-flush as a low-energy bridge. ${arRef('artmann2007')}</li>`;
+    if(hspCrit) li+=`<li>Augment shading on east and west facades; raise roof surface albedo. ${arRef('olgyay1963')}</li>`;
+    if(topHot) li+=`<li>Evaluate evaporative or earth-contact cooling if local conditions permit. ${arRef('givoni1976')}</li>`;
+    if(tcpCrit) li+=`<li>Reassess passive strategy for 2080: if NDP declines and TCP falls below 50%, lightweight construction with active night ventilation may outperform massive passive approach. ${arRef('szokolay2008')}</li>`;
+    chunks.push({t:'adapt',h:`<div class="ar-adapt"><strong>2050–2080 adaptation priorities:</strong><ul>${li}</ul></div>`});
   }
-
-  return items.join('');
+  return chunks;
 }
 
-// ─── REFERENCES FOOTER ───────────────────────────────────────────────────────
-function arRefFooter(){
-  const entries=Object.values(AR_REFS).map(v=>`<p class="ar-ref-entry">${v}</p>`).join('');
-  return `<details class="ar-refs"><summary>▸ Academic sources (APA 7th edition)</summary><div style="margin-top:8px">${entries}</div></details>`;
+function arSources(){
+  const items=Object.values(AR_REFS).map(v=>`<p class="ar-src-e">${v}</p>`).join('');
+  return `<details class="ar-srcs"><summary>▸ Sources (APA 7)</summary><div style="margin-top:8px">${items}</div></details>`;
 }
 
-// ─── MAIN ENTRY ──────────────────────────────────────────────────────────────
+// ─── MAIN: generate with write animation ─────────────────────────────────────
 function generateAdaptiveRecs(c,slot){
   const el=document.getElementById('recWrap-'+slot);
   if(!el)return;
-  const sec=(n,title,body)=>
-    `<div class="ar-section"><div class="ar-section-head"><span class="ar-num">${n}</span>${title}</div><div class="ar-section-body">${body}</div></div>`;
-  el.innerHTML=
-    sec(1,'Climate shift',arClimateSection(c))+
-    sec(2,'Morphological assessment',arMorphSection(c))+
-    sec(3,'Simulation findings',arSimSection(c))+
-    arRefFooter();
+  el.innerHTML='<div class="ar-wrap" id="arBody-'+slot+'"></div>';
+  const body=document.getElementById('arBody-'+slot);
+  const scroll=el.closest('.cs-panel-body')||el.closest('[style*="overflow"]')||el.parentElement;
+
+  const sections=[
+    {label:'1 · Climate shift',    chunks:arClimate(c)},
+    {label:'2 · Morphology',       chunks:arMorph(c)},
+    {label:'3 · Simulation',       chunks:arSim(c)},
+  ];
+
+  // Flatten into a queue: [header, chunk, chunk, …, header, chunk, …]
+  const queue=[];
+  sections.forEach(s=>{
+    queue.push({t:'head',h:s.label});
+    s.chunks.forEach(ch=>queue.push(ch));
+  });
+  queue.push({t:'src',h:arSources()});
+
+  let i=0;
+  function next(){
+    if(i>=queue.length)return;
+    const item=queue[i++];
+    const div=document.createElement('div');
+    if(item.t==='head') div.className='ar-head';
+    else div.className='ar-p';
+    div.innerHTML=item.h;
+    body.appendChild(div);
+    if(scroll) scroll.scrollTop=scroll.scrollHeight;
+    else div.scrollIntoView({behavior:'smooth',block:'nearest'});
+    setTimeout(next,item.t==='head'?60:90);
+  }
+  next();
 }
 
 /* ===================== FLOORPLAN MOSAIC =====================
