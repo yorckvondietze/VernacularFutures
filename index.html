@@ -5465,11 +5465,15 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
     /* North arrow — simple flat arrow lying on the ground plane */
     if(_northRad!==null){
       const bspan=Math.max(W||5,D||5);
-      const arLen=bspan*0.38; const y0=0.08;
+      /* Arrow placed entirely outside the building:
+         tail at 1.3×span from center (well beyond any eave),
+         tip at 0.8×span from center — both south of the building edge (≈0.5×span).
+         arLen = 0.5×span so arrow is proportional but never overlaps building. */
+      const arLen=bspan*0.50; const y0=0.08;
       /* north direction in Three.js space */
       const _nnx=Math.sin(_northRad),_nnz=-Math.cos(_northRad);
-      /* place arrow tail south of building centroid */
-      const _ox=pcx-_nnx*bspan*0.55; const _oz=-pcy-_nnz*bspan*0.55;
+      /* tail: 1.3×span south of centroid; tip: 0.8×span south — both outside building */
+      const _ox=pcx-_nnx*bspan*1.3; const _oz=-pcy-_nnz*bspan*1.3;
       const _tx=_ox+_nnx*arLen;  const _tz=_oz+_nnz*arLen;
       const _amat=new THREE.LineBasicMaterial({color:0x555555,transparent:true,opacity:0.75});
       /* body */
@@ -6710,10 +6714,8 @@ function caseDetailHTML(c,slot){
         ${bigBrotherActive&&slot==='B'?`<div style="background:var(--terracotta);color:#fff;font-family:var(--mono);font-size:10px;padding:6px 9px;margin:8px 0 0;display:flex;align-items:flex-start;gap:7px;line-height:1.4;"><span style="font-size:12px;flex:none;">◉</span><span><b>PRESENT-DAY CLIMATE SHOWN</b> for this side, regardless of the slider. Compare it against ${c.id===selectedId?'':(byId(selectedId)?byId(selectedId).name||byId(selectedId).id:'the selected case')}'s projected ${SCENARIOS_LONG[scn]} climate on the left.</span></div>`:''}
         <div class="koppen-strip">
           ${c.koppen.map((k,i)=>{
-  const _effYr=['2011–2025 (TMYx)','≈ 2068 effective (FWG 2036–2065 delta + TMYx 2018 base)','≈ 2098 effective (FWG 2066–2095 delta + TMYx 2018 base)'][i];
-  const _tip=i===0?'Present-day TMYx 2011–2025 — no morphing applied.':_effYr;
-  const _iBtn=i>0?`<span style="font-size:8px;color:var(--terracotta,#c4542a);cursor:help;vertical-align:super;margin-left:2px;line-height:1;" title="${_effYr}">ⓘ</span>`:'';
-  return `<div class="koppen-box ${i===displayScn?'current':''}" style="cursor:pointer;" title="${_tip}" onclick="const t=document.querySelectorAll('.scenario-tick')[${i}];if(t)t.click();"><div class="scn">${SCENARIOS[i]}${_iBtn}</div><div class="code">${k||'<span class="nodata" style="font-size:10px">–</span>'}</div></div>`;
+  const _iBtn=i>0?`<button class="ar-cite" style="margin-left:2px;font-style:normal;" onclick="event.stopPropagation();arShowCite(this,['','≈ 2068 effective conditions. FWG applies CMIP6 deltas from a 1985–2014 baseline (centre ≈ 2000) onto TMYx 2011–2025 (centre ≈ 2018). This +18yr offset means the morphed 2050 file represents roughly 2068 climate. Conservative labelling — actual warming exceeds the nominal year. Rodrigues et al. (2023), Building and Environment 246.','≈ 2098 effective conditions. FWG 2066–2095 delta applied to TMYx 2018 base → roughly 2098 conditions. The 2080 label is conservative — results represent near-end-of-century warming. Rodrigues et al. (2023), Building and Environment 246.'][${i}])">ⓘ</button>`:'';
+  return `<div class="koppen-box ${i===displayScn?'current':''}" style="cursor:pointer;" onclick="const t=document.querySelectorAll('.scenario-tick')[${i}];if(t)t.click();"><div class="scn">${SCENARIOS[i]}${_iBtn}</div><div class="code">${k||'<span class="nodata" style="font-size:10px">–</span>'}</div></div>`;
 }).join('')}
         </div>
         <div class="climate-tabs-row">
