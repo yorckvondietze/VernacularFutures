@@ -3249,7 +3249,9 @@ function arKShift(from,to){
 
 // ─── SECTION 1: CLIMATE ──────────────────────────────────────────────────────
 function arClimateSection(c){
-  const k0=c.koppen,k1=c.koppen50,k2=c.koppen80;
+  /* c.koppen is [present,2050,2080] array */
+  const _kp=Array.isArray(c.koppen)?c.koppen:[c.koppen,c.koppen50,c.koppen80];
+  const k0=_kp[0],k1=_kp[1],k2=_kp[2];
   if(!k0) return '<p class="ar-nodata">no_climate_data</p>';
   const h0=arKHeat(k0),h2=arKHeat(k2||k1||k0);
   const shift80=k2&&k2!==k0,shift50=k1&&k1!==k0;
@@ -3300,7 +3302,8 @@ function arClimateSection(c){
 function arMorphSection(c){
   const hasGeom=(c.wallThk||c.area||c.roofPitch||c.thermalMass)&&(c.wallThk||c.thermalMass);
   if(!hasGeom) return '<p class="ar-nodata">no_geometry</p>';
-  const k0=c.koppen,k2=c.koppen80||c.koppen50||k0;
+  const _kp2=Array.isArray(c.koppen)?c.koppen:[c.koppen,c.koppen50,c.koppen80];
+  const k0=_kp2[0],k2=_kp2[2]||_kp2[1]||_kp2[0];
   const fam0=arKFam(k0),fam2=arKFam(k2);
   const h0=arKHeat(k0),h2=arKHeat(k2);
   const items=[];
@@ -5018,10 +5021,8 @@ function simNorm(v,metric){
 const SIM_YEAR_LABELS=['TMYx','~2030','~2040','2050','~2057','~2064','~2070','~2075','2080'];
 
 DIAGRAM_META={
-  tcp:{label:'TCP',caption:c=>{const m=simInterp(SIM_CACHE[c.id],SIM_STEP[c===byId(selectedId)?'A':'B']||0);return m&&m.tcp!=null?`${m.tcp.toFixed(1)}% thermal comfort probability (ASHRAE 55-2020 adaptive).`:'Simulation pending.';}},
-  hsp:{label:'HSP',caption:c=>{const m=simInterp(SIM_CACHE[c.id],SIM_STEP[c===byId(selectedId)?'A':'B']||0);return m&&m.hsp!=null?`${Math.round(m.hsp)} h/yr overheating hours.`:'Simulation pending.';}},
-  ndp:{label:'NDP',caption:c=>{const m=simInterp(SIM_CACHE[c.id],SIM_STEP[c===byId(selectedId)?'A':'B']||0);const f=m&&m.ndp<NDP_THRESHOLD?' ⚠ Artmann 1000 h/yr threshold':'';return m&&m.ndp!=null?`${Math.round(m.ndp)} h/yr night discharge potential.${f}`:'Simulation pending.';}},
-  t_op:{label:'T_op',caption:c=>{const m=simInterp(SIM_CACHE[c.id],SIM_STEP[c===byId(selectedId)?'A':'B']||0);return m&&m.t_op!=null?`${m.t_op.toFixed(1)}°C mean operative temperature.`:'Simulation pending.';}},
+  tcp:{label:'TCP %',caption:c=>{const m=simInterp(SIM_CACHE[c.id],SIM_STEP[c===byId(selectedId)?'A':'B']||0);return m&&m.tcp!=null?`${m.tcp.toFixed(1)}% thermal comfort probability (ASHRAE 55-2020 adaptive).`:'Simulation pending.';}},
+  hsp:{label:'HSP %',caption:c=>{const m=simInterp(SIM_CACHE[c.id],SIM_STEP[c===byId(selectedId)?'A':'B']||0);return m&&m.hsp!=null?`${Math.round(m.hsp)} h/yr overheating hours.`:'Simulation pending.';}},
 };
 let currentDiagram={A:'tcp',B:'tcp'};
 let shapeShiftOn={A:false,B:false};
