@@ -4948,7 +4948,9 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
           const[r,g,b]=simCmap(Math.max(0,Math.min(1,t)),metric);
           const geo=new THREE.PlaneGeometry(res,res);
           const mat=new THREE.MeshBasicMaterial({color:new THREE.Color(r,g,b),transparent:true,opacity:0.72,side:THREE.DoubleSide});
-          const mesh=new THREE.Mesh(geo,mat);mesh.rotation.x=-Math.PI/2;mesh.position.set(cell.x,0.02,-cell.y);cg.add(mesh);
+          const mesh=new THREE.Mesh(geo,mat);mesh.rotation.x=-Math.PI/2;mesh.position.set(cell.x,0.02,-cell.y);
+          mesh.userData.cellVal=t;  /* store for raycaster hover */
+          cg.add(mesh);
         });
         floorMesh=cg;group.add(floorMesh);
       }else{
@@ -4971,16 +4973,56 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
         }
       }
     }
-    /* orbit */
+    /* orbit + scroll zoom + hover tooltip */
     let az=0.88,pol=0.95,drag=false,lx=0,ly=0,rad=Math.max(W,D)*2.4+8;
-    function place(){camera.position.set(rad*Math.sin(pol)*Math.sin(az),rad*Math.cos(pol)+eH/2,rad*Math.sin(pol)*Math.cos(az));camera.lookAt(W/2,eH/2,-D/2);}
+    const radMin=Math.max(W,D)*0.8+2,radMax=Math.max(W,D)*6+20;
+    /* centroid of actual polygon for camera target */
+    const pcx=poly.reduce((s,p)=>s+p[0],0)/poly.length;
+    const pcy=poly.reduce((s,p)=>s+p[1],0)/poly.length;
+    function place(){camera.position.set(pcx+rad*Math.sin(pol)*Math.sin(az),rad*Math.cos(pol)+eH*0.6,-pcy+rad*Math.sin(pol)*Math.cos(az));camera.lookAt(pcx,eH*0.5,-pcy);}
     place();
     const onDown=e=>{drag=true;lx=e.clientX;ly=e.clientY;};
     const onMove=e=>{if(!drag)return;az-=(e.clientX-lx)*0.006;pol=Math.max(0.15,Math.min(1.45,pol-(e.clientY-ly)*0.006));lx=e.clientX;ly=e.clientY;place();};
     const onUp=()=>{drag=false;};
     const onResize=()=>{const nw=container.clientWidth||w,nh=container.clientHeight||h;renderer.setSize(nw,nh);camera.aspect=nw/nh;camera.updateProjectionMatrix();};
+    /* scroll wheel zoom */
+    const onWheel=e=>{e.preventDefault();rad=Math.max(radMin,Math.min(radMax,rad*(1+e.deltaY*0.001)));place();};
+    container.addEventListener('wheel',onWheel,{passive:false});
+    /* hover tooltip for sensor grid */
+    const tooltip=document.createElement('div');
+    tooltip.style.cssText='position:absolute;pointer-events:none;display:none;background:rgba(0,0,0,.75);color:#fff;font-family:monospace;font-size:10px;padding:3px 7px;border-radius:3px;white-space:nowrap;';
+    container.style.position='relative';container.appendChild(tooltip);
+    const raycaster=new THREE.Raycaster();
+    const _mouse=new THREE.Vector2();
+    const onHover=e=>{
+      if(!floorMesh||!floorMesh.isGroup){tooltip.style.display='none';return;}
+      const rect=renderer.domElement.getBoundingClientRect();
+      _mouse.x=((e.clientX-rect.left)/rect.width)*2-1;
+      _mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;
+      raycaster.setFromCamera(_mouse,camera);
+      const hits=raycaster.intersectObjects(floorMesh.children,false);
+      if(hits.length){
+        const obj=hits[0].object;
+        /* retrieve the cell value stored as userData */
+        if(obj.userData.cellVal!=null){
+          const metric=currentDiagram[slot]||'tcp';
+          const mv=simInterp(simData,SIM_STEP[slot]||0);
+          const label=metric==='tcp'?'TCP':'metric';
+          const raw=obj.userData.cellVal;
+          let disp;
+          if(metric==='tcp') disp=`TCP: ${(raw*100).toFixed(0)}%`;
+          else if(metric==='hsp') disp=`HSP: ${(raw*100).toFixed(0)}%`;
+          else disp=`${label}: ${raw.toFixed(2)}`;
+          tooltip.textContent=disp;
+          tooltip.style.display='block';
+          tooltip.style.left=(e.clientX-rect.left+10)+'px';
+          tooltip.style.top=(e.clientY-rect.top-24)+'px';
+        }
+      }else{tooltip.style.display='none';}
+    };
+    container.addEventListener('pointermove',e=>{onHover(e);if(!drag)return;az-=(e.clientX-lx)*0.006;pol=Math.max(0.15,Math.min(1.45,pol-(e.clientY-ly)*0.006));lx=e.clientX;ly=e.clientY;place();});
     container.addEventListener('pointerdown',onDown);
-    window.addEventListener('pointermove',onMove);window.addEventListener('pointerup',onUp);window.addEventListener('resize',onResize);
+    window.addEventListener('pointerup',onUp);window.addEventListener('resize',onResize);
     /* expose update hooks */
     VIEWERS[slot]={renderer,scene,camera,container,onDown,onMove,onUp,onResize,raf:null,
       _updateScene:updateScene,
