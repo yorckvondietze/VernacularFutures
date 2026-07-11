@@ -476,6 +476,7 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 @media (max-width:760px){.compare-grid{grid-template-columns:1fr;}.compare-col{padding-right:0;}.compare-col + .compare-col{padding-left:0;border-left:none;border-top:1px solid var(--line);padding-top:16px;margin-top:16px;}}
 
 .sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.sim-cell .ksub{font-size:9px;color:var(--ink-faint);line-height:1.4;margin-top:3px;}
 
 .diagram-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
 /* ---- climate sub-tabs: vertical sidebar of square buttons ----
@@ -2736,6 +2737,14 @@ function parseWorkbookToCases(workbook){
   const headers=(rows[headerRowIdx]||[]).map(h=>(h||'').toString());
   const idx={};Object.keys(COLMAP_DEF).forEach(k=>idx[k]=findCol(headers,COLMAP_DEF[k]));
   const numOf=v=>{if(v==null||v==='')return null;const n=parseFloat(v);return Number.isFinite(n)?n:null;};
+  /* Parse HSP cell: may be "4.3% | 121 h/y" (new) or plain number (legacy) */
+  const parseHSPCell=v=>{
+    if(v==null||v==='')return{pct:null,h:null};
+    if(typeof v==='number')return{pct:null,h:Number.isFinite(v)?v:null};
+    const m=String(v).match(/([0-9.]+)%\s*\|\s*([0-9]+)/);
+    if(m)return{pct:parseFloat(m[1]),h:parseInt(m[2])};
+    const n=parseFloat(v);return{pct:null,h:Number.isFinite(n)?n:null};
+  };
 const yearNum=v=>{if(!v)return 0;const m=String(v).match(/\d{3,4}/);return m?+m[0]:0;};
   const out=[];
   for(let r=headerRowIdx+1;r<rows.length;r++){
@@ -2770,7 +2779,7 @@ const yearNum=v=>{if(!v)return 0;const m=String(v).match(/\d{3,4}/);return m?+m[
       balconies:get('balconies')||null,special:get('special')||null,
       flags:[get('flags')||null,...approxFlags].filter(Boolean).join('; ')||null,
       notes:get('notes')||null,source:get('source')||null,
-      sim:{oh:[numOf(get('oh00')),numOf(get('oh50')),numOf(get('oh80'))],comfort:[numOf(get('cf00')),numOf(get('cf50')),numOf(get('cf80'))],ndp:[numOf(get('ndp00')),numOf(get('ndp50')),numOf(get('ndp80'))],topMean:[numOf(get('topMean00')),numOf(get('topMean50')),numOf(get('topMean80'))]},
+      sim:(()=>{const _h0=parseHSPCell(get('oh00')),_h1=parseHSPCell(get('oh50')),_h2=parseHSPCell(get('oh80'));return{oh:[_h0.h,_h1.h,_h2.h],oh_pct:[_h0.pct,_h1.pct,_h2.pct],oh_raw:[get('oh00'),get('oh50'),get('oh80')],comfort:[numOf(get('cf00')),numOf(get('cf50')),numOf(get('cf80'))],ndp:[numOf(get('ndp00')),numOf(get('ndp50')),numOf(get('ndp80'))],topMean:[numOf(get('topMean00')),numOf(get('topMean50')),numOf(get('topMean80'))]}})(),
       wallType:wallTypeFromStructure(structure),
       hasGeom:numOf(get('psi'))!=null,
       hasCoord:lat!=null,
@@ -5369,15 +5378,40 @@ function updateSimGrid(slot,step,simData){
   if(!el)return;
   const nd='<span class="nodata" style="font-size:11px">NO_DATA</span>';
   const tcp=m&&m.tcp!=null?m.tcp.toFixed(1):null;
-  const hsp=m&&m.hsp!=null?Math.round(m.hsp):null;
+  const hspH=m&&m.hsp!=null?Math.round(m.hsp):null;
+  /* HSP % from case object (exact ASHRAE-applicable %) or approximate from h/8760 */
+  const _cslot=slot==='A'?selectedId:compareId;const _ccase=byId&&byId(_cslot);
+  const _sidx=step<=2?0:step<=6?1:2;
+  const hspPct=_ccase&&_ccase.sim&&_ccase.sim.oh_pct&&_ccase.sim.oh_pct[_sidx]!=null
+    ?_ccase.sim.oh_pct[_sidx].toFixed(1)
+    :(hspH!=null?(hspH/8760*100).toFixed(1):null);
+  const hspDisp=hspH!=null?(hspPct!=null?`${hspPct}% ·  ${hspH}`:String(hspH)):null;
   const ndp=m&&m.ndp!=null?Math.round(m.ndp):null;
   const top=m&&m.t_op!=null?m.t_op.toFixed(1):null;
   const ndpWarn=ndp!=null&&ndp<NDP_THRESHOLD?` <span style="color:var(--rust)">⚠</span>`:'';
+  /* Citation helper (reuse AR refs if available) */
+  const _c=(k,abbr)=>typeof arShowCite==='function'?`<button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,'${k}')" style="font-size:8px;vertical-align:middle;margin-left:3px">${abbr}</button>`:'' ;
   el.innerHTML=`
-    <div class="sim-cell"><div class="k">TCP — thermal comfort probability</div><div class="v">${tcp??nd}<span class="u">${tcp!=null?' %':''}</span></div></div>
-    <div class="sim-cell"><div class="k">HSP — overheating hours</div><div class="v">${hsp??nd}<span class="u">${hsp!=null?' h/yr':''}</span></div></div>
-    <div class="sim-cell"><div class="k">NDP — night discharge</div><div class="v">${ndp??nd}${ndpWarn}<span class="u">${ndp!=null?' h/yr':''}</span></div></div>
-    <div class="sim-cell"><div class="k">T_op — mean operative temp</div><div class="v">${top??nd}<span class="u">${top!=null?' °C':''}</span></div></div>`;
+    <div class="sim-cell">
+      <div class="k">TCP — Thermal Comfort Probability ${_c('ashrae55','ⓘ')}${_c('dear2002','ⓘ')}</div>
+      <div class="v">${tcp??nd}<span class="u">${tcp!=null?' %':''}</span></div>
+      <div class="ksub">% occupied hours within ASHRAE 55-2020 adaptive comfort bounds</div>
+    </div>
+    <div class="sim-cell">
+      <div class="k">HSP — Overheating Hours ${_c('ashrae55','ⓘ')}</div>
+      <div class="v">${hspDisp??nd}<span class="u">${hspH!=null?' h/y':''}</span></div>
+      <div class="ksub">% · h/y above ASHRAE 55-2020 adaptive upper limit (T_pma 10–33.5°C range only)</div>
+    </div>
+    <div class="sim-cell">
+      <div class="k">NDP — Night Discharge Potential ${_c('artmann2007','ⓘ')}</div>
+      <div class="v">${ndp??nd}${ndpWarn}<span class="u">${ndp!=null?' h/y':''}</span></div>
+      <div class="ksub">Jun–Aug hours: T_out &lt; T_in and T_out &lt; 22°C (Artmann et al. 2007)</div>
+    </div>
+    <div class="sim-cell">
+      <div class="k">T_op — Mean Operative Temperature ${_c('dear2002','ⓘ')}</div>
+      <div class="v">${top??nd}<span class="u">${top!=null?' °C':''}</span></div>
+      <div class="ksub">Annual mean; T_op = (T_air + T_MRT) / 2, ISO 7726:1998</div>
+    </div>`;
 }
 
 function createViewer(container,c,slot){
