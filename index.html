@@ -563,7 +563,7 @@ body.atlas-active:not(.filter-open) .avgt-persistent-bar{display:none!important;
 .diagram-tab{font-family:var(--mono);font-size:10.5px;padding:5px 9px;border-radius:0;border:1px solid var(--line);background:var(--paper-dim);color:var(--ink-soft);cursor:pointer;}
 .diagram-tab:hover{border-color:var(--terracotta);color:var(--terracotta-deep);}
 .diagram-tab.active{background:var(--ink);border-color:var(--ink);color:var(--paper);font-weight:600;}
-.viewer3d-canvas-box{width:100%;height:210px;border-radius:0;border:1px solid var(--line);overflow:hidden;background:linear-gradient(to bottom,var(--paper),var(--paper-dim));position:relative;cursor:grab;touch-action:none;}
+.viewer3d-canvas-box{width:100%;height:400px;border-radius:0;border:1px solid var(--line);overflow:hidden;background:linear-gradient(to bottom,var(--paper),var(--paper-dim));position:relative;cursor:grab;touch-action:none;}
 .viewer3d-canvas-box:active{cursor:grabbing;}
 .viewer3d-canvas-box canvas{display:block;}
 .viewer3d-fallback{display:flex;align-items:center;justify-content:center;height:100%;font-family:var(--mono);font-size:11px;color:var(--ink-faint);text-align:center;padding:0 16px;}
@@ -1387,6 +1387,7 @@ body.mobile-mode .metric-table{
   -webkit-overflow-scrolling:touch;
 }
 /* 3D viewer: scale to fit on mobile */
+body.mobile-mode .viewer3d-canvas-box{height:260px;}
 body.mobile-mode .viewer3d-canvas-box canvas{
   max-width:100%!important;
   height:auto!important;
@@ -4634,39 +4635,46 @@ function lerpRgb(a,b,f){const pa=hexToRgb(a),pb=hexToRgb(b);return`rgb(${Math.ro
 function heatColor(t){t=Math.max(0,Math.min(1,t));for(let i=0;i<HEAT_RAMP.length-1;i++){const[t0,c0]=HEAT_RAMP[i],[t1,c1]=HEAT_RAMP[i+1];if(t>=t0&&t<=t1)return lerpRgb(c0,c1,(t-t0)/(t1-t0));}return HEAT_RAMP[HEAT_RAMP.length-1][1];}
 function clamp01(v){return Math.max(0,Math.min(1,v));}
 
-const _SCN_KEYS=['present','ssp585_2050','ssp585_2080'];
-const _simCache={};   /* cid → fetched full sim JSON, shared across slots */
-let _simStep={A:0,B:0}; /* continuous slider step 0-8 per slot */
-const NDP_THRESHOLD=1000; /* Artmann et al. 2007 */
-/* sim colormaps: each is an array of [r,g,b] stops 0→1 */
+/* ── Simulation data cache & helpers ────────────────────────────────── */
+const SCN_KEYS=['present','ssp585_2050','ssp585_2080'];
+const SIM_CACHE={};          /* cid → fetched full sim JSON */
+const SIM_VIZ_CACHE={};       /* cid → {present,ssp585_2050,ssp585_2080} — viz JSONs */
+const SIM_STEP={A:0,B:0};   /* continuous slider 0-8 per slot */
+const NDP_THRESHOLD=1000;   /* Artmann et al. 2007 h/yr */
 const SIM_CMAPS={
-  tcp:[[0.84,0.15,0.12],[0.97,0.65,0.40],[0.97,0.97,0.97],[0.65,0.80,0.95],[0.20,0.40,0.80]],
+  tcp:[[0.20,0.40,0.80],[0.65,0.80,0.95],[0.97,0.97,0.97],[0.97,0.65,0.40],[0.84,0.15,0.12]],
   hsp:[[0.20,0.40,0.80],[0.65,0.80,0.95],[0.97,0.97,0.97],[0.97,0.65,0.40],[0.84,0.12,0.12]],
   ndp:[[0.84,0.12,0.12],[0.97,0.50,0.15],[0.92,0.78,0.10],[0.35,0.78,0.45],[0.08,0.65,0.35]],
   t_op:[[0.27,0.46,0.71],[0.57,0.75,0.85],[0.96,0.96,0.96],[0.99,0.80,0.50],[0.90,0.30,0.15]],
 };
-function _simCmapSample(t,metric){
-  const c=SIM_CMAPS[metric]||SIM_CMAPS.t_op;
-  t=Math.max(0,Math.min(1,t));
+function simCmap(t,metric){
+  const c=SIM_CMAPS[metric]||SIM_CMAPS.t_op;t=Math.max(0,Math.min(1,t));
   const seg=(c.length-1)*t,i=Math.floor(seg),f=seg-i;
-  const c0=c[Math.min(i,c.length-1)],c1=c[Math.min(i+1,c.length-1)];
-  return[c0[0]+f*(c1[0]-c0[0]),c0[1]+f*(c1[1]-c0[1]),c0[2]+f*(c1[2]-c0[2])];
+  const a=c[Math.min(i,c.length-1)],b=c[Math.min(i+1,c.length-1)];
+  return[a[0]+f*(b[0]-a[0]),a[1]+f*(b[1]-a[1]),a[2]+f*(b[2]-a[2])];
 }
-function _simInterp(d,step){
+function simInterp(d,step){
   if(!d)return null;
-  const t=step/8;
-  const p=d.present||{},s50=d.ssp585_2050||{},s80=d.ssp585_2080||{};
-  function lerp(a,b,f){return a!=null&&b!=null?a+f*(b-a):null;}
-  if(t<=0.5){const f=t*2;return{tcp:lerp(p.tcp,s50.tcp,f),hsp:lerp(p.hsp_hours,s50.hsp_hours,f),ndp:lerp(p.ndp_hours,s50.ndp_hours,f),t_op:lerp(p.t_op_mean,s50.t_op_mean,f)};}
-  const f=(t-0.5)*2;return{tcp:lerp(s50.tcp,s80.tcp,f),hsp:lerp(s50.hsp_hours,s80.hsp_hours,f),ndp:lerp(s50.ndp_hours,s80.ndp_hours,f),t_op:lerp(s50.t_op_mean,s80.t_op_mean,f)};
+  const t=step/8,p=d.present||{},s5=d.ssp585_2050||{},s8=d.ssp585_2080||{};
+  const L=(a,b,f)=>a!=null&&b!=null?+(a+f*(b-a)).toFixed(2):null;
+  if(t<=0.5){const f=t*2;return{tcp:L(p.tcp,s5.tcp,f),hsp:L(p.hsp_hours,s5.hsp_hours,f),ndp:L(p.ndp_hours,s5.ndp_hours,f),t_op:L(p.t_op_mean,s5.t_op_mean,f)};}
+  const f=(t-0.5)*2;return{tcp:L(s5.tcp,s8.tcp,f),hsp:L(s5.hsp_hours,s8.hsp_hours,f),ndp:L(s5.ndp_hours,s8.ndp_hours,f),t_op:L(s5.t_op_mean,s8.t_op_mean,f)};
 }
+function simNorm(v,metric){
+  if(v==null)return 0.5;
+  if(metric==='tcp')return Math.max(0,Math.min(1,1-v/100));
+  if(metric==='hsp')return Math.max(0,Math.min(1,v/5000));
+  if(metric==='ndp')return Math.max(0,Math.min(1,1-v/2000));
+  return Math.max(0,Math.min(1,(v-14)/26)); /* t_op */
+}
+const SIM_YEAR_LABELS=['TMYx','~2030','~2040','2050','~2057','~2064','~2070','~2075','2080'];
+
 DIAGRAM_META={
-  tcp:{label:'TCP',caption:c=>{const d=_simCache[c.id],v=d?_simInterp(d,_simStep[currentSlot(c)]||0):null;return v&&v.tcp!=null?`${v.tcp.toFixed(1)}% thermal comfort probability (ASHRAE 55-2020 adaptive).`:'Simulation data loading…';}},
-  hsp:{label:'HSP',caption:c=>{const d=_simCache[c.id],v=d?_simInterp(d,_simStep[currentSlot(c)]||0):null;return v&&v.hsp!=null?`${Math.round(v.hsp)} h/yr overheating hours.`:'Simulation data loading…';}},
-  ndp:{label:'NDP',caption:c=>{const d=_simCache[c.id],v=d?_simInterp(d,_simStep[currentSlot(c)]||0):null;const flag=v&&v.ndp<NDP_THRESHOLD?' ⚠ Artmann threshold':'';return v&&v.ndp!=null?`${Math.round(v.ndp)} h/yr night discharge potential.${flag}`:'Simulation data loading…';}},
-  t_op:{label:'T_op',caption:c=>{const d=_simCache[c.id],v=d?_simInterp(d,_simStep[currentSlot(c)]||0):null;return v&&v.t_op!=null?`${v.t_op.toFixed(1)}°C mean operative temperature.`:'Simulation data loading…';}},
+  tcp:{label:'TCP',caption:c=>{const m=simInterp(SIM_CACHE[c.id],SIM_STEP[c===byId(selectedId)?'A':'B']||0);return m&&m.tcp!=null?`${m.tcp.toFixed(1)}% thermal comfort probability (ASHRAE 55-2020 adaptive).`:'Simulation pending.';}},
+  hsp:{label:'HSP',caption:c=>{const m=simInterp(SIM_CACHE[c.id],SIM_STEP[c===byId(selectedId)?'A':'B']||0);return m&&m.hsp!=null?`${Math.round(m.hsp)} h/yr overheating hours.`:'Simulation pending.';}},
+  ndp:{label:'NDP',caption:c=>{const m=simInterp(SIM_CACHE[c.id],SIM_STEP[c===byId(selectedId)?'A':'B']||0);const f=m&&m.ndp<NDP_THRESHOLD?' ⚠ Artmann 1000 h/yr threshold':'';return m&&m.ndp!=null?`${Math.round(m.ndp)} h/yr night discharge potential.${f}`:'Simulation pending.';}},
+  t_op:{label:'T_op',caption:c=>{const m=simInterp(SIM_CACHE[c.id],SIM_STEP[c===byId(selectedId)?'A':'B']||0);return m&&m.t_op!=null?`${m.t_op.toFixed(1)}°C mean operative temperature.`:'Simulation pending.';}},
 };
-function currentSlot(c){if(c&&selectedId&&c.id===selectedId)return'A';if(c&&compareId&&c.id===compareId)return'B';return'A';}
 let currentDiagram={A:'tcp',B:'tcp'};
 let shapeShiftOn={A:false,B:false};
 let bigBrotherActive=false,bbLine=null,bbResultId=null;
@@ -4847,172 +4855,195 @@ function createNoDataCube(container,slot){
   }
 }
 
-function buildSimViewer(container,c,simData,slot){
-  /* Three.js scene using EGG_SHAPES building geometry + EnergyPlus scalar metrics.
-     Floor coloured by active sim metric. NDP walls coloured by Artmann threshold.
-     Continuous scenario slider (9 steps: present → 2050 → 2080) with main-slider sync. */
+/* Convert viz JSON cache to simInterp-compatible format */
+function vizCacheToSimData(vc){
+  function m(d){if(!d||!d.metrics)return{};const t=d.metrics;return{tcp:t.tcp,hsp_hours:t.hsp_hours,ndp_hours:t.ndp_summer_h,t_op_mean:t.t_op_mean};}
+  return{present:m(vc.present),ssp585_2050:m(vc.ssp585_2050),ssp585_2080:m(vc.ssp585_2080)};
+}
+
+function buildSimViewer(container,c,vizCache,slot){
+  /* vizCache = {present, ssp585_2050, ssp585_2080} — each is a viz JSON from
+     data/sim_output/viz/{cid}_{scenario}.json
+     Building polygon comes from polygon_2d in the viz JSON (real DXF outline),
+     not from EGG_SHAPES. Sensor grid, apertures and roof wire all from JSON. */
   try{
-    const N_STEPS=9;
-    const step=_simStep[slot]||0;
+    const firstData=vizCache.present||vizCache.ssp585_2050||vizCache.ssp585_2080;
+    if(!firstData||!firstData.building||!firstData.building.polygon_2d){createNoDataCube(container,slot);return;}
     const dark=document.documentElement.getAttribute('data-theme')==='dark';
-    const w=container.clientWidth||300,h=container.clientHeight||240;
+    const w=container.clientWidth||300,h=container.clientHeight||400;
     const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
     renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
-    renderer.setSize(w,h);
-    renderer.setClearColor(dark?0x18181a:0xf0ede8,0);
+    renderer.setSize(w,h);renderer.setClearColor(dark?0x18181a:0xf0ede8,0);
     container.appendChild(renderer.domElement);
     const scene=new THREE.Scene();
     const camera=new THREE.PerspectiveCamera(38,w/h,0.1,300);
-    camera.position.set(18,14,22);camera.lookAt(0,2,0);
-    const amb=new THREE.AmbientLight(0xffffff,0.7);
-    const dir=new THREE.DirectionalLight(0xffffff,0.6);dir.position.set(10,20,10);
-    scene.add(amb,dir);
-    /* building dims from case data */
-    const {W,D,H,pitch,eave}=buildingDims(c,slot);
-    const shape=EGG_SHAPES[c.id];
-    const poly=shape?shape.env.map(([nx,ny])=>[nx*W,ny*D]):[[0,0],[W,0],[W,D],[0,D]];
-    const eaveH=Math.max(2.4,Math.min(7,H));
-    const pitchRad=pitch*Math.PI/180;
-    const rise=(Math.min(W,D)/2)*Math.tan(pitchRad);
-    const ridgeH=eaveH+rise;
-    const wireColor=dark?0xffffff:0x111111;
-    const wireMat=new THREE.LineBasicMaterial({color:wireColor,opacity:0.7,transparent:true});
-    const roofMat=new THREE.LineBasicMaterial({color:dark?0x888888:0x555555,opacity:0.6,transparent:true});
+    scene.add(new THREE.AmbientLight(0xffffff,0.7));
+    const dl=new THREE.DirectionalLight(0xffffff,0.6);dl.position.set(10,20,10);scene.add(dl);
+    /* geometry from viz JSON — real DXF polygon */
+    const bld=firstData.building;
+    const poly=bld.polygon_2d.map(([x,y])=>[x,y]);
+    const eH=bld.eave_height||3.0;
+    const ridgeH=bld.ridge_height||6.0;
+    const roofPitch=bld.roof_pitch_deg||0;
+    const apertures=firstData.apertures||[];
+    const roofWireData=firstData.roof_wire||[];
+    /* centre camera on polygon centroid */
+    const pxs=poly.map(p=>p[0]),pys=poly.map(p=>p[1]);
+    const pcx=(Math.min(...pxs)+Math.max(...pxs))/2,pcy=(Math.min(...pys)+Math.max(...pys))/2;
+    const pspan=Math.max(Math.max(...pxs)-Math.min(...pxs),Math.max(...pys)-Math.min(...pys));
+    const wc=dark?0xffffff:0x111111;
+    const wm=()=>new THREE.LineBasicMaterial({color:wc,opacity:0.7,transparent:true});
+    const rm=()=>new THREE.LineBasicMaterial({color:dark?0x888888:0x555555,opacity:0.6,transparent:true});
+    const mkL=pts=>new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),wm());
     const group=new THREE.Group();scene.add(group);
-    /* floor polygon + vertical edges + eave polygon */
-    const mkLine=pts=>{const g=new THREE.BufferGeometry().setFromPoints(pts);return new THREE.Line(g,wireMat.clone());};
-    const flPts=poly.map(([x,y])=>new THREE.Vector3(x,0,-y));flPts.push(flPts[0]);
-    const eaPts=poly.map(([x,y])=>new THREE.Vector3(x,eaveH,-y));eaPts.push(eaPts[0]);
-    group.add(mkLine(flPts));group.add(mkLine(eaPts));
-    poly.forEach(([x,y])=>group.add(mkLine([new THREE.Vector3(x,0,-y),new THREE.Vector3(x,eaveH,-y)])));
-    /* gable roof */
-    if(pitch>10){
-      const bxs=poly.map(p=>p[0]),bys=poly.map(p=>p[1]);
-      const bxMin=Math.min(...bxs),bxMax=Math.max(...bxs),byMid=(Math.min(...bys)+Math.max(...bys))/2;
-      const rA=new THREE.Vector3(bxMin,ridgeH,-byMid),rB=new THREE.Vector3(bxMax,ridgeH,-byMid);
-      group.add(mkLine([rA,rB]).clone().material.color.setHex(dark?0x888888:0x555555)||group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([rA,rB]),roofMat.clone())));
-      eaPts.slice(0,-1).forEach(p=>{
-        const to=p.distanceTo(new THREE.Vector3(rA.x,eaveH,rA.z))<p.distanceTo(new THREE.Vector3(rB.x,eaveH,rB.z))?rA:rB;
-        group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([p.clone(),to.clone()]),roofMat.clone()));
+    /* floor + eave outlines + vertical wall edges */
+    const fPts=poly.map(([x,y])=>new THREE.Vector3(x,0,-y));fPts.push(fPts[0]);
+    const ePts=poly.map(([x,y])=>new THREE.Vector3(x,eH,-y));ePts.push(ePts[0]);
+    group.add(mkL(fPts));group.add(mkL(ePts));
+    poly.forEach(([x,y])=>group.add(mkL([new THREE.Vector3(x,0,-y),new THREE.Vector3(x,eH,-y)])));
+    /* roof wireframe from viz JSON (generated by generate_viz_data.py) */
+    if(roofWireData.length>0){
+      roofWireData.forEach(seg=>{
+        const[sx,sy,sz]=seg.start,[ex,ey,ez]=seg.end;
+        group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(sx,sy,sz),new THREE.Vector3(ex,ey,ez)]),rm()));
       });
+    }else if(roofPitch>10){
+      /* fallback gable from bbox */
+      const byMid=(Math.min(...pys)+Math.max(...pys))/2;
+      const rA=new THREE.Vector3(Math.min(...pxs),ridgeH,-byMid),rB=new THREE.Vector3(Math.max(...pxs),ridgeH,-byMid);
+      group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([rA,rB]),rm()));
+      ePts.slice(0,-1).forEach(p=>{const to=p.distanceTo(new THREE.Vector3(rA.x,eH,rA.z))<p.distanceTo(new THREE.Vector3(rB.x,eH,rB.z))?rA:rB;group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([p.clone(),to.clone()]),rm()));});
     }
-    /* metric-coloured floor plane */
-    let floorMesh=null;
-    function updateFloor(step){
-      if(floorMesh){group.remove(floorMesh);if(floorMesh.geometry)floorMesh.geometry.dispose();}
-      const m=_simInterp(simData,step);
-      if(!m)return;
-      const metric=currentDiagram[slot]||'tcp';
-      let norm=0;
-      if(metric==='tcp')norm=1-(m.tcp||0)/100;
-      else if(metric==='hsp')norm=Math.min(1,(m.hsp||0)/5000);
-      else if(metric==='ndp')norm=1-Math.min(1,(m.ndp||0)/2000);
-      else norm=Math.max(0,Math.min(1,((m.t_op||20)-14)/26));
-      const[r,g,b]=_simCmapSample(norm,metric);
-      const fGeo=new THREE.ShapeGeometry(new THREE.Shape(poly.map(([x,y])=>new THREE.Vector2(x,-y))));
-      floorMesh=new THREE.Mesh(fGeo,new THREE.MeshBasicMaterial({color:new THREE.Color(r,g,b),transparent:true,opacity:0.55,side:THREE.DoubleSide}));
-      floorMesh.rotation.x=-Math.PI/2;floorMesh.position.y=0.01;group.add(floorMesh);
-    }
-    /* NDP wall panels */
-    let ndpGroup=new THREE.Group();group.add(ndpGroup);
-    function updateNdpWalls(step){
-      while(ndpGroup.children.length)ndpGroup.remove(ndpGroup.children[0]);
-      const m=_simInterp(simData,step);if(!m||m.ndp==null)return;
-      const crossed=m.ndp<NDP_THRESHOLD,near=m.ndp<1200;
-      const col=crossed?0xE24B4A:near?0xEF9F27:0x1D9E75;
-      const op=crossed?0.35:near?0.20:0.10;
-      const mat=new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:op,side:THREE.DoubleSide});
-      for(let i=0;i<poly.length;i++){
-        const j=(i+1)%poly.length;
-        const[x0,y0]=poly[i],[x1,y1]=poly[j];
-        const v=new Float32Array([x0,0,-y0,x1,0,-y1,x1,eaveH,-y1,x0,0,-y0,x1,eaveH,-y1,x0,eaveH,-y0]);
-        const wg=new THREE.BufferGeometry();wg.setAttribute('position',new THREE.BufferAttribute(v,3));
-        ndpGroup.add(new THREE.Mesh(wg,mat.clone()));
-      }
-    }
-    /* ground */
-    const gd=new THREE.Mesh(new THREE.PlaneGeometry(60,60),new THREE.MeshBasicMaterial({color:dark?0x111113:0xe8e4de,transparent:true,opacity:0.35}));
+    /* window apertures — white wireframe quads from DXF opening_w layer */
+    apertures.forEach(ap=>{
+      if(!ap.p0||!ap.p1||!ap.p2||!ap.p3)return;
+      const winMat=new THREE.LineBasicMaterial({color:0xffffff,opacity:0.85,transparent:true});
+      const pts=[ap.p0,ap.p1,ap.p2,ap.p3,ap.p0].map(([x,y,z])=>new THREE.Vector3(x,z,-y));
+      group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),winMat));
+    });
+    /* ground plane */
+    const gd=new THREE.Mesh(new THREE.PlaneGeometry(Math.max(pspan,20)*3,Math.max(pspan,20)*3),new THREE.MeshBasicMaterial({color:dark?0x111113:0xe8e4de,transparent:true,opacity:0.35}));
     gd.rotation.x=-Math.PI/2;scene.add(gd);
-    updateFloor(step);updateNdpWalls(step);
-    /* scenario slider overlay */
-    const sliderEl=document.createElement('div');
-    sliderEl.id='simSlider-'+slot;
-    sliderEl.style.cssText='position:absolute;bottom:0;left:0;right:0;padding:7px 10px 8px;background:var(--paper-dim);border-top:1px solid var(--line);display:flex;flex-direction:column;gap:4px;';
-    sliderEl.innerHTML=`
-      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--ink-faint);">
-        <span>Present</span><span id="simSliderYear-${slot}" style="color:var(--ink);font-weight:600;">TMYx</span><span>2080</span>
-      </div>
-      <input type="range" id="simSliderInput-${slot}" min="0" max="8" step="1" value="${step}"
-        style="width:100%;accent-color:var(--terracotta);cursor:pointer;">
-      <div id="simNdpState-${slot}" style="font-family:var(--mono);font-size:9px;min-height:13px;"></div>`;
-    container.style.position='relative';
-    container.appendChild(sliderEl);
-    /* year labels per step */
-    const YEAR_LABELS=['TMYx','~2028','~2036','2050','~2057','~2064','~2072','~2076','2080'];
-    function applyStep(s){
-      _simStep[slot]=s;
-      const m=_simInterp(simData,s);
-      updateFloor(s);updateNdpWalls(s);
-      const yr=document.getElementById('simSliderYear-'+slot);if(yr)yr.textContent=YEAR_LABELS[s]||'';
-      const nd=document.getElementById('simNdpState-'+slot);
-      if(nd&&m&&m.ndp!=null){
-        const crossed=m.ndp<NDP_THRESHOLD,near=m.ndp<1200;
-        nd.style.color=crossed?'var(--rust)':near?'var(--ochre)':'var(--moss)';
-        nd.textContent=`NDP ${Math.round(m.ndp)} h/yr${crossed?' ⚠ Artmann threshold':near?' approaching threshold':''}`;
+    /* floor heatmap + NDP wall tint — replaced on every step change */
+    let floorMesh=null,ndpGroup=new THREE.Group();group.add(ndpGroup);
+    const simFlatData=vizCacheToSimData(vizCache); /* for simInterp/updateSimGrid */
+    function updateScene(step){
+      /* clear previous floor + NDP walls */
+      if(floorMesh){if(floorMesh.isGroup){floorMesh.traverse(m=>{m.geometry&&m.geometry.dispose();m.material&&m.material.dispose();});group.remove(floorMesh);}else{group.remove(floorMesh);floorMesh.geometry&&floorMesh.geometry.dispose();floorMesh.material&&floorMesh.material.dispose();}floorMesh=null;}
+      while(ndpGroup.children.length){const m=ndpGroup.children[0];ndpGroup.remove(m);m.geometry&&m.geometry.dispose();m.material&&m.material.dispose();}
+      const mv=simInterp(simFlatData,step);if(!mv)return;
+      const metric=currentDiagram[slot]||'tcp';
+      const metricVal=metric==='t_op'?mv.t_op:metric==='hsp'?mv.hsp:metric==='ndp'?mv.ndp:mv.tcp;
+      const norm=simNorm(metricVal,metric);
+      /* sensor grid floor — per-cell quads from viz JSON */
+      const nearest=step<=2?'present':step<=6?'ssp585_2050':'ssp585_2080';
+      const nearData=vizCache[nearest];
+      const grid=nearData&&nearData.sensor_grid;
+      if(grid&&grid.cells&&grid.cells.length>0){
+        const res=(grid.res||0.5)*0.92;
+        const tMin=grid.t_min||14,tMax=grid.t_max||32;
+        const cellGroup=new THREE.Group();cellGroup.isGroup=true;
+        grid.cells.forEach(cell=>{
+          const t=metric==='t_op'?(cell.t-tMin)/Math.max(tMax-tMin,1):cell.n;
+          const[r,g,b]=simCmap(Math.max(0,Math.min(1,t)),metric);
+          const geo=new THREE.PlaneGeometry(res,res);
+          const mat=new THREE.MeshBasicMaterial({color:new THREE.Color(r,g,b),transparent:true,opacity:0.72,side:THREE.DoubleSide});
+          const mesh=new THREE.Mesh(geo,mat);
+          mesh.rotation.x=-Math.PI/2;mesh.position.set(cell.x,0.02,-cell.y);
+          cellGroup.add(mesh);
+        });
+        floorMesh=cellGroup;group.add(floorMesh);
+      }else{
+        /* fallback: solid floor colour */
+        const[r,g,b]=simCmap(norm,metric);
+        const shape2d=new THREE.Shape(poly.map(([x,y])=>new THREE.Vector2(x,-y)));
+        floorMesh=new THREE.Mesh(new THREE.ShapeGeometry(shape2d),new THREE.MeshBasicMaterial({color:new THREE.Color(r,g,b),transparent:true,opacity:0.55,side:THREE.DoubleSide}));
+        floorMesh.rotation.x=-Math.PI/2;floorMesh.position.y=0.02;group.add(floorMesh);
       }
-      /* update caption */
-      const cap=document.getElementById('diagramCaption-'+slot);
-      if(cap&&c&&DIAGRAM_META[currentDiagram[slot]])cap.textContent=DIAGRAM_META[currentDiagram[slot]].caption(c);
-      /* sync main slider: map step 0→scn0, 4→scn1, 8→scn2 */
-      const newScn=s<=1?0:s<=5?1:2;
-      if(newScn!==scn){scn=newScn;renderSlider();onScenarioChange();}
+      /* NDP wall tint */
+      const ndpVal=mv.ndp;
+      if(ndpVal!=null){
+        const crossed=ndpVal<NDP_THRESHOLD,near=ndpVal<1200;
+        const col=crossed?0xE24B4A:near?0xEF9F27:0x1D9E75,op=crossed?0.30:near?0.18:0.08;
+        const mat=new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:op,side:THREE.DoubleSide});
+        for(let i=0;i<poly.length;i++){const j=(i+1)%poly.length,[x0,y0]=poly[i],[x1,y1]=poly[j];
+          const v=new Float32Array([x0,0,-y0,x1,0,-y1,x1,eH,-y1,x0,0,-y0,x1,eH,-y1,x0,eH,-y0]);
+          const wg=new THREE.BufferGeometry();wg.setAttribute('position',new THREE.BufferAttribute(v,3));
+          ndpGroup.add(new THREE.Mesh(wg,mat.clone()));
+        }
+      }
     }
-    const inp=sliderEl.querySelector('input');
-    inp.addEventListener('input',e=>applyStep(+e.target.value));
-    /* store ref so main slider can update it */
-    VIEWERS[slot]=(VIEWERS[slot]||{});
-    VIEWERS[slot]._simApplyStep=applyStep;
-    /* orbit */
-    let dragging=false,lastX=0,lastY=0;
-    let az=Math.PI*0.28,pol=Math.PI*0.36,radius=26;
-    function place(){camera.position.set(radius*Math.sin(pol)*Math.sin(az),radius*Math.cos(pol)+3,radius*Math.sin(pol)*Math.cos(az));camera.lookAt(0,H/2,0);}
+    /* orbit controls */
+    let az=0.88,pol=0.95,drag=false,lx=0,ly=0,rad=pspan*2.4+8;
+    function place(){camera.position.set(pcx+rad*Math.sin(pol)*Math.sin(az),rad*Math.cos(pol)+eH*0.6,-pcy+rad*Math.sin(pol)*Math.cos(az));camera.lookAt(pcx,eH*0.55,-pcy);}
     place();
-    const onDown=e=>{if(e.target===inp)return;dragging=true;lastX=e.clientX;lastY=e.clientY;};
-    const onMove=e=>{if(!dragging)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;az-=dx*0.006;pol=Math.max(0.18,Math.min(1.45,pol-dy*0.006));place();};
-    const onUp=()=>{dragging=false;};
+    const onDown=e=>{drag=true;lx=e.clientX;ly=e.clientY;};
+    const onMove=e=>{if(!drag)return;az-=(e.clientX-lx)*0.006;pol=Math.max(0.15,Math.min(1.45,pol-(e.clientY-ly)*0.006));lx=e.clientX;ly=e.clientY;place();};
+    const onUp=()=>{drag=false;};
     const onResize=()=>{const nw=container.clientWidth||w,nh=container.clientHeight||h;renderer.setSize(nw,nh);camera.aspect=nw/nh;camera.updateProjectionMatrix();};
     container.addEventListener('pointerdown',onDown);
-    window.addEventListener('pointermove',onMove);
-    window.addEventListener('pointerup',onUp);
-    window.addEventListener('resize',onResize);
-    VIEWERS[slot]={renderer,scene,camera,raf:null,container,onDown,onMove,onUp,onResize,_simApplyStep:applyStep,
-      _simUpdateMetric:(metric)=>{currentDiagram[slot]=metric;updateFloor(_simStep[slot]||0);}};
-    applyStep(step);
+    window.addEventListener('pointermove',onMove);window.addEventListener('pointerup',onUp);window.addEventListener('resize',onResize);
+    VIEWERS[slot]={renderer,scene,camera,container,onDown,onMove,onUp,onResize,raf:null,
+      _updateScene:updateScene,
+      _setStep:(s)=>{SIM_STEP[slot]=s;updateScene(s);
+        const inp=document.getElementById('simSlider-'+slot);if(inp)inp.value=s;
+        const yr=document.getElementById('simYear-'+slot);if(yr)yr.textContent=SIM_YEAR_LABELS[s]||'';
+        updateSimGrid(slot,s,simFlatData);
+        const cap=document.getElementById('diagramCaption-'+slot);if(cap&&DIAGRAM_META[currentDiagram[slot]])cap.textContent=DIAGRAM_META[currentDiagram[slot]].caption(c);
+      }
+    };
+    updateScene(SIM_STEP[slot]||0);
+    const inp=document.getElementById('simSlider-'+slot);
+    if(inp){inp.addEventListener('input',e=>{
+      const s=+e.target.value;
+      VIEWERS[slot]._setStep(s);
+      /* sync main slider bidirectionally: simStep→scn 0/1/2 */
+      const ns=s<=1?0:s<=5?1:2;
+      if(ns!==scn){
+        const mainSl=document.getElementById('scenarioSlider');
+        if(mainSl){mainSl.value=ns;mainSl.dispatchEvent(new Event('input'));}
+      }
+    });}
     (function tick(){VIEWERS[slot].raf=requestAnimationFrame(tick);renderer.render(scene,camera);})();
-  }catch(err){
-    container.innerHTML='<div class="viewer3d-fallback" style="display:flex;align-items:center;justify-content:center;height:100%;font-family:var(--mono);font-size:10px;color:var(--ink-faint);">NO_DATA<br><span style="font-size:9px;opacity:0.6;">>run_simulation_script</span></div>';
-  }
+  }catch(err){console.warn('buildSimViewer error:',err);createNoDataCube(container,slot);}
+}
+function updateSimGrid(slot,step,simData){
+  const el=document.getElementById('simGrid-'+slot);if(!el)return;
+  const m=simInterp(simData,step);
+  const nd='<span class="nodata" style="font-size:11px">NO_DATA</span>';
+  const tcp=m&&m.tcp!=null?m.tcp.toFixed(1):null;
+  const hsp=m&&m.hsp!=null?Math.round(m.hsp):null;
+  const ndp=m&&m.ndp!=null?Math.round(m.ndp):null;
+  const top=m&&m.t_op!=null?m.t_op.toFixed(1):null;
+  const ndpWarn=ndp!=null&&ndp<NDP_THRESHOLD?` <span style="color:var(--rust)">⚠</span>`:'';
+  el.innerHTML=`
+    <div class="sim-cell"><div class="k">TCP — thermal comfort probability</div><div class="v">${tcp??nd}<span class="u">${tcp!=null?' %':''}</span></div></div>
+    <div class="sim-cell"><div class="k">HSP — overheating hours</div><div class="v">${hsp??nd}<span class="u">${hsp!=null?' h/yr':''}</span></div></div>
+    <div class="sim-cell"><div class="k">NDP — night discharge</div><div class="v">${ndp??nd}${ndpWarn}<span class="u">${ndp!=null?' h/yr':''}</span></div></div>
+    <div class="sim-cell"><div class="k">T_op — mean operative temp</div><div class="v">${top??nd}<span class="u">${top!=null?' °C':''}</span></div></div>`;
 }
 
 function createViewer(container,c,slot){
   if(typeof THREE==='undefined'){container.innerHTML='<div class="viewer3d-fallback">3D preview unavailable (three.js did not load)</div>';return;}
-  /* Full mode: attempt to load real EnergyPlus sim data from R2.
-     Show NO_DATA cube while fetching; replace with real viewer on success. */
   if(!MOCK){
-    const cid=c?c.id:null;
-    if(cid&&_simCache[cid]){
-      buildSimViewer(container,c,_simCache[cid],slot);
-    }else if(cid){
-      createNoDataCube(container,slot);
-      fetch(`${DATA_BASE}/sim_output/full/${cid}.json?v=${BUILD_TS}`)
-        .then(r=>r.ok?r.json():null).then(data=>{
-          if(!data)return;
-          _simCache[cid]=data;
-          const activeId=slot==='A'?selectedId:compareId;
-          const box=document.getElementById('viewer3d-'+slot);
-          if(activeId===cid&&box){disposeViewer(slot);buildSimViewer(box,c,data,slot);}
-        }).catch(()=>{});
-    }else{createNoDataCube(container,slot);}
+    const cid=c&&c.id;
+    if(!cid){createNoDataCube(container,slot);return;}
+    /* Use viz JSONs (polygon_2d + apertures + sensor_grid) not full JSON */
+    if(SIM_VIZ_CACHE[cid]){buildSimViewer(container,c,SIM_VIZ_CACHE[cid],slot);return;}
+    createNoDataCube(container,slot);
+    /* Fetch all 3 scenario viz JSONs in parallel */
+    const SCNS=['present','ssp585_2050','ssp585_2080'];
+    Promise.all(SCNS.map(s=>
+      fetch(`${DATA_BASE}/sim_output/viz/${cid}_${s}.json`)
+        .then(r=>r.ok?r.json():null).catch(()=>null)
+    )).then(results=>{
+      const vc={present:results[0],ssp585_2050:results[1],ssp585_2080:results[2]};
+      if(!vc.present&&!vc.ssp585_2050&&!vc.ssp585_2080)return; /* no data */
+      SIM_VIZ_CACHE[cid]=vc;
+      const activeId=slot==='A'?selectedId:compareId;
+      const box=document.getElementById('viewer3d-'+slot);
+      if(activeId===cid&&box){disposeViewer(slot);buildSimViewer(box,c,vc,slot);}
+    }).catch(()=>{/* keep no-data cube */});
     return;
   }
   try{
@@ -5144,8 +5175,8 @@ function switchDiagramTab(slot,key,c){
   if(shapeShiftOn[slot]){
     disposeViewer(slot);
     createViewer(document.getElementById('viewer3d-'+slot),c,slot);
-  }else if(VIEWERS[slot]&&VIEWERS[slot]._simUpdateMetric){
-    VIEWERS[slot]._simUpdateMetric(key);
+  }else if(VIEWERS[slot]&&VIEWERS[slot]._updateScene){
+    VIEWERS[slot]._updateScene(SIM_STEP[slot]||0);
     const cap=document.getElementById('diagramCaption-'+slot);
     if(cap&&DIAGRAM_META[key])cap.textContent=DIAGRAM_META[key].caption(c);
   }else{
@@ -6004,7 +6035,6 @@ function switchMetricPage(slot,page,c){
 
 /* ---- single case-detail block, reused for slot A (primary) and slot B (compare) ---- */
 function caseDetailHTML(c,slot){
-  const oh=c.sim&&c.sim.oh?c.sim.oh[scn]:null, cf=c.sim&&c.sim.comfort?c.sim.comfort[scn]:null;
   /* vernacularBIGBROTHER exception: slot B is a PRESENT-day station being
      proposed as a future analogue — always show ITS present-day climate
      here, regardless of the slider, so the user can visually check
@@ -6090,20 +6120,21 @@ function caseDetailHTML(c,slot){
           </div>
           <div class="climate-tabs-content">
             <div class="viewer3d-canvas-box" id="viewer3d-${slot}"><div class="viewer3d-hint">drag to rotate</div></div>
+            <div style="padding:5px 0 3px;display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9px;color:var(--ink-faint);">
+              <span>Present</span>
+              <input type="range" id="simSlider-${slot}" min="0" max="8" step="1" value="${SIM_STEP[slot]||0}" style="flex:1;accent-color:var(--terracotta);cursor:pointer;">
+              <span id="simYear-${slot}" style="color:var(--ink);font-weight:600;min-width:32px;text-align:right;">${SIM_YEAR_LABELS[SIM_STEP[slot]||0]||'TMYx'}</span>
+              <span>2080</span>
+            </div>
             <div class="heat-legend"><div class="heat-legend-bar"></div><div class="heat-legend-labels"><span>low</span><span>high</span></div></div>
             <div class="diagram-caption" id="diagramCaption-${slot}"></div>
           </div>
         </div>
-        <div class="sim-grid" style="margin-top:10px;">
-          ${(()=>{const d=_simCache[c.id],sk=_SCN_KEYS[scn],v=d&&d[sk]?d[sk]:null;
-          const tcp=v?v.tcp:null,hsp=v?v.hsp_hours:null,ndp=v?v.ndp_hours:null,top=v?v.t_op_mean:null;
-          const nd='<span class="nodata" style="font-size:12px">NO_DATA</span>';
-          const ndpFlag=ndp!=null&&ndp<1000?' <span style="color:var(--rust);font-size:10px">⚠</span>':'';
-          return `<div class="sim-cell"><div class="k">TCP — thermal comfort probability</div><div class="v">${tcp!=null?tcp.toFixed(1):nd}<span class="u">${tcp!=null?' %':''}</span></div></div>
-          <div class="sim-cell"><div class="k">HSP — overheating hours</div><div class="v">${hsp!=null?Math.round(hsp):nd}<span class="u">${hsp!=null?' h/yr':''}</span></div></div>
-          <div class="sim-cell"><div class="k">NDP — night discharge potential</div><div class="v">${ndp!=null?Math.round(ndp):nd}${ndpFlag}<span class="u">${ndp!=null?' h/yr':''}</span></div></div>
-          <div class="sim-cell"><div class="k">T_op — mean operative temperature</div><div class="v">${top!=null?top.toFixed(1):nd}<span class="u">${top!=null?' °C':''}</span></div></div>`;
-          })()}
+        <div class="sim-grid" id="simGrid-${slot}" style="margin-top:10px;">
+          <div class="sim-cell"><div class="k">TCP — thermal comfort probability</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
+          <div class="sim-cell"><div class="k">HSP — overheating hours</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
+          <div class="sim-cell"><div class="k">NDP — night discharge</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
+          <div class="sim-cell"><div class="k">T_op — mean operative temp</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
         </div>
         <button class="rec-toggle-btn" id="recToggleBtn-${slot}" style="margin-top:14px;">&gt;adaptive<em>RECOMMENDATIONS</em></button>
         <div class="rec-wrap" id="recWrap-${slot}" style="margin-top:10px;display:none;">
@@ -6306,14 +6337,10 @@ function renderSlider(){
     const bbWasActive=bigBrotherActive||bbNoMatch;
     fKoppen='';const ks=document.getElementById('fKoppen');if(ks)ks.value='';
     refreshKoppenOptions();applyScenarioPalette();refreshMap();applyFilter();renderPanel();renderLegend();renderLineLegend();
-    /* sync sim viewer sliders: scn 0→step 0, 1→step 4, 2→step 8 */
-    const _simTargetStep=scn*4;
-    ['A','B'].forEach(slot=>{
-      const inp=document.getElementById('simSliderInput-'+slot);
-      if(inp)inp.value=_simTargetStep;
-      if(VIEWERS[slot]&&VIEWERS[slot]._simApplyStep){
-        const _scnBak=scn;VIEWERS[slot]._simApplyStep(_simTargetStep);scn=_scnBak;
-      }
+    /* sync sim sliders: scn 0/1/2 → step 0/4/8 */
+    const _tStep=scn*4;['A','B'].forEach(slot=>{
+      if(VIEWERS[slot]&&VIEWERS[slot]._setStep){const _s=scn;VIEWERS[slot]._setStep(_tStep);scn=_s;}
+      else{const inp=document.getElementById('simSlider-'+slot);if(inp)inp.value=_tStep;const yr=document.getElementById('simYear-'+slot);if(yr)yr.textContent=SIM_YEAR_LABELS[_tStep]||'';}
     });
     /* if BB was showing and we're still on a future scenario, recompute it
        for the newly selected year (2050 <-> 2080). */
