@@ -511,6 +511,9 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
   .climate-tabs-row{flex-direction:column;}
 }
 .shapeshift-btn{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:0.01em;padding:11px 14px;margin-bottom:10px;border:1.5px solid var(--terracotta);background:var(--terracotta-dim);color:var(--terracotta-deep);cursor:pointer;transition:background-color .2s ease,color .2s ease;}
+.sim-refetch-btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:0.04em;padding:7px 12px;border:1px solid var(--line-strong,var(--line));background:transparent;color:var(--ink-soft);cursor:pointer;border-radius:0;transition:border-color .15s,color .15s;}
+.sim-refetch-btn:hover{border-color:var(--terracotta);color:var(--terracotta);}
+.sim-refetch-btn .rfetch-arrow{font-size:14px;line-height:1;font-style:normal;}
 .rec-toggle-btn{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:0.01em;padding:9px 14px;border:1.5px solid var(--moss);background:var(--moss-dim);color:var(--moss);cursor:pointer;transition:background-color .2s ease,color .2s ease;}
 .rec-toggle-btn:hover,.rec-toggle-btn.active{background:var(--moss);color:var(--paper);}
 .shapeshift-btn:hover{background:var(--terracotta);color:var(--paper);}
@@ -1735,7 +1738,7 @@ html[data-theme="dark"] .loader-status{
     <div class="loader-status" id="loaderStatus">initializing atlas…</div>
   </div>
 </div>
-<div class="mobile-banner">vernacularfutures · mobile view · compare &amp; 3D unavailable · <a href="#" id="mobileDesktopToggle" style="color:inherit;text-decoration:underline;">switch to desktop layout</a></div>
+<div class="mobile-banner">vernacularfutures  mobile view  compare &amp; 3D unavailable  <a href="#" id="mobileDesktopToggle" style="color:inherit;text-decoration:underline;">switch to desktop layout</a></div>
 <div class="chrome-stripe"></div>
 <div class="win-titlebar">
   <span class="win-title">vernacularfutures</span>
@@ -1761,7 +1764,7 @@ html[data-theme="dark"] .loader-status{
   </div>
   
   <div class="scenario-control">
-    <div class="scenario-label">Climate scenario · SSP5-8.5
+    <div class="scenario-label">Climate scenario  SSP5-8.5
       <span class="info-btn" id="scenarioInfoBtn" title="About these scenarios">ⓘ</span>
       <div class="info-popover" id="scenarioInfoPop" style="display:none;">
         <div class="info-pop-head">About the climate scenarios</div>
@@ -1774,8 +1777,12 @@ html[data-theme="dark"] .loader-status{
             <li><b>2050 horizon:</b> 2036–2065 centred mean</li>
             <li><b>2080 horizon:</b> 2066–2095 centred mean</li>
           </ul>
-          <p>Baseline for delta calculation: <b>1985–2014</b> (CMIP6 historical reference). Variables morphed: dry-bulb temperature, dew point, solar radiation, wind speed, atmospheric pressure. Precipitation is carried from the present-day file with minor ensemble scaling.</p>
-          <p class="info-ref">Belcher et al. (2005) · Rodrigues et al., <i>Building and Environment</i> 246, 2023</p>
+          <p>Baseline for delta calculation: <b>1985–2014</b> (CMIP6 historical reference, centre ≈ 2000). Variables morphed: dry-bulb temperature, dew point, solar radiation, wind speed, atmospheric pressure. Precipitation is not morphed.</p>
+          <p style="background:var(--terracotta-dim,rgba(196,84,42,.08));border-left:2px solid var(--terracotta,#c4542a);padding:7px 10px;margin:8px 0 4px;font-size:10.5px;"><b>Methodological caveat — baseline mismatch:</b> The FWG deltas represent warming from the 1985–2014 baseline (centre ≈ 2000). Applied onto TMYx 2011–2025 files (centre ≈ 2018), the morphed outputs effectively represent conditions roughly 18 years beyond their nominal labels:<br><br>
+          &nbsp;&nbsp;• <b>"2050" label</b> → effectively ≈<b>2068</b> conditions<br>
+          &nbsp;&nbsp;• <b>"2080" label</b> → effectively ≈<b>2098</b> conditions<br><br>
+          This is conservative labelling: projections are likely warmer than the nominal year implies. Rodrigues et al. (2023) explicitly note this limitation. Results are reported under the FWG nominal labels for methodological transparency; findings should be read as representing <i>at least</i> 2050/2080 severity.</p>
+          <p class="info-ref">Belcher et al. (2005)  Rodrigues et al., <i>Building and Environment</i> 246, 2023</p>
         </div>
       </div>
     </div>
@@ -1818,16 +1825,16 @@ html[data-theme="dark"] .loader-status{
       <div class="mobile-sheet-close" id="filterSheetClose">✕ &nbsp;close filters</div>
       <div class="filter-group"><span class="fl">Country</span><select id="fRegion"><option value="">All countries</option></select></div>
       <div class="filter-group"><span class="fl">Köppen zone</span><select id="fKoppen"><option value="">All</option></select></div>
-      <div class="filter-group"><span class="fl">Roof pitch</span><select id="fRoof"><option value="">All</option><option value="steep">Steep · ≥35°</option><option value="shallow">Shallow · &lt;35°</option></select></div>
+      <div class="filter-group"><span class="fl">Roof pitch</span><select id="fRoof"><option value="">All</option><option value="steep">Steep ≥35°</option><option value="shallow">Shallow · &lt;35°</option></select></div>
       <div class="filter-group"><span class="fl">Construction type</span><select id="fConstruction"><option value="">All</option><option value="timber_frame">Timber frame</option><option value="wood">Wood</option><option value="clay">Clay</option><option value="stone/masonry">Stone masonry</option><option value="log_construction">Log</option></select></div>
-      <div class="filter-group"><span class="fl">Thermal mass · per m²</span><select id="fMass"><option value="">All</option><option value="high">High · ≥ median</option><option value="low">Low · &lt; median</option></select></div>
-      <div class="filter-group"><span class="fl">Overheating Δ · →2080</span><select id="fOhDelta"><option value="">All</option><option value="high">High · ≥ median</option><option value="low">Low · &lt; median</option></select></div>
-      <div class="filter-group"><span class="fl">Comfort decline Δ · →2080</span><select id="fComfortDelta"><option value="">All</option><option value="high">High · ≥ median</option></select></div>
-      <div class="filter-group"><span class="fl">Solar exposure Δ · →2080</span><select id="fSolarDelta"><option value="">All</option><option value="high">High · ≥ median</option></select></div>
+      <div class="filter-group"><span class="fl">Thermal mass per m²</span><select id="fMass"><option value="">All</option><option value="high">High ≥ median</option><option value="low">Low &lt; median</option></select></div>
+      <div class="filter-group"><span class="fl">Overheating Δ →2080</span><select id="fOhDelta"><option value="">All</option><option value="high">High ≥ median</option><option value="low">Low &lt; median</option></select></div>
+      <div class="filter-group"><span class="fl">Comfort decline Δ →2080</span><select id="fComfortDelta"><option value="">All</option><option value="high">High ≥ median</option></select></div>
+      <div class="filter-group"><span class="fl">Solar exposure Δ →2080</span><select id="fSolarDelta"><option value="">All</option><option value="high">High ≥ median</option></select></div>
       <div class="filter-group"><span class="fl">Köppen zone shift</span><select id="fKoppenDelta"><option value="">All</option><option value="yes">Shifts by 2080</option></select></div>
-      <div class="filter-group"><span class="fl">Compactness ψ</span><select id="fCompact"><option value="">All</option><option value="cubey">Compact · ψ≥0.85</option><option value="rectangly">Elongated · ψ&lt;0.85</option></select></div>
-      <div class="filter-group"><span class="fl">WWR</span><select id="fWwr"><option value="">All</option><option value="high">High · ≥ median</option><option value="low">Low · &lt; median</option></select></div>
-      <div class="filter-group"><span class="fl">Diurnal swing<span class="action-info-icon" id="fDiurnalInfoIcon" style="font-size:10px;margin-left:4px;">ⓘ<div class="action-info-pop" id="fDiurnalInfoPop" style="width:290px;"><div class="ai-head">_diurnal swing threshold</div><div class="ai-body">Annual mean of daily (T<sub>max</sub> − T<sub>min</sub>). High-mass construction is desirable above roughly <b>10°C</b>; below <b>6°C</b>, low-mass construction generally performs best, and high mass can cause overheating in humid climates with limited night-time cooling. This filter uses 10°C as the high/low split.</div><div class="ai-cite">Reardon, C., McGee, C. &amp; Milne, G. (2020). Thermal mass. <em>YourHome: Australia's guide to environmentally sustainable homes</em>, Australian Government.</div></div></span></span><select id="fDiurnal"><option value="">All</option><option value="high">High · ≥10°C</option><option value="low">Low · &lt;10°C</option></select></div>
+      <div class="filter-group"><span class="fl">Compactness ψ</span><select id="fCompact"><option value="">All</option><option value="cubey">Compact ψ≥0.85</option><option value="rectangly">Elongated · ψ&lt;0.85</option></select></div>
+      <div class="filter-group"><span class="fl">WWR</span><select id="fWwr"><option value="">All</option><option value="high">High ≥ median</option><option value="low">Low &lt; median</option></select></div>
+      <div class="filter-group"><span class="fl">Diurnal swing<span class="action-info-icon" id="fDiurnalInfoIcon" style="font-size:10px;margin-left:4px;">ⓘ<div class="action-info-pop" id="fDiurnalInfoPop" style="width:290px;"><div class="ai-head">_diurnal swing threshold</div><div class="ai-body">Annual mean of daily (T<sub>max</sub> − T<sub>min</sub>). High-mass construction is desirable above roughly <b>10°C</b>; below <b>6°C</b>, low-mass construction generally performs best, and high mass can cause overheating in humid climates with limited night-time cooling. This filter uses 10°C as the high/low split.</div><div class="ai-cite">Reardon, C., McGee, C. &amp; Milne, G. (2020). Thermal mass. <em>YourHome: Australia's guide to environmentally sustainable homes</em>, Australian Government.</div></div></span></span><select id="fDiurnal"><option value="">All</option><option value="high">High ≥10°C</option><option value="low">Low &lt;10°C</option></select></div>
       <div class="filter-group"><span class="fl">Construction period</span><select id="fPeriod"><option value="">All</option><option value="pre1500">Pre-1500</option><option value="1500-1700">1500–1700</option><option value="1700-1850">1700–1850</option><option value="1850-1920">1850–1920</option><option value="1920-1970">1920–1970</option><option value="1970-now">1970–present</option></select></div>
       <span class="filter-count" id="filterCount"></span>
       <button class="filter-reset" id="filterReset">Reset</button>
@@ -1974,7 +1981,7 @@ html[data-theme="dark"] .loader-status{
         <canvas id="eggCanvas" width="560" height="200"></canvas>
       </div>
       <div class="egg-footer">
-        <span id="eggScoreLine">score 0 · high 0</span>
+        <span id="eggScoreLine">score 0  high 0</span>
         <span class="info-btn" id="eggInfoBtn" title="Data source">ⓘ
           <div class="info-popover egg-info-pop" id="eggInfoPop" style="display:none;bottom:calc(100% + 6px);top:auto;right:0;width:280px;">
             <div class="info-pop-head">Data sources</div>
@@ -2024,7 +2031,7 @@ const EGG_SHAPES = {"CS_3": {"env": [[0.0, 0.0342], [1.0, 0.0], [0.8368, 0.4122]
 
 const SCENARIOS=['Present','2050','2080'];
 const SCENARIO_PERIODS=['(2011–2025)','(2036–2065)','(2066–2095)'];
-const SCENARIO_MAIN=['Present · TMYx','2050 · SSP5-8.5','2080 · SSP5-8.5'];
+const SCENARIO_MAIN=['Present  TMYx','2050  SSP5-8.5','2080  SSP5-8.5'];
 const SCENARIOS_LONG=SCENARIO_MAIN.map((m,i)=>m+' '+SCENARIO_PERIODS[i]);
 const KGCOLOR={A:'#D98E4A',B:'#B5562E',C:'#33424E',D:'#6B6B2E'};
 const KGNAME={A:'Tropical (A)',B:'Arid (B)',C:'Temperate (C)',D:'Continental (D)'};
@@ -2312,7 +2319,7 @@ function rebuildMarkers(){
   const bounds=[];
   CASES.filter(c=>c.hasCoord).forEach(c=>{
     const mk=L.circleMarker([c.lat,c.lon],{radius:7,weight:0,fillColor:kcolor(c.koppen[scn]),fillOpacity:0.92});
-    mk.bindTooltip(`<b>${c.name||c.id}</b><br>${c.region} · ${c.koppen[scn]||'–'}`,{direction:'top',offset:[0,-6]});
+    mk.bindTooltip(`<b>${c.name||c.id}</b><br>${c.region}  ${c.koppen[scn]||'–'}`,{direction:'top',offset:[0,-6]});
     mk.on('click',()=>selectCase(c.id));mk._cid=c.id;mk.addTo(map);markers.push(mk);bounds.push([c.lat,c.lon]);
   });
   if(bounds.length)map.fitBounds(bounds,{padding:[30,30]});
@@ -2417,7 +2424,7 @@ function pass(c){
 function applyFilter(){
   refreshMap();
   const vis=CASES.filter(pass),mapped=vis.filter(c=>c.hasCoord).length;
-  document.getElementById('filterCount').textContent=`${vis.length}/${CASES.length} cases · ${mapped} mapped`;
+  document.getElementById('filterCount').textContent=`${vis.length}/${CASES.length} cases  ${mapped} mapped`;
   renderUnmapped(vis);
   if(selectedId&&!pass(byId(selectedId))){selectedId=null;renderPanel();}
 }
@@ -2442,7 +2449,7 @@ function refreshKoppenOptions(){
   ks.querySelectorAll('option:not(:first-child)').forEach(o=>o.remove());
   const codes=[...new Set(CASES.map(c=>c.koppen[scn]).filter(Boolean))]
     .sort((a,b)=> a[0]===b[0] ? a.localeCompare(b) : 'ABCDE'.indexOf(a[0])-'ABCDE'.indexOf(b[0]));
-  codes.forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k+(KOPPEN_LABEL[k]?' · '+KOPPEN_LABEL[k]:'');ks.appendChild(o);});
+  codes.forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k+(KOPPEN_LABEL[k]?' — '+KOPPEN_LABEL[k]:'');ks.appendChild(o);});
 }
 const FILTER_SELECT_IDS=['fRoof','fConstruction','fMass','fOhDelta','fComfortDelta','fSolarDelta','fKoppenDelta','fCompact','fWwr','fDiurnal','fPeriod'];
 function buildFilters(){
@@ -2487,7 +2494,7 @@ function buildFilters(){
     csSearchResults.innerHTML=hits.map((c,i)=>`<div class="cs-search-item${i===0?' active':''}" data-id="${c.id}">
       <span class="cs-search-id">${c.id}</span>
       <span>${c.name||'–'}</span>
-      <span class="cs-search-sub">${c.country||''}${c.koppen&&c.koppen[0]?' · '+c.koppen[0]:''}</span>
+      <span class="cs-search-sub">${c.country||''}${c.koppen&&c.koppen[0]?' '+c.koppen[0]:''}</span>
     </div>`).join('');
     csSearchResults.style.display='block';
     csSearchResults.querySelectorAll('.cs-search-item').forEach(el=>{
@@ -2892,7 +2899,7 @@ function onEditGridChange(e){
   buildCorpusStats();
   renderAdminStatus();
   const dirty=document.getElementById('editGridDirty');
-  if(dirty)dirty.textContent=' · edited this session';
+  if(dirty)dirty.textContent=' — edited this session';
 }
 function exportEditedWorkbook(){
   const header=EDIT_FIELDS.map(f=>f.label);
@@ -2996,7 +3003,7 @@ function renderPhotoTable(list,persistent){
     <div class="photo-card">
       ${f.url?`<img src="${f.url}" class="photo-thumb" loading="lazy"/>`:'<div class="photo-thumb photo-thumb-empty">no preview</div>'}
       <div class="photo-name">${f.name}</div>
-      <div class="photo-meta">${fmtBytes(f.size)} · ${new Date(f.modified).toLocaleDateString()}</div>
+      <div class="photo-meta">${fmtBytes(f.size)}  ${new Date(f.modified).toLocaleDateString()}</div>
       <button class="admin-remove" data-rmphoto="${f.name}">remove</button>
     </div>`).join('')}</div>
     <div class="admin-note">${persistent?'Saved to the connected folder on disk.':'Session-only, not saved to disk (no folder connected). Thumbnails for genuinely uploaded files only; seeded placeholders show no preview.'}</div>`;
@@ -3442,6 +3449,11 @@ function arMorph(c){
 function arSim(c){
   const hasSim=c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null||c.sim.oh[0]!=null);
   if(!hasSim) return [{t:'nodata',h:'<p class="ar-nodata">no_simulations</p>'}];
+  /* Require real DXF geometry (wall_thick from dxf_analyse).
+     Without it, sim_corpus.py used a fallback square box — results are from
+     a fictional geometry and must not be shown as building performance data. */
+  const hasRealGeom=c.wallThk!=null||c.area!=null;
+  if(!hasRealGeom) return [{t:'nodata',h:'<p class="ar-nodata">no_simulations</p>'}];
   const tcp=c.sim.comfort,hsp=c.sim.oh,ndp=c.sim.ndp,top=c.sim.topMean;
   const NT=1000;
   const kp=Array.isArray(c.koppen)?c.koppen:[c.koppen,c.koppen50,c.koppen80];
@@ -3588,15 +3600,25 @@ function generateAdaptiveRecs(c,slot){
   if(!el)return;
   el.innerHTML='<div class="ar-wrap" id="arBody-'+slot+'"></div>';
   const body=document.getElementById('arBody-'+slot);
-  const scroll=el.closest('.cs-panel-body')||el.closest('[style*="overflow"]')||el.parentElement;
+
+  /* Find the actual scrollable parent by inspecting computed overflow.
+     .closest() misses elements where overflow is set via CSS not inline. */
+  function findScrollParent(node){
+    while(node&&node!==document.documentElement){
+      const ov=window.getComputedStyle(node).overflowY;
+      if((ov==='auto'||ov==='scroll')&&node.scrollHeight>node.clientHeight) return node;
+      node=node.parentElement;
+    }
+    return null;
+  }
+  const scrollEl=findScrollParent(el);
 
   const sections=[
-    {label:'1 · Climate shift',    chunks:arClimate(c)},
-    {label:'2 · Morphology',       chunks:arMorph(c)},
-    {label:'3 · Simulation',       chunks:arSim(c)},
+    {label:'1  Climate shift',    chunks:arClimate(c)},
+    {label:'2  Morphology',       chunks:arMorph(c)},
+    {label:'3  Simulation',       chunks:arSim(c)},
   ];
 
-  // Flatten into a queue: [header, chunk, chunk, …, header, chunk, …]
   const queue=[];
   sections.forEach(s=>{
     queue.push({t:'head',h:s.label});
@@ -3613,8 +3635,11 @@ function generateAdaptiveRecs(c,slot){
     else div.className='ar-p';
     div.innerHTML=item.h;
     body.appendChild(div);
-    if(scroll) scroll.scrollTop=scroll.scrollHeight;
-    else div.scrollIntoView({behavior:'smooth',block:'nearest'});
+    /* Scroll after layout — rAF ensures scrollHeight is updated */
+    requestAnimationFrame(()=>{
+      if(scrollEl) scrollEl.scrollTop=scrollEl.scrollHeight;
+      else div.scrollIntoView({behavior:'instant',block:'nearest'});
+    });
     setTimeout(next,item.t==='head'?60:90);
   }
   next();
@@ -3830,7 +3855,7 @@ function houseSVG(c){
     <polygon points="${(wallL-eaveOver).toFixed(0)},${wallTop} ${cx},${ridgeY.toFixed(0)} ${(wallR+eaveOver).toFixed(0)},${wallTop}" fill="${roofFill}" stroke="#111111" stroke-width="1.4"/>
     ${win}
     <rect x="${dx}" y="${baseY-doorH}" width="${doorW}" height="${doorH}" rx="0" fill="#111111"/>
-    <text x="${W-12}" y="${H-8}" text-anchor="end" font-family="IBM Plex Mono" font-size="8.5" fill="#8A8A8A">pitch ${c.roofPitch||'–'}° · ${c.wallType||'–'} · WWR ${c.wwr!=null?c.wwr+'%':'–'}</text>
+    <text x="${W-12}" y="${H-8}" text-anchor="end" font-family="IBM Plex Mono" font-size="8.5" fill="#8A8A8A">pitch ${c.roofPitch||'–'}°  ${c.wallType||'–'}  WWR ${c.wwr!=null?c.wwr+'%':'–'}</text>
   </svg>`;
 }
 
@@ -4040,7 +4065,7 @@ async function updateStationMarker(c){
   /* dotted connecting line — read the theme colour from CSS vars */
   const lineColor=getComputedStyle(document.documentElement).getPropertyValue('--ink').trim()||'#ccc';
   const stLatLngs=[[c.lat,c.lon],[coord.lat,coord.lon]];
-  const stTip=`EPW station link${coord.name?' · '+coord.name:''}`;
+  const stTip=`EPW station link${coord.name?' — '+coord.name:''}`;
   const stHit=L.polyline(stLatLngs,{color:'#000',weight:12,opacity:0,interactive:true}).addTo(map);
   stHit.bindTooltip(stTip,{sticky:true});
   stationLine=L.polyline(stLatLngs,{
@@ -4462,7 +4487,7 @@ function solarBreakdownChart(c,s,epwData){
     g+=`<rect x="${(x(i)-barW/2).toFixed(1)}" y="${(baseY-dhBar).toFixed(1)}" width="${barW.toFixed(1)}" height="${dhBar.toFixed(1)}" fill="${DIFF_COL}" opacity="0.7" rx="0" data-tip="${MONTHS_FULL[i]}: ${dhi.toFixed(1)} kWh/m²/day diffuse" style="cursor:pointer;"/>`;
     if(dBar>0.5)g+=`<rect x="${(x(i)-barW/2).toFixed(1)}" y="${(baseY-totalBar).toFixed(1)}" width="${barW.toFixed(1)}" height="${dBar.toFixed(1)}" fill="${DIRECT_COL}" opacity="0.85" rx="0" data-tip="${MONTHS_FULL[i]}: ${direct.toFixed(1)} kWh/m²/day direct" style="cursor:pointer;"/>`;
   });
-  g+=`<text x="${pad}" y="10" font-family="IBM Plex Mono" font-size="7" fill="var(--ink-faint)">kWh/m²/day · ▮ direct ▮ diffuse</text>`;
+  g+=`<text x="${pad}" y="10" font-family="IBM Plex Mono" font-size="7" fill="var(--ink-faint)">kWh/m²/day  ▮ direct  ▮ diffuse</text>`;
   return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="direct vs diffuse solar radiation">${g}</svg>`;
 }
 function rhChart(c,s,epwData){
@@ -4500,7 +4525,7 @@ function psychroChart(c,s,epwData){
   return `<div class="chartwrap" style="padding:0;position:relative;">
     <canvas id="${id}" style="width:100%;display:block;" height="260"></canvas>
     <div style="position:absolute;bottom:6px;right:8px;font-family:var(--mono);font-size:8px;color:var(--ink-faint);">
-      DIN 1946-2 comfort zone · outdoor conditions · each dot = 1 hour
+      DIN 1946-2 comfort zone  outdoor conditions  each dot = 1 hour
     </div>
   </div>`;
 }
@@ -4613,7 +4638,7 @@ function drawPsychroCanvas(canvasId,epwData){
   }
 
   /* ── ASHRAE 55-2017 §5.2.1 comfort zone ── */
-  const a55Col=dark?'rgba(80,160,255,0.9)':'rgba(20,90,210,0.9)';
+  const a55Col=dark?'rgba(220,100,140,0.88)':'rgba(170,50,90,0.88)';  /* pink — distinct from blue data points */
   const a55Poly=ASHRAE55_POLY.map(([T,w])=>[tx(T),wy(w)]);
   function buildA55Path(){
     ctx.beginPath();
@@ -4621,7 +4646,7 @@ function drawPsychroCanvas(canvasId,epwData){
     ctx.closePath();
   }
   buildA55Path();
-  ctx.fillStyle=dark?'rgba(80,160,255,0.05)':'rgba(20,90,210,0.04)';
+  ctx.fillStyle=dark?'rgba(220,100,140,0.05)':'rgba(170,50,90,0.04)';
   ctx.fill();
   ctx.strokeStyle=a55Col;ctx.lineWidth=1.8;ctx.setLineDash([4,3]);
   ctx.stroke();ctx.setLineDash([]);
@@ -4812,7 +4837,7 @@ function overviewTabHTML(c,epwData){
       <div class="cstat"><div class="v">${rhV}</div><div class="k">Avg RH (%)</div></div>
     </div>
     <div class="chartwrap" style="margin-top:10px;">${tempPrecipChart(c,scn,epwData)}
-      <div class="chart-caption"><span>temp (°C · EPW)</span><span>▮ precip (mm · ${epwData&&epwData.precip?'EPW':'synthetic'})</span></div>
+      <div class="chart-caption"><span>temp (°C  EPW)</span><span>▮ precip (mm  ${epwData&&epwData.precip?'EPW':'synthetic'})</span></div>
     </div>
     <div class="chartwrap" style="margin-top:10px;">${ghiChart(c,scn,epwData)}
       <div class="chart-caption"><span>GHI: global horizontal irradiance (EPW)</span></div>
@@ -4829,7 +4854,7 @@ function psychroTabHTML(c,epwData,slot){
   return `<div class="chartwrap" style="padding:0;position:relative;">
     <canvas id="psychro-canvas-${sid}" style="width:100%;display:block;" height="260"></canvas>
     <div style="position:absolute;bottom:6px;left:8px;right:8px;display:flex;justify-content:space-between;align-items:flex-end;">
-      <div style="font-family:var(--mono);font-size:8px;color:var(--ink-faint);">DIN 1946-2 · outdoor conditions · 1 dot = 1 h</div>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--ink-faint);">DIN 1946-2  outdoor conditions  1 dot = 1 h</div>
       <span class="action-info-icon" style="font-size:11px;position:relative;" id="psychroInfoIcon-${sid}">ⓘ
         <div class="action-info-pop" id="psychroInfoPop-${sid}" style="bottom:calc(100% + 6px);top:auto;right:0;width:320px;">
           <div class="ai-head">_psychrometric chart</div>
@@ -4837,7 +4862,7 @@ function psychroTabHTML(c,epwData,slot){
             <b style="color:var(--moss);">⬜ DIN 1946-2 hatching</b>: Indoor thermal comfort zone for Central European buildings (DIN 1946-2:2018, Raumklima). Dashed green boundary; diagonal hatching marks the operative comfort envelope. Outdoor EPW conditions plotted as hourly scatter.
           </div>
           <div class="ai-body" style="margin-top:8px;">
-            <b style="color:#E07010;">── 28°C T<sub>w</sub></b> heat stress onset · <b style="color:#C04010;">── 31°C T<sub>w</sub></b> high risk (vulnerable) · <b style="color:#900000;">── 35°C T<sub>w</sub></b> survivability limit (6h).<br>
+            <b style="color:#E07010;">── 28°C T<sub>w</sub></b> heat stress onset  <b style="color:#C04010;">── 31°C T<sub>w</sub></b> high risk (vulnerable)  <b style="color:#900000;">── 35°C T<sub>w</sub></b> survivability limit (6h).<br>
             Lines of constant wet-bulb temperature after <b>Sherwood &amp; Huber (2010)</b>, <em>PNAS</em> 107(21):9552–9555 and <b>WHO (2021)</b> <em>Global Heat Health Information Network</em>. Wet-bulb Tw approximated via Stull (2011), <em>J. Atmos. Sci.</em> 68(10).
           </div>
         </div>
@@ -4853,7 +4878,7 @@ function windTabHTML(c,epwData){
     <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;">
       <div style="flex:0 0 200px;">${windRoseSVG(rose)}</div>
       <div style="flex:1;min-width:160px;">
-        <div class="kvline">Prevailing: <b>${prevailing.dir}</b> · ${prevailing.speed.toFixed(1)} m/s avg</div>
+        <div class="kvline">Prevailing: <b>${prevailing.dir}</b>  ${prevailing.speed.toFixed(1)} m/s avg</div>
         <div class="heat-legend" style="margin-top:8px;"><div class="heat-legend-bar" style="background:linear-gradient(to right,#D9E1E5,#512C60);"></div><div class="heat-legend-labels"><span>calm</span><span>strong</span></div></div>
         <div class="chartwrap" style="margin-top:10px;">${windSpeedChart(c,scn,epwData)}
           <div class="chart-caption"><span>avg wind speed (m/s)</span></div>
@@ -4971,7 +4996,7 @@ function extremesTabHTML(c,epwData){
   const precipTotal=epwData&&epwData.precip?
     Math.round(epwData.precip.filter(v=>v!=null).reduce((a,b)=>a+b,0)):null;
 
-  const src=hasHourly?'EPW hourly · 8760h':(MOCK?'synthetic':'monthly EPW');
+  const src=hasHourly?'EPW hourly 8760h':(MOCK?'synthetic':'monthly EPW');
   const wbNote=wb28===0&&wb31===0?'(none for this station)':'';
 
   return `
@@ -4980,7 +5005,7 @@ function extremesTabHTML(c,epwData){
         <div class="v">${heatwaveDays}</div>
         <div class="k">HEATWAVE DAYS (HWN)
           <span class="action-info-icon" id="hwInfoIcon" style="font-size:10px;vertical-align:middle;">ⓘ<div class="action-info-pop" id="hwInfoPop" style="bottom:calc(100% + 4px);top:auto;left:0;right:auto;width:300px;">
-            <div class="ai-head">_heatwave days · HWN metric</div>
+            <div class="ai-head">_heatwave days  HWN metric</div>
             <div class="ai-body">Days contributing to heatwave events, defined as periods of <b>≥3 consecutive days</b> with daily T<sub>max</sub> &gt; 30°C. Absolute threshold (not percentile-based) to enable cross-site comparison across climate zones. A relative threshold would normalise away the climate differences that drive morphological variation.</div>
             <div class="ai-cite">Perkins, S.E. &amp; Alexander, L.V. (2013). On the measurement of heat waves. <em>Journal of Climate</em> 26(13), 4500–4517. Threshold: WHO Euro Regional Office heat-health action threshold (30°C Tmax).</div>
           </div></span>
@@ -4988,7 +5013,7 @@ function extremesTabHTML(c,epwData){
       </div>
       <div class="cstat"><div class="v">${frostDays}</div><div class="k">FROST DAYS &lt;0°C</div></div>
     </div>
-    <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);margin:12px 0 6px;">WET-BULB TEMPERATURE · STULL (2011)</div>
+    <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);margin:12px 0 6px;">WET-BULB TEMPERATURE  STULL (2011)</div>
     <div class="climate-stat-row" style="grid-template-columns:repeat(3,1fr);gap:8px;">
       <div class="cstat"><div class="v" style="font-size:18px;">${hasHourly?wb28:nd}</div><div class="k">HRS/YR &gt;28°C T<sub>w</sub><br><span style="opacity:0.6;font-size:8px;">discomfort</span></div></div>
       <div class="cstat"><div class="v" style="font-size:18px;${hasHourly&&wb31>0?'color:var(--rust);':''}">${hasHourly?wb31:nd}</div><div class="k">HRS/YR &gt;31°C T<sub>w</sub><br><span style="opacity:0.6;font-size:8px;">dangerous</span></div></div>
@@ -5015,7 +5040,7 @@ function extremesTabHTML(c,epwData){
       </div>
     </div>
     <div style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin-top:10px;line-height:1.6;display:flex;align-items:flex-start;gap:6px;">
-      <span>${SCENARIOS_LONG[scn]} · ${src}${MOCK?' · mock values':''}<br>Wet-bulb: Stull, R. (2011). <em>J. Atmos. Sci.</em> 68(10), 2267–2269. ${wbNote}</span>
+      <span>${SCENARIOS_LONG[scn]}  ${src}${MOCK?' — mock values':''}<br>Wet-bulb: Stull, R. (2011). <em>J. Atmos. Sci.</em> 68(10), 2267–2269. ${wbNote}</span>
       <span class="action-info-icon" style="font-size:11px;position:relative;flex-shrink:0;" id="extremesInfoIcon">ⓘ
         <div class="action-info-pop" id="extremesInfoPop" style="bottom:calc(100% + 6px);top:auto;right:0;width:330px;">
           <div class="ai-head">_health risk thresholds</div>
@@ -5241,51 +5266,43 @@ function buildingDims(c,slot){
   return{W,D,H,pitch,eave};
 }
 function createNoDataCube(container,slot){
-  /* Real THREE.js 10×10×10m cube with canvas-textured faces, orbit controls,
-     and slow auto-rotation — matches the regular viewer's pattern exactly. */
+  /* Wireframe-only cube — edges contrast against any background.
+     Filled faces are intentionally omitted because they match the
+     background colour in both light and dark mode and become invisible. */
   const w=container.clientWidth||300,h=container.clientHeight||210;
   try{
     const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+    renderer.setClearColor(0x000000,0);  /* fully transparent background */
     renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
     renderer.setSize(w,h);
+    container.style.position='relative';
     container.appendChild(renderer.domElement);
 
     const scene=new THREE.Scene();
     const camera=new THREE.PerspectiveCamera(38,w/h,0.1,300);
 
-    /* canvas texture for faces */
-    function makeFaceTex(){
-      const cv=document.createElement('canvas');cv.width=512;cv.height=512;
-      const ctx=cv.getContext('2d');if(!ctx)return new THREE.Texture();
-      const dark=document.documentElement.getAttribute('data-theme')==='dark';
-      const bg=dark?'#18181a':'#f0ede8';
-      const faint=dark?'#555550':'#aaa89e';
-      ctx.fillStyle=bg;ctx.fillRect(0,0,512,512);
-      ctx.strokeStyle=faint;ctx.lineWidth=6;ctx.strokeRect(8,8,496,496);
-      ctx.fillStyle=faint;ctx.font='bold 60px monospace';ctx.textAlign='center';
-      ctx.fillText('NO_DATA',256,200);
-      ctx.font='30px monospace';
-      ctx.fillText('>run_simulation_script',256,278);
-      const t=new THREE.CanvasTexture(cv);return t;
-    }
-    const tex=makeFaceTex();
-    const geo=new THREE.BoxGeometry(10,10,10);
-    /* single material — NOT an array. Array materials break disposeViewer's
-       traverse which checks o.material.map and finds Array.prototype.map */
-    const mat=new THREE.MeshBasicMaterial({map:tex});
-    const cube=new THREE.Mesh(geo,mat);
-    cube.position.y=5;scene.add(cube);
-
     const dark=document.documentElement.getAttribute('data-theme')==='dark';
+    const geo=new THREE.BoxGeometry(10,10,10);
+
+    /* Wireframe edges — clearly visible on both dark and light backgrounds */
     const edges=new THREE.LineSegments(
       new THREE.EdgesGeometry(geo),
-      new THREE.LineBasicMaterial({color:dark?0x555550:0xaaa89e})
+      new THREE.LineBasicMaterial({color:dark?0xc0c0b0:0x606055})
     );
     edges.position.y=5;scene.add(edges);
 
-    const gGeo=new THREE.PlaneGeometry(30,30);
-    const ground=new THREE.Mesh(gGeo,new THREE.MeshBasicMaterial({color:dark?0x111113:0xe8e4de,transparent:true,opacity:0.35}));
-    ground.rotation.x=-Math.PI/2;scene.add(ground);
+    /* Ground cross-hair lines */
+    const gMat=new THREE.LineBasicMaterial({color:dark?0x555550:0xb0ad9e,transparent:true,opacity:0.5});
+    const gPts=[new THREE.Vector3(-18,0,0),new THREE.Vector3(18,0,0)];
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(gPts),gMat));
+    const gPts2=[new THREE.Vector3(0,0,-18),new THREE.Vector3(0,0,18)];
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(gPts2),gMat));
+
+    /* HTML text overlay — always readable, theme-aware */
+    const lbl=document.createElement('div');
+    lbl.style.cssText='position:absolute;bottom:10px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);pointer-events:none;letter-spacing:.04em;';
+    lbl.textContent='NO_DATA — simulation not yet run';
+    container.appendChild(lbl);
 
     /* orbit controls — same pattern as regular viewer */
     const radius=22;let az=Math.PI*0.28,pol=Math.PI*0.36,dragging=false,lastX=0,lastY=0;
@@ -5619,7 +5636,10 @@ function createViewer(container,c,slot){
     /* Gate: only show simulation viewer if Excel yellow columns confirm sim ran.
        c.sim.comfort[0] = TCP present from Excel col BD. If null → sim not done,
        don't show data even if stale JSONs exist on R2. */
-    const _hasSim=c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null||c.sim.oh[0]!=null);
+    /* Require both simulation data AND real DXF geometry (wall_thick from dxf_analyse).
+       Simulations without DXF used a fallback box — results are not building-specific. */
+    const _hasRealGeom=c.wallThk!=null||c.area!=null;
+    const _hasSim=_hasRealGeom&&c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null||c.sim.oh[0]!=null);
     if(!_hasSim){createNoDataCube(container,slot);return;}
     /* Use viz JSONs if available (try new naming then old _prefix convention) */
     if(SIM_VIZ_CACHE[cid]){buildSimViewer(container,c,SIM_VIZ_CACHE[cid],slot);return;}
@@ -5764,7 +5784,7 @@ function applyDiagram(key,c,slot){
     mesh.material.map=tex;mesh.material.needsUpdate=true;
   });
   const cap=document.getElementById('diagramCaption-'+slot);
-  if(cap)cap.textContent=DIAGRAM_META[key].caption(c)+(shiftActive?' · shapeSHIFT preview: heuristic adaptation, not re-simulated.':'');
+  if(cap)cap.textContent=DIAGRAM_META[key].caption(c)+(shiftActive?' — shapeSHIFT preview: heuristic, not re-simulated.':'');
   document.querySelectorAll(`.sim-tab[data-slot="${slot}"]`).forEach(b=>b.classList.toggle('active',b.dataset.diagram===key));
 }
 function wireDiagramTabs(c,slot){
@@ -5977,7 +5997,7 @@ function applyBigBrotherResult(a,targetCase,dist){
   if(map&&a.hasCoord&&targetCase.hasCoord){
     const lineCol=scn===1?'#9A7870':'#E07010';
     const bbLatLngs=[[a.lat,a.lon],[targetCase.lat,targetCase.lon]];
-    const bbTip=`${targetCase.name||targetCase.id} · vernacularBIGBROTHER${dist!=null?' · climate distance '+dist.toFixed(2):''}`;
+    const bbTip=`${targetCase.name||targetCase.id}  vernacularBIGBROTHER${dist!=null?' — climate distance '+dist.toFixed(2):''}`;
     /* invisible fat hit-area so the line is easy to catch/hover */
     const bbHit=L.polyline(bbLatLngs,{color:'#000',weight:16,opacity:0,interactive:true}).addTo(map);
     bbHit.bindTooltip(bbTip,{sticky:true});
@@ -6361,11 +6381,11 @@ function renderAvgTypologyDetailPanel(zone){
 
   el.innerHTML=`
     <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:14px 16px 0;">
-      <div class="panel-eyebrow">${domRegion} · ${members.length} case studies · radius ${zone.radius_km} km</div>
+      <div class="panel-eyebrow">${domRegion}  ${members.length} case studies  radius ${zone.radius_km} km</div>
       <button id="avgTCloseBtn" style="background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--ink-faint);padding:0;flex:none;margin-top:1px;" title="Close typology view">× close</button>
     </div>
     <div class="cs-title" style="padding:4px 16px 0;font-size:18px;word-break:break-all;">${label}</div>
-    <div class="cs-sub" style="padding:2px 16px 10px;">Averaged typology · ${SCENARIOS_LONG[scn]}</div>
+    <div class="cs-sub" style="padding:2px 16px 10px;">Averaged typology  ${SCENARIOS_LONG[scn]}</div>
     <div class="cs-main-tabs" style="padding:0 16px;">
       <button class="cs-main-tab active" data-avgtab="building">Building</button>
       <button class="cs-main-tab" data-avgtab="climate">Climate</button>
@@ -6374,16 +6394,16 @@ function renderAvgTypologyDetailPanel(zone){
     </div>
 
     <div class="cs-panel active" id="avgT-panel-building" style="padding:14px 16px;">
-      <div class="media-col-head" style="font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px;">Photographs · all members</div>
+      <div class="media-col-head" style="font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px;">Photographs  all members</div>
       <div id="avgTPhotoBlock" class="media-col-content" style="margin-bottom:18px;"><div class="photo-carousel" style="display:flex;align-items:center;justify-content:center;min-height:180px;"><span style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">Loading member photographs…</span></div></div>
-      <div class="media-col-head" style="font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px;">Aggregated drawings · all members</div>
+      <div class="media-col-head" style="font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px;">Aggregated drawings  all members</div>
       <div id="avgTPlanBlock" class="media-col-content"><div class="photo-carousel" style="display:flex;align-items:center;justify-content:center;min-height:180px;"><span style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">Loading member drawings…</span></div></div>
     </div>
 
     <div class="cs-panel" id="avgT-panel-climate" style="padding:14px 16px;display:none;">
       <div style="background:var(--terracotta);color:#fff;font-family:var(--mono);font-size:10px;padding:8px 10px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px;line-height:1.4;">
         <span style="font-size:13px;flex:none;">◉</span>
-        <span><b>REPRESENTATIVE EPW: SPATIAL MEDOID.</b> Climate shown is not averaged. It is the single most central station in the zone: <b>${epwId||'n/a'}</b>${medoidCase?` (${medoidCase.id}${medoidCase.name?' · '+medoidCase.name:''})`:''}. Chosen by minimum mean great-circle distance to all other member stations.</span>
+        <span><b>REPRESENTATIVE EPW: SPATIAL MEDOID.</b> Climate shown is not averaged. It is the single most central station in the zone: <b>${epwId||'n/a'}</b>${medoidCase?` (${medoidCase.id}${medoidCase.name?' — '+medoidCase.name:''})`:''}. Chosen by minimum mean great-circle distance to all other member stations.</span>
       </div>
       <div id="avgTClimateBlock"><div style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);padding:20px 0;text-align:center;">Loading medoid climate…</div></div>
     </div>
@@ -6459,7 +6479,7 @@ function renderAvgTypologyDetailPanel(zone){
       try{
         const plans=await fetchPlans(c.id);
         if(plans&&plans.length){
-          plans.forEach(p=>allPlans.push({url:p.url,label:`${c.id} · ${p.label}`}));
+          plans.forEach(p=>allPlans.push({url:p.url,label:`${c.id}  ${p.label}`}));
         }
       }catch(e){}
     }
@@ -6480,7 +6500,7 @@ function renderAvgTypologyDetailPanel(zone){
     if(!block||!epwId)return;
     if(medoidCase){
       block.innerHTML=`<div style="font-family:var(--mono);font-size:10px;color:var(--ink-soft);line-height:1.9;">
-        <div style="margin-bottom:8px;"><b>Medoid case:</b> ${medoidCase.id}${medoidCase.name?' · '+medoidCase.name:''}</div>
+        <div style="margin-bottom:8px;"><b>Medoid case:</b> ${medoidCase.id}${medoidCase.name?' — '+medoidCase.name:''}</div>
         <div style="margin-bottom:8px;"><b>Köppen (${SCENARIOS[scn]}):</b> <span style="color:${kcolor(medoidCase.koppen[scn])};font-weight:700;">${medoidCase.koppen[scn]||'–'}</span></div>
         <div style="opacity:0.7;">Open the medoid case study for its full climate analysis (psychrometric chart, wind, extremes).</div>
         <div style="margin-top:10px;"><span class="cs-chip" style="cursor:pointer;font-size:10px;padding:4px 9px;border:1px solid var(--terracotta);display:inline-flex;align-items:center;gap:5px;background:var(--paper-dim);" data-cid="${medoidCase.id}"><span style="width:7px;height:7px;border-radius:50%;background:${kcolor(medoidCase.koppen[scn])};"></span><b>Open ${medoidCase.id}</b> →</span></div>
@@ -6567,7 +6587,7 @@ const METRIC_PAGES=[
    ['Construction period',c.year?(c.year):noData],
    ['Name',mv(c.name)],
    ['Case study ID',mv(c.id)],
-   ['Assigned EPW station',c.epw?(c.epw+(c.distToStation!=null?' · ≈'+c.distToStation+' km':'')):noData],
+   ['Assigned EPW station',c.epw?(c.epw+(c.distToStation!=null?' — ≈'+c.distToStation+' km':'')):noData],
  ]},
  {label:'Dimensions & structure',rows:c=>[
    ['Wall type',WALL_LABEL[c.wallType]||noData],
@@ -6653,9 +6673,9 @@ function caseDetailHTML(c,slot){
   const displayScn=(bigBrotherActive&&slot==='B')?0:scn;
   const ctab=currentClimateTab[slot],dtab=currentDiagram[slot],mpage=currentMetricPage[slot];
   return `
-    <div class="panel-eyebrow">${c.region} · ${c.id} · ${c.country||'–'}</div>
+    <div class="panel-eyebrow">${c.region}   ${c.id}  ${c.country||'–'}</div>
     <div class="cs-title">${c.name||c.id}</div>
-    <div class="cs-sub">${c.hasCoord?c.lat.toFixed(3)+'°, '+c.lon.toFixed(3)+'°':'<span class="nodata">no coordinates</span>'} &nbsp;·&nbsp; ${SCENARIOS_LONG[scn]}${c.year?' · built '+c.year:''}</div>
+    <div class="cs-sub">${c.hasCoord?c.lat.toFixed(3)+'°, '+c.lon.toFixed(3)+'°':'<span class="nodata">no coordinates</span>'} &nbsp;&nbsp; ${SCENARIOS_LONG[scn]}${c.year?' — built '+c.year:''}</div>
 
     <div class="cs-main-tabs">
       <button class="cs-main-tab ${(currentCsTab[slot]||'building')==='building'?'active':''}" data-cstab="building" data-slot="${slot}"><span class="numeral">1</span> Building</button>
@@ -6689,7 +6709,12 @@ function caseDetailHTML(c,slot){
         <div class="kvline" id="stationDist-${slot}" style="${!MOCK&&c.epw?'':'display:none;'}"></div>
         ${bigBrotherActive&&slot==='B'?`<div style="background:var(--terracotta);color:#fff;font-family:var(--mono);font-size:10px;padding:6px 9px;margin:8px 0 0;display:flex;align-items:flex-start;gap:7px;line-height:1.4;"><span style="font-size:12px;flex:none;">◉</span><span><b>PRESENT-DAY CLIMATE SHOWN</b> for this side, regardless of the slider. Compare it against ${c.id===selectedId?'':(byId(selectedId)?byId(selectedId).name||byId(selectedId).id:'the selected case')}'s projected ${SCENARIOS_LONG[scn]} climate on the left.</span></div>`:''}
         <div class="koppen-strip">
-          ${c.koppen.map((k,i)=>`<div class="koppen-box ${i===displayScn?'current':''}" style="cursor:pointer;" title="Switch to ${SCENARIOS[i]}" onclick="const t=document.querySelectorAll('.scenario-tick')[${i}];if(t)t.click();"><div class="scn">${SCENARIOS[i]}</div><div class="code">${k||'<span class="nodata" style="font-size:10px">–</span>'}</div></div>`).join('')}
+          ${c.koppen.map((k,i)=>{
+  const _effYr=['2011–2025 (TMYx)','≈ 2068 effective (FWG 2036–2065 delta + TMYx 2018 base)','≈ 2098 effective (FWG 2066–2095 delta + TMYx 2018 base)'][i];
+  const _tip=i===0?'Present-day TMYx 2011–2025 — no morphing applied.':_effYr;
+  const _iBtn=i>0?`<span style="font-size:8px;color:var(--terracotta,#c4542a);cursor:help;vertical-align:super;margin-left:2px;line-height:1;" title="${_effYr}">ⓘ</span>`:'';
+  return `<div class="koppen-box ${i===displayScn?'current':''}" style="cursor:pointer;" title="${_tip}" onclick="const t=document.querySelectorAll('.scenario-tick')[${i}];if(t)t.click();"><div class="scn">${SCENARIOS[i]}${_iBtn}</div><div class="code">${k||'<span class="nodata" style="font-size:10px">–</span>'}</div></div>`;
+}).join('')}
         </div>
         <div class="climate-tabs-row">
           <div class="diagram-tabs climate-tabs-sidebar">${CLIMATE_TABS.map(k=>`<button class="diagram-tab climate-tab climate-tab-square ${k===ctab?'active':''} ${k==='extremes'?'climate-tab-favorite':''}" data-ctab="${k}" data-slot="${slot}">${CLIMATE_LABEL[k]}</button>`).join('')}</div>
@@ -6739,9 +6764,8 @@ function caseDetailHTML(c,slot){
           </div>
         </div>
         <div class="action-btn-wrap" style="margin-top:10px;">
-          <button class="action-btn" id="simRefetchBtn-${slot}" data-slot="${slot}" data-cid="${c.id}" style="display:inline-flex;align-items:center;gap:6px;">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.68"/></svg>
-            &gt;refetch <em>SIMULATION</em>
+          <button class="sim-refetch-btn" id="simRefetchBtn-${slot}" data-slot="${slot}" data-cid="${c.id}">
+            <span class="rfetch-arrow">↙</span>&gt;refetch <em>SIMULATION</em>
           </button>
         </div>
         <div class="sim-grid" id="simGrid-${slot}" style="margin-top:10px;">
@@ -6874,8 +6898,8 @@ function drawSimilarityLines(){
   const maxS=scored[0].r.score;
   scored.forEach(({c,r})=>{
     const latlngs=[[a.lat,a.lon],[c.lat,c.lon]];
-    const tag=r.convergence?'cross-climate convergence':r.sameRegion?'similar morphology · same region':'similar morphology';
-    const tipText=`${c.name||c.id} · ${tag} · match ${r.score.toFixed(1)}`;
+    const tag=r.convergence?'cross-climate convergence':r.sameRegion?'similar morphology  same region':'similar morphology';
+    const tipText=`${c.name||c.id}  ${tag}  match ${r.score.toFixed(1)}`;
     /* invisible fat hit-area first, so the thin visible line is easy to catch */
     const hit=L.polyline(latlngs,{color:'#000',weight:14,opacity:0,interactive:true}).addTo(map);
     hit.bindTooltip(tipText,{sticky:true});
@@ -7049,7 +7073,7 @@ function fmtShiftCell(dict,presentZone){
   return keys.map(z=>{
     const changed=z!==presentZone;
     return `<span style="${changed?'color:var(--terracotta-deep);font-weight:700;':'color:var(--ink-soft);'}">${z}</span> <span style="color:var(--ink-faint);">×${dict[z]}</span>`;
-  }).join(' · ');
+  }).join('  ');
 }
 function koppenShiftTableHTML(){
   const rows=computeKoppenShifts();
@@ -7131,7 +7155,7 @@ function thermalMassZoneRows(zone){
     <div class="fc-tmrow"><span class="tm-label">${zone} Present</span><span>thermal mass effective up to ~${dynV('[SIM] kg/m²')}</span></div>
     <div class="fc-tmrow"><span class="tm-label">${zone} 2050</span><span>threshold drops to ~${dynV('[SIM] kg/m²')}</span></div>
     <div class="fc-tmrow"><span class="tm-label">${zone} 2080</span><span>thermal mass threshold ~${dynV('[SIM] kg/m²')}</span></div>
-    <div class="fc-datatag">computed from morphed EPW + simulation · SSP5-8.5</div>`;
+    <div class="fc-datatag">computed from morphed EPW + simulation  SSP5-8.5</div>`;
 }
 function tmForceShow(zone){
   const host=document.getElementById('tmForced-'+zone);
@@ -7164,7 +7188,7 @@ function wireThermalMassDropdown(){
 /* region helper reused below */
 function regionOf(c){return (c.region||c.country||'—');}
 
-/* ---- 1 · CORPUS STATS (cheap, synchronous) ---- */
+/* ---- 1  CORPUS STATS (cheap, synchronous) ---- */
 function computeCorpusStats(){
   const n=CASES.length;
   const withCoord=CASES.filter(c=>c.hasCoord).length;
@@ -7186,7 +7210,7 @@ function computeCorpusStats(){
     koppenCounts:kz};
 }
 
-/* ---- 2 · KÖPPEN SHIFT TABLE (present → 2050 → 2080) ---- */
+/* ---- 2  KÖPPEN SHIFT TABLE (present → 2050 → 2080) ---- */
 function computeKoppenShifts(){
   /* present-zone rows; for each, how many cases stay vs move, and the
      destination breakdown per scenario. Uses c.koppen=[present,2050,2080]. */
@@ -7226,7 +7250,7 @@ function koppenShiftTableHTML(){
     <tbody>${body}</tbody></table>`;
 }
 
-/* ---- 3 · TYPOLOGICAL MISMATCH (vernacularBIGBROTHER) ---- */
+/* ---- 3  TYPOLOGICAL MISMATCH (vernacularBIGBROTHER) ---- */
 /* single case: compare the case's FUTURE fingerprint to every case's PRESENT
    fingerprint, nearest = big brother. Distance → mismatch severity. */
 function bbSeverity(dist){
@@ -7289,7 +7313,7 @@ async function computeMismatchAll(scnIdx,onProg){
   _mismatchAllCache[scnIdx]=results;return results;
 }
 
-/* ---- 4 · CULTURAL BIAS: η² variance decomposition ----
+/* ---- 4  CULTURAL BIAS: η² variance decomposition ----
    η² = between-country SS / total SS, per morphological metric.
    (One-way ANOVA grouping by country.) Interpretation: Rapoport 1969. */
 function etaSquaredByCountry(metricKey){
@@ -7340,7 +7364,7 @@ function culturalBiasTableHTML(){
     <tbody>${body}</tbody></table>`;
 }
 
-/* ─────────── 6 · REQUIRED EAVE DEPTH — orientation + hemisphere aware ───────────
+/* ─────────── 6  REQUIRED EAVE DEPTH — orientation + hemisphere aware ───────────
    Method, in words:
    1. "Local summer" is hemisphere-dependent: for a Northern-hemisphere case we
       evaluate the JUNE solstice (declination +23.44°); for a Southern-hemisphere
@@ -7504,9 +7528,9 @@ function eaveDepthTableHTML(orient,winH){
 
 
 const FINDINGS=[
- {group:'A · General findings',items:[
+ {group:'A  General findings',items:[
 
-  {id:'corpus',title:'Overview of Corpus',eyebrow:'General finding · corpus',
+  {id:'corpus',title:'Overview of Corpus',eyebrow:'General finding  corpus',
    body:()=>{
      const s=computeCorpusStats();
      const yr=(s.yearMin&&s.yearMax)?`${s.yearMin}–${s.yearMax}`:'—';
@@ -7519,7 +7543,7 @@ const FINDINGS=[
       +`<div class="fc-tmrow"><span class="tm-label">With coordinates</span><span>${dynV(s.withCoord)}</span></div>`
       +`<div class="fc-tmrow"><span class="tm-label">With extracted geometry</span><span>${dynV(s.withGeom)}</span></div>`
       +`<div class="fc-tmrow"><span class="tm-label">With assigned EPW station</span><span>${dynV(s.withEpw)}</span></div>`
-      +`<div class="fc-tmrow"><span class="tm-label">Countries · regions</span><span>${dynV(s.nCountries)} · ${dynV(s.nRegions)}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">Countries  regions</span><span>${dynV(s.nCountries)} · ${dynV(s.nRegions)}</span></div>`
       +`<div class="fc-tmrow"><span class="tm-label">Köppen zones represented</span><span>${dynV(s.nKoppen)}</span></div>`
       +`<div class="fc-tmrow"><span class="tm-label">Build-year range</span><span>${dynV(yr)}</span></div>`
       +ub('Limitations of the sample: European-temperate bias, uneven geographical coverage, museum-relocation effects on station assignment.','draft · limitations')
