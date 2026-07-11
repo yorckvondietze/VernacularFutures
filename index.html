@@ -4640,10 +4640,10 @@ const SIM_CACHE={};          /* cid → fetched full sim JSON */
 const SIM_STEP={A:0,B:0};   /* continuous slider 0-8 per slot */
 const NDP_THRESHOLD=1000;   /* Artmann et al. 2007 h/yr */
 const SIM_CMAPS={
-  tcp:[[0.20,0.40,0.80],[0.65,0.80,0.95],[0.97,0.97,0.97],[0.97,0.65,0.40],[0.84,0.15,0.12]],
-  hsp:[[0.20,0.40,0.80],[0.65,0.80,0.95],[0.97,0.97,0.97],[0.97,0.65,0.40],[0.84,0.12,0.12]],
-  ndp:[[0.84,0.12,0.12],[0.97,0.50,0.15],[0.92,0.78,0.10],[0.35,0.78,0.45],[0.08,0.65,0.35]],
-  t_op:[[0.27,0.46,0.71],[0.57,0.75,0.85],[0.96,0.96,0.96],[0.99,0.80,0.50],[0.90,0.30,0.15]],
+  tcp: [[0.84,0.12,0.12],[0.97,0.50,0.15],[0.92,0.78,0.10],[0.35,0.78,0.45],[0.08,0.65,0.35]], /* red→green: low TCP=bad */
+  hsp: [[0.08,0.65,0.35],[0.35,0.78,0.45],[0.92,0.78,0.10],[0.97,0.50,0.15],[0.84,0.12,0.12]], /* green→red: high HSP=bad */
+  ndp: [[0.84,0.12,0.12],[0.97,0.50,0.15],[0.92,0.78,0.10],[0.35,0.78,0.45],[0.08,0.65,0.35]], /* red→green: high NDP=good */
+  t_op:[[0.27,0.46,0.71],[0.57,0.75,0.85],[0.96,0.96,0.96],[0.99,0.80,0.50],[0.90,0.30,0.15]], /* blue→red: high T_op=hot */
 };
 function simCmap(t,metric){
   const c=SIM_CMAPS[metric]||SIM_CMAPS.t_op;t=Math.max(0,Math.min(1,t));
@@ -4660,10 +4660,10 @@ function simInterp(d,step){
 }
 function simNorm(v,metric){
   if(v==null)return 0.5;
-  if(metric==='tcp')return Math.max(0,Math.min(1,1-v/100));
-  if(metric==='hsp')return Math.max(0,Math.min(1,v/5000));
-  if(metric==='ndp')return Math.max(0,Math.min(1,1-v/2000));
-  return Math.max(0,Math.min(1,(v-14)/26)); /* t_op */
+  if(metric==='tcp') return Math.max(0,Math.min(1,v/100));       /* 0%=red, 100%=green */
+  if(metric==='hsp') return Math.max(0,Math.min(1,v/5000));      /* 0=green, 5000h=red */
+  if(metric==='ndp') return Math.max(0,Math.min(1,v/2000));      /* 0=red, 2000h=green */
+  return Math.max(0,Math.min(1,(v-14)/26));                       /* t_op: 14°C=blue, 40°C=red */
 }
 const SIM_YEAR_LABELS=['TMYx','~2030','~2040','2050','~2057','~2064','~2070','~2075','2080'];
 
@@ -4903,9 +4903,9 @@ function buildSimViewer(container,c,simData,slot){
       const norm=simNorm(mv[metric==='t_op'?'t_op':metric],metric);
       const [r,g,b]=simCmap(norm,metric);
       /* coloured floor */
-      const shape2d=new THREE.Shape(poly.map(([x,y])=>new THREE.Vector2(x,-y)));
-      floorMesh=new THREE.Mesh(new THREE.ShapeGeometry(shape2d),new THREE.MeshBasicMaterial({color:new THREE.Color(r,g,b),transparent:true,opacity:0.55,side:THREE.DoubleSide}));
-      floorMesh.rotation.x=-Math.PI/2;floorMesh.position.y=0.02;group.add(floorMesh);
+      const fGeo=new THREE.PlaneGeometry(W,D);
+      floorMesh=new THREE.Mesh(fGeo,new THREE.MeshBasicMaterial({color:new THREE.Color(r,g,b),transparent:true,opacity:0.7,side:THREE.DoubleSide}));
+      floorMesh.rotation.x=-Math.PI/2;floorMesh.position.set(W/2,0.02,-D/2);group.add(floorMesh);
       /* NDP wall tint */
       const ndpVal=mv.ndp;
       if(ndpVal!=null){
@@ -4949,11 +4949,29 @@ function buildSimViewer(container,c,simData,slot){
       if(ns!==scn){scn=ns;renderSlider();onScenarioChange();}
     });}
     (function tick(){VIEWERS[slot].raf=requestAnimationFrame(tick);renderer.render(scene,camera);})();
+    /* populate metrics grid and clear caption immediately on first build */
+    updateSimGrid(slot,SIM_STEP[slot]||0,simData);
+    const cap=document.getElementById('diagramCaption-'+slot);if(cap)cap.textContent='';
   }catch(err){console.warn('buildSimViewer error:',err);createNoDataCube(container,slot);}
 }
 function updateSimGrid(slot,step,simData){
-  const el=document.getElementById('simGrid-'+slot);if(!el)return;
+  const el=document.getElementById('simGrid-'+slot);
   const m=simInterp(simData,step);
+  /* NDP bar */
+  const ndpBar=document.getElementById('simNdpBar-'+slot);
+  const ndpState=document.getElementById('simNdpState-'+slot);
+  if(m&&m.ndp!=null){
+    const ndpVal=m.ndp;
+    const crossed=ndpVal<NDP_THRESHOLD,near=ndpVal<1200;
+    const col=crossed?'#E24B4A':near?'#EF9F27':'#1D9E75';
+    const pct=Math.min(100,ndpVal/2000*100).toFixed(1)+'%';
+    if(ndpBar){ndpBar.style.width=pct;ndpBar.style.background=col;}
+    if(ndpState){
+      ndpState.style.color=col;
+      ndpState.textContent=crossed?`${Math.round(ndpVal)} h/yr — ⚠ Artmann threshold crossed (< 1000 h/yr)`:near?`${Math.round(ndpVal)} h/yr — approaching Artmann threshold`:`${Math.round(ndpVal)} h/yr — thermal mass effective`;
+    }
+  }
+  if(!el)return;
   const nd='<span class="nodata" style="font-size:11px">NO_DATA</span>';
   const tcp=m&&m.tcp!=null?m.tcp.toFixed(1):null;
   const hsp=m&&m.hsp!=null?Math.round(m.hsp):null;
@@ -5099,14 +5117,16 @@ function applyDiagram(key,c,slot){
   document.querySelectorAll(`.sim-tab[data-slot="${slot}"]`).forEach(b=>b.classList.toggle('active',b.dataset.diagram===key));
 }
 function wireDiagramTabs(c,slot){
-  /* compare-mode mirroring: changing any tab in one case study now
-     mirrors the same tab selection to the compared case study, so
-     the two stay on matching views (psychrometric vs psychrometric,
-     not psychrometric vs wind). */
-  document.querySelectorAll(`.sim-tab[data-slot="${slot}"]`).forEach(b=>b.addEventListener('click',()=>{
+  const tabs=document.querySelectorAll(`.sim-tab[data-slot="${slot}"]`);
+  tabs.forEach(b=>b.addEventListener('click',()=>{
     const key=b.dataset.diagram;
+    tabs.forEach(t=>t.classList.remove('active'));
+    b.classList.add('active');
     switchDiagramTab(slot,key,c);
-    mirrorTabChange(slot,(oSlot,oCase)=>switchDiagramTab(oSlot,key,oCase));
+    mirrorTabChange(slot,(oSlot,oCase)=>{
+      document.querySelectorAll(`.sim-tab[data-slot="${oSlot}"]`).forEach(t=>t.classList.toggle('active',t.dataset.diagram===key));
+      switchDiagramTab(oSlot,key,oCase);
+    });
   }));
 }
 function switchDiagramTab(slot,key,c){
@@ -6043,16 +6063,6 @@ function caseDetailHTML(c,slot){
     <!-- TAB 4: SIMULATION -->
     <div class="cs-panel ${currentCsTab[slot]==='simulation'?'active':''}" data-cspanel="simulation" data-slot="${slot}">
       <div class="block" style="margin-top:12px;">
-        <div class="action-btn-wrap">
-          <button class="shapeshift-btn" id="shapeShiftBtn-${slot}" style="flex:1;">&gt;shape<span class="ss-cursive">SHIFT</span></button>
-          <span class="action-info-icon" id="ssInfoIcon-${slot}">ⓘ
-            <div class="action-info-pop" id="ssInfoPop-${slot}">
-              <div class="ai-head">_shape<em>SHIFT</em></div>
-              <div class="ai-body">A parametric heuristic preview of the morphological adjustment implied by this study's correlation findings. Building geometry is rescaled from correlation-derived design parameters. This is not a re-simulation. It is an illustrative approximation only. Vertex colours indicate the relative performance direction under the selected climate scenario.</div>
-              <div class="ai-cite">Validation pending: Honeybee / EnergyPlus v24.2 (EN ISO 13790 §11 solar heat gain not yet implemented in RC model).</div>
-            </div>
-          </span>
-        </div>
         <div class="climate-tabs-row">
           <div class="diagram-tabs sim-tabs-sidebar climate-tabs-sidebar" id="diagramTabs-${slot}">
             ${Object.keys(DIAGRAM_META).map(k=>`<button class="diagram-tab sim-tab climate-tab-square ${k===dtab?'active':''}" data-diagram="${k}" data-slot="${slot}">${DIAGRAM_META[k].label}</button>`).join('')}
@@ -6065,9 +6075,23 @@ function caseDetailHTML(c,slot){
               <span id="simYear-${slot}" style="color:var(--ink);font-weight:600;min-width:32px;text-align:right;">${SIM_YEAR_LABELS[SIM_STEP[slot]||0]||'TMYx'}</span>
               <span>2080</span>
             </div>
+            <div style="padding:2px 0 4px;">
+              <div style="font-family:var(--mono);font-size:8.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">NDP night discharge potential</div>
+              <div style="position:relative;height:7px;background:var(--line);border-radius:4px;overflow:visible;">
+                <div id="simNdpBar-${slot}" style="height:100%;border-radius:4px;transition:width .35s,background .35s;width:0%;background:#1D9E75;"></div>
+                <div style="position:absolute;top:-3px;left:${(NDP_THRESHOLD/2000*100).toFixed(1)}%;width:2px;height:13px;background:rgba(255,180,0,.85);border-radius:1px;" title="Artmann 2007: 1000 h/yr"></div>
+              </div>
+              <div id="simNdpState-${slot}" style="font-family:var(--mono);font-size:8.5px;margin-top:3px;min-height:12px;color:var(--ink-faint);"></div>
+            </div>
             <div class="heat-legend"><div class="heat-legend-bar"></div><div class="heat-legend-labels"><span>low</span><span>high</span></div></div>
             <div class="diagram-caption" id="diagramCaption-${slot}"></div>
           </div>
+        </div>
+        <div class="action-btn-wrap" style="margin-top:10px;">
+          <button class="action-btn" id="simRefetchBtn-${slot}" data-slot="${slot}" data-cid="${c.id}" style="display:inline-flex;align-items:center;gap:6px;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.68"/></svg>
+            &gt;refetch <em>SIMULATION</em>
+          </button>
         </div>
         <div class="sim-grid" id="simGrid-${slot}" style="margin-top:10px;">
           <div class="sim-cell"><div class="k">TCP — thermal comfort probability</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
@@ -6092,6 +6116,21 @@ function wireCaseDetail(c,slot){
   wireShapeShift(c,slot);
   renderPhotoBlock(c,slot);
   renderPlanBlock(c,slot);
+  /* refetch simulation button */
+  const rfBtn=document.getElementById('simRefetchBtn-'+slot);
+  if(rfBtn){rfBtn.addEventListener('click',()=>{
+    const cid=c.id;
+    delete SIM_CACHE[cid];
+    disposeViewer(slot);
+    const box=document.getElementById('viewer3d-'+slot);
+    if(box){
+      createNoDataCube(box,slot);
+      fetch(`${DATA_BASE}/sim_output/full/${cid}.json`)
+        .then(r=>r.ok?r.json():Promise.reject('404'))
+        .then(data=>{SIM_CACHE[cid]=data;disposeViewer(slot);const b2=document.getElementById('viewer3d-'+slot);if(b2)buildSimViewer(b2,c,data,slot);})
+        .catch(()=>{});
+    }
+  });}
   const recBtn=document.getElementById('recToggleBtn-'+slot);
   if(recBtn){
     recBtn.addEventListener('click',()=>{
