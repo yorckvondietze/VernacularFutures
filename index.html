@@ -4637,6 +4637,13 @@ function clamp01(v){return Math.max(0,Math.min(1,v));}
 /* ── Simulation data cache & helpers ────────────────────────────────── */
 const SCN_KEYS=['present','ssp585_2050','ssp585_2080'];
 const SIM_CACHE={};          /* cid → fetched full sim JSON */
+const SIM_VIZ_CACHE={};       /* cid → {present,ssp585_2050,ssp585_2080} viz JSONs */
+
+/* Convert viz JSON cache to simInterp-compatible format */
+function vizCacheToSimData(vc){
+  function m(d){if(!d||!d.metrics)return{};const t=d.metrics;return{tcp:t.tcp,hsp_hours:t.hsp_hours,ndp_hours:t.ndp_summer_h,t_op_mean:t.t_op_mean};}
+  return{present:m(vc.present),ssp585_2050:m(vc.ssp585_2050),ssp585_2080:m(vc.ssp585_2080)};
+}
 const SIM_STEP={A:0,B:0};   /* continuous slider 0-8 per slot */
 const NDP_THRESHOLD=1000;   /* Artmann et al. 2007 h/yr */
 const SIM_CMAPS={
@@ -4853,7 +4860,15 @@ function createNoDataCube(container,slot){
   }
 }
 
-function buildSimViewer(container,c,simData,slot){
+function buildSimViewer(container,c,simDataOrVizCache,slot){
+  /* Accepts either:
+     - vizCache {present:{building,apertures,metrics,sensor_grid}, ssp585_2050:..., ssp585_2080:...}
+     - old simData {present:{tcp,hsp_hours,...}, ssp585_2050:..., ssp585_2080:...}
+     Detect by checking if first available scenario has a 'building' key */
+  const _first=simDataOrVizCache.present||simDataOrVizCache.ssp585_2050||simDataOrVizCache.ssp585_2080||{};
+  const _isViz=!!(_first.building||_first.apertures||_first.metrics);
+  const simData=_isViz?vizCacheToSimData(simDataOrVizCache):simDataOrVizCache;
+  const vizCache=_isViz?simDataOrVizCache:null;
   try{
     const dark=document.documentElement.getAttribute('data-theme')==='dark';
     const w=container.clientWidth||300,h=container.clientHeight||210;
@@ -4865,13 +4880,15 @@ function buildSimViewer(container,c,simData,slot){
     const camera=new THREE.PerspectiveCamera(38,w/h,0.1,300);
     scene.add(new THREE.AmbientLight(0xffffff,0.7));
     const dl=new THREE.DirectionalLight(0xffffff,0.6);dl.position.set(10,20,10);scene.add(dl);
-    /* building dims + polygon */
+    /* geometry: use viz JSON polygon if available, else EGG_SHAPES or box */
     const {W,D,H,pitch}=buildingDims(c,slot);
+    const _vizBld=vizCache&&(vizCache.present||vizCache.ssp585_2050||vizCache.ssp585_2080);
+    const _vizPoly=_vizBld&&_vizBld.building&&_vizBld.building.polygon_2d;
     const shape=EGG_SHAPES[c.id];
-    const poly=shape?shape.env.map(([nx,ny])=>[nx*W,ny*D]):[[0,0],[W,0],[W,D],[0,D]];
-    const eH=Math.max(2.4,Math.min(7,H));
-    const rise=(Math.min(W,D)/2)*Math.tan(pitch*Math.PI/180);
-    const ridgeH=eH+rise;
+    const poly=_vizPoly||( shape?shape.env.map(([nx,ny])=>[nx*W,ny*D]):[[0,0],[W,0],[W,D],[0,D]] );
+    const eH=_vizBld&&_vizBld.building&&_vizBld.building.eave_height||Math.max(2.4,Math.min(7,H));
+    const ridgeH=_vizBld&&_vizBld.building&&_vizBld.building.ridge_height||eH+( (Math.min(W,D)/2)*Math.tan(pitch*Math.PI/180) );
+    const rise=ridgeH-eH;
     const wc=dark?0xffffff:0x111111;
     const wm=()=>new THREE.LineBasicMaterial({color:wc,opacity:0.7,transparent:true});
     const rm=()=>new THREE.LineBasicMaterial({color:dark?0x888888:0x555555,opacity:0.6,transparent:true});
@@ -4895,17 +4912,33 @@ function buildSimViewer(container,c,simData,slot){
     /* metric floor plane (replaced on metric/step change) */
     let floorMesh=null,ndpGroup=new THREE.Group();group.add(ndpGroup);
     function updateScene(step){
-      /* remove old floor */
-      if(floorMesh){group.remove(floorMesh);floorMesh.geometry.dispose();floorMesh.material.dispose();floorMesh=null;}
+      if(floorMesh){if(floorMesh.isGroup){floorMesh.traverse(m=>{m.geometry&&m.geometry.dispose();m.material&&m.material.dispose();});group.remove(floorMesh);}else{group.remove(floorMesh);floorMesh.geometry&&floorMesh.geometry.dispose();floorMesh.material&&floorMesh.material.dispose();}floorMesh=null;}
       while(ndpGroup.children.length){const m=ndpGroup.children[0];ndpGroup.remove(m);m.geometry&&m.geometry.dispose();m.material&&m.material.dispose();}
       const mv=simInterp(simData,step);if(!mv)return;
       const metric=currentDiagram[slot]||'tcp';
-      const norm=simNorm(mv[metric==='t_op'?'t_op':metric],metric);
-      const [r,g,b]=simCmap(norm,metric);
-      /* coloured floor */
-      const fGeo=new THREE.PlaneGeometry(W,D);
-      floorMesh=new THREE.Mesh(fGeo,new THREE.MeshBasicMaterial({color:new THREE.Color(r,g,b),transparent:true,opacity:0.7,side:THREE.DoubleSide}));
-      floorMesh.rotation.x=-Math.PI/2;floorMesh.position.set(W/2,0.02,-D/2);group.add(floorMesh);
+      const metricVal=metric==='t_op'?mv.t_op:metric==='hsp'?mv.hsp:metric==='ndp'?mv.ndp:mv.tcp;
+      const norm=simNorm(metricVal,metric);
+      /* use viz JSON sensor grid if available, else solid floor */
+      const nearest=step<=2?'present':step<=6?'ssp585_2050':'ssp585_2080';
+      const nearData=vizCache&&vizCache[nearest];
+      const grid=nearData&&nearData.sensor_grid;
+      if(grid&&grid.cells&&grid.cells.length>0){
+        const res=(grid.res||0.5)*0.92,tMin=grid.t_min||14,tMax=grid.t_max||32;
+        const cg=new THREE.Group();cg.isGroup=true;
+        grid.cells.forEach(cell=>{
+          const t=metric==='t_op'?(cell.t-tMin)/Math.max(tMax-tMin,1):norm*(0.65+0.35*cell.n);
+          const[r,g,b]=simCmap(Math.max(0,Math.min(1,t)),metric);
+          const geo=new THREE.PlaneGeometry(res,res);
+          const mat=new THREE.MeshBasicMaterial({color:new THREE.Color(r,g,b),transparent:true,opacity:0.72,side:THREE.DoubleSide});
+          const mesh=new THREE.Mesh(geo,mat);mesh.rotation.x=-Math.PI/2;mesh.position.set(cell.x,0.02,-cell.y);cg.add(mesh);
+        });
+        floorMesh=cg;group.add(floorMesh);
+      }else{
+        const[r,g,b]=simCmap(norm,metric);
+        const shape2d=new THREE.Shape(poly.map(([x,y])=>new THREE.Vector2(x,-y)));
+        floorMesh=new THREE.Mesh(new THREE.ShapeGeometry(shape2d),new THREE.MeshBasicMaterial({color:new THREE.Color(r,g,b),transparent:true,opacity:0.55,side:THREE.DoubleSide}));
+        floorMesh.rotation.x=-Math.PI/2;floorMesh.position.y=0.02;group.add(floorMesh);
+      }
       /* NDP wall tint */
       const ndpVal=mv.ndp;
       if(ndpVal!=null){
@@ -4990,17 +5023,37 @@ function createViewer(container,c,slot){
   if(!MOCK){
     const cid=c&&c.id;
     if(!cid){createNoDataCube(container,slot);return;}
+    /* Use viz JSONs if available (try new naming then old _prefix convention) */
+    if(SIM_VIZ_CACHE[cid]){buildSimViewer(container,c,SIM_VIZ_CACHE[cid],slot);return;}
     if(SIM_CACHE[cid]){buildSimViewer(container,c,SIM_CACHE[cid],slot);return;}
-    /* show placeholder while fetching */
     createNoDataCube(container,slot);
-    fetch(`${DATA_BASE}/sim_output/full/${cid}.json`)
-      .then(r=>r.ok?r.json():Promise.reject('404'))
-      .then(data=>{
-        SIM_CACHE[cid]=data;
+    const SCNS=['present','ssp585_2050','ssp585_2080'];
+    /* Try new naming (CS_91_present.json) then old (_CS_91_present.json) */
+    Promise.all(SCNS.map(s=>
+      fetch(`${DATA_BASE}/sim_output/viz/${cid}_${s}.json`)
+        .then(r=>r.ok?r.json():null)
+        .catch(()=>null)
+        .then(d=>d||fetch(`${DATA_BASE}/sim_output/viz/_${cid}_${s}.json`)
+          .then(r=>r.ok?r.json():null).catch(()=>null))
+    )).then(results=>{
+      const vc={present:results[0],ssp585_2050:results[1],ssp585_2080:results[2]};
+      if(vc.present||vc.ssp585_2050||vc.ssp585_2080){
+        SIM_VIZ_CACHE[cid]=vc;
         const activeId=slot==='A'?selectedId:compareId;
         const box=document.getElementById('viewer3d-'+slot);
-        if(activeId===cid&&box){disposeViewer(slot);buildSimViewer(box,c,data,slot);}
-      }).catch(()=>{/* keep no-data cube */});
+        if(activeId===cid&&box){disposeViewer(slot);buildSimViewer(box,c,vc,slot);}
+        return;
+      }
+      /* Fallback: old full JSON for metrics only (box geometry) */
+      fetch(`${DATA_BASE}/sim_output/full/${cid}.json`)
+        .then(r=>r.ok?r.json():Promise.reject())
+        .then(data=>{
+          SIM_CACHE[cid]=data;
+          const activeId=slot==='A'?selectedId:compareId;
+          const box=document.getElementById('viewer3d-'+slot);
+          if(activeId===cid&&box){disposeViewer(slot);buildSimViewer(box,c,data,slot);}
+        }).catch(()=>{});
+    });
     return;
   }
   try{
@@ -6127,7 +6180,15 @@ function wireCaseDetail(c,slot){
       createNoDataCube(box,slot);
       fetch(`${DATA_BASE}/sim_output/full/${cid}.json`)
         .then(r=>r.ok?r.json():Promise.reject('404'))
-        .then(data=>{SIM_CACHE[cid]=data;disposeViewer(slot);const b2=document.getElementById('viewer3d-'+slot);if(b2)buildSimViewer(b2,c,data,slot);})
+        .then(data=>{
+          /* try viz JSONs first on refetch */
+          const SCNS=['present','ssp585_2050','ssp585_2080'];
+          Promise.all(SCNS.map(s=>fetch(`${DATA_BASE}/sim_output/viz/${cid}_${s}.json`).then(r=>r.ok?r.json():null).catch(()=>null).then(d=>d||fetch(`${DATA_BASE}/sim_output/viz/_${cid}_${s}.json`).then(r=>r.ok?r.json():null).catch(()=>null)))).then(rs=>{
+            const vc={present:rs[0],ssp585_2050:rs[1],ssp585_2080:rs[2]};
+            if(vc.present||vc.ssp585_2050||vc.ssp585_2080){SIM_VIZ_CACHE[cid]=vc;disposeViewer(slot);const b2=document.getElementById('viewer3d-'+slot);if(b2)buildSimViewer(b2,c,vc,slot);}
+            else{SIM_CACHE[cid]=data;disposeViewer(slot);const b2=document.getElementById('viewer3d-'+slot);if(b2)buildSimViewer(b2,c,data,slot);}
+          });
+        })
         .catch(()=>{});
     }
   });}
