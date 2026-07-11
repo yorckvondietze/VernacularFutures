@@ -4869,6 +4869,11 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
   const _isViz=!!(_first.building||_first.apertures||_first.metrics);
   const simData=_isViz?vizCacheToSimData(simDataOrVizCache):simDataOrVizCache;
   const vizCache=_isViz?simDataOrVizCache:null;
+  /* if no metrics exist at all, show no-data cube */
+  const _m0=simData.present||{};
+  if(_m0.tcp==null&&_m0.hsp_hours==null&&_m0.ndp_hours==null&&_m0.t_op_mean==null){
+    createNoDataCube(container,slot);return;
+  }
   try{
     const dark=document.documentElement.getAttribute('data-theme')==='dark';
     const w=container.clientWidth||300,h=container.clientHeight||210;
@@ -4906,6 +4911,14 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
       group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([rA,rB]),rm()));
       ePts.slice(0,-1).forEach(p=>{const to=p.distanceTo(new THREE.Vector3(rA.x,eH,rA.z))<p.distanceTo(new THREE.Vector3(rB.x,eH,rB.z))?rA:rB;group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([p.clone(),to.clone()]),rm()));});
     }
+    /* window apertures from viz JSON — opening_w layer only */
+    const _aps=_vizBld?(_vizBld.apertures||[]):[];
+    _aps.forEach(ap=>{
+      if(!ap.p0||!ap.p1||!ap.p2||!ap.p3)return;
+      const winMat=new THREE.LineBasicMaterial({color:0xffffff,opacity:0.9,transparent:true});
+      const pts=[ap.p0,ap.p1,ap.p2,ap.p3,ap.p0].map(([x,y,z])=>new THREE.Vector3(x,z,-y));
+      group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),winMat));
+    });
     /* ground plane */
     const gd=new THREE.Mesh(new THREE.PlaneGeometry(60,60),new THREE.MeshBasicMaterial({color:dark?0x111113:0xe8e4de,transparent:true,opacity:0.35}));
     gd.rotation.x=-Math.PI/2;scene.add(gd);
@@ -4922,11 +4935,16 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
       const nearest=step<=2?'present':step<=6?'ssp585_2050':'ssp585_2080';
       const nearData=vizCache&&vizCache[nearest];
       const grid=nearData&&nearData.sensor_grid;
-      if(grid&&grid.cells&&grid.cells.length>0){
-        const res=(grid.res||0.5)*0.92,tMin=grid.t_min||14,tMax=grid.t_max||32;
+      /* sensor grid only valid for tcp/hsp — those have real spatial proximity data.
+         t_op and ndp are zone-averaged only; showing a grid would imply per-cell
+         EnergyPlus data we don't have. */
+      const gridApplies=grid&&grid.cells&&grid.cells.length>0&&(metric==='tcp'||metric==='hsp');
+      if(gridApplies){
+        const res=(grid.res||0.5)*1.01,tMin=grid.t_min||14,tMax=grid.t_max||32; /* 1% overlap eliminates seams */
         const cg=new THREE.Group();cg.isGroup=true;
         grid.cells.forEach(cell=>{
-          const t=metric==='t_op'?(cell.t-tMin)/Math.max(tMax-tMin,1):norm*(0.65+0.35*cell.n);
+          /* spread ±0.3 around zone norm so proximity is clearly visible */
+          const t=Math.max(0,Math.min(1,norm+(cell.n-0.5)*0.6));
           const[r,g,b]=simCmap(Math.max(0,Math.min(1,t)),metric);
           const geo=new THREE.PlaneGeometry(res,res);
           const mat=new THREE.MeshBasicMaterial({color:new THREE.Color(r,g,b),transparent:true,opacity:0.72,side:THREE.DoubleSide});
@@ -4934,6 +4952,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
         });
         floorMesh=cg;group.add(floorMesh);
       }else{
+        /* solid floor colour — zone-averaged metric (also fallback for t_op/ndp) */
         const[r,g,b]=simCmap(norm,metric);
         const shape2d=new THREE.Shape(poly.map(([x,y])=>new THREE.Vector2(x,-y)));
         floorMesh=new THREE.Mesh(new THREE.ShapeGeometry(shape2d),new THREE.MeshBasicMaterial({color:new THREE.Color(r,g,b),transparent:true,opacity:0.55,side:THREE.DoubleSide}));
