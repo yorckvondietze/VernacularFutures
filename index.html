@@ -9491,65 +9491,117 @@ function computeAvgZone(pinLat,pinLon,radius_km){
 }
 
 async function renderAvgTypWin(){
-  const win=document.getElementById("avgTypWin");
-  if(!_avgPin||!win||win.classList.contains("avgt-hidden"))return;
+  const win=document.getElementById('avgTypWin');
+  if(!_avgPin||!win||win.classList.contains('avgt-hidden'))return;
   const ll=_avgPin.getLatLng();
-  const r=parseInt(document.getElementById("avgTypRadiusSlider").value)||AVG_DEFAULT_RADIUS;
+  const r=parseInt(document.getElementById('avgTypRadiusSlider').value)||AVG_DEFAULT_RADIUS;
   const z=computeAvgZone(ll.lat,ll.lng,r);
-  document.getElementById("avgTypTitle").textContent=z.label;
-  document.getElementById("avgTypSubtitle").textContent=z.members.length+" case stud"+(z.members.length===1?"y":"ies")+"  ·  "+r+" km radius";
+  document.getElementById('avgTypTitle').textContent=z.label;
+  document.getElementById('avgTypSubtitle').textContent=
+    z.members.length+' case stud'+(z.members.length===1?'y':'ies')+'  ·  '+r+' km radius';
+
   /* BUILDING */
-  const bP=document.getElementById("avgt-panel-building");
-  if(!z.members.length){bP.innerHTML="<p class='avgt-empty'>No case studies within radius.</p>";}
-  else{
-    bP.innerHTML="<p class='avgt-sec-head'>Photos</p><div class='avgt-carousel-wrap' id='avgt-photos'><span style='font-size:10px;color:var(--ink-faint)'>loading…</span></div><p class='avgt-sec-head' style='margin-top:12px'>Floor plans</p><div class='avgt-carousel-wrap' id='avgt-plans'><span style='font-size:10px;color:var(--ink-faint)'>loading…</span></div>";
-    Promise.all(z.members.map(async c=>{const[ph,pl]=await Promise.all([fetchPhotos(c.id),fetchPlans(c.id)]);return{c,ph,pl};})).then(res=>{
-      const pr=document.getElementById("avgt-photos"),plr=document.getElementById("avgt-plans");
+  const bP=document.getElementById('avgt-panel-building');
+  if(!z.members.length){
+    bP.innerHTML='<p class="avgt-empty">No case studies within radius.</p>';
+  }else{
+    bP.innerHTML='<p class="avgt-sec-head">Photos</p><div class="avgt-carousel-wrap" id="avgt-photos"><span style="font-size:10px;color:var(--ink-faint)">loading…</span></div><p class="avgt-sec-head" style="margin-top:12px">Floor plans</p><div class="avgt-carousel-wrap" id="avgt-plans"><span style="font-size:10px;color:var(--ink-faint)">loading…</span></div>';
+    Promise.all(z.members.map(async c=>{
+      const[ph,pl]=await Promise.all([fetchPhotos(c.id),fetchPlans(c.id)]);
+      return{c,ph,pl};
+    })).then(res=>{
+      const pr=document.getElementById('avgt-photos');
+      const plr=document.getElementById('avgt-plans');
       if(!pr||!plr)return;
       const ap=[],apl=[];
-      res.forEach(({c,ph,pl})=>{ph.slice(0,2).forEach(u=>ap.push({u,l:c.id+" · "+c.name}));pl.slice(0,1).forEach(p=>apl.push({u:p.url,l:c.id+" · "+c.name}));});
-      const ih=arr=>arr.length?arr.map(p=>"<div class='avgt-carousel-item'><img src=""+p.u+"" loading='lazy' alt=""+p.l+"">"+"<span>"+p.l+"</span></div>").join(""):"<span style='font-size:10px;color:var(--ink-faint)'>No images found.</span>";
-      pr.innerHTML=ih(ap);plr.innerHTML=ih(apl);
+      res.forEach(({c,ph,pl})=>{
+        ph.slice(0,2).forEach(u=>ap.push({u,l:c.id+' · '+c.name}));
+        pl.slice(0,1).forEach(p=>apl.push({u:p.url,l:c.id+' · '+c.name}));
+      });
+      const ih=arr=>arr.length
+        ?arr.map(p=>'<div class="avgt-carousel-item"><img src="'+p.u+'" loading="lazy" alt="'+p.l+'"><span>'+p.l+'</span></div>').join('')
+        :'<span style="font-size:10px;color:var(--ink-faint)">No images found.</span>';
+      pr.innerHTML=ih(ap);
+      plr.innerHTML=ih(apl);
     });
   }
+
   /* CLIMATE */
-  const cP=document.getElementById("avgt-panel-climate");
-  if(!z.members.length){cP.innerHTML="<p class='avgt-empty'>No case studies within radius.</p>";}
-  else{
-    const med=z.medoid,kp=Array.isArray(med?.koppen)?med.koppen:[];
-    const krows=["present","2050 SSP5-8.5","2080 SSP5-8.5"].map((scn,i)=>{
-      const kc={};z.members.forEach(c=>{const k=(Array.isArray(c.koppen)?c.koppen[i]:"")||"";if(k)kc[k]=(kc[k]||0)+1;});
-      return"<tr><td>"+scn+"</td><td>"+Object.entries(kc).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,n])=>k+" ("+n+")").join(" · ")+"</td></tr>";
-    }).join("");
-    cP.innerHTML="<p class='avgt-sec-head'>Representative station</p><table class='avgt-metric-table'><tr><td>Station</td><td>"+(med?.epwStation||"—")+"</td></tr><tr><td>Name</td><td>"+(med?.name||"—")+"</td></tr><tr><td>Country</td><td>"+(med?.country||"—")+"</td></tr><tr><td>Coordinates</td><td>"+((med?.lat?.toFixed(3)||"—")+"°, "+(med?.lon?.toFixed(3)||"—")+"°")+"</td></tr></table><p class='avgt-sec-head'>Dominant Köppen by scenario</p><table class='avgt-metric-table'>"+krows+"</table>";
+  const cP=document.getElementById('avgt-panel-climate');
+  if(!z.members.length){
+    cP.innerHTML='<p class="avgt-empty">No case studies within radius.</p>';
+  }else{
+    const med=z.medoid;
+    const krows=['present','2050 SSP5-8.5','2080 SSP5-8.5'].map((scn,i)=>{
+      const kc={};
+      z.members.forEach(c=>{const k=(Array.isArray(c.koppen)?c.koppen[i]:'')||'';if(k)kc[k]=(kc[k]||0)+1;});
+      const top=Object.entries(kc).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,n])=>k+' ('+n+')').join(' · ');
+      return '<tr><td>'+scn+'</td><td>'+(top||'—')+'</td></tr>';
+    }).join('');
+    cP.innerHTML=
+      '<p class="avgt-sec-head">Representative station</p>'+
+      '<table class="avgt-metric-table">'+
+        '<tr><td>Station</td><td>'+(med?.epwStation||'—')+'</td></tr>'+
+        '<tr><td>Name</td><td>'+(med?.name||'—')+'</td></tr>'+
+        '<tr><td>Country</td><td>'+(med?.country||'—')+'</td></tr>'+
+        '<tr><td>Coordinates</td><td>'+((med?.lat?.toFixed(3)||'—')+'°, '+(med?.lon?.toFixed(3)||'—')+'°')+'</td></tr>'+
+      '</table>'+
+      '<p class="avgt-sec-head">Dominant Köppen by scenario</p>'+
+      '<table class="avgt-metric-table">'+krows+'</table>';
   }
+
   /* METRICS */
-  const mP=document.getElementById("avgt-panel-metrics");
-  if(!z.members.length){mP.innerHTML="<p class='avgt-empty'>No case studies within radius.</p>";}
-  else{
-    const f=z.fmt,r2=(v,d)=>v!=null?f(v,d):"—";
-    const row=(a,b)=>"<tr><td>"+a+"</td><td>"+b+"</td></tr>";
-    mP.innerHTML="<p class='avgt-sec-head'>Envelope — averaged</p><table class='avgt-metric-table'>"+
-      row("Floor area",r2(z.avgArea)+" m²")+row("Building height",r2(z.avgHeight)+" m")+row("Eave height",r2(z.avgEaveH)+" m")+
-      row("Eave depth",r2(z.avgEaveDepth,2)+" m")+row("Wall thickness",r2(z.avgWallThk,2)+" m")+
-      row("Wall thickness N/S",r2(z.avgWallThkNS,2)+" m")+row("Wall thickness E/W",r2(z.avgWallThkEW,2)+" m")+
-      row("WWR",r2(z.avgWwr)+" %")+row("Roof pitch",r2(z.avgRoofPitch)+"°")+
-      row("Compactness ψ",r2(z.avgPsi,3))+row("V/A ratio",r2(z.avgVA,2))+row("Thermal mass",r2(z.avgThermalMass)+" kJ/(m²K)")+
-      "</table><p class='avgt-sec-head'>Dominant tags</p><table class='avgt-metric-table'>"+
-      row("Köppen",z.domKoppen||"—")+row("Country",z.domCountry||"—")+row("Construction",z.domStruct||"—")+row("Roof form",z.domRoofForm||"—")+
-      "</table><p class='avgt-sec-head'>Simulation (present / 2050 / 2080)</p><table class='avgt-metric-table'>"+
-      row("TCP %",z.avgTcp.map((v,i)=>v!=null?f(v)+"%":"—").join(" / "))+
-      row("HSP h/yr",z.avgHsp.map(v=>v!=null?Math.round(v)+" h":"—").join(" / "))+
-      row("NDP h/yr",z.avgNdp.map(v=>v!=null?Math.round(v)+" h":"—").join(" / "))+
-      "</table>";
+  const mP=document.getElementById('avgt-panel-metrics');
+  if(!z.members.length){
+    mP.innerHTML='<p class="avgt-empty">No case studies within radius.</p>';
+  }else{
+    const f=z.fmt;
+    const r2=(v,d)=>v!=null?f(v,d||1):'—';
+    const row=(a,b)=>'<tr><td>'+a+'</td><td>'+b+'</td></tr>';
+    mP.innerHTML=
+      '<p class="avgt-sec-head">Envelope — averaged</p>'+
+      '<table class="avgt-metric-table">'+
+        row('Floor area',r2(z.avgArea)+' m²')+
+        row('Building height',r2(z.avgHeight)+' m')+
+        row('Eave height',r2(z.avgEaveH)+' m')+
+        row('Eave depth',r2(z.avgEaveDepth,2)+' m')+
+        row('Wall thickness',r2(z.avgWallThk,2)+' m')+
+        row('Wall thickness N/S',r2(z.avgWallThkNS,2)+' m')+
+        row('Wall thickness E/W',r2(z.avgWallThkEW,2)+' m')+
+        row('WWR',r2(z.avgWwr)+' %')+
+        row('Roof pitch',r2(z.avgRoofPitch)+'°')+
+        row('Compactness ψ',r2(z.avgPsi,3))+
+        row('V/A ratio',r2(z.avgVA,2))+
+        row('Thermal mass',r2(z.avgThermalMass)+' kJ/(m²K)')+
+      '</table>'+
+      '<p class="avgt-sec-head">Dominant tags</p>'+
+      '<table class="avgt-metric-table">'+
+        row('Köppen',z.domKoppen||'—')+
+        row('Country',z.domCountry||'—')+
+        row('Construction',z.domStruct||'—')+
+        row('Roof form',z.domRoofForm||'—')+
+      '</table>'+
+      '<p class="avgt-sec-head">Simulation (present / 2050 / 2080)</p>'+
+      '<table class="avgt-metric-table">'+
+        row('TCP %',z.avgTcp.map((v)=>v!=null?f(v)+'%':'—').join(' / '))+
+        row('HSP h/yr',z.avgHsp.map((v)=>v!=null?Math.round(v)+' h':'—').join(' / '))+
+        row('NDP h/yr',z.avgNdp.map((v)=>v!=null?Math.round(v)+' h':'—').join(' / '))+
+      '</table>';
   }
+
   /* MEMBERS */
-  const membP=document.getElementById("avgt-panel-members");
-  if(!z.members.length){membP.innerHTML="<p class='avgt-empty'>No case studies within radius.</p>";}
-  else{
-    membP.innerHTML="<p class='avgt-sec-head'>"+z.members.length+" case stud"+(z.members.length===1?"y":"ies")+"</p><div>"+
-      z.members.map(c=>"<span class='avgt-chip' onclick='selectCase(""+c.id+"");document.body.classList.add("cs-open");' title=""+c.name+"">"+"<b>"+c.id+"</b> "+c.name+" <span style='color:var(--ink-faint)'>"+((Array.isArray(c.koppen)?c.koppen[0]:"")||"")+"</span></span>").join("")+
-      "</div>";
+  const membP=document.getElementById('avgt-panel-members');
+  if(!z.members.length){
+    membP.innerHTML='<p class="avgt-empty">No case studies within radius.</p>';
+  }else{
+    membP.innerHTML=
+      '<p class="avgt-sec-head">'+z.members.length+' case stud'+(z.members.length===1?'y':'ies')+'</p>'+
+      '<div>'+
+        z.members.map(c=>{
+          const k=(Array.isArray(c.koppen)?c.koppen[0]:'')||'';
+          return '<span class="avgt-chip" data-csid="'+c.id+'" title="'+c.name+'"><b>'+c.id+'</b> '+c.name+' <span style="color:var(--ink-faint)">'+k+'</span></span>';
+        }).join('')+
+      '</div>';
   }
 }
 
@@ -9609,6 +9661,13 @@ function initAvgTypology(){
     const p=document.getElementById("avgt-panel-"+btn.dataset.avgtab);
     if(p)p.classList.add("active");
   }));
+  /* chip click → open case in csPanel */
+  document.getElementById('avgt-panel-members').addEventListener('click',e=>{
+    const chip=e.target.closest('.avgt-chip');
+    if(!chip||!chip.dataset.csid)return;
+    selectCase(chip.dataset.csid);
+    document.body.classList.add('cs-open');
+  });
   wireAvgTypDrag();
 }
 
@@ -9692,7 +9751,6 @@ else if(window._hideLoader)window._hideLoader();
     };
     const ro=new ResizeObserver(sync);
     ro.observe(bar);
-    }
     window.addEventListener('resize',sync);
     document.getElementById('filterStripBtn')?.addEventListener('click',()=>setTimeout(sync,260));
     sync();
