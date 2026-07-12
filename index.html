@@ -6261,11 +6261,16 @@ function renderAvgTypologyZone(zone){
   zone.mergedMarker=L.marker([zone.pinLat,zone.pinLon],{icon,zIndexOffset:500}).addTo(map);
   zone.mergedMarker.on('click',(e)=>{
     L.DomEvent.stopPropagation(e);
-    _activeAvgZone=zone;  /* set before selectedId=null */
-    selectedId=null;
-    renderAvgTypologyDetailPanel(zone);
-    document.body.classList.add('cs-open');
-    if(map)setTimeout(()=>map.invalidateSize(),0);
+    _activeAvgZone=zone;  /* claim the zone immediately */
+    /* 30ms delay lets any cascading case-study marker click settle,
+       then we reassert control and open the typology panel */
+    setTimeout(()=>{
+      if(!_activeAvgZone||_activeAvgZone.id!==zone.id)return;
+      selectedId=null;compareId=null;
+      renderAvgTypologyDetailPanel(zone);
+      document.body.classList.add('cs-open');
+      if(map)setTimeout(()=>map.invalidateSize(),0);
+    },30);
   });
   /* fade individual markers */
   markers.forEach(mk=>{
@@ -6602,10 +6607,13 @@ function addAvgTypologyZone(){
     _selectedZoneId=zone.id;
     _activeAvgZone=zone;
     document.querySelectorAll('.avgt-zone-panel').forEach(r=>r.classList.toggle('zone-selected',+r.dataset.zoneid===zone.id));
-    selectedId=null;
-    renderAvgTypologyDetailPanel(zone);
-    document.body.classList.add('cs-open');
-    if(map)setTimeout(()=>map.invalidateSize(),0);
+    setTimeout(()=>{
+      if(!_activeAvgZone||_activeAvgZone.id!==zone.id)return;
+      selectedId=null;compareId=null;
+      renderAvgTypologyDetailPanel(zone);
+      document.body.classList.add('cs-open');
+      if(map)setTimeout(()=>map.invalidateSize(),0);
+    },30);
   });
   renderAvgTypologyZone(zone);
 }
@@ -6971,14 +6979,14 @@ function renderPanel(){
   const el=document.getElementById('csPanel');
   const grid=document.querySelector('.explorer-grid');
   const wasCompare=grid&&grid.classList.contains('compare-active');
-  /* If an avg typology zone is active and no case study is selected, keep it */
-  if(_activeAvgZone&&!selectedId){
+  /* Avg zone always takes priority — prevents cascading case-study marker
+     clicks from overwriting the zone panel while our setTimeout is pending */
+  if(_activeAvgZone){
     renderAvgTypologyDetailPanel(_activeAvgZone);
     document.body.classList.add('cs-open');
     if(map)setTimeout(()=>map.invalidateSize(),0);
     return;
   }
-  _activeAvgZone=null;
   if(!selectedId){
     pickingCompare=false;compareId=null;
     clearStationMarker();
