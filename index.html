@@ -5477,7 +5477,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
     const _innerPoly=_vizBld&&_vizBld.building&&_vizBld.building.inner_polygon_2d;
     if(_innerPoly&&_innerPoly.length>2){
       const _wt=(_vizBld.building.wall_thick_m||0);
-      const _iMat=new THREE.LineBasicMaterial({color:dark?0x888880:0x888880,transparent:true,opacity:0.5});
+      const _iMat=new THREE.LineBasicMaterial({color:dark?0xDDCC99:0x222222,transparent:true,opacity:0.9});
       /* inner wall outline at floor level */
       const _iPtsF=_innerPoly.map(([x,y])=>new THREE.Vector3(x,0.01,-y));
       _iPtsF.push(_iPtsF[0]);
