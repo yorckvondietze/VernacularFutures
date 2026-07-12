@@ -2704,7 +2704,7 @@ const COLMAP_DEF={
   special:[h=>h.startsWith('special_characteristics')],
   notes:[h=>h==='notes'],
   source:[h=>h.startsWith('source')],
-  oh00:[h=>h.includes('overheating')&&h.includes('_00')],oh50:[h=>h.includes('overheating')&&h.includes('_50')],oh80:[h=>h.includes('overheating')&&h.includes('_80')],
+  oh00:[h=>(h.toLowerCase().includes('hsp')||h.toLowerCase().includes('overheating'))&&h.includes('_00')],oh50:[h=>(h.toLowerCase().includes('hsp')||h.toLowerCase().includes('overheating'))&&h.includes('_50')],oh80:[h=>(h.toLowerCase().includes('hsp')||h.toLowerCase().includes('overheating'))&&h.includes('_80')],
   cf00:[h=>h.includes('adaptive_comfort')&&h.includes('_00')],cf50:[h=>h.includes('adaptive_comfort')&&h.includes('_50')],cf80:[h=>h.includes('adaptive_comfort')&&h.includes('_80')],
   ndp00:[h=>h.includes('ndp')&&h.includes('_00')],ndp50:[h=>h.includes('ndp')&&h.includes('_50')],ndp80:[h=>h.includes('ndp')&&h.includes('_80')],
   topMean00:[h=>h.includes('t_op_mean')&&h.includes('_00')],topMean50:[h=>h.includes('t_op_mean')&&h.includes('_50')],topMean80:[h=>h.includes('t_op_mean')&&h.includes('_80')],
@@ -4639,7 +4639,7 @@ function drawPsychroCanvas(canvasId,epwData){
   }
 
   /* ── ASHRAE 55-2017 §5.2.1 comfort zone ── */
-  const a55Col=dark?'rgba(220,100,140,0.88)':'rgba(170,50,90,0.88)';  /* pink — distinct from blue data points */
+  const a55Col=dark?'rgba(255,80,160,0.92)':'rgba(220,30,120,0.92)';  /* bright pink — distinct from blue data points */
   const a55Poly=ASHRAE55_POLY.map(([T,w])=>[tx(T),wy(w)]);
   function buildA55Path(){
     ctx.beginPath();
