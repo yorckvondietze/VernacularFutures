@@ -5324,14 +5324,16 @@ function createNoDataCube(container,slot){
     /* register before tick so VIEWERS[slot].raf = N works */
     const thisViewer={renderer,scene,camera,container,onDown,onMove,onUp,onResize,raf:0};
     VIEWERS[slot]=thisViewer;
+    /* Initial render — must happen before RAF so something is visible immediately */
+    renderer.render(scene,camera);
     function tick(){
-      if(VIEWERS[slot]!==thisViewer)return;  /* zombie guard: stop if we've been replaced */
+      if(VIEWERS[slot]!==thisViewer)return;
       VIEWERS[slot].raf=requestAnimationFrame(tick);
       if(!dragging)az+=0.003;
-      cube.rotation.y=az;edges.rotation.y=az;
+      edges.rotation.y=az;  /* cube mesh removed; only edges need rotation */
       renderer.render(scene,camera);
     }
-    VIEWERS[slot].raf=requestAnimationFrame(tick);  /* defer first render to next frame */
+    VIEWERS[slot].raf=requestAnimationFrame(tick);
   }catch(err){
     container.innerHTML='<div class="viewer3d-fallback" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;font-family:var(--mono);color:var(--ink-faint);font-size:10px;">NO_DATA<span style="font-size:9px;opacity:0.6;">&gt;run_simulation_script</span></div>';
   }
@@ -5346,10 +5348,21 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
   const _isViz=!!(_first.building||_first.apertures||_first.metrics);
   const simData=_isViz?vizCacheToSimData(simDataOrVizCache):simDataOrVizCache;
   const vizCache=_isViz?simDataOrVizCache:null;
-  /* if no metrics exist at all, show no-data cube */
+  /* if viz JSON has no metrics, fall back to Excel c.sim data before giving up */
   const _m0=simData.present||{};
   if(_m0.tcp==null&&_m0.hsp_hours==null&&_m0.ndp_hours==null&&_m0.t_op_mean==null){
-    createNoDataCube(container,slot);return;
+    if(c&&c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null||c.sim.oh[0]!=null)){
+      /* Inject Excel metrics into simData — viz JSON geometry used, Excel metrics for display */
+      ['present','ssp585_2050','ssp585_2080'].forEach((scn,i)=>{
+        if(!simData[scn]) simData[scn]={};
+        if(simData[scn].tcp==null) simData[scn].tcp=c.sim.comfort?c.sim.comfort[i]:null;
+        if(simData[scn].hsp_hours==null) simData[scn].hsp_hours=c.sim.oh?c.sim.oh[i]:null;
+        if(simData[scn].ndp_hours==null) simData[scn].ndp_hours=c.sim.ndp?c.sim.ndp[i]:null;
+        if(simData[scn].t_op_mean==null) simData[scn].t_op_mean=c.sim.topMean?c.sim.topMean[i]:null;
+      });
+    } else {
+      createNoDataCube(container,slot);return;
+    }
   }
   try{
     const dark=document.documentElement.getAttribute('data-theme')==='dark';
@@ -6308,6 +6321,10 @@ function renderAvgTypologyDetailPanel(zone){
   const el=document.getElementById('csPanel');
   if(el)el.dataset.avgZoneId=zone.id;
   if(!el)return;
+  /* Ensure the case study panel is visible (cs-open) */
+  document.body.classList.add('cs-open');
+  if(map&&!document.body.classList.contains('map-fullscreen'))
+    setTimeout(()=>map.invalidateSize(),0);
   const{members,label,epwId}=computeAvgTypology(zone);
   zone.caseIds=members.map(c=>c.id);zone.label=label;zone.epwId=epwId;
   /* averaging helpers */
@@ -6564,6 +6581,10 @@ function addAvgTypologyZone(){
     renderAvgTypologyDetailPanel(zone);
   });
   renderAvgTypologyZone(zone);
+  /* Auto-open the detail panel and make the cs panel visible */
+  renderAvgTypologyDetailPanel(zone);
+  document.body.classList.add('cs-open');
+  if(map)setTimeout(()=>map.invalidateSize(),0);
 }
 
 function wireShapeShift(c,slot){
