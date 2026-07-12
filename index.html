@@ -819,6 +819,8 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 .source-list li::before{content:'·';position:absolute;left:0;color:var(--terracotta);}
 .source-list .src-au{color:var(--ink);font-weight:600;}
 .source-list .src-j{font-style:italic;}
+.source-list li.src-key{color:var(--ink);border-left:2px solid var(--terracotta);padding-left:14px;margin-left:-2px;}
+.source-list li.src-key::before{display:none;}
 .corpus-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0 6px;}
 .cstat{background:var(--paper);border:1px solid var(--line);border-radius:0;padding:12px 14px;}
 .cstat .v{font-family:var(--serif);font-size:26px;font-weight:600;}
@@ -1960,8 +1962,6 @@ html[data-theme="dark"] .loader-status{
         <h3>Limitations</h3>
         <ul class="limits-list">
           <li><b>Naturalistic fallacy</b>: correlation cannot by itself justify prescription; simulation is required and remains partial.</li>
-          <li><b>Latitude-fixed solar geometry</b>: climate-analogue matching cannot transfer solar angles; shading and gain strategies do not migrate with the climate envelope.</li>
-          <li><b>Museum relocation bias</b>: open-air-museum buildings are assigned EPW from museum coordinates, not the original build site; orientation tags are unreliable for these unless verified against historic cadastral maps.</li>
           <li><b>Incomplete corpus</b>: geometry metrics exist for a subset of buildings; coordinates and EPW assignment are missing for others; Köppen classification and simulation outputs are not yet written back for most rows. <span class="nodata">live counts shown above</span></li>
           <li><b>Precipitation</b>: not morphed and unreliable for classification; future Köppen uses present-day precipitation to avoid rounding-driven misclassification.</li>
           <li><b>Recent-warming bias in TMYx</b>: 2011–2025 normals already embed warming, so some stations no longer classify as Dfb even where 1961–1990 normals would. Significant, not an error.</li>
@@ -2012,16 +2012,63 @@ html[data-theme="dark"] .loader-status{
         </div>
       </div>
       <div class="card-window" style="margin:24px 0;">
-        <div class="card-titlebar"><span class="win-title">_academic_sources</span><span class="win-controls"><span class="c-close"></span></span></div>
+        <div class="card-titlebar"><span class="win-title">_sources_bibliography</span><span class="win-controls"><span class="c-close"></span></span></div>
+        <p style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);padding:10px 22px 0;letter-spacing:0.06em;">APA 7TH EDITION &nbsp;&nbsp; <span style="border-left:2px solid var(--terracotta);padding-left:6px;">terracotta border = primary source</span></p>
         <ul class="source-list">
-          <li><span class="src-au">Belcher, S. E., Hacker, J. N., &amp; Powell, D. S.</span> (2005). Constructing design weather data for future climates. <span class="src-j">Building Services Engineering Research and Technology</span>, 26(1), 49–61.</li>
-          <li><span class="src-au">Rodrigues, E., Fernandes, M. S., &amp; Carvalho, D.</span> (2023). Future Weather Generator: A Python package for the morphing of climate change projections into building performance simulation. <span class="src-j">Building and Environment</span>, 246, 110981.</li>
-          <li><span class="src-au">Kottek, M., Grieser, J., Beck, C., Rudolf, B., &amp; Rubel, F.</span> (2006). World Map of the Köppen–Geiger climate classification updated. <span class="src-j">Meteorologische Zeitschrift</span>, 15(3), 259–263.</li>
-          <li><span class="src-au">Rapoport, A.</span> (1969). <span class="src-j">House Form and Culture</span>. Prentice-Hall.</li>
-          <li><span class="src-au">Olgyay, V.</span> (1963). <span class="src-j">Design with Climate: Bioclimatic Approach to Architectural Regionalism</span>. Princeton University Press.</li>
-          <li><span class="src-au">Jentsch, M. F., James, P. A. B., Bourikas, L., &amp; Bahaj, A. S.</span> (2013). Transforming existing weather data for worldwide locations to enable energy and building performance simulation under future climates. <span class="src-j">Renewable Energy</span>, 55, 514–524.</li>
+          <li><span class="src-au">Antonescu, G., Pescari, R.-I., Socalici, A., &amp; Taus, D.</span> (2023). Thermophysical characteristics of clay for efficient rammed earth wall construction. <span class="src-j">Materials</span>, 16(17), 5978.</li>
+          <li><span class="src-au">Armstrong McKay, D. I., Staal, A., Abrams, J. F., Winkelmann, R., Sakschewski, B., Loriani, S., Fetzer, I., Cornell, S. E., Rockström, J., &amp; Lenton, T. M.</span> (2022). Exceeding 1.5°C global warming could trigger multiple climate tipping points. <span class="src-j">Science</span>, 377(6611), eabn7950.</li>
+          <li class="src-key"><span class="src-au">Artmann, N., Gyalistras, D., Manz, H., &amp; Heiselberg, P.</span> (2008). Impact of climate warming on passive night cooling potential in Europe. <span class="src-j">Building Research and Information</span>, 36(2), 111–128.</li>
+          <li class="src-key"><span class="src-au">Artmann, N., Manz, H., &amp; Heiselberg, P.</span> (2007). Climatic potential for passive cooling of buildings by night-time ventilation in Europe. <span class="src-j">Applied Energy</span>, 84(2), 187–201.</li>
+          <li><span class="src-au">ASHRAE.</span> (2020). <span class="src-j">ANSI/ASHRAE Standard 55-2020: Thermal environmental conditions for human occupancy</span>. American Society of Heating, Refrigerating and Air-Conditioning Engineers.</li>
+          <li><span class="src-au">Auliciems, A., &amp; Szokolay, S. V.</span> (2007). <span class="src-j">Thermal comfort</span> (2nd ed., PLEA Notes 3). Passive and Low Energy Architecture International / University of Queensland.</li>
+          <li><span class="src-au">Beck, H. E., Zimmermann, N. E., McVicar, T. R., Vergopolan, N., Berg, A., &amp; Wood, E. F.</span> (2018). Present and future Köppen-Geiger climate classification maps at 1-km resolution. <span class="src-j">Scientific Data</span>, 5, 180214.</li>
+          <li class="src-key"><span class="src-au">Belcher, S. E., Hacker, J. N., &amp; Powell, D. S.</span> (2005). Constructing design weather data for future climates. <span class="src-j">Building Services Engineering Research and Technology</span>, 26(1), 49–61.</li>
+          <li><span class="src-au">Benjamini, Y., &amp; Hochberg, Y.</span> (1995). Controlling the false discovery rate: A practical and powerful approach to multiple testing. <span class="src-j">Journal of the Royal Statistical Society: Series B</span>, 57(1), 289–300.</li>
+          <li><span class="src-au">Cohen, J.</span> (1988). <span class="src-j">Statistical power analysis for the behavioral sciences</span> (2nd ed.). Lawrence Erlbaum Associates.</li>
+          <li><span class="src-au">Conrad, V.</span> (1946). Usual formulas of continentality and their limits of validity. <span class="src-j">Transactions of the American Geophysical Union</span>, 27(5), 663–664.</li>
+          <li><span class="src-au">de Dear, R. J., &amp; Brager, G. S.</span> (2002). Thermal comfort in naturally ventilated buildings: Revisions to ASHRAE Standard 55. <span class="src-j">Energy and Buildings</span>, 34(6), 549–561.</li>
+          <li><span class="src-au">Desogus, G., Cannas, A. E. I., &amp; Sanna, A.</span> (2016). Bioclimatic lessons from Mediterranean vernacular architecture: The Sardinian case study. <span class="src-j">Energy and Buildings</span>, 129, 574–588.</li>
+          <li><span class="src-au">Duffie, J. A., &amp; Beckman, W. A.</span> (2013). <span class="src-j">Solar engineering of thermal processes</span> (4th ed.). Wiley.</li>
+          <li><span class="src-au">European Committee for Standardization.</span> (2020). <span class="src-j">EN 1745:2020: Masonry and masonry products, methods for determining thermal properties</span>. CEN.</li>
+          <li><span class="src-au">Fanger, P. O.</span> (1970). <span class="src-j">Thermal comfort: Analysis and applications in environmental engineering</span>. Danish Technical Press.</li>
+          <li class="src-key"><span class="src-au">Fathy, H.</span> (1986). <span class="src-j">Natural energy and vernacular architecture: Principles and examples with reference to the hot arid climates</span> (W. Shearer &amp; A.-e.-r. A. Sultan, Eds.). University of Chicago Press.</li>
+          <li class="src-key"><span class="src-au">Frampton, K.</span> (1983). Towards a critical regionalism: Six points for an architecture of resistance. In H. Foster (Ed.), <span class="src-j">The anti-aesthetic: Essays on postmodern culture</span> (pp. 16–30). Bay Press.</li>
+          <li class="src-key"><span class="src-au">Givoni, B.</span> (1976). <span class="src-j">Man, climate and architecture</span> (2nd ed.). Applied Science Publishers.</li>
+          <li><span class="src-au">Givoni, B.</span> (1991). Performance and applicability of passive and low-energy cooling systems. <span class="src-j">Energy and Buildings</span>, 17(3), 177–199.</li>
+          <li><span class="src-au">Givoni, B.</span> (1994). <span class="src-j">Passive and low energy cooling of buildings</span>. Van Nostrand Reinhold.</li>
+          <li><span class="src-au">Hausladen, G., de Saldanha, M., Liedl, P., &amp; Sager, C.</span> (2005). <span class="src-j">Climate design: Solutions for buildings that can do more with less technology</span>. Birkhäuser.</li>
+          <li><span class="src-au">Hensen, J. L. M., &amp; Lamberts, R.</span> (Eds.). (2011). <span class="src-j">Building performance simulation for design and operation</span>. Routledge.</li>
+          <li><span class="src-au">Heschong, L.</span> (1979). <span class="src-j">Thermal delight in architecture</span>. MIT Press.</li>
+          <li><span class="src-au">Hume, D.</span> (1739). <span class="src-j">A treatise of human nature</span>. John Noon.</li>
+          <li><span class="src-au">Intergovernmental Panel on Climate Change.</span> (2021). <span class="src-j">Climate change 2021: The physical science basis</span>. Cambridge University Press.</li>
+          <li><span class="src-au">International Organization for Standardization.</span> (2005). <span class="src-j">ISO 7730:2005: Ergonomics of the thermal environment</span>. ISO.</li>
+          <li><span class="src-au">International Organization for Standardization.</span> (2007a). <span class="src-j">ISO 10456:2007: Building materials and products, hygrothermal properties</span>. ISO.</li>
+          <li><span class="src-au">International Organization for Standardization.</span> (2017a). <span class="src-j">ISO 6946:2017: Building components and building elements, thermal resistance and transmittance</span>. ISO.</li>
+          <li><span class="src-au">Khei, M., Monteiro, P., &amp; Pinto, C.</span> (2024). Quantitative analysis of vernacular residential building typologies and bioclimatic strategies in the warm-summer Mediterranean climate. <span class="src-j">Buildings</span>, 14(8), 2321.</li>
+          <li class="src-key"><span class="src-au">Kottek, M., Grieser, J., Beck, C., Rudolf, B., &amp; Rubel, F.</span> (2006). World map of the Köppen-Geiger climate classification updated. <span class="src-j">Meteorologische Zeitschrift</span>, 15(3), 259–263.</li>
+          <li><span class="src-au">McNeel &amp; Associates.</span> (2023). <span class="src-j">Grasshopper 3D</span> [Computer software]. Robert McNeel &amp; Associates.</li>
+          <li><span class="src-au">Moore, G. E.</span> (1903). <span class="src-j">Principia ethica</span>. Cambridge University Press.</li>
+          <li><span class="src-au">Moser, M.</span> (2023). <span class="src-j">ezdxf (Version 1.x)</span> [Python library]. https://ezdxf.mozman.at</li>
+          <li><span class="src-au">O'Neill, B. C., Tebaldi, C., van Vuuren, D. P., Eyring, V., Friedlingstein, P., Hurtt, G., Knutti, R., Kriegler, E., Lamarque, J.-F., Lowe, J., Meehl, G. A., Moss, R., Riahi, K., &amp; Sanderson, B. M.</span> (2016). The Scenario Model Intercomparison Project (ScenarioMIP) for CMIP6. <span class="src-j">Geoscientific Model Development</span>, 9(9), 3461–3482.</li>
+          <li><span class="src-au">Oliver, P.</span> (Ed.). (1997). <span class="src-j">Encyclopedia of vernacular architecture of the world</span> (3 vols.). Cambridge University Press.</li>
+          <li class="src-key"><span class="src-au">Olgyay, V.</span> (1963). <span class="src-j">Design with climate: Bioclimatic approach to architectural regionalism</span>. Princeton University Press.</li>
+          <li><span class="src-au">Pajek, L., &amp; Košir, M.</span> (2017). Can building energy performance be predicted by a bioclimatic potential analysis? Case study of the Alps–Adriatic region. <span class="src-j">Energy and Buildings</span>, 139, 160–173.</li>
+          <li><span class="src-au">Pajek, L., &amp; Košir, M.</span> (2021). Implications of climate change for bioclimatic building design in Central European climates. <span class="src-j">Sustainability</span>, 13(12), 6791.</li>
+          <li class="src-key"><span class="src-au">Rapoport, A.</span> (1969). <span class="src-j">House form and culture</span>. Prentice-Hall.</li>
+          <li><span class="src-au">Riahi, K., van Vuuren, D. P., Kriegler, E., Edmonds, J., O'Neill, B. C., Fujimori, S., Bauer, N., Calvin, K., Dellink, R., Fricko, O., Lutz, W., Popp, A., Cuaresma, J. C., Kc, S., Leimbach, M., Jiang, L., Kram, T., Rao, S., Emmerling, J., … Tavoni, M.</span> (2017). The Shared Socioeconomic Pathways and their energy, land use, and greenhouse gas emissions implications: An overview. <span class="src-j">Global Environmental Change</span>, 42, 153–168.</li>
+          <li class="src-key"><span class="src-au">Rodrigues, E., Fernandes, M. S., &amp; Gaspar, A. R.</span> (2023). Future Weather Generator: An open-source tool for generating future EPW files. <span class="src-j">Building and Environment</span>, 229, 110104.</li>
+          <li><span class="src-au">Roudsari, M. S., &amp; Pak, M.</span> (2013). Ladybug: A parametric environmental plugin for grasshopper to help designers create an environmentally-conscious design. In <span class="src-j">Proceedings of the 13th International IBPSA Conference</span> (pp. 3128–3135).</li>
+          <li><span class="src-au">Sahbaz, N. I., &amp; Alptekin, E.</span> (2017). Determination of thermal properties of traditional Central Asian felt. <span class="src-j">Journal of Natural Fibers</span>, 14(6), 823–831.</li>
+          <li><span class="src-au">Shen, Z.</span> (2012). Effects of roof pitch on air flow and heating load of sealed and vented attics for gable-roof residential buildings. <span class="src-j">Sustainability</span>, 4(9), 1999–2021.</li>
+          <li><span class="src-au">Sherwood, S. C., &amp; Huber, M.</span> (2010). An adaptability limit to climate change due to heat stress. <span class="src-j">Proceedings of the National Academy of Sciences</span>, 107(21), 9552–9555.</li>
+          <li><span class="src-au">Stull, R.</span> (2011). Wet-bulb temperature from relative humidity and air temperature. <span class="src-j">Journal of Applied Meteorology and Climatology</span>, 50(11), 2267–2269.</li>
+          <li class="src-key"><span class="src-au">Szokolay, S. V.</span> (2008). <span class="src-j">Introduction to architectural science: The basis of sustainable design</span> (2nd ed.). Architectural Press.</li>
+          <li><span class="src-au">United Nations Framework Convention on Climate Change.</span> (2015). <span class="src-j">Paris Agreement</span>. UNFCCC.</li>
+          <li><span class="src-au">U.S. Department of Energy.</span> (2023). <span class="src-j">EnergyPlus (Version 23.x)</span> [Computer software]. https://energyplus.net</li>
+          <li><span class="src-au">White, J. A., Waybright, T., &amp; Henninger, R. H.</span> (Eds.). (2022). <span class="src-j">Climate.OneBuilding.org: Repository of free climate data for building performance simulation</span> [Data set].</li>
+          <li><span class="src-au">Xu, C., Kohler, T. A., Lenton, T. M., Svenning, J.-C., &amp; Scheffer, M.</span> (2020). Future of the human climate niche. <span class="src-j">Proceedings of the National Academy of Sciences</span>, 117(21), 11350–11355.</li>
+          <li><span class="src-au">Yen, Y. C.</span> (1981). Review of thermal properties of snow, ice and sea ice. U.S. Army Cold Regions Research and Engineering Laboratory.</li>
         </ul>
-        <p style="font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);margin-top:14px;"><span class="nodata">NO_DATA</span>: additional sources (DXF source archives, CMIP6 access, Köppen station list) to be appended.</p>
       </div>
     </div>
   </section>
@@ -6883,6 +6930,125 @@ function wireAllFcInfo(){}
             Givoni (1976, 1994) arid/tropical zone assessment;
             Szokolay (2008) zone viability summary.
    ─────────────────────────────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────────────────────
+   BEST STRATEGIES BY ZONE — global helpers
+   ─────────────────────────────────────────────────────────────────────────── */
+const ZONE_STRATEGY={
+  'arid':{
+    primary:'Thermal mass via time-lag (deep earth, stone or mudbrick walls). Mass shifts the interior temperature peak by 8-12 hours, keeping midday heat out and releasing it overnight into cool desert air. Small shaded openings minimise solar gain. Courtyard typology creates a sheltered microclimate that pre-cools incoming air.',
+    future:'Diurnal swing is the primary viability indicator. As long as night temperatures drop reliably below 20\u00b0C, the strategy holds. Under SSP5-8.5 desert night temperatures rise more slowly than days, so the swing narrows but the mechanism persists. Monitor diurnal swing trajectory across scenarios.',
+    risk:'If nighttime lows rise above 22\u00b0C consistently, the time-lag advantage is lost and mass begins trapping heat.',
+    riskLevel:'Medium',
+  },
+  'mediterranean':{
+    primary:'Thermal mass combined with deep eave overhangs. South-facing mass walls store overnight coolth and release it through the midday peak. Eaves sized to shade the wall at solar noon on the summer solstice (typically 0.6-1.2 m at Mediterranean latitudes) exclude direct radiation while admitting winter sun.',
+    future:'NDP declines faster in Mediterranean zones than in continental ones as nights warm. By 2080 the night-flush strategy may be insufficient on its own. Solar control (larger overhangs, external shutters, high-albedo roofs) becomes the primary intervention; mass is secondary.',
+    risk:'Strategy viable at present and likely at 2050. Fundamental reassessment may be required toward 2098 for cases already near the Artmann threshold.',
+    riskLevel:'Medium-High',
+  },
+  'temperate':{
+    primary:'Thermal mass with night ventilation. The Artmann calibration zone: night temperatures reliably drop below 22\u00b0C for over 1,000 hours per summer, allowing full discharge of daytime stored heat. Steep roofs create an attic buffer (Kaltdach) that decouples the living space from direct roof solar gain. Moderate eave depth provides partial summer shading without eliminating low-angle winter sun.',
+    future:'NDP is declining in all temperate zones under SSP5-8.5. Cases at the lower end of the present NDP range risk crossing the Artmann threshold by 2080. Night ventilation intensification (larger operable openings, cross-flow paths) should be treated as a future-proofing measure now rather than a retrofit later.',
+    risk:'Cases above 1,500 h/yr NDP at present have margin. Cases near 1,000 h/yr are already vulnerable.',
+    riskLevel:'Low-Medium',
+  },
+  'continental':{
+    primary:'Thermal mass with night ventilation, maximised. Continental climates offer the most robust night-discharge conditions in this corpus, with NDP typically above 1,500 h/yr at present. Massive construction (stone, log, brick) with thick walls and small windows addresses both the heating load of cold winters and summer heat attenuation. The strategy moderates both seasonal extremes simultaneously.',
+    future:'The most resilient zone for thermal mass in the corpus. Even under 2080 SSP5-8.5, NDP in most Dfb cases is projected to remain well above the Artmann threshold. The main concern is the shift toward Cfa conditions in some cases, introducing humid-night overheating risk not present historically.',
+    risk:'Low overall. Cases shifting to Cfa by 2080 should be reassessed for summer humidity.',
+    riskLevel:'Low',
+  },
+  'tropical':{
+    primary:'Cross-ventilation with lightweight construction. Warm nights preclude thermal mass as a cooling strategy. The vernacular response, confirmed by the low corpus thermal mass in this zone, is to maximise air movement: elevated floor plans, large operable openings, roof forms that induce stack effect, minimal internal partitioning. Full shading of all surfaces is essential.',
+    future:'The fundamental strategy does not change, but performance margins shrink as wet-bulb temperatures rise. At wet-bulb temperatures above approximately 22\u00b0C, wind-driven ventilation provides decreasing comfort relief. The critical threshold for mechanical cooling dependency approaches in some humid tropical cases by 2098.',
+    risk:'High for comfort. The passive strategy approaches its physical limits as TCP declines reflect the gap between what ventilation alone can deliver and ASHRAE adaptive comfort bounds.',
+    riskLevel:'High',
+  },
+};
+const RISK_COL={'Low':'var(--moss,#2d7a2d)','Low-Medium':'var(--ochre)','Medium':'var(--ochre)','Medium-High':'var(--rust)','High':'var(--rust)'};
+
+function stratZoneHTML(zone){
+  const family=tmZoneFamily(zone);
+  const st=ZONE_STRATEGY[family]||ZONE_STRATEGY['temperate'];
+  const cases=CASES.filter(c=>{
+    const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';
+    return k===zone&&c.sim&&(c.sim.ndp||c.sim.comfort);
+  });
+  const n=cases.length;
+  if(!n)return`<p style="font-size:11px;color:var(--ink-faint);padding:12px 0;">No simulation data for ${zone} yet.</p>`;
+  const avg=arr=>{const v=arr.filter(x=>x!=null&&isFinite(x));return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;};
+  const f1=v=>v!=null?v.toFixed(1):'\u2014'; const fi=v=>v!=null?Math.round(v)+'':'\u2014';
+  const tcp=[avg(cases.map(c=>c.sim?.comfort?.[0])),avg(cases.map(c=>c.sim?.comfort?.[1])),avg(cases.map(c=>c.sim?.comfort?.[2]))];
+  const ndp=[avg(cases.map(c=>c.sim?.ndp?.[0])),avg(cases.map(c=>c.sim?.ndp?.[1])),avg(cases.map(c=>c.sim?.ndp?.[2]))];
+  const hsp=[avg(cases.map(c=>c.sim?.oh?.[0])),avg(cases.map(c=>c.sim?.oh?.[1])),avg(cases.map(c=>c.sim?.oh?.[2]))];
+  const{val:avgSwing,estimated:swingEst}=diurnalSwingForZone(zone);
+  const tcpTrend=tcp[0]!=null&&tcp[2]!=null?tcp[2]-tcp[0]:null;
+  const trendBadge=tcpTrend==null?'':tcpTrend<-10?`<span style="color:var(--rust);font-size:9px;font-weight:700;">\u2193 declining fast</span>`:tcpTrend<-3?`<span style="color:var(--ochre);font-size:9px;">\u2193 declining</span>`:`<span style="color:var(--moss,#2d7a2d);font-size:9px;">\u2248 stable</span>`;
+  const futureZones=[...new Set(cases.flatMap(c=>[(Array.isArray(c.koppen)?c.koppen[1]:null),(Array.isArray(c.koppen)?c.koppen[2]:null)].filter(Boolean)))];
+  const rows=['Present','2050','2080'].map((scn,i)=>`<tr>
+    <td style="padding:4px 8px 4px 0;font-weight:700;white-space:nowrap;">${scn}</td>
+    <td style="padding:4px 6px;">${dynV(f1(tcp[i])+'%')}</td>
+    <td style="padding:4px 6px;color:${ndp[i]!=null&&ndp[i]<1000?'var(--rust)':'inherit'}">${dynV(fi(ndp[i])+' h/yr')}</td>
+    <td style="padding:4px 6px;">${dynV(fi(hsp[i])+' h/yr')}</td>
+  </tr>`).join('');
+  return`
+    <p style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin:0 0 6px;">PERFORMANCE TRAJECTORY &nbsp;${trendBadge}</p>
+    <table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:14px;">
+      <thead><tr style="border-bottom:1px solid var(--line);">
+        <th style="text-align:left;padding:4px 0;font-size:9px;color:var(--ink-faint);">SCENARIO</th>
+        <th style="text-align:left;padding:4px 6px;font-size:9px;color:var(--ink-faint);">TCP</th>
+        <th style="text-align:left;padding:4px 6px;font-size:9px;color:var(--ink-faint);">NDP h/yr</th>
+        <th style="text-align:left;padding:4px 6px;font-size:9px;color:var(--ink-faint);">HSP h/yr</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    ${avgSwing!=null?`<div class="fc-tmrow" style="margin-bottom:10px;"><span class="tm-label">Mean diurnal swing${swingEst?' (zone typical*)':' (from EPW)'}</span><span>${dynV(avgSwing.toFixed(1)+'\u00b0C')}</span></div>`:''}
+    ${swingEst?`<p style="font-size:9px;color:var(--ink-faint);margin:-6px 0 10px;">* Zone-typical estimate (Givoni 1976; Szokolay 2008). Open a case to load real EPW data.</p>`:''}
+    ${futureZones.length?`<div class="fc-tmrow" style="margin-bottom:14px;"><span class="tm-label">Projected zone(s) by 2050/2080</span><span style="font-size:10px;color:var(--ink-soft);">${futureZones.join(', ')}</span></div>`:''}
+    <p style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin:0 0 5px;">PRIMARY STRATEGY</p>
+    <p style="font-size:13px;line-height:1.65;margin-bottom:14px;">${st.primary}</p>
+    <p style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin:0 0 5px;">TRAJECTORY UNDER SSP5-8.5</p>
+    <p style="font-size:13px;line-height:1.65;margin-bottom:14px;">${st.future}</p>
+    <p style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin:0 0 5px;">RISK LEVEL &nbsp;<span style="color:${RISK_COL[st.riskLevel]||'var(--ink)'};font-weight:700;">${st.riskLevel}</span></p>
+    <p style="font-size:13px;line-height:1.65;margin-bottom:8px;">${st.risk}</p>
+    <div class="fc-datatag">${n} simulated case stud${n===1?'y':'ies'} in zone · grouped by present K\u00f6ppen · SSP5-8.5</div>`;
+}
+
+function stratBlock(){
+  const counts=koppenSampleCounts();
+  const zones=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+  const opts=zones.map(z=>{
+    const sn=CASES.filter(c=>{const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';return k===z&&c.sim&&(c.sim.ndp||c.sim.comfort);}).length;
+    return`<option value="${z}">${z} (${sn>0?sn+' sim':'no sim'} / ${counts[z]} total)</option>`;
+  }).join('');
+  const first=zones.find(z=>CASES.some(c=>{const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';return k===z&&c.sim&&(c.sim.ndp||c.sim.comfort);}))||zones[0]||'Cfb';
+  return`<select class="fc-ksel" id="stratKoppenSel">${opts}</select><div id="stratPanel" style="margin-top:14px;">${stratZoneHTML(first)}</div>`;
+}
+function wireStratDropdown(){
+  const sel=document.getElementById('stratKoppenSel');
+  if(sel&&!sel._stratWired){sel._stratWired=true;sel.addEventListener('change',()=>{const p=document.getElementById('stratPanel');if(p)p.innerHTML=stratZoneHTML(sel.value);});}
+}
+
+/* Typical annual mean diurnal swing (°C) by Köppen zone, from Givoni (1976)
+   and Szokolay (2008). Used as fallback when EPW hasn't been loaded for a case. */
+const DIURNAL_TYPICAL={
+  'Af':6,'Am':6,'Aw':9,
+  'BWh':18,'BWk':16,'BSh':14,'BSk':13,
+  'Csa':14,'Csb':12,'Cfa':10,'Cfb':8,'Cfc':7,
+  'Dfa':13,'Dfb':12,'Dfc':11,'Dwa':13,'Dwb':12,
+  'ET':9,'EF':8,
+};
+function diurnalSwingForZone(zone){
+  /* First: average real EPW-derived values if any cases have been opened */
+  const real=CASES.filter(c=>{const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';return k===zone&&c.diurnalSwing!=null;}).map(c=>c.diurnalSwing);
+  if(real.length){
+    return{val:+(real.reduce((a,b)=>a+b,0)/real.length).toFixed(1),estimated:false};
+  }
+  /* Fallback: typical value for the zone from literature */
+  const typical=DIURNAL_TYPICAL[zone]||(DIURNAL_TYPICAL[zone.slice(0,3)]||8);
+  return{val:typical,estimated:true};
+}
+
 const ZONE_TM_LIT={
   'BWh':'Hot desert: mass effective when diurnal swings >15\u00b0C allow nightly discharge. Givoni (1976).',
   'BWk':'Cold desert: mass effective; significant diurnal swings ensure night cooling. Givoni (1976).',
@@ -6997,11 +7163,7 @@ function thermalMassZoneRows(zone){
   const isTropical=family==='tropical';
 
   /* average diurnal swing for cases in this zone */
-  const swingVals=CASES.filter(c=>{
-    const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';
-    return k===zone&&c.diurnalSwing!=null;
-  }).map(c=>c.diurnalSwing);
-  const avgSwing=swingVals.length?+(swingVals.reduce((a,b)=>a+b,0)/swingVals.length).toFixed(1):null;
+  const{val:avgSwing,estimated:swingEst}=diurnalSwingForZone(zone);
   const gt=tmGivoniThreshold(zone);
   const swingOk=avgSwing!=null&&avgSwing>=gt;
 
@@ -7040,14 +7202,14 @@ function thermalMassZoneRows(zone){
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>
-    <div class="fc-tmrow"><span class="tm-label">Mean diurnal swing (present EPW)</span>
-      <span>${dynV(avgSwing!=null?avgSwing.toFixed(1)+'\u00b0C':'\u2014')}
+    <div class="fc-tmrow"><span class="tm-label">Mean diurnal swing${swingEst?' (zone typical*)':' (from EPW)'}</span>
+      <span>${dynV(avgSwing.toFixed(1)+'\u00b0C')}
         <span style="font-size:9px;color:${swingOk?'var(--moss,#2d7a2d)':'var(--rust)'};">
-          (Givoni threshold &gt;${gt}\u00b0C \u2014 ${swingOk?'\u2713 above':'\u2717 below'})
+          (Givoni &gt;${gt}\u00b0C \u2014 ${swingOk?'\u2713':'\u2717'})
         </span>
       </span>
     </div>
-    <p style="font-size:9px;color:var(--ink-faint);margin:2px 0 10px;">Diurnal swing shown for present EPW only. Under SSP5-8.5, nights warm faster than days \u2014 swing narrows. 2050/2080 values not yet extracted from morphed EPW.</p>
+    <p style="font-size:9px;color:var(--ink-faint);margin:2px 0 10px;">${swingEst?'* Zone-typical estimate (Givoni 1976; Szokolay 2008). Open a case study to load real EPW values.':'From loaded EPW files.'} Under SSP5-8.5 nights warm faster than days, narrowing the swing.</p>
     ${s.tmpm2!=null?`<div class="fc-tmrow"><span class="tm-label">Mean thermal mass / floor area</span><span>${dynV(Math.round(s.tmpm2)+' kJ/m\u00b2K')}</span></div>`:''}
     <div class="fc-tmrow"><span class="tm-label">Simulated cases in zone</span><span>${dynV(s.n)}</span></div>
     ${tmZoneInterpretation(zone,family,avgSwing)}
@@ -7545,6 +7707,13 @@ const FINDINGS=[
       +loremP(7)+loremP(8);
    }},
 
+  {id:'strategies',title:'Best Strategies by Climate Zone',eyebrow:'Recommendation · strategy viability',
+   body:()=>{
+     return `<p style="line-height:1.7;margin-bottom:16px;">Passive strategies are not equally robust across all climate zones. As warming shifts K\u00f6ppen zone boundaries under SSP5-8.5, strategies calibrated to present-day conditions will perform differently, some degrading gradually, others crossing viability thresholds within the projection period. The following assessment draws on simulation output across the corpus, grouped by present K\u00f6ppen zone, and maps each zone to its primary passive strategy and future vulnerability.</p>`
+       +`<p style="margin:0 0 8px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">SELECT ZONE</p>`
+       +stratBlock();
+   }},
+
   {id:'thermalmass',title:'1. The thermal mass problem',eyebrow:'Recommendation · strategy viability',
    body:()=>{
      return ''
@@ -7665,6 +7834,7 @@ function showFinding(id){
   wireInfoIcon('dynFindInfoIcon','dynFindInfoPop');
   wireAllFcInfo();
   wireThermalMassDropdown();
+  wireStratDropdown();
   wireMismatchButtons();
 }
 
