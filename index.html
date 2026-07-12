@@ -6933,43 +6933,75 @@ function wireAllFcInfo(){}
 /* ─────────────────────────────────────────────────────────────────────────────
    BEST STRATEGIES BY ZONE — global helpers
    ─────────────────────────────────────────────────────────────────────────── */
-const ZONE_STRATEGY={
-  'arid':{
-    primary:'Thermal mass via time-lag (deep earth, stone or mudbrick walls). Mass shifts the interior temperature peak by 8-12 hours, keeping midday heat out and releasing it overnight into cool desert air. Small shaded openings minimise solar gain. Courtyard typology creates a sheltered microclimate that pre-cools incoming air.',
-    future:'Diurnal swing is the primary viability indicator. As long as night temperatures drop reliably below 20\u00b0C, the strategy holds. Under SSP5-8.5 desert night temperatures rise more slowly than days, so the swing narrows but the mechanism persists. Monitor diurnal swing trajectory across scenarios.',
-    risk:'If nighttime lows rise above 22\u00b0C consistently, the time-lag advantage is lost and mass begins trapping heat.',
-    riskLevel:'Medium',
-  },
-  'mediterranean':{
-    primary:'Thermal mass combined with deep eave overhangs. South-facing mass walls store overnight coolth and release it through the midday peak. Eaves sized to shade the wall at solar noon on the summer solstice (typically 0.6-1.2 m at Mediterranean latitudes) exclude direct radiation while admitting winter sun.',
-    future:'NDP declines faster in Mediterranean zones than in continental ones as nights warm. By 2080 the night-flush strategy may be insufficient on its own. Solar control (larger overhangs, external shutters, high-albedo roofs) becomes the primary intervention; mass is secondary.',
-    risk:'Strategy viable at present and likely at 2050. Fundamental reassessment may be required toward 2098 for cases already near the Artmann threshold.',
-    riskLevel:'Medium-High',
-  },
-  'temperate':{
-    primary:'Thermal mass with night ventilation. The Artmann calibration zone: night temperatures reliably drop below 22\u00b0C for over 1,000 hours per summer, allowing full discharge of daytime stored heat. Steep roofs create an attic buffer (Kaltdach) that decouples the living space from direct roof solar gain. Moderate eave depth provides partial summer shading without eliminating low-angle winter sun.',
-    future:'NDP is declining in all temperate zones under SSP5-8.5. Cases at the lower end of the present NDP range risk crossing the Artmann threshold by 2080. Night ventilation intensification (larger operable openings, cross-flow paths) should be treated as a future-proofing measure now rather than a retrofit later.',
-    risk:'Cases above 1,500 h/yr NDP at present have margin. Cases near 1,000 h/yr are already vulnerable.',
-    riskLevel:'Low-Medium',
-  },
-  'continental':{
-    primary:'Thermal mass with night ventilation, maximised. Continental climates offer the most robust night-discharge conditions in this corpus, with NDP typically above 1,500 h/yr at present. Massive construction (stone, log, brick) with thick walls and small windows addresses both the heating load of cold winters and summer heat attenuation. The strategy moderates both seasonal extremes simultaneously.',
-    future:'The most resilient zone for thermal mass in the corpus. Even under 2080 SSP5-8.5, NDP in most Dfb cases is projected to remain well above the Artmann threshold. The main concern is the shift toward Cfa conditions in some cases, introducing humid-night overheating risk not present historically.',
-    risk:'Low overall. Cases shifting to Cfa by 2080 should be reassessed for summer humidity.',
-    riskLevel:'Low',
-  },
-  'tropical':{
-    primary:'Cross-ventilation with lightweight construction. Warm nights preclude thermal mass as a cooling strategy. The vernacular response, confirmed by the low corpus thermal mass in this zone, is to maximise air movement: elevated floor plans, large operable openings, roof forms that induce stack effect, minimal internal partitioning. Full shading of all surfaces is essential.',
-    future:'The fundamental strategy does not change, but performance margins shrink as wet-bulb temperatures rise. At wet-bulb temperatures above approximately 22\u00b0C, wind-driven ventilation provides decreasing comfort relief. The critical threshold for mechanical cooling dependency approaches in some humid tropical cases by 2098.',
-    risk:'High for comfort. The passive strategy approaches its physical limits as TCP declines reflect the gap between what ventilation alone can deliver and ASHRAE adaptive comfort bounds.',
-    riskLevel:'High',
-  },
-};
-const RISK_COL={'Low':'var(--moss,#2d7a2d)','Low-Medium':'var(--ochre)','Medium':'var(--ochre)','Medium-High':'var(--rust)','High':'var(--rust)'};
+/* ─── Best Strategies: data-driven recommendation engine ─────────────────────
+   For each Köppen zone: derive ranked adaptive interventions from actual
+   simulation data (NDP, TCP, HSP trajectories). Short, actionable, numbered.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+function stratRecs(zone,ndp,tcp,hsp,avgSwing){
+  /* Returns array of {title, body, color} — ranked recommendations derived
+     from the actual data for this zone. Colour: green=maintain, amber=augment, red=urgent */
+  const recs=[];
+  const family=tmZoneFamily(zone);
+  const isArid=family==='arid';
+  const isTropical=family==='tropical';
+  const gt=tmGivoniThreshold(zone);
+  const swingOk=avgSwing>=gt;
+  const f=v=>v!=null?Math.round(v)+'':'\u2014';
+
+  /* 1 — Thermal mass viability */
+  if(isArid){
+    if(swingOk){
+      recs.push({title:'Maximize wall thickness',body:`Diurnal swing ${avgSwing.toFixed(1)}\u00b0C (Givoni threshold >${gt}\u00b0C). Time-lag strategy is viable: thick earth or stone walls delay peak heat by 8\u201312 h. Maintain or increase wall mass. NDP metric not applicable here (22\u00b0C ceiling does not fit desert nights).`,color:'var(--moss,#2d7a2d)'});
+    }else{
+      recs.push({title:'Monitor diurnal swing',body:`Swing ${avgSwing.toFixed(1)}\u00b0C is below the Givoni threshold of ${gt}\u00b0C for effective time-lag. Mass benefit is marginal; nights are not cool enough to fully discharge stored heat.`,color:'var(--ochre)'});
+    }
+  }else if(isTropical){
+    recs.push({title:'Avoid high thermal mass',body:`NDP ${f(ndp[0])} h/yr at present. Nights are too warm for effective discharge. High mass accumulates heat rather than buffering it. Low-mass lightweight construction is the vernacularly confirmed response in this zone.`,color:'var(--rust)'});
+  }else{
+    const ndpNow=ndp[0];const ndpEnd=ndp[2];const margin=ndpNow!=null?ndpNow-1000:null;
+    if(ndpNow!=null&&ndpNow<1000){
+      recs.push({title:'Reassess thermal mass strategy',body:`NDP ${f(ndpNow)} h/yr \u2014 already below the Artmann threshold of 1,000 h/yr. Mass is accumulating heat across successive days. Consider reducing mass and introducing mechanical night cooling, or prioritising cross-ventilation over storage.`,color:'var(--rust)'});
+    }else if(ndpEnd!=null&&ndpEnd<1000){
+      recs.push({title:'Reinforce night ventilation now',body:`NDP ${f(ndpNow)} h/yr at present but projected to reach ${f(ndpEnd)} h/yr by 2080, crossing the Artmann threshold. Thermal mass remains viable through 2050 but future-proofing requires larger operable openings and clear cross-ventilation paths to maintain discharge capacity.`,color:'var(--ochre)'});
+    }else{
+      recs.push({title:'Thermal mass: maintain',body:`NDP ${f(ndpNow)}\u2192${f(ndpEnd)} h/yr. Above the Artmann threshold (1,000 h/yr) across all scenarios. Night discharge strategy remains viable. Ensure operable openings are large enough to fully exploit available cool hours.`,color:'var(--moss,#2d7a2d)'});
+    }
+  }
+
+  /* 2 — Solar shading (from HSP) */
+  const hspNow=hsp[0];const hspEnd=hsp[2];
+  if(hspEnd!=null&&hspNow!=null){
+    const hspRise=hspEnd-hspNow;
+    if(hspEnd>1500||hspRise>500){
+      recs.push({title:'Increase solar shading \u2014 urgent',body:`Overheating hours ${f(hspNow)}\u2192${f(hspEnd)} h/yr (+${f(hspRise)} h). East and west fa\u00e7ades receive low-angle sun that fixed horizontal overhangs cannot block. External louvres, shutters, or vegetation on these faces are the highest-impact single intervention. Raising roof albedo also reduces peak loads.`,color:'var(--rust)'});
+    }else if(hspEnd>500||hspRise>200){
+      recs.push({title:'Augment solar shading',body:`Overheating hours rising from ${f(hspNow)} to ${f(hspEnd)} h/yr. Eave depth adequate for present; increasing it or adding external shutters on south and west will carry the strategy through 2080.`,color:'var(--ochre)'});
+    }else{
+      recs.push({title:'Solar shading: adequate at present',body:`Overheating hours ${f(hspNow)}\u2192${f(hspEnd)} h/yr. Low current load; monitor trajectory and extend eaves or add shutters if HSP exceeds 500 h/yr.`,color:'var(--moss,#2d7a2d)'});
+    }
+  }
+
+  /* 3 — Ventilation / openings (from TCP trend) */
+  const tcpNow=tcp[0];const tcpEnd=tcp[2];
+  const tcpDrop=tcpNow!=null&&tcpEnd!=null?tcpNow-tcpEnd:null;
+  if(tcpEnd!=null&&tcpEnd<50){
+    recs.push({title:'Increase operable window area',body:`TCP ${f(tcpNow)}\u2192${f(tcpEnd)}%. Below 50% by 2080: passive strategy cannot maintain comfort for the majority of occupied hours. Maximising cross-ventilation (large operable areas, clear through-paths) is the most cost-effective next step before mechanical cooling is required.`,color:'var(--rust)'});
+  }else if(tcpDrop!=null&&tcpDrop>10){
+    recs.push({title:'Improve cross-ventilation',body:`TCP declining ${tcpDrop.toFixed(0)} percentage points by 2080. Increasing the size of operable openings on opposing fa\u00e7ades and removing internal obstructions to airflow will partially compensate for the warming trend.`,color:'var(--ochre)'});
+  }
+
+  /* 4 — Zone shift note */
+  const futureZones=[...new Set(CASES.filter(c=>{const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';return k===zone;}).flatMap(c=>[(Array.isArray(c.koppen)?c.koppen[1]:null),(Array.isArray(c.koppen)?c.koppen[2]:null)].filter(Boolean)))];
+  const shiftZones=futureZones.filter(z=>z!==zone);
+  if(shiftZones.length){
+    recs.push({title:'Climate zone shift: review strategy',body:`Projected to shift into ${shiftZones.join(', ')} by 2050\u20132080. Strategies calibrated to ${zone} conditions will face different demands. The vernacularBIGBROTHER tab identifies which present-day case study already inhabits those future conditions.`,color:'var(--ochre)'});
+  }
+
+  return recs;
+}
 
 function stratZoneHTML(zone){
-  const family=tmZoneFamily(zone);
-  const st=ZONE_STRATEGY[family]||ZONE_STRATEGY['temperate'];
   const cases=CASES.filter(c=>{
     const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';
     return k===zone&&c.sim&&(c.sim.ndp||c.sim.comfort);
@@ -6977,41 +7009,39 @@ function stratZoneHTML(zone){
   const n=cases.length;
   if(!n)return`<p style="font-size:11px;color:var(--ink-faint);padding:12px 0;">No simulation data for ${zone} yet.</p>`;
   const avg=arr=>{const v=arr.filter(x=>x!=null&&isFinite(x));return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;};
-  const f1=v=>v!=null?v.toFixed(1):'\u2014'; const fi=v=>v!=null?Math.round(v)+'':'\u2014';
-  const tcp=[avg(cases.map(c=>c.sim?.comfort?.[0])),avg(cases.map(c=>c.sim?.comfort?.[1])),avg(cases.map(c=>c.sim?.comfort?.[2]))];
+  const fi=v=>v!=null?Math.round(v)+'':'\u2014';
   const ndp=[avg(cases.map(c=>c.sim?.ndp?.[0])),avg(cases.map(c=>c.sim?.ndp?.[1])),avg(cases.map(c=>c.sim?.ndp?.[2]))];
+  const tcp=[avg(cases.map(c=>c.sim?.comfort?.[0])),avg(cases.map(c=>c.sim?.comfort?.[1])),avg(cases.map(c=>c.sim?.comfort?.[2]))];
   const hsp=[avg(cases.map(c=>c.sim?.oh?.[0])),avg(cases.map(c=>c.sim?.oh?.[1])),avg(cases.map(c=>c.sim?.oh?.[2]))];
   const{val:avgSwing,estimated:swingEst}=diurnalSwingForZone(zone);
-  const tcpTrend=tcp[0]!=null&&tcp[2]!=null?tcp[2]-tcp[0]:null;
-  const trendBadge=tcpTrend==null?'':tcpTrend<-10?`<span style="color:var(--rust);font-size:9px;font-weight:700;">\u2193 declining fast</span>`:tcpTrend<-3?`<span style="color:var(--ochre);font-size:9px;">\u2193 declining</span>`:`<span style="color:var(--moss,#2d7a2d);font-size:9px;">\u2248 stable</span>`;
-  const futureZones=[...new Set(cases.flatMap(c=>[(Array.isArray(c.koppen)?c.koppen[1]:null),(Array.isArray(c.koppen)?c.koppen[2]:null)].filter(Boolean)))];
+  const f1=v=>v!=null?v.toFixed(1):'\u2014';
   const rows=['Present','2050','2080'].map((scn,i)=>`<tr>
     <td style="padding:4px 8px 4px 0;font-weight:700;white-space:nowrap;">${scn}</td>
-    <td style="padding:4px 6px;">${dynV(f1(tcp[i])+'%')}</td>
-    <td style="padding:4px 6px;color:${ndp[i]!=null&&ndp[i]<1000?'var(--rust)':'inherit'}">${dynV(fi(ndp[i])+' h/yr')}</td>
-    <td style="padding:4px 6px;">${dynV(fi(hsp[i])+' h/yr')}</td>
+    <td style="padding:4px 6px;">${tcp[i]!=null?fi(tcp[i])+'%':'\u2014'}</td>
+    <td style="padding:4px 6px;color:${ndp[i]!=null&&ndp[i]<1000?'var(--rust)':'inherit'}">${fi(ndp[i])} h/yr</td>
+    <td style="padding:4px 6px;">${fi(hsp[i])} h/yr</td>
   </tr>`).join('');
+  const recs=stratRecs(zone,ndp,tcp,hsp,avgSwing);
+  const recHtml=recs.map((r,i)=>`
+    <div style="margin:0 0 10px;padding:8px 10px 8px 12px;border-left:3px solid ${r.color};">
+      <p style="font-family:var(--mono);font-size:10px;font-weight:700;margin:0 0 3px;color:${r.color};">${i+1}. ${r.title}</p>
+      <p style="font-size:12px;line-height:1.6;margin:0;">${r.body}</p>
+    </div>`).join('');
   return`
-    <p style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin:0 0 6px;">PERFORMANCE TRAJECTORY &nbsp;${trendBadge}</p>
+    <p style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin:0 0 6px;">SIMULATION SUMMARY</p>
     <table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:14px;">
       <thead><tr style="border-bottom:1px solid var(--line);">
         <th style="text-align:left;padding:4px 0;font-size:9px;color:var(--ink-faint);">SCENARIO</th>
         <th style="text-align:left;padding:4px 6px;font-size:9px;color:var(--ink-faint);">TCP</th>
-        <th style="text-align:left;padding:4px 6px;font-size:9px;color:var(--ink-faint);">NDP h/yr</th>
-        <th style="text-align:left;padding:4px 6px;font-size:9px;color:var(--ink-faint);">HSP h/yr</th>
+        <th style="text-align:left;padding:4px 6px;font-size:9px;color:var(--ink-faint);">NDP</th>
+        <th style="text-align:left;padding:4px 6px;font-size:9px;color:var(--ink-faint);">HSP</th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>
-    ${avgSwing!=null?`<div class="fc-tmrow" style="margin-bottom:10px;"><span class="tm-label">Mean diurnal swing${swingEst?' (zone typical*)':' (from EPW)'}</span><span>${dynV(avgSwing.toFixed(1)+'\u00b0C')}</span></div>`:''}
-    ${swingEst?`<p style="font-size:9px;color:var(--ink-faint);margin:-6px 0 10px;">* Zone-typical estimate (Givoni 1976; Szokolay 2008). Open a case to load real EPW data.</p>`:''}
-    ${futureZones.length?`<div class="fc-tmrow" style="margin-bottom:14px;"><span class="tm-label">Projected zone(s) by 2050/2080</span><span style="font-size:10px;color:var(--ink-soft);">${futureZones.join(', ')}</span></div>`:''}
-    <p style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin:0 0 5px;">PRIMARY STRATEGY</p>
-    <p style="font-size:13px;line-height:1.65;margin-bottom:14px;">${st.primary}</p>
-    <p style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin:0 0 5px;">TRAJECTORY UNDER SSP5-8.5</p>
-    <p style="font-size:13px;line-height:1.65;margin-bottom:14px;">${st.future}</p>
-    <p style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin:0 0 5px;">RISK LEVEL &nbsp;<span style="color:${RISK_COL[st.riskLevel]||'var(--ink)'};font-weight:700;">${st.riskLevel}</span></p>
-    <p style="font-size:13px;line-height:1.65;margin-bottom:8px;">${st.risk}</p>
-    <div class="fc-datatag">${n} simulated case stud${n===1?'y':'ies'} in zone · grouped by present K\u00f6ppen · SSP5-8.5</div>`;
+    <div class="fc-tmrow" style="margin-bottom:12px;"><span class="tm-label">Diurnal swing${swingEst?' (zone typical*)':' (EPW mean)'}</span><span>${f1(avgSwing)}\u00b0C${swingEst?'<span style="font-size:9px;color:var(--ink-faint);"> \u2014 Givoni 1976</span>':''}</span></div>
+    <p style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin:0 0 8px;">ADAPTIVE RECOMMENDATIONS &nbsp;\u00b7\u00b7&nbsp; ${n} case stud${n===1?'y':'ies'} in zone</p>
+    ${recHtml}
+    <div class="fc-datatag">NDP: Artmann (2007) \u00b7 Solar shading: Olgyay (1963) \u00b7 Ventilation: Givoni (1994) \u00b7 n=${n} simulated</div>`;
 }
 
 function stratBlock(){
@@ -7362,17 +7392,19 @@ async function bbPresentFingerprints(onProg){
   _presentFpCache=out;return out;
 }
 async function computeMismatchSingle(caseId,scnIdx){
-  /* scnIdx: 1=2050, 2=2080 */
-  const c=byId(caseId);if(!c||!c.epw)return null;
+  const c=byId(caseId);
+  if(!c||!c.epw||!c.hasGeom)return null; /* subject must have geometry */
   const paths=epwFwgPaths(c.epw);
   const futPath=scnIdx===2?paths.m2080:paths.m2050;
   const futEpw=await fetchParseEpw(futPath);
   if(!futEpw)return null;
   const futFp=computeBBFingerprint(futEpw);
   const present=await bbPresentFingerprints();
+  /* restrict big-brother pool to cases with extracted DXF geometry */
+  const geomPool=present.filter(p=>p.id!==caseId&&byId(p.id)?.hasGeom);
   let best=null,bestD=Infinity;
-  present.forEach(p=>{if(p.id===caseId)return;const d=bbDistance(futFp,p.fp);if(d<bestD){bestD=d;best=p;}});
-  return best?{brother:best,dist:bestD,severity:bbSeverity(bestD)}:null;
+  geomPool.forEach(p=>{const d=bbDistance(futFp,p.fp);if(d<bestD){bestD=d;best=p;}});
+  return best?{brother:best,dist:bestD,severity:bbSeverity(bestD),poolN:geomPool.length}:null;
 }
 /* analyse-all: assign a future big-brother to every case. Network-heavy →
    progress + warning. Cached after first run. */
@@ -7380,10 +7412,12 @@ let _mismatchAllCache={};
 async function computeMismatchAll(scnIdx,onProg){
   if(_mismatchAllCache[scnIdx])return _mismatchAllCache[scnIdx];
   const present=await bbPresentFingerprints();
-  const withEpw=CASES.filter(c=>c.epw);
+  /* restrict both subject and big-brother pool to cases with DXF geometry */
+  const withGeom=CASES.filter(c=>c.epw&&c.hasGeom);
+  const geomPool=present.filter(p=>byId(p.id)?.hasGeom);
   const results=[];
-  for(let i=0;i<withEpw.length;i+=5){
-    const batch=withEpw.slice(i,i+5);
+  for(let i=0;i<withGeom.length;i+=5){
+    const batch=withGeom.slice(i,i+5);
     await Promise.all(batch.map(async c=>{
       try{
         const paths=epwFwgPaths(c.epw);
@@ -7391,13 +7425,13 @@ async function computeMismatchAll(scnIdx,onProg){
         if(!futEpw)return;
         const futFp=computeBBFingerprint(futEpw);
         let best=null,bestD=Infinity;
-        present.forEach(p=>{if(p.id===c.id)return;const d=bbDistance(futFp,p.fp);if(d<bestD){bestD=d;best=p;}});
-        if(best)results.push({id:c.id,name:c.name||c.id,brother:best.name,dist:bestD,severity:bbSeverity(bestD)});
+        geomPool.forEach(p=>{if(p.id===c.id)return;const d=bbDistance(futFp,p.fp);if(d<bestD){bestD=d;best=p;}});
+        if(best)results.push({id:c.id,name:c.name||c.id,brotherId:best.id,brother:best.name||best.id,dist:bestD,severity:bbSeverity(bestD)});
       }catch(e){}
     }));
-    if(onProg)onProg(Math.min(i+5,withEpw.length),withEpw.length);
+    if(onProg)onProg(Math.min(i+5,withGeom.length),withGeom.length);
   }
-  results.sort((a,b)=>b.dist-a.dist); /* worst mismatch first */
+  results.sort((a,b)=>b.dist-a.dist);
   _mismatchAllCache[scnIdx]=results;return results;
 }
 
@@ -7634,7 +7668,7 @@ const FINDINGS=[
      const s=computeCorpusStats()||{};
      const yr=(s.yearMin&&s.yearMax)?`${s.yearMin}\u2013${s.yearMax}`:'';
      return ''
-      +`<p style="line-height:1.7;margin-bottom:12px;">The corpus comprises ${dynV(s.n??0)} vernacular case studies, focusing on rural and unselfconscious architecture `
+      +`<p style="line-height:1.7;margin-bottom:12px;">The corpus comprises ${dynV(s.n??0)} vernacular case studies, focusing on rural and <em>unselfconscious</em> architecture `
         +fcInfo('unselfconscious architecture','Rapoport (1969) distinguishes "unselfconscious" vernacular building, produced within an inherited tradition without individual design authorship, from self-conscious, designer-led architecture. This corpus is restricted to the former: buildings built as part of a continuous cultural and climatic tradition, with form determined by accumulated selection pressure rather than individual decision.','Rapoport, A. (1969). <em>House Form and Culture</em>. Prentice-Hall.')
       +` (Rapoport, 1969), meaning architecture built within an inherited tradition rather than based on individual planning.</p>`
       +`<p style="line-height:1.7;margin-bottom:12px;">Originating from the Central Uplands in Germany and Czechia (K\u00f6ppen climate zones Cfb and Dfb), the corpus was systematically expanded across K\u00f6ppen climate zones `
@@ -7672,8 +7706,12 @@ const FINDINGS=[
       +`<p style="line-height:1.7;margin-bottom:12px;">Zone transitions are not uniformly distributed across construction types and regions. Case studies with high thermal mass (stone, brick, earth construction) in Cfb zones shifting toward Cfa or Csb face the most acute exposure: their passive strategy depends on night discharge, which declines as nights warm. Across the corpus, the cases with the largest overheating delta (HSP present to 2080) cluster in Mediterranean and subtropical zones, and in construction types with poor ventilation compatibility. Continental Dfb cases shift into Cfa, which brings humid subtropical summer conditions their morphology was not selected for.</p>`
       +`<p style="line-height:1.7;margin-bottom:14px;">Simulation output provides a direct vulnerability signal: cases where NDP drops below the Artmann threshold (1,000 h/yr) by 2080 and simultaneously show TCP below 50% flag a fundamental strategy failure, not a marginal degradation. These cases require reassessment rather than incremental adaptation.</p>`
       +`<p style="margin:24px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">TYPOLOGICAL MISMATCH `
-        +fcInfo('vernacularBIGBROTHER mismatch','For a case, its future climate fingerprint (from the morphed EPW) is matched to the nearest present-day climate fingerprint across the corpus, the place already living in that future climate. A large distance means no good present-day analogue exists in the corpus, which could imply false optimisation: the building is tuned to a climate that will no longer exist, without a verified vernacular tradition for the conditions ahead. Distance is a weighted 9-dimensional climate RMS (HDD, CDD, summer/winter temp, amplitude, GHI, wet-bulb, precip).','vernacularBIGBROTHER · climate-analogue method. Rapoport (1969) selection-pressure framing.')+`</p>`
-      +`<p style="line-height:1.7;margin-bottom:12px;">The vernacularBIGBROTHER identifies which present-day case study already lives in the future climate of a selected building. Where the match distance is low, an established vernacular tradition provides a reference for adaptation. Where the distance is high, no analogue exists in the corpus, and any prescription based on climate-morphology correlation would be extrapolating beyond the observed sample.</p>`
+        +fcInfo('Typological mismatch, what it means and its limits',
+          'The vernacularBIGBROTHER finds the present-day case study whose climate already resembles the projected future climate of the selected building. A large distance between them means no established vernacular tradition in this corpus was developed for those future conditions. This is an indicator, not a certainty: a building can still perform well under conditions its tradition was not calibrated for, especially if its passive strategy happens to be broadly applicable. Conversely, a small distance gives reassurance that an existing tradition has already proven viable in that future climate. Interpretation requires simulation to move from correlation to prescription (see Disclaimer, naturalistic fallacy). This analysis is restricted to case studies with extracted DXF geometry. Both the subject case and the big brother candidate must have geometry. The limited sample means results should be read as preliminary indicators. The finding grows more reliable as more case studies are added to the corpus.',
+          'Rapoport, A. (1969). House Form and Culture. Prentice-Hall. | Hume, D. (1739). A Treatise of Human Nature.'
+        )+`</p>`
+      +`<p style="line-height:1.7;margin-bottom:10px;">Each case study has a future climate it is heading towards. The vernacularBIGBROTHER finds which present-day building in the corpus already lives in that future climate. If the two buildings look very different in their morphology, it could mean the original building was shaped by conditions that will no longer exist. If they look similar, the original strategy is likely to remain relevant. A large mismatch is a flag worth investigating further with simulation, not a conclusion in itself.</p>`
+      +`<p style="font-size:10px;color:var(--ink-faint);margin-bottom:14px;">${dynV(CASES.filter(c=>c.hasGeom).length)} case studies with geometry available for analysis. Both subject and big-brother must have geometry data.</p>`
       +`<div class="mismatch-opts" id="mismatchOpts">
           <button class="mismatch-btn" data-mismatch="single">Use the open case study</button>
           <button class="mismatch-btn" data-mismatch="all2050">Analyse all → 2050</button>
@@ -7709,7 +7747,7 @@ const FINDINGS=[
 
   {id:'strategies',title:'Best Strategies by Climate Zone',eyebrow:'Recommendation · strategy viability',
    body:()=>{
-     return `<p style="line-height:1.7;margin-bottom:16px;">Passive strategies are not equally robust across all climate zones. As warming shifts K\u00f6ppen zone boundaries under SSP5-8.5, strategies calibrated to present-day conditions will perform differently, some degrading gradually, others crossing viability thresholds within the projection period. The following assessment draws on simulation output across the corpus, grouped by present K\u00f6ppen zone, and maps each zone to its primary passive strategy and future vulnerability.</p>`
+     return `<p style="line-height:1.7;margin-bottom:14px;">Ranked adaptive interventions per K\u00f6ppen zone, derived from simulation output. Each recommendation is tied directly to the TCP, NDP and HSP numbers for that zone. Select a zone to see what the data says.</p>`
        +`<p style="margin:0 0 8px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">SELECT ZONE</p>`
        +stratBlock();
    }},
@@ -7718,10 +7756,12 @@ const FINDINGS=[
    body:()=>{
      return ''
       +`<p style="line-height:1.65;margin-bottom:12px;">Thermal mass stores daytime heat in walls and releases it at night, effective when outdoor air cools enough to flush the stored heat before the next day. The critical metric is Night Discharge Potential (NDP): the number of summer hours where outdoor temperature is simultaneously below indoor temperature and below 22°C. As nights warm under SSP5-8.5, NDP declines. Below the Artmann threshold of 1,000 h/yr, mass can no longer discharge fully and accumulates heat across successive days, inverting its role from cooling asset to liability. `
-        +fcInfo('Artmann threshold, methodology and sources',
+        +fcInfo('Artmann threshold — methodology and sources',
           'NDP is defined as the number of Jun–Aug hours where outdoor dry-bulb temperature is below both indoor operative temperature AND 22°C. The 1,000 h/yr threshold from Artmann et al. (2007) is the empirical minimum for thermal mass to deliver net summer cooling in Central European climates. Thermal mass per floor area (kJ/m²K) is approximated by the Honeybee EnergyPlus model. Grouped by present Köppen zone; arithmetic means across simulated cases. One case contributes to one zone only (present zone).',
           'Artmann, N., Manz, H., & Heiselberg, P. (2007). Applied Energy, 84(2), 187–201. | Givoni, B. (1976). Man, Climate and Architecture (2nd ed.). | Givoni, B. (1994). Passive and Low Energy Cooling of Buildings. | Szokolay, S. V. (2008). Introduction to Architectural Science (2nd ed.).'
         )+`</p>`
+      +`<p style="line-height:1.65;margin-bottom:12px;">The availability of cool nights is driven by <em>diurnal swing</em>: the daily difference between maximum and minimum temperature. High swing means nights drop far below daytime peaks, giving mass sufficient time to discharge before the next heat cycle. Low swing means nights remain warm and discharge is partial or absent. Givoni (1976) identifies a minimum swing of approximately 8°C for thermal mass to deliver meaningful cooling in temperate and continental climates, and above 15°C in hot arid climates where the mechanism differs fundamentally.</p>`
+      +`<p style="line-height:1.65;margin-bottom:12px;">The Artmann NDP metric has a significant limitation: its 22°C ceiling is calibrated for Central European summers. In hot arid climates (BW, BS), summer nights commonly sit at 25–32°C and never cross the 22°C threshold, so NDP appears near zero even where thermal mass is performing well. In desert climates, mass operates through a different mechanism: <em>time-lag</em>. A thick earth or stone wall shifts the indoor temperature peak by 8–12 hours, so midday heat only penetrates the interior at night when outdoor air is cooler. The strategy works not by discharging heat through night ventilation but by delaying its arrival. For arid zones the primary viability indicator is diurnal swing, not NDP. The zone selector below flags this distinction explicitly.</p>`
       +`<p style="margin:16px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">NDP · TCP · HSP BY KÖPPEN ZONE</p>`
       +thermalMassBlock()
       +`<p style="font-size:10px;color:var(--ink-faint);margin-top:14px;line-height:1.5;">Grouping: cases assigned to present-day Köppen zone. Each case contributes its present/2050/2080 simulation output to the zone’s rows. One case study contributes to exactly one zone.</p>`;
@@ -7908,38 +7948,45 @@ function wireMismatchButtons(){
   const opts=document.getElementById('mismatchOpts');
   if(!opts)return;
   const host=()=>document.getElementById('mismatchResult');
+  const geomN=CASES.filter(c=>c.hasGeom).length;
   opts.querySelectorAll('.mismatch-btn').forEach(b=>{
     b.addEventListener('click',async()=>{
       const mode=b.dataset.mismatch;
       const h=host();if(!h)return;
       if(mode==='single'){
-        if(!selectedId){h.innerHTML='<div class="fc-lowsample">Open a case study first, its vernacularBIGBROTHER is computed from the case you have selected.</div>';return;}
-        h.innerHTML='<div class="mismatch-prog">computing analogue for the open case…</div>';
-        const c=byId(selectedId);
+        if(!selectedId){h.innerHTML='<div class="fc-lowsample">Open a case study first, then run the analysis for that case.</div>';return;}
+        const cs=byId(selectedId);
+        if(!cs?.hasGeom){h.innerHTML='<div class="fc-lowsample">The open case study has no extracted DXF geometry. Open a case with geometry data to use this tool.</div>';return;}
+        h.innerHTML='<div class="mismatch-prog">computing climate analogue\u2026</div>';
         const [r50,r80]=await Promise.all([computeMismatchSingle(selectedId,1),computeMismatchSingle(selectedId,2)]);
-        const line=(lbl,r)=>r?`<div class="fc-tmrow"><span class="tm-label">${lbl}</span><span>vBB: ${dynV(r.brother.name)}, ${dynV(r.severity)} <span style="color:var(--ink-faint)">(d=${r.dist.toFixed(2)})</span></span></div>`
-                             :`<div class="fc-tmrow"><span class="tm-label">${lbl}</span><span style="color:var(--ink-faint)">no analogue / EPW unavailable</span></div>`;
-        h.innerHTML=`<p style="margin:6px 0;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">${(c&&(c.name||c.id))||selectedId}</p>`
-          +line('2050 → analogue',r50)+line('2080 → analogue',r80);
+        const line=(lbl,r)=>r
+          ?`<div style="margin:8px 0;padding:8px 0;border-bottom:1px solid var(--line);">
+              <p style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin:0 0 4px;">${lbl}</p>
+              <div class="fc-tmrow"><span class="tm-label">${cs.id} \u00b7 ${cs.name||''}</span><span style="font-size:9px;color:var(--ink-soft);">subject</span></div>
+              <div class="fc-tmrow"><span class="tm-label">${dynV(r.brother.id)} \u00b7 ${dynV(r.brother.name||r.brother.id)}</span><span style="font-size:9px;color:var(--ink-soft);">vernacularBIGBROTHER</span></div>
+              <div class="fc-tmrow"><span class="tm-label">Mismatch</span><span>${dynV(r.severity)} <span style="color:var(--ink-faint);font-size:9px;">(d\u202f=\u202f${r.dist.toFixed(2)}, pool n\u202f=\u202f${r.poolN||'?'})</span></span></div>
+            </div>`
+          :`<div class="fc-tmrow"><span class="tm-label">${lbl}</span><span style="color:var(--ink-faint)">no analogue found or EPW unavailable</span></div>`;
+        h.innerHTML=line('2050 SSP5-8.5',r50)+line('2080 SSP5-8.5',r80);
         blinkDynamicFindings();
       }else{
         const scnIdx=(mode==='all2080')?2:1;
         const yr=scnIdx===2?'2080':'2050';
-        h.innerHTML=`<div class="mismatch-prog" id="mmProg">starting… fetching morphed EPWs for ${yr}</div>`;
+        h.innerHTML=`<div class="mismatch-prog" id="mmProg">fetching morphed EPWs for ${yr} (geometry cases only: ${geomN})\u2026</div>`;
         const rows=await computeMismatchAll(scnIdx,(done,total)=>{
           const p=document.getElementById('mmProg');
-          if(p)p.textContent=`analysing ${yr}: ${done} / ${total} cases…`;
+          if(p)p.textContent=`analysing ${yr}: ${done} / ${total} geometry cases\u2026`;
         });
-        if(!rows.length){h.innerHTML='<div class="fc-lowsample">No results, EPW files may be unavailable in this environment.</div>';return;}
-        const worst=rows.slice(0,12);
+        if(!rows.length){h.innerHTML='<div class="fc-lowsample">No results. EPW files may be unavailable, or no cases with geometry have been processed yet.</div>';return;}
+        const worst=rows.slice(0,15);
         const body=worst.map(r=>`<tr>
-          <td class="ktd-zone">${r.id}</td>
-          <td>vBB: <span class="dyn-val">${r.brother}</span></td>
-          <td><span class="dyn-val">${r.severity}</span></td>
-          <td class="ktd-n">${r.dist.toFixed(2)}</td>
+          <td style="padding:5px 6px;font-family:var(--mono);font-size:10px;">${r.id}<br><span style="color:var(--ink-soft);font-size:9px;">${r.name}</span></td>
+          <td style="padding:5px 6px;font-family:var(--mono);font-size:10px;">${dynV(r.brotherId)}<br><span style="color:var(--ink-soft);font-size:9px;">${dynV(r.brother)}</span></td>
+          <td style="padding:5px 6px;">${dynV(r.severity)}</td>
+          <td style="padding:5px 6px;color:var(--ink-faint);font-size:10px;">${r.dist.toFixed(2)}</td>
         </tr>`).join('');
-        h.innerHTML=`<p style="margin:8px 0 4px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">WORST ${worst.length} MISMATCHES → ${yr} (of ${rows.length})</p>`
-          +`<table class="ktable"><thead><tr><th>Case</th><th>big brother</th><th>severity</th><th>d</th></tr></thead><tbody>${body}</tbody></table>`;
+        h.innerHTML=`<p style="margin:8px 0 6px;font-family:var(--mono);font-size:10px;color:var(--ink-faint);">WORST ${worst.length} MISMATCHES \u2192 ${yr} &nbsp;\u00b7\u00b7&nbsp; geometry cases only (n\u202f=\u202f${rows.length} of ${geomN})</p>`
+          +`<table class="ktable"><thead><tr><th>Case study</th><th>vernacularBIGBROTHER</th><th>severity</th><th>d</th></tr></thead><tbody>${body}</tbody></table>`;
         blinkDynamicFindings();
       }
     });
