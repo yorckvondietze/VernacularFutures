@@ -593,6 +593,7 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 .ar-note{color:var(--ochre-deep,#7a6010)}
 .ar-nodata{font-family:var(--mono);font-size:10px;color:var(--ink-faint);font-style:italic;margin:2px 0 10px}
 .ar-cite{font-size:8px;color:var(--terracotta,#c4542a);cursor:pointer;border:none;background:none;padding:0 1px;vertical-align:super;line-height:1}
+.ar-adapt-item{margin:0 0 10px;padding:0;}
 .ar-adapt{border-left:2px solid #c42020;padding:5px 0 5px 10px;margin:6px 0 4px}
 .ar-adapt ul{margin:4px 0 0 14px;padding:0;line-height:1.7;font-size:11.5px}
 .ar-srcs{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
@@ -3701,24 +3702,24 @@ function arSim(c){
   if(tcpCrit||ndpBelow||ndpCross2080||ndpCross2050||hspCrit||topHot||tcpMod){
     let li='';
     if((ndpCross2080||ndpCross2050)&&ndpNightFlushRelevant){
-      li+=`<li>As NDP declines below the 1,000 h/yr threshold, consider whether night ventilation can be intensified through architectural modifications (larger operable openings, cross-ventilation pathways, stack vents) before resorting to mechanical night-flush. Mechanical night cooling is an option once passive potential is exhausted. ${arRef('artmann2007')}</li>`;
+      li+=`<p class="ar-adapt-item">As NDP declines below the 1,000 h/yr threshold, consider whether night ventilation can be intensified through architectural modifications (larger operable openings, cross-ventilation pathways, stack vents) before resorting to mechanical night-flush. Mechanical night cooling is an option once passive potential is exhausted. ${arRef('artmann2007')}</p>`;
     }
     if(ndpBelow&&hasMass&&nightCoolClimate){
-      li+=`<li>NDP already below threshold: the thermal mass strategy is compromised. Evaluate whether reducing thermal mass in favour of lightweight well-insulated construction with mechanical cooling would outperform the existing typology under 2050–2080 conditions. ${arRef('szokolay2008')}</li>`;
+      li+=`<p class="ar-adapt-item">NDP already below threshold: the thermal mass strategy is compromised. Evaluate whether reducing thermal mass in favour of lightweight well-insulated construction with mechanical cooling would outperform the existing typology under 2050–2080 conditions. ${arRef('szokolay2008')}</p>`;
     }
     if(hspCrit){
-      li+=`<li>Augment solar control on east and west facades — these receive low-angle morning and afternoon sun that horizontal overhangs cannot easily shade. External louvres, vegetation, or light shelves are effective options. Raising roof surface albedo also reduces peak loads. ${arRef('olgyay1963')}</li>`;
+      li+=`<p class="ar-adapt-item">Augment solar control on east and west facades — these receive low-angle morning and afternoon sun that horizontal overhangs cannot easily shade. External louvres, vegetation, or light shelves are effective options. Raising roof surface albedo also reduces peak loads. ${arRef('olgyay1963')}</p>`;
     }
     if(topHot&&['tropical','desert','steppe'].includes(fam2)){
-      li+=`<li>Evaluate passive evaporative cooling (fountain courts, wetted surfaces, earthen pots) if local water availability permits — can reduce T_op by 3–6°C in arid and semi-arid contexts. Earth-coupled cooling through buried pipes is also viable in appropriate soils. ${arRef('givoni1976')}</li>`;
+      li+=`<p class="ar-adapt-item">Evaluate passive evaporative cooling (fountain courts, wetted surfaces, earthen pots) if local water availability permits — can reduce T_op by 3–6°C in arid and semi-arid contexts. Earth-coupled cooling through buried pipes is also viable in appropriate soils. ${arRef('givoni1976')}</p>`;
     }
     if(tcpCrit){
-      li+=`<li>TCP below 50% by 2080 signals that the passive strategy alone cannot maintain comfort for the majority of occupied hours. A fundamental reassessment is warranted: the original typology may need to be adapted rather than simply maintained. Options include controlled natural ventilation, phase-change materials, or hybrid passive-active systems. ${arRef('szokolay2008')}</li>`;
+      li+=`<p class="ar-adapt-item">TCP below 50% by 2080 signals that the passive strategy alone cannot maintain comfort for the majority of occupied hours. A fundamental reassessment is warranted: the original typology may need to be adapted rather than simply maintained. Options include controlled natural ventilation, phase-change materials, or hybrid passive-active systems. ${arRef('szokolay2008')}</p>`;
     }
     if(tcpMod&&!tcpCrit){
-      li+=`<li>Monitor thermal performance closely at mid-century. If 2050 TCP falls below 60%, consider targeted envelope upgrades (additional shading, improved ventilation pathways) before the full 2080 climate materialises. `+arRef('ipcc2021')+`</li>`;
+      li+=`<p class="ar-adapt-item">Monitor thermal performance closely at mid-century. If 2050 TCP falls below 60%, consider targeted envelope upgrades (additional shading, improved ventilation pathways) before the full 2080 climate materialises. `+arRef('ipcc2021')+`</p>`;
     }
-    if(li) chunks.push({t:'adapt',h:`<div class="ar-adapt"><strong>2050–2080 adaptation considerations:</strong><ul>${li}</ul></div>`});
+    if(li) chunks.push({t:'adapt',h:`<div class="ar-adapt"><strong>2050–2080 adaptation considerations:</strong>${li}</div>`});
   }
   return chunks;
 }
