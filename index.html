@@ -48,7 +48,7 @@ html[data-theme="dark"]{
   --cat-sim:#3D2A08;--cat-sim-ink:#F0A030;
   --cat-flag:#3D1A1A;--cat-flag-ink:#F0907A;
 }
-/* chrome-stripe intentionally has no dark-mode override — it uses
+/* chrome-stripe intentionally has no dark-mode override, it uses
    var(--terracotta) which applyScenarioPalette() already updates
    correctly per-theme; a static override here was blocking that. */
 html[data-theme="dark"] .scenario-slider{background:linear-gradient(90deg,#B86AF5,#F0A030);border-radius:6px;}
@@ -147,7 +147,7 @@ body:not(.map-fullscreen) .scenario-label{transform:translateY(5px);}
    shapes and make the house animation legible */
 .ufo-thumb .ufo-logo svg .cls-4,.ufo-thumb .ufo-logo svg .cls-3,
 .ufo-thumb .ufo-logo svg polygon{fill:#FFFFFF!important;}
-/* light beam: transparent white — the bottom oval (cls-3) stays solid white */
+/* light beam: transparent white, the bottom oval (cls-3) stays solid white */
 .ufo-thumb .ufo-logo svg .cls-1{fill:rgba(255,255,255,0.30)!important;}
 .ufo-thumb .ufo-logo svg .cls-2{fill:none!important;}
 .ufo-thumb .ufo-logo svg .cls-1,.ufo-thumb .ufo-logo svg .cls-2,
@@ -260,7 +260,7 @@ main{padding:6px 28px 50px;max-width:1500px;margin:0 auto;}
 .cs-search-row{position:relative;margin-bottom:10px;}
 /* default mode: search row floats in the map's top-right corner, below the titlebar.
    Fullscreen mode overrides this via its own position:fixed rule below.
-   Mobile mode reverts to normal flow — see mobile section.            */
+   Mobile mode reverts to normal flow, see mobile section.            */
 .map-card .cs-search-row{
   position:absolute;
   top:44px;right:12px;
@@ -322,7 +322,7 @@ main{padding:6px 28px 50px;max-width:1500px;margin:0 auto;}
 
 .photo-box{width:100%;height:160px;border-radius:0;}
 .photo-carousel{position:relative;width:100%;height:220px;overflow:hidden;border:1px solid var(--line);background:var(--paper);}
-/* EPW station marker on map — square, auto-themes with dark/light mode */
+/* EPW station marker on map, square, auto-themes with dark/light mode */
 .station-marker-icon{background:transparent!important;border:none!important;}
 .station-sq{width:10px;height:10px;background:var(--ink);border:1.5px solid var(--paper);box-sizing:border-box;}
 .photo-carousel img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--paper);opacity:0;transition:opacity .25s ease;}
@@ -365,7 +365,7 @@ html[data-theme="dark"] .ufo-mini-host svg .mcls-2{fill:none!important;}
 .zoom-overlay{position:fixed;object-fit:contain;pointer-events:none;z-index:999;transition:all .42s cubic-bezier(0.4,0,0.2,1);background:var(--paper);}
 .media-row{display:flex;gap:8px;}
 .photo-col{flex:1;min-width:0;}
-/* plan column hidden by default — appears with smooth transition when plans are found */
+/* plan column hidden by default, appears with smooth transition when plans are found */
 .plan-col{flex:1;min-width:0;}
 .media-row.has-plans .plan-col{overflow-y:auto;}
 .plan-stack{display:flex;flex-direction:column;gap:0;}
@@ -390,7 +390,7 @@ html[data-theme="dark"] .ufo-mini-host svg .mcls-2{fill:none!important;}
 .koppen-box .code{font-family:var(--serif);font-size:15px;font-weight:600;margin-top:1px;}
 /* map titlebar controls: match the Köppen icon's height to the others (it
    comes from a taller 17×16 viewBox) and optically centre the ⓘ text glyph,
-   so every icon's centerline lines up (applies in fullscreen too — same nodes) */
+   so every icon's centerline lines up (applies in fullscreen too, same nodes) */
 .map-card .card-titlebar #koppenOverlayBtn svg{height:14px;width:auto;display:block;}
 .map-card .card-titlebar .action-info-icon{display:inline-flex;align-items:center;justify-content:center;line-height:1;}
 .map-card .card-titlebar .win-controls > span{display:inline-flex;align-items:center;justify-content:center;height:14px;margin:0;padding:0;}
@@ -440,7 +440,7 @@ html[data-theme="dark"] .ufo-mini-host svg .mcls-2{fill:none!important;}
 .map-restore-btn:hover{background:var(--terracotta-dim);}
 .map-safe-msg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;background:var(--paper);border:1px solid var(--line-strong);font-family:var(--mono);font-size:10.5px;padding:10px 16px;white-space:nowrap;z-index:50;pointer-events:none;opacity:0;transition:opacity .25s;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
 .map-safe-msg.show{opacity:1;}
-/* scrollbar styling — thin, themed, never white */
+/* scrollbar styling, thin, themed, never white */
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:3px;}
@@ -460,7 +460,7 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 .map-card{flex:1;min-height:0;display:flex;flex-direction:column;}
 #map{flex:1;min-height:0;}
 .unmapped{flex-shrink:0;max-height:100px;overflow-y:auto;}
-/* only the cs-panel card-window fills 100% height — methodology/findings/admin card-windows stay auto */
+/* only the cs-panel card-window fills 100% height, methodology/findings/admin card-windows stay auto */
 .explorer-grid .card-window{height:100%;display:flex;flex-direction:column;}
 .panel{flex:1;overflow-y:auto;height:auto!important;}
 /* other views scroll internally */
@@ -601,7 +601,7 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 .ar-srcs summary::-webkit-details-marker{display:none}
 .ar-src-e{font-size:9.5px;line-height:1.55;color:var(--ink-soft);margin:0 0 5px;padding-left:14px;text-indent:-14px}
 
-.findings-grid{display:grid;grid-template-columns:200px 1fr;gap:12px;align-items:start;}
+.findings-grid{display:grid;grid-template-columns:180px 1fr;gap:10px;align-items:start;}
 .findings-menu{background:var(--paper);border:1px solid var(--line);border-radius:0;padding:8px;position:sticky;top:14px;}
 .fm-group-label{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink-faint);padding:10px 12px 4px;}
 /* ── Findings: dynamic values, blink, action button, dropdowns ── */
@@ -737,10 +737,10 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 .fm-item{display:block;width:100%;text-align:left;font-family:var(--sans);font-size:13px;padding:9px 12px;border:none;background:transparent;color:var(--ink-soft);cursor:pointer;border-radius:0;border-left:3px solid transparent;}
 .fm-item:hover{background:var(--paper-dim);color:var(--ink);}
 .fm-item.active{background:var(--paper-dim);color:var(--terracotta-deep);font-weight:600;border-left-color:var(--terracotta);}
-.findings-content{padding:28px 32px;height:72vh;overflow-y:auto;overflow-x:hidden;}
+.findings-content{padding:20px 24px;height:72vh;overflow-y:auto;overflow-x:hidden;}
 .fc-eyebrow{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-faint);margin-bottom:6px;}
 .fc-title{font-family:var(--serif);font-size:27px;font-weight:600;margin:0 0 16px;line-height:1.15;}
-.fc-body{font-size:14.5px;line-height:1.62;max-width:62ch;}
+.fc-body{font-size:14px;line-height:1.65;}
 .fc-body p{margin:0 0 14px;}
 .prescription{border-left:3px solid var(--moss);background:var(--moss-dim);padding:12px 16px;border-radius:0;margin:14px 0;font-size:13.5px;}
 .prescription .pl{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--moss);font-weight:600;margin-bottom:4px;}
@@ -845,8 +845,8 @@ footer .tag-link{background:var(--terracotta-dim);color:var(--terracotta-deep);p
 .app-header{padding:10px 20px 8px 8px!important;height:113px!important;overflow:visible;align-items:center!important;position:relative;}
 /* logo is taller than the header; keep it as the middle flex item (so
    space-between centres it in the gap between the left brand block and the
-   right scenario control) but give it zero layout height — overflowing
-   visibly — so it doesn't inflate the flex line or pull the row off the
+   right scenario control) but give it zero layout height, overflowing
+   visibly, so it doesn't inflate the flex line or pull the row off the
    header's true vertical centre */
 body:not(.mobile-mode) .app-header .header-logo-center{height:0;overflow:visible;align-self:center;transform:translateX(20px);}
 .brand-title{font-size:22px!important;}
@@ -902,7 +902,7 @@ body:not(.mobile-mode) .app-header .header-logo-center{height:0;overflow:visible
 .hm-tab .numeral{font-family:var(--serif);font-size:15px;font-weight:600;color:inherit;opacity:0.7;}
 
 /* ═══════════════════════════════════════════════════════
-   DECK LAYOUT — Atlas view (Tab I)
+   DECK LAYOUT, Atlas view (Tab I)
    Uses position:fixed anchored to --deck-top (JS-measured
    from header bottom). No flex height chain dependency.
    Activated by body.atlas-active class.
@@ -970,7 +970,7 @@ body.atlas-active.cs-open .explorer-grid > .card-window .panel{
   flex:1;min-height:0;overflow-y:scroll!important;overflow-x:hidden;
   height:auto!important;max-height:none!important;
 }
-/* mosaic-wrap: don't create a second nested scroll container — the
+/* mosaic-wrap: don't create a second nested scroll container, the
    outer .panel already scrolls. height:100% inside a flex-stretched
    parent is unreliable and was clipping the last grid row. */
 body.atlas-active.cs-open .explorer-grid > .card-window .mosaic-wrap{
@@ -1025,8 +1025,8 @@ body.map-fullscreen .scenario-slider{width:369px!important;height:11px!important
 body.map-fullscreen .scenario-slider::-webkit-slider-thumb{width:27px!important;height:27px!important;}
 body.map-fullscreen .scenario-slider::-moz-range-thumb{width:27px!important;height:27px!important;}
 body.map-fullscreen .scenario-slider::-moz-range-track{height:11px!important;}
-/* keep the slider centred on the visible map area — not the full
-   viewport — as the filter/case-study drawers shift the map's bounds */
+/* keep the slider centred on the visible map area, not the full
+   viewport, as the filter/case-study drawers shift the map's bounds */
 body.map-fullscreen.filter-open .scenario-slider-wrap{left:calc(20vw + 40px);}
 body.map-fullscreen.cs-open .scenario-slider-wrap{right:calc(var(--cs-width, 40vw) + 40px);}
 body.map-fullscreen .scenario-ticks{display:flex!important;}
@@ -1140,12 +1140,12 @@ body.atlas-active.cs-open .explorer-grid > .card-window .panel{
 #view-cases > .cs-search-row{display:none!important;}
 
 /* ═══════════════════════════════════════════════════════
-   FULLSCREEN MAP MODE — applied via body.map-fullscreen
+   FULLSCREEN MAP MODE, applied via body.map-fullscreen
    Map fills the area below the tab bar; filter bar, search,
    and the case study panel float on top with semi-transparent
    backgrounds. Desktop-only feature.
    All floating elements use position:fixed with explicit
-   viewport coordinates — no percentage-height chains through
+   viewport coordinates, no percentage-height chains through
    nested flex/grid ancestors, which is fragile and was the
    root cause of the v121 layout collapse.
    ═══════════════════════════════════════════════════════ */
@@ -1155,7 +1155,7 @@ body.map-fullscreen #view-cases{
 body.map-fullscreen .explorer-grid{
   display:contents;
 }
-/* old fullscreen filter layout removed — deck drawer used instead */
+/* old fullscreen filter layout removed, deck drawer used instead */
 body.map-fullscreen .cs-search-row{
   position:fixed;
   top:80px;
@@ -1165,7 +1165,7 @@ body.map-fullscreen .cs-search-row{
   margin:0;
   transition:right .22s cubic-bezier(.4,0,.2,1);
 }
-/* search bar sits next to the case study column — slides with it,
+/* search bar sits next to the case study column, slides with it,
    same right-anchor formula as the map titlebar above it */
 body.map-fullscreen.cs-open .cs-search-row{
   right:calc(var(--cs-width, 40vw) + 52px);
@@ -1236,7 +1236,7 @@ body.map-fullscreen #mapFullscreenBtn{opacity:1;color:var(--terracotta);}
 
 
 /* ═══════════════════════════════════════════════════════
-   MOBILE MODE — applied via body.mobile-mode (JS-detected)
+   MOBILE MODE, applied via body.mobile-mode (JS-detected)
    Desktop layout is completely unaffected.
    ═══════════════════════════════════════════════════════ */
 body.mobile-mode,
@@ -1445,12 +1445,12 @@ body.mobile-mode #view-admin{
 body.mobile-mode .mobile-banner{ display:block; }
 
 /* ═══════════════════════════════════════════════════════
-   MOBILE + ATLAS — Google Maps-style experience.
+   MOBILE + ATLAS, Google Maps-style experience.
    Overrides both the generic stacked mobile-mode layout above
    and the desktop side-drawer deck layout: on a phone the map
    fills the whole screen and everything else (filters, case
    studies, mosaic) opens as a bottom sheet on demand. Mosaic
-   is NOT auto-opened — matches map-app conventions where the
+   is NOT auto-opened, matches map-app conventions where the
    map is what you see first.
    ═══════════════════════════════════════════════════════ */
 body.mobile-mode.atlas-active #view-cases.active{
@@ -1494,7 +1494,7 @@ body.mobile-mode.atlas-active .deck-strip-btn{
 }
 body.mobile-mode.atlas-active .deck-strip-btn svg{ width:22px!important;height:22px!important; }
 
-/* lock page-level scroll while the deck system is active on mobile —
+/* lock page-level scroll while the deck system is active on mobile 
    the map + sheets are fully self-contained via position:fixed, so
    page scroll only caused touch-gesture conflicts with sheet-internal
    scrolling and let the header scroll out of view behind the sheets */
@@ -1507,7 +1507,7 @@ body.mobile-mode.atlas-active{
 
 /* filter drawer becomes a bottom sheet, closed by default.
    Anchored with top:var(--deck-top) + bottom:0 (not a vh-from-bottom
-   height) so it can NEVER cover the header/slider — only its visibility
+   height) so it can NEVER cover the header/slider, only its visibility
    toggles, via transform, not its vertical extent. */
 body.mobile-mode.atlas-active:not(.map-fullscreen) .filter-bar{
   position:fixed!important;
@@ -1533,7 +1533,7 @@ body.mobile-mode.atlas-active .filter-bar .filter-group select{
 }
   position:static!important;width:100%!important;
 }
-/* Köppen legend becomes a collapsed dropdown on mobile — otherwise it
+/* Köppen legend becomes a collapsed dropdown on mobile, otherwise it
    sits at the same bottom-left corner the filter/case sheets rise
    from, causing visual overlap */
 body.mobile-mode .map-legend{
@@ -1582,7 +1582,7 @@ body.mobile-mode.atlas-active .explorer-grid > .card-window .panel{
   height:auto!important;max-height:none!important;
 }
 /* the old stacked-layout mobile CSS targets #csPanel by ID, which
-   outranks any class-based selector regardless of source order —
+   outranks any class-based selector regardless of source order 
    re-assert scroll here using the same ID so atlas mode wins */
 body.mobile-mode.atlas-active #csPanel{
   overflow-y:auto!important;overflow-x:hidden!important;
@@ -1609,7 +1609,7 @@ body.mobile-mode.atlas-active .c-fetch{
 }
 /* the padding above turned these into flex containers whose SVG
    child (no explicit CSS width, only an SVG width attribute) got
-   flex-shrunk to 0 width — rendering the icon invisible while the
+   flex-shrunk to 0 width, rendering the icon invisible while the
    box itself stayed clickable. Lock the SVG to its intrinsic size. */
 body.mobile-mode.atlas-active .c-fetch svg,
 body.mobile-mode.atlas-active .c-close svg{
@@ -1625,10 +1625,10 @@ body.atlas-active .leaflet-top.leaflet-left{top:34px!important;}
 html[data-theme="dark"] .leaflet-control-zoom a{background:var(--paper-dim)!important;color:var(--ink)!important;border-color:var(--line-strong)!important;}
 html[data-theme="dark"] .leaflet-control-zoom a:hover{background:var(--paper)!important;color:var(--ink)!important;}
 /* keep transform changes instant (they're driven by JS to clear the filter
-   drawer) — an inherited `transition:all` was animating/chasing them */
+   drawer), an inherited `transition:all` was animating/chasing them */
 body.atlas-active .leaflet-top.leaflet-left,
 body.atlas-active .map-legend{transition-property:background-color,border-color,color;}
-/* line legend — bottom-right, explains the connector lines on the map */
+/* line legend, bottom-right, explains the connector lines on the map */
 .map-line-legend{
   position:absolute;bottom:12px;right:12px;z-index:500;
   background:rgba(255,255,255,0.94);border:1px solid var(--line);
@@ -1646,7 +1646,7 @@ body.atlas-active .map-legend{transition-property:background-color,border-color,
 
 
 /* ═══════════════════════════════════════════════════════
-   SITE LOADER — SVG frame-sequence animation shown on boot
+   SITE LOADER, SVG frame-sequence animation shown on boot
    ═══════════════════════════════════════════════════════ */
 #siteLoader{
   position:fixed;inset:0;z-index:100000;
@@ -1654,7 +1654,7 @@ body.atlas-active .map-legend{transition-property:background-color,border-color,
   display:flex;align-items:center;justify-content:center;
   transition:opacity .5s ease,visibility .5s ease,background-color .3s ease;
 }
-/* dark mode: proper dark version, not the light one forced through —
+/* dark mode: proper dark version, not the light one forced through 
    toggleable live during boot via the loader's own theme button */
 html[data-theme="dark"] #siteLoader{
   background:#0B0A16;
@@ -1696,7 +1696,7 @@ html[data-theme="dark"] .loader-status{
 .header-logo-host svg{width:100%;height:auto;display:block;}
 .header-logo-host svg .hdrlogo-1,.header-logo-host svg .hdrlogo-2,.header-logo-host svg .hdrlogo-4{stroke-width:4px;}
 .header-logo-host svg .hdrlogo-3{stroke-width:5.5px;}
-/* UFO body + house silhouette: medium grey (was solid black — too heavy).
+/* UFO body + house silhouette: medium grey (was solid black, too heavy).
    Beam: a step lighter. Both use theme-aware variables so dark mode
    adapts automatically without a separate override. */
 .header-logo-host svg .hdrlogo-3,
@@ -1821,7 +1821,7 @@ html[data-theme="dark"] .loader-status{
             <li><b>2080 horizon:</b> 2066–2095 centred mean</li>
           </ul>
           <p>Baseline for delta calculation: <b>1985–2014</b> (CMIP6 historical reference, centre ≈ 2000). Variables morphed: dry-bulb temperature, dew point, solar radiation, wind speed, atmospheric pressure. Precipitation is not morphed.</p>
-          <p style="background:var(--terracotta-dim,rgba(196,84,42,.08));border-left:2px solid var(--terracotta,#c4542a);padding:7px 10px;margin:8px 0 4px;font-size:10.5px;"><b>Methodological caveat — baseline mismatch:</b> The FWG deltas represent warming from the 1985–2014 baseline (centre ≈ 2000). Applied onto TMYx 2011–2025 files (centre ≈ 2018), the morphed outputs effectively represent conditions roughly 18 years beyond their nominal labels:<br><br>
+          <p style="background:var(--terracotta-dim,rgba(196,84,42,.08));border-left:2px solid var(--terracotta,#c4542a);padding:7px 10px;margin:8px 0 4px;font-size:10.5px;"><b>Methodological caveat, baseline mismatch:</b> The FWG deltas represent warming from the 1985–2014 baseline (centre ≈ 2000). Applied onto TMYx 2011–2025 files (centre ≈ 2018), the morphed outputs effectively represent conditions roughly 18 years beyond their nominal labels:<br><br>
           &nbsp;&nbsp;• <b>"2050" label</b> → effectively ≈<b>2068</b> conditions<br>
           &nbsp;&nbsp;• <b>"2080" label</b> → effectively ≈<b>2098</b> conditions<br><br>
           This is conservative labelling: projections are likely warmer than the nominal year implies. Rodrigues et al. (2023) explicitly note this limitation. Results are reported under the FWG nominal labels for methodological transparency; findings should be read as representing <i>at least</i> 2050/2080 severity.</p>
@@ -1872,7 +1872,7 @@ html[data-theme="dark"] .loader-status{
       <div class="filter-group"><span class="fl">Roof pitch</span><select id="fRoof"><option value="">All</option><option value="steep">Steep ≥35°</option><option value="shallow">Shallow &lt;35°</option></select></div>
       <div class="filter-group"><span class="fl">Construction</span><select id="fConstruction"><option value="">All</option><option value="stone">Stone / masonry</option><option value="timber_solid">Timber solid</option><option value="timber_frame_earth">Timber frame earth</option><option value="timber_light">Timber light</option><option value="earth_clay">Earth clay</option><option value="brick">Brick</option><option value="peat_turf">Peat / turf</option></select></div>
       <div class="filter-group"><span class="fl">Thermal mass per m²</span><select id="fMass"><option value="">All</option><option value="high">High ≥ median</option><option value="low">Low &lt; median</option></select></div>
-      <div class="filter-group"><span class="fl">Construction period</span><select id="fPeriod"><option value="">All</option><option value="ancient">3000–1000 BC</option><option value="classical">1000 BC–500 CE</option><option value="early-medieval">500–1000 CE</option><option value="medieval">1000–1400</option><option value="early-modern">1400–1700</option><option value="pre-industrial">1700–1850</option><option value="industrial">1850–1920</option><option value="modern">1920–present</option></select><button class="cont-trad-btn" id="contTradBtn" title="Toggle visibility of continuous-tradition cases">∞ continuous tradition — shown</button></div>
+      <div class="filter-group"><span class="fl">Construction period</span><select id="fPeriod"><option value="">All</option><option value="ancient">3000–1000 BC</option><option value="classical">1000 BC–500 CE</option><option value="early-medieval">500–1000 CE</option><option value="medieval">1000–1400</option><option value="early-modern">1400–1700</option><option value="pre-industrial">1700–1850</option><option value="industrial">1850–1920</option><option value="modern">1920–present</option></select><button class="cont-trad-btn" id="contTradBtn" title="Toggle visibility of continuous-tradition cases">∞ continuous tradition, shown</button></div>
       <div class="filter-group"><span class="fl">Compactness ψ</span><select id="fCompact"><option value="">All</option><option value="compact">Regular / compact ψ ≥ median</option><option value="elongated">Irregular / elongated ψ &lt; median</option></select></div>
       <div class="filter-group"><span class="fl">WWR</span><select id="fWwr"><option value="">All</option><option value="high">High ≥ median</option><option value="low">Low &lt; median</option></select></div>
       <div class="filter-group"><span class="fl">Overheating Δ →2080</span><select id="fOhDelta"><option value="">All</option><option value="high">High ≥ median</option><option value="low">Low &lt; median</option></select></div>
@@ -1905,7 +1905,7 @@ html[data-theme="dark"] .loader-status{
       </div>
       <div class="map-col">
         <div class="map-card">
-          <div class="card-titlebar"><span class="win-title">_map</span><span class="win-controls"><span class="c-fetch" id="mapFullscreenBtn" title="Toggle fullscreen map" style="display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1 L1 1 L1 4 M7 1 L10 1 L10 4 M1 7 L1 10 L4 10 M10 7 L10 10 L7 10"/></svg></span><span class="c-fetch" id="koppenOverlayBtn" title="Toggle Köppen zone overlay" style="display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0.5;"><svg width="17" height="16" viewBox="0 0 17 16" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="discoBallClip"><circle cx="8.5" cy="9.7" r="5.3"/></clipPath></defs><path d="M2.4 2.6 L3.7 3 L2.4 3.4 L2 4.7 L1.6 3.4 L0.3 3 L1.6 2.6 L2 1.3 Z" fill="currentColor"/><path d="M14.6 2 L15.35 2.25 L14.6 2.5 L14.35 3.25 L14.1 2.5 L13.35 2.25 L14.1 2 L14.35 1.25 Z" fill="currentColor"/><line x1="8.5" y1="1.7" x2="8.5" y2="3.5" stroke="currentColor" stroke-width="0.8"/><rect x="7.4" y="3.2" width="2.2" height="1.2" rx="0.2" fill="none" stroke="currentColor" stroke-width="0.7"/><circle cx="8.5" cy="9.7" r="5.3" fill="none" stroke="currentColor" stroke-width="1"/><g clip-path="url(#discoBallClip)"><path d="M3.2 9.7 H13.8 M4.1 7 H12.9 M4.1 12.4 H12.9 M4.9 5.5 Q8.5 9.7 12.1 14 M12.1 5.5 Q8.5 9.7 4.9 14 M8.5 4.5 Q5.9 9.7 8.5 15 M8.5 4.5 Q11.1 9.7 8.5 15" stroke="currentColor" stroke-width="0.5" fill="none" stroke-linecap="round"/></g></svg></span><span class="action-info-icon" id="koppenOverlayInfo" style="font-size:14px;position:relative;display:flex;align-items:center;">ⓘ<div class="action-info-pop" id="koppenOverlayInfoPop" style="top:calc(100% + 4px);bottom:auto;right:0;width:320px;"><div class="ai-head">_Köppen overlay</div><div class="ai-body">Colour field interpolated from Köppen-Geiger classifications at case study station locations using inverse distance weighting (IDW, power 2). Each pixel is a weighted blend of the nearest stations' zone colours.</div><div class="ai-warn"><b>NOTE: This is not a validated climate map.</b> Boundaries are interpolation artefacts, not climatological zone boundaries. The overlay reflects only the stations in this corpus — gaps between stations are extrapolated. Do not interpret as a gridded climate product. For reference gridded data see Kottek et al. (2006), <em>Meteorologische Zeitschrift</em>, or Beck et al. (2018), <em>Scientific Data</em>.</div><div class="ai-cite">Classification per scenario derived from EPW-station Köppen assignment (Kottek et al. 2006 thresholds). Future zones: FWG morphed EPW (Rodrigues et al. 2023), SSP5-8.5.</div></div></span><span class="c-fetch" id="fetchMap" title="Re-fetch EPW &amp; coordinates"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 L2 9 M2 5 L2 9 L6 9"/></svg></span><span class="c-close" id="mapCloseBtn"></span></span></div>
+          <div class="card-titlebar"><span class="win-title">_map</span><span class="win-controls"><span class="c-fetch" id="mapFullscreenBtn" title="Toggle fullscreen map" style="display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1 L1 1 L1 4 M7 1 L10 1 L10 4 M1 7 L1 10 L4 10 M10 7 L10 10 L7 10"/></svg></span><span class="c-fetch" id="koppenOverlayBtn" title="Toggle Köppen zone overlay" style="display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0.5;"><svg width="17" height="16" viewBox="0 0 17 16" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="discoBallClip"><circle cx="8.5" cy="9.7" r="5.3"/></clipPath></defs><path d="M2.4 2.6 L3.7 3 L2.4 3.4 L2 4.7 L1.6 3.4 L0.3 3 L1.6 2.6 L2 1.3 Z" fill="currentColor"/><path d="M14.6 2 L15.35 2.25 L14.6 2.5 L14.35 3.25 L14.1 2.5 L13.35 2.25 L14.1 2 L14.35 1.25 Z" fill="currentColor"/><line x1="8.5" y1="1.7" x2="8.5" y2="3.5" stroke="currentColor" stroke-width="0.8"/><rect x="7.4" y="3.2" width="2.2" height="1.2" rx="0.2" fill="none" stroke="currentColor" stroke-width="0.7"/><circle cx="8.5" cy="9.7" r="5.3" fill="none" stroke="currentColor" stroke-width="1"/><g clip-path="url(#discoBallClip)"><path d="M3.2 9.7 H13.8 M4.1 7 H12.9 M4.1 12.4 H12.9 M4.9 5.5 Q8.5 9.7 12.1 14 M12.1 5.5 Q8.5 9.7 4.9 14 M8.5 4.5 Q5.9 9.7 8.5 15 M8.5 4.5 Q11.1 9.7 8.5 15" stroke="currentColor" stroke-width="0.5" fill="none" stroke-linecap="round"/></g></svg></span><span class="action-info-icon" id="koppenOverlayInfo" style="font-size:14px;position:relative;display:flex;align-items:center;">ⓘ<div class="action-info-pop" id="koppenOverlayInfoPop" style="top:calc(100% + 4px);bottom:auto;right:0;width:320px;"><div class="ai-head">_Köppen overlay</div><div class="ai-body">Colour field interpolated from Köppen-Geiger classifications at case study station locations using inverse distance weighting (IDW, power 2). Each pixel is a weighted blend of the nearest stations' zone colours.</div><div class="ai-warn"><b>NOTE: This is not a validated climate map.</b> Boundaries are interpolation artefacts, not climatological zone boundaries. The overlay reflects only the stations in this corpus, gaps between stations are extrapolated. Do not interpret as a gridded climate product. For reference gridded data see Kottek et al. (2006), <em>Meteorologische Zeitschrift</em>, or Beck et al. (2018), <em>Scientific Data</em>.</div><div class="ai-cite">Classification per scenario derived from EPW-station Köppen assignment (Kottek et al. 2006 thresholds). Future zones: FWG morphed EPW (Rodrigues et al. 2023), SSP5-8.5.</div></div></span><span class="c-fetch" id="fetchMap" title="Re-fetch EPW &amp; coordinates"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 L2 9 M2 5 L2 9 L6 9"/></svg></span><span class="c-close" id="mapCloseBtn"></span></span></div>
           <div id="map"></div>
           <div class="map-safe-msg" id="mapSafeMsg"></div>
           <div class="map-legend" id="mapLegend"></div>
@@ -2130,10 +2130,10 @@ function regionOf(c){return REGION_OF[c.country]||'Other';}
 /* ===================== MOCKUP FILL =====================
    Demo mode: invent plausible, deterministic values wherever the workbook is
    empty so the whole tool is exercised. Real values are kept; only gaps are
-   filled. Nothing here is scientific — it exists to show how the tool works. */
+   filled. Nothing here is scientific, it exists to show how the tool works. */
 /* ===================== APP MODE: demo vs full =====================
    Demo mode is the always-self-contained mode this prototype has run in
-   throughout development — zero fetches, mock-filled, safe to open as a
+   throughout development, zero fetches, mock-filled, safe to open as a
    raw file. Full mode fetches the real data/_cs.xlsx and shows
    only real fields, NO_DATA everywhere else, restricted to cases with
    real coordinates. Demo is the default on load specifically so opening
@@ -2231,7 +2231,7 @@ function mockFill(c){
   if(!c.courtyard)c.courtyard=rnd()<0.2?'yes':'no';
   if(!c.balconies)c.balconies=rnd()<0.15?'yes':'no';
   const a=Math.abs(c.lat||45),warmth=Math.max(0,(48-a))/48;
-  /* sim values (oh, comfort, ndp, topMean) intentionally NOT mocked —
+  /* sim values (oh, comfort, ndp, topMean) intentionally NOT mocked 
      must come from real EnergyPlus results in Excel yellow columns only. */
   c.mockMeanT=+(28-0.45*a-(c.elev?c.elev*0.0065:0)+(rnd()-0.5)*3).toFixed(1);
 }
@@ -2239,7 +2239,7 @@ function processCases(rawArray){
   rawArray.forEach(c=>{
     c.region=regionOf(c);
     mockFill(c);
-    /* guarantee c.sim always exists — mockFill skips this in full mode since
+    /* guarantee c.sim always exists, mockFill skips this in full mode since
        EnergyPlus results aren't in the Excel yet; guard every access so the
        panel renders with NO_DATA rather than crashing. */
     c.sim=c.sim||{oh:[null,null,null],comfort:[null,null,null],ndp:[null,null,null],topMean:[null,null,null]};
@@ -2247,7 +2247,7 @@ function processCases(rawArray){
     if(!c.sim.comfort)c.sim.comfort=[null,null,null];
     if(!c.sim.ndp)c.sim.ndp=[null,null,null];
     if(!c.sim.topMean)c.sim.topMean=[null,null,null];
-    /* c.tags always computed from real (or null-safe) field values — was
+    /* c.tags always computed from real (or null-safe) field values, was
        previously only set inside mockFill, so full-mode cases had no tags. */
     c.tags={
       compact:c.psi!=null&&c.psi>=0.85,
@@ -2260,7 +2260,7 @@ function processCases(rawArray){
   return rawArray;
 }
 /* Case data is NOT embedded in this file. It is fetched live from R2
-   (data/_cs.xlsx, see fetchFullModeRaw/setAppMode below) — if that fetch
+   (data/_cs.xlsx, see fetchFullModeRaw/setAppMode below), if that fetch
    fails, CASES stays empty and every view shows no-data rather than
    falling back to placeholder content. */
 CASES = processCases([]);
@@ -2308,7 +2308,7 @@ function computeDynamicThresholds(){
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   Köppen IDW overlay — renders case study zone colours as a smooth
+   Köppen IDW overlay, renders case study zone colours as a smooth
    interpolated colour field using inverse distance weighting (p=2)
    ─────────────────────────────────────────────────────────────── */
 function renderKoppenOverlay(){
@@ -2319,7 +2319,7 @@ function renderKoppenOverlay(){
   });
   if(!pts.length)return;
   const mapSize=map.getSize();
-  const SCALE=4; /* render at 1/4 resolution — bilinear upscaling via CSS */
+  const SCALE=4; /* render at 1/4 resolution, bilinear upscaling via CSS */
   const W=Math.ceil(mapSize.x/SCALE),H=Math.ceil(mapSize.y/SCALE);
   const cv=document.createElement('canvas');cv.width=W;cv.height=H;
   const ctx=cv.getContext('2d');
@@ -2461,7 +2461,7 @@ function pass(c){
   if(fOhDelta==='low'&&!(caseOhDelta(c)!=null&&caseOhDelta(c)<DYN.ohDeltaMed))return false;
   if(fComfortDelta==='high'&&!(caseComfortDelta(c)!=null&&caseComfortDelta(c)>=DYN.comfortDeltaMed))return false;
   if(fKoppenDelta==='yes'&&!(c.koppen[0]&&c.koppen[2]&&c.koppen[0]!==c.koppen[2]))return false;
-  /* compactness: dynamic median — median ≈ 0.96 for 2D polygon compactness */
+  /* compactness: dynamic median, median ≈ 0.96 for 2D polygon compactness */
   if(fCompact==='compact'&&!(c.psi!=null&&c.psi>=DYN.psiMed))return false;
   if(fCompact==='elongated'&&!(c.psi!=null&&c.psi<DYN.psiMed))return false;
   if(fWwr==='high'&&!(c.wwr!=null&&c.wwr>=DYN.wwrMed))return false;
@@ -2495,7 +2495,7 @@ function applyFilter(){
   if(selectedId&&!pass(byId(selectedId))){selectedId=null;renderPanel();}
 }
 function renderUnmapped(vis){
-  /* unmapped window was removed from the UI — guard against missing element */
+  /* unmapped window was removed from the UI, guard against missing element */
   const el=document.getElementById('unmapped');
   if(!el)return;
   const um=vis.filter(c=>!c.hasCoord);
@@ -2515,7 +2515,7 @@ function refreshKoppenOptions(){
   ks.querySelectorAll('option:not(:first-child)').forEach(o=>o.remove());
   const codes=[...new Set(CASES.map(c=>c.koppen[scn]).filter(Boolean))]
     .sort((a,b)=> a[0]===b[0] ? a.localeCompare(b) : 'ABCDE'.indexOf(a[0])-'ABCDE'.indexOf(b[0]));
-  codes.forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k+(KOPPEN_LABEL[k]?' — '+KOPPEN_LABEL[k]:'');ks.appendChild(o);});
+  codes.forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k+(KOPPEN_LABEL[k]?', '+KOPPEN_LABEL[k]:'');ks.appendChild(o);});
 }
 const FILTER_SELECT_IDS=['fRoof','fConstruction','fMass','fOhDelta','fComfortDelta','fKoppenDelta','fCompact','fWwr','fDiurnal','fPeriod','fCorpus'];
 function buildFilters(){
@@ -2539,14 +2539,14 @@ function buildFilters(){
   const _ctBtn=document.getElementById('contTradBtn');
   if(_ctBtn)_ctBtn.addEventListener('click',()=>{
     fHideContinuous=!fHideContinuous;
-    _ctBtn.textContent='∞ continuous tradition — '+(fHideContinuous?'hidden':'shown');
+    _ctBtn.textContent='∞ continuous tradition, '+(fHideContinuous?'hidden':'shown');
     _ctBtn.classList.toggle('hiding',fHideContinuous);
     applyFilter();
   });
   wireInfoIcon('fDiurnalInfoIcon','fDiurnalInfoPop');
   document.getElementById('filterReset').addEventListener('click',()=>{
     fRegion='';fKoppen='';fRoof='';fConstruction='';fMass='';fOhDelta='';fComfortDelta='';fKoppenDelta='';fCompact='';fWwr='';fPeriod='';fCorpus='';fHideContinuous=false;
-    const _ctb=document.getElementById('contTradBtn');if(_ctb){_ctb.textContent='∞ continuous tradition — shown';_ctb.classList.remove('hiding');}
+    const _ctb=document.getElementById('contTradBtn');if(_ctb){_ctb.textContent='∞ continuous tradition, shown';_ctb.classList.remove('hiding');}
     document.getElementById('fRegion').value='';document.getElementById('fKoppen').value='';
     FILTER_SELECT_IDS.forEach(id=>{document.getElementById(id).value='';});;
     applyFilter();
@@ -2656,7 +2656,7 @@ function rebuildAppFromCases(newCases){
 
 /* ---- full mode: fetch the real workbook from data/, parse with the same
    column-mapper used for admin re-uploads, restrict to cases with real
-   coordinates (the only principled inclusion rule — a case with no known
+   coordinates (the only principled inclusion rule, a case with no known
    location can't go on the map regardless of how complete the rest of its
    record is), no mock fill at all. Cached after first successful fetch so
    toggling back and forth doesn't re-fetch every time. ---- */
@@ -2669,7 +2669,7 @@ async function fetchFullModeRaw(){
   return parsed.filter(c=>c.hasCoord);
 }
 async function setAppMode(){
-  /* demo mode removed — always full */
+  /* demo mode removed, always full */
   if(!FULL_CASES_RAW){
     try{
       FULL_CASES_RAW=await fetchFullModeRaw();
@@ -2686,7 +2686,7 @@ async function setAppMode(){
   return true;
 }
 /* visible (not just console) notice when the R2-hosted case data can't be
-   reached — CASES stays empty in this state, by design, rather than
+   reached, CASES stays empty in this state, by design, rather than
    falling back to any placeholder content. */
 function showDataLoadFailure(msg){
   let el=document.getElementById('dataLoadFailure');
@@ -2698,7 +2698,7 @@ function showDataLoadFailure(msg){
       +'padding:8px 16px;text-align:center;display:flex;align-items:center;justify-content:center;gap:10px;';
     document.body.appendChild(el);
   }
-  el.innerHTML=`<span>⚠ Could not load case data from R2 — showing no data instead of a placeholder. (${msg||'connection failed'})</span>
+  el.innerHTML=`<span>⚠ Could not load case data from R2, showing no data instead of a placeholder. (${msg||'connection failed'})</span>
     <button id="dataLoadRetryBtn" style="font-family:var(--mono);font-size:11px;padding:3px 9px;border:1px solid #fff;background:transparent;color:#fff;cursor:pointer;">retry</button>`;
   document.getElementById('dataLoadRetryBtn').addEventListener('click',()=>{FULL_CASES_RAW=null;setAppMode();});
 }
@@ -2707,9 +2707,9 @@ function hideDataLoadFailure(){
   if(el)el.remove();
 }
 
-/* ===================== TAB 0 — ADMIN: ADD CASE STUDIES =====================
+/* ===================== TAB 0, ADMIN: ADD CASE STUDIES =====================
    Client-side only. The password is a soft gate for a personal/shared tool,
-   not real security — visible to anyone who reads the page source. DXF
+   not real security, visible to anyone who reads the page source. DXF
    folder access uses the File System Access API where the browser supports
    it (Chrome/Edge: real, persistent reads/writes to a folder you pick);
    elsewhere it falls back to an in-memory, session-only file list. */
@@ -2844,7 +2844,7 @@ function parseYearFull(v){
   if(!raw||raw==='-'||raw==='–'||raw==='') return {hasData:false};
   const s=raw.toLowerCase();
 
-  /* continuous tradition — always shown */
+  /* continuous tradition, always shown */
   if(s.includes('continuous')||s.includes('tradition')){
     return {hasData:true,isContinuous:true,yMin:null,yMax:null,approx:false};
   }
@@ -3034,7 +3034,7 @@ function onEditGridChange(e){
   buildCorpusStats();
   renderAdminStatus();
   const dirty=document.getElementById('editGridDirty');
-  if(dirty)dirty.textContent=' — edited this session';
+  if(dirty)dirty.textContent=', edited this session';
 }
 function exportEditedWorkbook(){
   const header=EDIT_FIELDS.map(f=>f.label);
@@ -3091,7 +3091,7 @@ function renderDxfTable(list,persistent){
   el.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>removeDxfFile(b.dataset.rm)));
 }
 
-/* ---- Photos folder — same File System Access pattern as the DXF folder ---- */
+/* ---- Photos folder, same File System Access pattern as the DXF folder ---- */
 const IMG_EXT=['.jpg','.jpeg','.png','.webp','.gif'];
 async function connectPhotoFolder(){
   if(!window.showDirectoryPicker)return;
@@ -3246,7 +3246,7 @@ function renderAdminView(){
         <div class="card-titlebar"><span class="win-title">_excel_workbook</span><span class="win-controls"><span class="c-close"></span></span></div>
         <div class="admin-section-body">
           <div class="admin-status" id="excelStatus"></div>
-          <div class="dropzone" id="excelDropzone"><span class="big">Drop a replacement .xlsx here</span>or click to choose a file — this overwrites all currently loaded case studies</div>
+          <div class="dropzone" id="excelDropzone"><span class="big">Drop a replacement .xlsx here</span>or click to choose a file, this overwrites all currently loaded case studies</div>
           <input type="file" id="excelFileInput" accept=".xlsx,.xls" style="display:none;">
           <div id="excelMsg"></div>
           <div class="admin-note">Matched by column header text (Köppen zone, Compactness ψ, WWR, etc.), so reordered or extra columns still parse. Missing fields fall back to the same demo-fill logic used elsewhere in this prototype.</div>
@@ -3257,7 +3257,7 @@ function renderAdminView(){
         <div class="card-titlebar"><span class="win-title">_workbook_grid</span><span class="win-controls"><span class="c-close"></span></span></div>
         <div class="admin-section-body">
           <div class="admin-action-row">
-            <span class="admin-status">Edit any cell directly — changes apply live to the map, filters and case-study panels. <span id="editGridDirty"></span></span>
+            <span class="admin-status">Edit any cell directly, changes apply live to the map, filters and case-study panels. <span id="editGridDirty"></span></span>
             <button class="btn-secondary" id="exportWorkbookBtn">Export edited .xlsx</button>
           </div>
           <input class="grid-search" type="text" id="editGridSearch" placeholder="Filter by ID, name, country…">
@@ -3323,7 +3323,7 @@ function wireAdminInteractions(){
 // ADAPTIVE RECOMMENDATIONS ENGINE  v3
 // ═══════════════════════════════════════════════════════════════════════════
 
-/* Citation references — shown in popover on ⓘ click */
+/* Citation references, shown in popover on ⓘ click */
 const AR_REFS={
   ashrae55:'ASHRAE. (2020). ASHRAE Standard 55-2020: Thermal Environmental Conditions for Human Occupancy. ASHRAE.',
   artmann2007:'Artmann, N., Manz, H., & Heiselberg, P. (2007). Climatic potential for passive cooling of buildings by night-time ventilation in Europe. Applied Energy, 84(2), 187–201.',
@@ -3401,7 +3401,7 @@ function arKDesc(z){
     Dfc:'Short cool summers; very cold winters; heating dominated.',
     ET:'Below 10°C for most of year; overheating risk negligible.',
   };
-  return d[z]||`${z} — characteristics require site-specific assessment.`;
+  return d[z]||`${z}, characteristics require site-specific assessment.`;
 }
 const AR_SHIFT={
   'Cfb→Cfa':'shift to humid subtropical: summers significantly hotter and more humid.',
@@ -3431,16 +3431,16 @@ function arClimate(c){
   const h0=arKHeat(k0),h2=arKHeat(k2||k1||k0),dh=h2-h0;
   const chunks=[];
 
-  chunks.push({t:'p',h:`<strong>${k0} — ${AR_KL[k0]||k0}:</strong> ${arKDesc(k0)} ${arRef('kottek2006')}`});
+  chunks.push({t:'p',h:`<strong>${k0}, ${AR_KL[k0]||k0}:</strong> ${arKDesc(k0)} ${arRef('kottek2006')}`});
 
   if(k1){
     if(k1===k0) chunks.push({t:'p',h:`<strong>2050 (SSP5-8.5):</strong> ${arRef('ipcc2021')} Zone unchanged (${k1}). Within-zone warming of 0.5–1.5°C projected. ${arRef('belcher2005')}${h0>=3?' '+arNote('Rising event frequency even without zone reclassification.'):''}` });
-    else chunks.push({t:'p',h:`<strong>2050 (SSP5-8.5):</strong> ${arRef('ipcc2021')} Shift to <strong>${k1}</strong> (${AR_KL[k1]||k1}) — ${arKShift(k0,k1)}`});
+    else chunks.push({t:'p',h:`<strong>2050 (SSP5-8.5):</strong> ${arRef('ipcc2021')} Shift to <strong>${k1}</strong> (${AR_KL[k1]||k1}), ${arKShift(k0,k1)}`});
   }
   if(k2){
     const big=k2!==k0&&arKFam(k0)!==arKFam(k2);
     if(k2===k0&&(!k1||k1===k0)) chunks.push({t:'p',h:`<strong>2080:</strong> Zone stable. Cumulative warming continues under SSP5-8.5. ${arRef('ipcc2021')}${h0>=3?' '+arWarn('In an already warm climate, cumulative warming raises extreme-event frequency non-linearly.'):''}` });
-    else if(k2!==k0) chunks.push({t:'p',h:`<strong>2080${big?' — '+arWarn('major zone shift'):''}:</strong> Shift to <strong>${k2}</strong> (${AR_KL[k2]||k2}) — ${arKShift(k0,k2)} ${arRef('ipcc2021')}`});
+    else if(k2!==k0) chunks.push({t:'p',h:`<strong>2080${big?', '+arWarn('major zone shift'):''}:</strong> Shift to <strong>${k2}</strong> (${AR_KL[k2]||k2}), ${arKShift(k0,k2)} ${arRef('ipcc2021')}`});
   }
   let v;
   if(dh>=2) v=arWarn(`Major climate transition by 2080. Passive strategies calibrated to present conditions may not remain viable without adaptation.`)+' '+arRef('ipcc2021');
@@ -3470,9 +3470,9 @@ function arMorph(c){
     if(hi&&diurnal){
       chunks.push({t:'p',h:arOk(`High thermal mass${tmpm2?` (≈${tmpm2} kJ/m²K)`:''} is well-matched to ${AR_KL[k0]||k0} conditions. Daytime heat stored in walls releases overnight, attenuating peak indoor temperatures by 3–8°C in arid and Mediterranean conditions. `)+arRef('givoni1976')+arRef('szokolay2008')});
     } else if(hi&&tropical){
-      chunks.push({t:'p',h:arWarn(`High thermal mass in ${AR_KL[k0]||k0} conditions: when nights remain above ~20°C, stored heat cannot discharge — it delays rather than removes the load, elevating overnight temperatures. This risk grows under SSP5-8.5. `)+arRef('artmann2007')+arRef('givoni1976')});
+      chunks.push({t:'p',h:arWarn(`High thermal mass in ${AR_KL[k0]||k0} conditions: when nights remain above ~20°C, stored heat cannot discharge, it delays rather than removes the load, elevating overnight temperatures. This risk grows under SSP5-8.5. `)+arRef('artmann2007')+arRef('givoni1976')});
     } else if(lo&&h2>=3){
-      chunks.push({t:'p',h:arNote(`Low thermal mass: rapid response to outdoor swings — useful for winter warm-up, but no buffering of summer peaks. As summer heat stress rises in ${k2}, indoor temperatures will track outdoor peaks directly. `)+arRef('szokolay2008')});
+      chunks.push({t:'p',h:arNote(`Low thermal mass: rapid response to outdoor swings, useful for winter warm-up, but no buffering of summer peaks. As summer heat stress rises in ${k2}, indoor temperatures will track outdoor peaks directly. `)+arRef('szokolay2008')});
     } else if(hi){
       chunks.push({t:'p',h:arNote(`High thermal mass${tmpm2?` (≈${tmpm2} kJ/m²K)`:''}. In ${AR_KL[k0]||k0}, effectiveness depends on night-time discharge potential. `)+arRef('szokolay2008')});
     }
@@ -3481,27 +3481,27 @@ function arMorph(c){
     }
   }
 
-  /* ── WWR — calibrated to vernacular corpus (median 5.4%, max 18.3%) ─ */
+  /* ── WWR, calibrated to vernacular corpus (median 5.4%, max 18.3%) ─ */
   if(c.wwr!=null){
     const wp=+c.wwr>1?+c.wwr:+c.wwr*100;
     /* Corpus context: median 5.4%, upper quartile ~9%, maximum 18% */
-    const corpCtx=`In this corpus, the median WWR is 5.4% — placing this building `;
+    const corpCtx=`In this corpus, the median WWR is 5.4%, placing this building `;
     if(wp<3){
       const txt=h2>=3
-        ?arOk(`WWR ${wp.toFixed(1)}% — minimal glazing, in the bottom quartile of this vernacular corpus (median 5.4%). In a warming climate this is a strong thermal asset: solar heat gain is almost entirely eliminated. Daylighting adequacy should be confirmed — traditional buildings of this type often relied on roof openings, lanterns, or courtyard light wells rather than wall glazing. `)
-        :arNote(`WWR ${wp.toFixed(1)}% — very low glazing. Thermal losses and solar gains through windows are negligible. In a presently cool climate this limits passive solar heating, but becomes increasingly advantageous as winters shorten under SSP5-8.5. `);
+        ?arOk(`WWR ${wp.toFixed(1)}%, minimal glazing, in the bottom quartile of this vernacular corpus (median 5.4%). In a warming climate this is a strong thermal asset: solar heat gain is almost entirely eliminated. Daylighting adequacy should be confirmed, traditional buildings of this type often relied on roof openings, lanterns, or courtyard light wells rather than wall glazing. `)
+        :arNote(`WWR ${wp.toFixed(1)}%, very low glazing. Thermal losses and solar gains through windows are negligible. In a presently cool climate this limits passive solar heating, but becomes increasingly advantageous as winters shorten under SSP5-8.5. `);
       chunks.push({t:'p',h:txt+arRef('olgyay1963')+arRef('rapoport1969')});
     } else if(wp<6){
-      chunks.push({t:'p',h:arOk(`WWR ${wp.toFixed(1)}% — within the typical vernacular range (corpus median 5.4%). This level of glazing reflects the historical priority of thermal enclosure over daylighting in vernacular design, and is well-calibrated for passive performance. Solar heat gain remains manageable under most projected scenarios. `)+arRef('olgyay1963')+arRef('rapoport1969')});
+      chunks.push({t:'p',h:arOk(`WWR ${wp.toFixed(1)}%, within the typical vernacular range (corpus median 5.4%). This level of glazing reflects the historical priority of thermal enclosure over daylighting in vernacular design, and is well-calibrated for passive performance. Solar heat gain remains manageable under most projected scenarios. `)+arRef('olgyay1963')+arRef('rapoport1969')});
     } else if(wp<12){
       const msg=h2>=3
-        ?arNote(`WWR ${wp.toFixed(1)}% — above the corpus median (5.4%) and in the upper half of this dataset. This is not high by modern standards, but for vernacular construction — where the baseline is thermal enclosure — it represents meaningful solar exposure. Shading adequacy on south and west facades should be verified under the projected 2050–2080 climate conditions. `)
-        :arNote(`WWR ${wp.toFixed(1)}% — above the vernacular corpus median (5.4%). Solar gain and heat loss through glazing are more significant than in most buildings of this dataset. `);
+        ?arNote(`WWR ${wp.toFixed(1)}%, above the corpus median (5.4%) and in the upper half of this dataset. This is not high by modern standards, but for vernacular construction, where the baseline is thermal enclosure, it represents meaningful solar exposure. Shading adequacy on south and west facades should be verified under the projected 2050–2080 climate conditions. `)
+        :arNote(`WWR ${wp.toFixed(1)}%, above the vernacular corpus median (5.4%). Solar gain and heat loss through glazing are more significant than in most buildings of this dataset. `);
       chunks.push({t:'p',h:msg+arRef('olgyay1963')+arRef('szokolay2008')});
     } else if(wp<16){
-      chunks.push({t:'p',h:arWarn(`WWR ${wp.toFixed(1)}% — high for a vernacular building: in the upper quartile of this corpus (median 5.4%, maximum 18.3%). Solar heat gain through unshaded glazing will be a significant factor under projected warming. The east and west facades are most vulnerable, as they receive low-angle morning and afternoon sun that overhangs cannot easily block. Shading retrofit or external shutters should be considered. `)+arRef('givoni1976')+arRef('olgyay1963')});
+      chunks.push({t:'p',h:arWarn(`WWR ${wp.toFixed(1)}%, high for a vernacular building: in the upper quartile of this corpus (median 5.4%, maximum 18.3%). Solar heat gain through unshaded glazing will be a significant factor under projected warming. The east and west facades are most vulnerable, as they receive low-angle morning and afternoon sun that overhangs cannot easily block. Shading retrofit or external shutters should be considered. `)+arRef('givoni1976')+arRef('olgyay1963')});
     } else {
-      chunks.push({t:'p',h:arWarn(`WWR ${wp.toFixed(1)}% — among the highest in this corpus (median 5.4%, only two buildings exceed 16%). This level of glazing is exceptional for vernacular construction and carries significant solar gain risk under all projected warming scenarios. Unshaded east and west glazing in particular will drive overheating hours. External shading, internal thermal mass, and night ventilation become critical compensating strategies. `)+arRef('givoni1976')+arRef('olgyay1963')});
+      chunks.push({t:'p',h:arWarn(`WWR ${wp.toFixed(1)}%, among the highest in this corpus (median 5.4%, only two buildings exceed 16%). This level of glazing is exceptional for vernacular construction and carries significant solar gain risk under all projected warming scenarios. Unshaded east and west glazing in particular will drive overheating hours. External shading, internal thermal mass, and night ventilation become critical compensating strategies. `)+arRef('givoni1976')+arRef('olgyay1963')});
     }
   }
 
@@ -3516,11 +3516,11 @@ function arMorph(c){
         :arNote(`No significant eave overhang. Solar control is not currently critical in ${AR_KL[k0]||k0}, but becomes increasingly relevant as climate warms. `);
       chunks.push({t:'p',h:msg+arRef('olgyay1963')});
     } else if(ed<0.4){
-      chunks.push({t:'p',h:arNote(`Eave depth ≈${ed.toFixed(2)} m — shallow relative to the latitude. At ${lat.toFixed(0)}°, full summer shading of a window typically requires ≈${req.toFixed(2)} m of horizontal overhang. The existing eave provides partial protection but will not exclude high-angle summer sun. As warming extends the hot season under SSP5-8.5, this gap will grow. Augmenting overhangs or adding seasonal external shading is recommended before mid-century. `)+arRef('olgyay1963')});
+      chunks.push({t:'p',h:arNote(`Eave depth ≈${ed.toFixed(2)} m, shallow relative to the latitude. At ${lat.toFixed(0)}°, full summer shading of a window typically requires ≈${req.toFixed(2)} m of horizontal overhang. The existing eave provides partial protection but will not exclude high-angle summer sun. As warming extends the hot season under SSP5-8.5, this gap will grow. Augmenting overhangs or adding seasonal external shading is recommended before mid-century. `)+arRef('olgyay1963')});
     } else if(ed<req*0.85){
-      chunks.push({t:'p',h:arNote(`Eave depth ≈${ed.toFixed(2)} m — meaningful but short of the ≈${req.toFixed(2)} m needed for complete summer shading at latitude ${lat.toFixed(0)}°. Partially effective now; the shortfall becomes more significant as the hot season extends and intensifies under warming. `)+arRef('olgyay1963')});
+      chunks.push({t:'p',h:arNote(`Eave depth ≈${ed.toFixed(2)} m, meaningful but short of the ≈${req.toFixed(2)} m needed for complete summer shading at latitude ${lat.toFixed(0)}°. Partially effective now; the shortfall becomes more significant as the hot season extends and intensifies under warming. `)+arRef('olgyay1963')});
     } else {
-      chunks.push({t:'p',h:arOk(`Eave depth ≈${ed.toFixed(2)} m at latitude ${lat.toFixed(0)}° — sufficient to shade a standard window at solar noon near the summer solstice (target ≈${req.toFixed(2)} m). Effective without energy use, and its benefit increases as solar intensity rises under warming. `)+arRef('olgyay1963')});
+      chunks.push({t:'p',h:arOk(`Eave depth ≈${ed.toFixed(2)} m at latitude ${lat.toFixed(0)}°, sufficient to shade a standard window at solar noon near the summer solstice (target ≈${req.toFixed(2)} m). Effective without energy use, and its benefit increases as solar intensity rises under warming. `)+arRef('olgyay1963')});
     }
   }
 
@@ -3546,7 +3546,7 @@ function arMorph(c){
     } else if(cm.includes('log')||cm.includes('timber_solid')){
       chunks.push({t:'p',h:arNote(`Higher insulation per unit thickness than masonry, but lower thermal mass. Suited to temperate and continental climates with mixed seasonal loads. As heating demand falls and summer heat stress rises, the insulation value becomes more important. `)+arRef('szokolay2008')+arRef('rapoport1969')});
     } else if(cm.includes('earth')||cm.includes('clay')||cm.includes('adobe')){
-      chunks.push({t:'p',h:arNote(`High thermal mass with hygroscopic moisture buffering — effective in semi-arid and Mediterranean conditions. Under SSP5-8.5, increased precipitation and freeze-thaw cycles can degrade unprotected earth walls; protective rendering becomes more critical. `)+arRef('szokolay2008')+arRef('rapoport1969')});
+      chunks.push({t:'p',h:arNote(`High thermal mass with hygroscopic moisture buffering, effective in semi-arid and Mediterranean conditions. Under SSP5-8.5, increased precipitation and freeze-thaw cycles can degrade unprotected earth walls; protective rendering becomes more critical. `)+arRef('szokolay2008')+arRef('rapoport1969')});
     } else if(cm.includes('thatch')||cm.includes('organic')||cm.includes('bamboo')||cm.includes('wool')||cm.includes('felt')){
       chunks.push({t:'p',h:arNote(`Minimal thermal mass, but compatible with high ventilation rates. In hot humid climates, cross-ventilation is the primary comfort mechanism and mass plays little role. Vulnerability: wind damage and fire risk, both of which may increase under climate change. `)+arRef('olgyay1963')+arRef('rapoport1969')});
     } else if(cm.includes('timber_frame')||cm.includes('frame')){
@@ -3556,7 +3556,7 @@ function arMorph(c){
 
   /* ── Roof form & pitch ───────────────────────────────────────────── */
   if(c.roofPitch&&+c.roofPitch>35){
-    chunks.push({t:'p',h:arOk(`Steep roof pitch (${(+c.roofPitch).toFixed(0)}°) creates a substantial ventilated attic void — the Kaltdach (cold roof) principle. This buffer zone decouples the occupied space from direct solar radiation on the roof surface, acting as a passive thermal filter. EnergyPlus simulations for this corpus include the attic as an unconditioned buffer, confirming its cooling effect. As solar intensity rises under warming, the buffer becomes more effective. `)+arRef('szokolay2008')});
+    chunks.push({t:'p',h:arOk(`Steep roof pitch (${(+c.roofPitch).toFixed(0)}°) creates a substantial ventilated attic void, the Kaltdach (cold roof) principle. This buffer zone decouples the occupied space from direct solar radiation on the roof surface, acting as a passive thermal filter. EnergyPlus simulations for this corpus include the attic as an unconditioned buffer, confirming its cooling effect. As solar intensity rises under warming, the buffer becomes more effective. `)+arRef('szokolay2008')});
   }
   if(c.roofForm){
     const rf=String(c.roofForm).toLowerCase();
@@ -3564,7 +3564,7 @@ function arMorph(c){
       chunks.push({t:'p',h:arNote(`Flat roof: direct solar exposure on the roof surface is the primary summer heat gain pathway. Raising albedo from 0.10–0.20 (dark gravel/asphalt) to 0.60–0.80 (white coating) can reduce surface temperature by 20–30°C and peak interior temperature by 2–4°C. `)+arRef('givoni1976')});
     }
     if(rf.includes('conical')||rf.includes('dome')||rf.includes('barrel')){
-      chunks.push({t:'p',h:arNote(`${rf.charAt(0).toUpperCase()+rf.slice(1)} roof: curved geometry reduces solar exposure across the day — effective at low-to-mid latitudes where high sun angles drive roof heat gain. `)+arRef('olgyay1963')});
+      chunks.push({t:'p',h:arNote(`${rf.charAt(0).toUpperCase()+rf.slice(1)} roof: curved geometry reduces solar exposure across the day, effective at low-to-mid latitudes where high sun angles drive roof heat gain. `)+arRef('olgyay1963')});
     }
   }
 
@@ -3572,8 +3572,8 @@ function arMorph(c){
   if(c.va!=null||c.psi!=null){
     const psi=c.psi!=null?+c.psi:null;
     if(psi!=null){
-      if(psi>0.7&&h2<=2) chunks.push({t:'p',h:arOk(`High compactness (ψ = ${psi.toFixed(2)}) minimises the surface-to-volume ratio, reducing heat loss — typical of cold and continental vernacular. `)+arRef('rapoport1969')});
-      else if(psi<0.4&&h2>=4) chunks.push({t:'p',h:arOk(`Low compactness (ψ = ${psi.toFixed(2)}) maximises the ratio of exposed surface to volume. In hot climates this increases exposed surface area, promoting heat dissipation — the logic behind courtyard houses and pavilion forms. `)+arRef('olgyay1963')});
+      if(psi>0.7&&h2<=2) chunks.push({t:'p',h:arOk(`High compactness (ψ = ${psi.toFixed(2)}) minimises the surface-to-volume ratio, reducing heat loss, typical of cold and continental vernacular. `)+arRef('rapoport1969')});
+      else if(psi<0.4&&h2>=4) chunks.push({t:'p',h:arOk(`Low compactness (ψ = ${psi.toFixed(2)}) maximises the ratio of exposed surface to volume. In hot climates this increases exposed surface area, promoting heat dissipation, the logic behind courtyard houses and pavilion forms. `)+arRef('olgyay1963')});
     }
   }
 
@@ -3585,7 +3585,7 @@ function arSim(c){
   const hasSim=c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null||c.sim.oh[0]!=null);
   if(!hasSim) return [{t:'nodata',h:'<p class="ar-nodata">no_simulations</p>'}];
   /* Require real DXF geometry (wall_thick from dxf_analyse).
-     Without it, sim_corpus.py used a fallback square box — results are from
+     Without it, sim_corpus.py used a fallback square box, results are from
      a fictional geometry and must not be shown as building performance data. */
   const hasRealGeom=c.wallThk!=null||c.area!=null;
   if(!hasRealGeom) return [{t:'nodata',h:'<p class="ar-nodata">no_simulations</p>'}];
@@ -3600,11 +3600,11 @@ function arSim(c){
   if(tcp&&tcp[0]!=null){
     const t0=+tcp[0],t1=tcp[1]!=null?+tcp[1]:null,t2=tcp[2]!=null?+tcp[2]:null;
     let base;
-    if(t0>80) base=arOk(`Present TCP = ${t0}% — high performance. More than four-fifths of occupied hours meet the ASHRAE 55-2020 adaptive comfort criteria for naturally ventilated buildings. This indicates the passive envelope strategy is well-calibrated to the present-day climate. `)+arRef('ashrae55')+arRef('dear2002');
-    else if(t0>65) base=arOk(`Present TCP = ${t0}% — good. The building is thermally comfortable for the majority of occupied hours, though a significant minority (${(100-t0).toFixed(0)}%) fall outside the ASHRAE 55 adaptive comfort bounds. `)+arRef('ashrae55');
-    else if(t0>50) base=arNote(`Present TCP = ${t0}% — moderate. Just over half of occupied hours are comfortable; the passive strategy provides partial but incomplete climate control. This is a common finding in tropical and hot semi-arid vernacular, where comfort is achieved primarily during cooler parts of the year. `)+arRef('dear2002');
-    else if(t0>35) base=arNote(`Present TCP = ${t0}% — marginal. Fewer than half of occupied hours meet adaptive comfort criteria. The building is thermally challenging under present conditions; additional passive or active strategies would improve habitability significantly. `)+arRef('ashrae55');
-    else base=arWarn(`Present TCP = ${t0}% — poor. Under a third of occupied hours are thermally comfortable. The passive strategy is insufficient for the present climate. This is often the case in deeply hot or hot-humid climates where the adaptive comfort model itself has limited applicability. `)+arRef('ashrae55')+arRef('dear2002');
+    if(t0>80) base=arOk(`Present TCP = ${t0}%, high performance. More than four-fifths of occupied hours meet the ASHRAE 55-2020 adaptive comfort criteria for naturally ventilated buildings. This indicates the passive envelope strategy is well-calibrated to the present-day climate. `)+arRef('ashrae55')+arRef('dear2002');
+    else if(t0>65) base=arOk(`Present TCP = ${t0}%, good. The building is thermally comfortable for the majority of occupied hours, though a significant minority (${(100-t0).toFixed(0)}%) fall outside the ASHRAE 55 adaptive comfort bounds. `)+arRef('ashrae55');
+    else if(t0>50) base=arNote(`Present TCP = ${t0}%, moderate. Just over half of occupied hours are comfortable; the passive strategy provides partial but incomplete climate control. This is a common finding in tropical and hot semi-arid vernacular, where comfort is achieved primarily during cooler parts of the year. `)+arRef('dear2002');
+    else if(t0>35) base=arNote(`Present TCP = ${t0}%, marginal. Fewer than half of occupied hours meet adaptive comfort criteria. The building is thermally challenging under present conditions; additional passive or active strategies would improve habitability significantly. `)+arRef('ashrae55');
+    else base=arWarn(`Present TCP = ${t0}%, poor. Under a third of occupied hours are thermally comfortable. The passive strategy is insufficient for the present climate. This is often the case in deeply hot or hot-humid climates where the adaptive comfort model itself has limited applicability. `)+arRef('ashrae55')+arRef('dear2002');
 
     let trend='';
     if(t2!=null){
@@ -3613,8 +3613,8 @@ function arSim(c){
       else if(d>20) trend=` `+arWarn(`Projected 2080 TCP = ${t2}% (−${d} pp). A significant decline. Passive performance is substantially degraded; targeted adaptation is required by mid-century.`)+` `+arRef('ipcc2021');
       else if(d>12) trend=` `+arNote(`Projected 2080 TCP = ${t2}% (−${d} pp). Moderate decline. The existing passive strategy partially addresses future conditions but will require supplementary measures.`);
       else if(d>5) trend=` `+arNote(`Projected 2080 TCP = ${t2}% (−${d} pp). Modest decline. The passive strategy retains most of its effectiveness throughout the projection period.`);
-      else if(d>0) trend=` `+arOk(`Projected 2080 TCP = ${t2}% (−${d} pp). Negligible change — passive strategy is robust across all climate scenarios.`);
-      else if(d<0) trend=` `+arOk(`Projected 2080 TCP = ${t2}% (+${Math.abs(d)} pp). Counterintuitive improvement — possible in cold climates where warming reduces cold-stress hours faster than it adds overheating hours.`);
+      else if(d>0) trend=` `+arOk(`Projected 2080 TCP = ${t2}% (−${d} pp). Negligible change, passive strategy is robust across all climate scenarios.`);
+      else if(d<0) trend=` `+arOk(`Projected 2080 TCP = ${t2}% (+${Math.abs(d)} pp). Counterintuitive improvement, possible in cold climates where warming reduces cold-stress hours faster than it adds overheating hours.`);
     }
     if(t1!=null&&t2!=null){
       const d50=+(t0-t1).toFixed(1);
@@ -3628,18 +3628,18 @@ function arSim(c){
     const n0=+ndp[0],n1=ndp[1]!=null?+ndp[1]:null,n2=ndp[2]!=null?+ndp[2]:null;
     let h;
     if(n0===0||n0<50){
-      h=arNote(`NDP = ${Math.round(n0)} h/yr — night temperatures in Jun–Aug are effectively never below the indoor operative temperature and below 22°C simultaneously. Night ventilation for thermal mass discharge is not a viable strategy in this climate. Comfort must be achieved through other means: cross-ventilation, shading, evaporative cooling, or adaptive behaviour. `)+arRef('artmann2007');
+      h=arNote(`NDP = ${Math.round(n0)} h/yr, night temperatures in Jun–Aug are effectively never below the indoor operative temperature and below 22°C simultaneously. Night ventilation for thermal mass discharge is not a viable strategy in this climate. Comfort must be achieved through other means: cross-ventilation, shading, evaporative cooling, or adaptive behaviour. `)+arRef('artmann2007');
     } else if(n0<NT){
-      h=arWarn(`NDP = ${Math.round(n0)} h/yr — already below the Artmann et al. (2007) critical threshold of 1,000 h/yr. The number of summer nights cool enough to discharge the thermal mass is insufficient for the strategy to function effectively. This finding is significant for a massive construction: if the mass cannot cool down at night, it accumulates heat across successive days and becomes a liability rather than an asset. `)+arRef('artmann2007');
+      h=arWarn(`NDP = ${Math.round(n0)} h/yr, already below the Artmann et al. (2007) critical threshold of 1,000 h/yr. The number of summer nights cool enough to discharge the thermal mass is insufficient for the strategy to function effectively. This finding is significant for a massive construction: if the mass cannot cool down at night, it accumulates heat across successive days and becomes a liability rather than an asset. `)+arRef('artmann2007');
     } else if(n2!=null&&n2<NT&&(n1==null||n1>=NT)){
-      h=arWarn(`NDP = ${Math.round(n0)} h/yr currently — above threshold. However, by 2080 (SSP5-8.5), NDP is projected at ${Math.round(n2)} h/yr — crossing the 1,000 h/yr critical threshold. The thermal mass strategy remains viable to mid-century but loses fundamental effectiveness under end-of-century warming. This transition warrants planning now: once NDP falls below threshold, the building's primary passive strategy changes character. `)+arRef('artmann2007');
+      h=arWarn(`NDP = ${Math.round(n0)} h/yr currently, above threshold. However, by 2080 (SSP5-8.5), NDP is projected at ${Math.round(n2)} h/yr, crossing the 1,000 h/yr critical threshold. The thermal mass strategy remains viable to mid-century but loses fundamental effectiveness under end-of-century warming. This transition warrants planning now: once NDP falls below threshold, the building's primary passive strategy changes character. `)+arRef('artmann2007');
     } else if(n1!=null&&n1<NT){
       h=arWarn(`NDP threshold crossed by 2050: projected ${Math.round(n1)} h/yr < 1,000 h/yr. The night cooling capacity supporting thermal mass effectiveness deteriorates within this generation's lifespan under SSP5-8.5. `)+arRef('artmann2007');
     } else {
       const drop=n2!=null?Math.round(n0-n2):0;
-      if(drop>800) h=arNote(`NDP = ${Math.round(n0)} h/yr currently, declining to ${n2!=null?Math.round(n2):'-'} h/yr by 2080 (−${drop} h/yr). Remains above the 1,000 h/yr threshold throughout — thermal mass strategy remains viable — but the margin is shrinking. Monitor closely as projections are updated. `)+arRef('artmann2007');
+      if(drop>800) h=arNote(`NDP = ${Math.round(n0)} h/yr currently, declining to ${n2!=null?Math.round(n2):'-'} h/yr by 2080 (−${drop} h/yr). Remains above the 1,000 h/yr threshold throughout, thermal mass strategy remains viable, but the margin is shrinking. Monitor closely as projections are updated. `)+arRef('artmann2007');
       else if(drop>400) h=arNote(`NDP = ${Math.round(n0)} h/yr → ${n2!=null?Math.round(n2):'-'} h/yr in 2080. A gradual decline, comfortably above the 1,000 h/yr threshold across all scenarios. Night cooling strategy remains intact. `)+arRef('artmann2007');
-      else h=arOk(`NDP robust: ${Math.round(n0)} h/yr currently${n2!=null?' → '+Math.round(n2)+' h/yr in 2080':''}. The thermal mass discharge capacity is well above the Artmann et al. (2007) threshold across all projected scenarios — the building's night cooling strategy will remain effective throughout the century. `)+arRef('artmann2007');
+      else h=arOk(`NDP robust: ${Math.round(n0)} h/yr currently${n2!=null?' → '+Math.round(n2)+' h/yr in 2080':''}. The thermal mass discharge capacity is well above the Artmann et al. (2007) threshold across all projected scenarios, the building's night cooling strategy will remain effective throughout the century. `)+arRef('artmann2007');
     }
     chunks.push({t:'p',h});
   }
@@ -3657,7 +3657,7 @@ function arSim(c){
     } else if(h2val!=null&&h2val>3000){
       h=arWarn(`Severe overheating by 2080: ${Math.round(h2val)} h/yr (${h2p}% of year) above the ASHRAE 55 upper adaptive comfort limit. Up from ${Math.round(h0)} h/yr (${h0p}%) at present. At this intensity, the thermal environment constitutes a health risk during prolonged heat events. Active cooling or fundamental envelope modification will be necessary to maintain habitability under 2080 conditions. `)+arRef('ashrae55')+arRef('ipcc2021');
     } else if(h2val!=null&&h2val>1200){
-      h=arWarn(`Significant overheating by 2080: ${Math.round(h2val)} h/yr (${h2p}% of year), up from ${Math.round(h0)} h/yr (${h0p}%) today. An increase of ${Math.round(h2val-h0)} h/yr represents a meaningful shift in thermal character. Targeted passive improvements — augmented external shading on east and west facades, improved night ventilation pathways, reflective roof coatings — are warranted before mid-century. `)+arRef('szokolay2008')+arRef('olgyay1963');
+      h=arWarn(`Significant overheating by 2080: ${Math.round(h2val)} h/yr (${h2p}% of year), up from ${Math.round(h0)} h/yr (${h0p}%) today. An increase of ${Math.round(h2val-h0)} h/yr represents a meaningful shift in thermal character. Targeted passive improvements, augmented external shading on east and west facades, improved night ventilation pathways, reflective roof coatings, are warranted before mid-century. `)+arRef('szokolay2008')+arRef('olgyay1963');
     } else {
       const inc=h2val!=null?Math.round(h2val-h0):null;
       h=arNote(`Overheating: ${Math.round(h0)} h/yr present${h2val!=null?` → ${Math.round(h2val)} h/yr 2080 (+${inc} h/yr)`:''}. The passive strategy manages overheating adequately, with a moderate increase in stress over the projection period. `);
@@ -3708,10 +3708,10 @@ function arSim(c){
       li+=`<p class="ar-adapt-item">NDP already below threshold: the thermal mass strategy is compromised. Evaluate whether reducing thermal mass in favour of lightweight well-insulated construction with mechanical cooling would outperform the existing typology under 2050–2080 conditions. ${arRef('szokolay2008')}</p>`;
     }
     if(hspCrit){
-      li+=`<p class="ar-adapt-item">Augment solar control on east and west facades — these receive low-angle morning and afternoon sun that horizontal overhangs cannot easily shade. External louvres, vegetation, or light shelves are effective options. Raising roof surface albedo also reduces peak loads. ${arRef('olgyay1963')}</p>`;
+      li+=`<p class="ar-adapt-item">Augment solar control on east and west facades, these receive low-angle morning and afternoon sun that horizontal overhangs cannot easily shade. External louvres, vegetation, or light shelves are effective options. Raising roof surface albedo also reduces peak loads. ${arRef('olgyay1963')}</p>`;
     }
     if(topHot&&['tropical','desert','steppe'].includes(fam2)){
-      li+=`<p class="ar-adapt-item">Evaluate passive evaporative cooling (fountain courts, wetted surfaces, earthen pots) if local water availability permits — can reduce T_op by 3–6°C in arid and semi-arid contexts. Earth-coupled cooling through buried pipes is also viable in appropriate soils. ${arRef('givoni1976')}</p>`;
+      li+=`<p class="ar-adapt-item">Evaluate passive evaporative cooling (fountain courts, wetted surfaces, earthen pots) if local water availability permits, can reduce T_op by 3–6°C in arid and semi-arid contexts. Earth-coupled cooling through buried pipes is also viable in appropriate soils. ${arRef('givoni1976')}</p>`;
     }
     if(tcpCrit){
       li+=`<p class="ar-adapt-item">TCP below 50% by 2080 signals that the passive strategy alone cannot maintain comfort for the majority of occupied hours. A fundamental reassessment is warranted: the original typology may need to be adapted rather than simply maintained. Options include controlled natural ventilation, phase-change materials, or hybrid passive-active systems. ${arRef('szokolay2008')}</p>`;
@@ -3770,7 +3770,7 @@ function generateAdaptiveRecs(c,slot){
     else div.className='ar-p';
     div.innerHTML=item.h;
     body.appendChild(div);
-    /* Scroll after layout — rAF ensures scrollHeight is updated */
+    /* Scroll after layout, rAF ensures scrollHeight is updated */
     requestAnimationFrame(()=>{
       if(scrollEl) scrollEl.scrollTop=scrollEl.scrollHeight;
       else div.scrollIntoView({behavior:'instant',block:'nearest'});
@@ -3782,7 +3782,7 @@ function generateAdaptiveRecs(c,slot){
 
 /* ===================== FLOORPLAN MOSAIC =====================
    Default empty-panel state: a scrollable grid of all case floorplans.
-   Cases without a plan are excluded — only real drawings shown.
+   Cases without a plan are excluded, only real drawings shown.
    Clicking a thumbnail zooms it to fill the panel (FLIP animation)
    then opens the case study. Clicking a map marker also triggers the
    zoom if the mosaic is currently visible and that case has a plan. ---- */
@@ -3811,7 +3811,7 @@ function mosaicHouseSVG(progress){
 }
 
 async function buildMosaic(cases, onProgress){
-  /* probe in batches of 4 — conservative to avoid connection pool exhaustion.
+  /* probe in batches of 4, conservative to avoid connection pool exhaustion.
      Also yields between batches when a case panel is actively loading plans. */
   const BATCH=4;
   const found=[];
@@ -3880,7 +3880,7 @@ function renderEmptyPanel(el){
     renderMosaicGrid(el,FLOORPLAN_MOSAIC);
     return;
   }
-  /* show empty grid immediately — thumbnails appear as probes complete */
+  /* show empty grid immediately, thumbnails appear as probes complete */
   el.innerHTML=`<div class="mosaic-wrap"><div class="mosaic-grid" id="mosaicGrid"></div>${rouletteBtnHTML()}</div>`;
   wireRouletteBtn();
   FLOORPLAN_MOSAIC=[];
@@ -3943,7 +3943,7 @@ function selectCaseCore(id){
 }
 
 function selectCase(id){
-  /* ensure the case study panel is actually visible — needed since
+  /* ensure the case study panel is actually visible, needed since
      mobile no longer auto-opens the drawer on load */
   if(!document.body.classList.contains('cs-open')){
     document.body.classList.add('cs-open');
@@ -3998,7 +3998,7 @@ function houseSVG(c){
 const MONTHS=['J','F','M','A','M','J','J','A','S','O','N','D'];
 const MONTHS_FULL=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const DAYS_PER_MONTH=[31,28,31,30,31,30,31,31,30,31,30,31];
-/* Absolute chart axis ranges — derived from the full 57-station EPW dataset.
+/* Absolute chart axis ranges, derived from the full 57-station EPW dataset.
    Fixed so comparisons across case studies are always visually meaningful. */
 const AX={
   T_MIN:-15, T_MAX:35,          /* °C monthly mean temperature */
@@ -4053,7 +4053,7 @@ async function fetchParseEpw(path){
   const stationLat=parseFloat(locParts[6]),stationLon=parseFloat(locParts[7]),stationElev=parseFloat(locParts[9]);
   const days_per_month=[31,28,31,30,31,30,31,31,30,31,30,31];
   const monthlyAcc=Array.from({length:12},()=>({temp:[],rh:[],ghi:[],wdir:[],wspd:[]}));
-  /* compact hourly arrays for psychrometric scatter — pre-allocated for 8760 rows */
+  /* compact hourly arrays for psychrometric scatter, pre-allocated for 8760 rows */
   const hTemp=new Float32Array(8760);
   const hRh=new Uint8Array(8760);
   const hWspd=new Float32Array(8760);
@@ -4140,7 +4140,7 @@ function epwClimateSummary(epw){
    When a case study is selected in full mode, a square marker appears
    at the assigned EPW station's coordinates and a thin dotted line
    connects it to the case study pin. Station coords come from the
-   EPW LOCATION header (line 1) — no separate spreadsheet needed.
+   EPW LOCATION header (line 1), no separate spreadsheet needed.
    Only reads the first streamed chunk to avoid downloading 1.5MB
    for coordinates alone; reuses the full parse cache if already warm. ---- */
 async function fetchStationCoord(epwFilename){
@@ -4188,7 +4188,7 @@ async function updateStationMarker(c){
   if(MOCK||!c||!c.epw||!c.lat||!map)return;
   const coord=await fetchStationCoord(c.epw);
   if(!coord)return;
-  /* square station marker — themes via CSS variable */
+  /* square station marker, themes via CSS variable */
   const icon=L.divIcon({
     className:'station-marker-icon',
     html:'<div class="station-sq"></div>',
@@ -4197,10 +4197,10 @@ async function updateStationMarker(c){
   stationMarker=L.marker([coord.lat,coord.lon],{icon,interactive:true,zIndexOffset:-100})
     .addTo(map)
     .bindTooltip(`EPW station: ${c.epw.replace(/_TMYx\.\d{4}-\d{4}\.epw/,'').replace(/_/g,' ')}`,{permanent:false,direction:'top'});
-  /* dotted connecting line — read the theme colour from CSS vars */
+  /* dotted connecting line, read the theme colour from CSS vars */
   const lineColor=getComputedStyle(document.documentElement).getPropertyValue('--ink').trim()||'#ccc';
   const stLatLngs=[[c.lat,c.lon],[coord.lat,coord.lon]];
-  const stTip=`EPW station link${coord.name?' — '+coord.name:''}`;
+  const stTip=`EPW station link${coord.name?', '+coord.name:''}`;
   const stHit=L.polyline(stLatLngs,{color:'#000',weight:12,opacity:0,interactive:true}).addTo(map);
   stHit.bindTooltip(stTip,{sticky:true});
   stationLine=L.polyline(stLatLngs,{
@@ -4269,12 +4269,12 @@ async function fetchPlans(caseId){
   if(PLAN_CACHE[caseId])return PLAN_CACHE[caseId];
   const base=casePhotoBasename(caseId);
   const found=[];
-  /* 1. floor plan — single file, no number */
+  /* 1. floor plan, single file, no number */
   for(const ext of PHOTO_EXTS){
     const url=`${DATA_BASE}/plans/${base}_floorplan.${ext}`;
     if(await safeHead(url)){found.push({url,label:'FLOOR PLAN'});break;}
   }
-  /* 2. elevations — scan all numbers 01-20, stop after 3 consecutive misses
+  /* 2. elevations, scan all numbers 01-20, stop after 3 consecutive misses
      (handles non-sequential numbering like elevation03, elevation04 with no 01/02) */
   let misses=0;
   for(let n=1;n<=20;n++){
@@ -4285,7 +4285,7 @@ async function fetchPlans(caseId){
     }
     if(hit){misses=0;}else{misses++;if(misses>=3)break;}
   }
-  /* 3. sections — same logic */
+  /* 3. sections, same logic */
   misses=0;
   for(let n=1;n<=20;n++){
     const num=String(n).padStart(2,'0');let hit=false;
@@ -4393,7 +4393,7 @@ function wirePhotoCarousel(containerEl,urls,caseId){
   });
 }
 
-/* ── shared mini UFO-abduction loader — grey/monochrome, used
+/* ── shared mini UFO-abduction loader, grey/monochrome, used
    everywhere a small "loading" indicator was previously the
    pulsing house outline (photo/plan carousels, mosaic thumbnails) ── */
 const UFO_MINI_FRAMES=["<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .mcls-1 {\n        fill: currentColor;\n        fill-opacity: 0.1;\n      }\n\n      .mcls-1, .mcls-2, .mcls-3, .mcls-4 {\n        stroke: currentColor;\n        stroke-miterlimit: 10;\n      }\n\n      .mcls-1, .mcls-2, .mcls-4 {\n        stroke-width: 2px;\n      }\n\n      .mcls-2 {\n        fill: none;\n      }\n\n      .mcls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <g>\n      <path class=\"mcls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n      <ellipse class=\"mcls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n      <path class=\"mcls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n      <path class=\"mcls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n      <path class=\"mcls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n    </g>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"mcls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <polygon points=\"776.8 485.25 773.64 492.27 757.54 480.36 757.54 552.62 645.99 552.62 645.99 480.31 629.86 492.24 626.73 485.28 695.46 434.44 701.79 429.77 708.05 434.4 737.69 456.32 737.69 442.37 750.83 442.37 750.83 466.04 776.8 485.25\"/>\n    <path class=\"mcls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"mcls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n  </g>\n</svg>", "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .mcls-1 {\n        fill: currentColor;\n        fill-opacity: 0.1;\n      }\n\n      .mcls-1, .mcls-2, .mcls-3, .mcls-4 {\n        stroke: currentColor;\n        stroke-miterlimit: 10;\n      }\n\n      .mcls-1, .mcls-2, .mcls-4 {\n        stroke-width: 2px;\n      }\n\n      .mcls-2 {\n        fill: none;\n      }\n\n      .mcls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <g>\n      <path class=\"mcls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n      <ellipse class=\"mcls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n      <path class=\"mcls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n      <path class=\"mcls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n      <path class=\"mcls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n    </g>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"mcls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <polygon points=\"773.34 420.42 771.91 427.98 753.47 420.16 770.35 490.42 661.89 516.49 645 446.18 632.1 461.55 627.43 455.51 682.38 390.02 687.44 384 694.61 387.04 728.55 401.43 725.29 387.86 738.07 384.79 743.6 407.81 773.34 420.42\"/>\n    <path class=\"mcls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"mcls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n  </g>\n</svg>", "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .mcls-1 {\n        fill: currentColor;\n        fill-opacity: 0.1;\n      }\n\n      .mcls-1, .mcls-2, .mcls-3, .mcls-4 {\n        stroke: currentColor;\n        stroke-miterlimit: 10;\n      }\n\n      .mcls-1, .mcls-2, .mcls-4 {\n        stroke-width: 2px;\n      }\n\n      .mcls-2 {\n        fill: none;\n      }\n\n      .mcls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <g>\n      <path class=\"mcls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n      <ellipse class=\"mcls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n      <path class=\"mcls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n      <path class=\"mcls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n      <path class=\"mcls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n    </g>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"mcls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <polygon points=\"780.13 409.07 777.67 416.36 760.49 406.07 767.52 477.99 656.5 488.84 649.46 416.88 634.57 430.32 630.78 423.7 694.24 366.41 700.08 361.15 706.76 365.15 738.39 384.08 737.04 370.2 750.11 368.92 752.42 392.47 780.13 409.07\"/>\n    <path class=\"mcls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"mcls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n  </g>\n</svg>", "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .mcls-1 {\n        fill: currentColor;\n        fill-opacity: 0.1;\n      }\n\n      .mcls-1, .mcls-2, .mcls-3, .mcls-4 {\n        stroke: currentColor;\n        stroke-miterlimit: 10;\n      }\n\n      .mcls-1, .mcls-2, .mcls-4 {\n        stroke-width: 2px;\n      }\n\n      .mcls-2 {\n        fill: none;\n      }\n\n      .mcls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <g>\n      <path class=\"mcls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n      <ellipse class=\"mcls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n      <path class=\"mcls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n      <path class=\"mcls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n      <path class=\"mcls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n    </g>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"mcls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <polygon points=\"768.24 380.81 763.59 386.95 750.55 371.75 734.43 442.18 625.69 417.3 641.82 346.81 623.44 354.85 621.94 347.36 700.28 313.14 707.49 309.99 712.56 315.9 736.56 343.88 739.68 330.29 752.48 333.22 747.2 356.29 768.24 380.81\"/>\n    <path class=\"mcls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"mcls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n  </g>\n</svg>", "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1366 768\">\n  <defs>\n    <style>\n      .mcls-1 {\n        fill: currentColor;\n        fill-opacity: 0.1;\n      }\n\n      .mcls-1, .mcls-2, .mcls-3, .mcls-4 {\n        stroke: currentColor;\n        stroke-miterlimit: 10;\n      }\n\n      .mcls-1, .mcls-2, .mcls-4 {\n        stroke-width: 2px;\n      }\n\n      .mcls-2 {\n        fill: none;\n      }\n\n      .mcls-3 {\n        stroke-width: 3px;\n      }\n    </style>\n  </defs>\n  <g id=\"Layer_1\" data-name=\"Layer 1\">\n    <path class=\"mcls-4\" d=\"M705.46,226.7c29.64,0,58.02,1.2,84.27,3.41-8.14-33.29-44.99-58.41-89.25-58.41s-81.78,25.6-89.45,59.32c.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3Z\"/>\n    <ellipse class=\"mcls-4\" cx=\"705.45\" cy=\"281.69\" rx=\"242.52\" ry=\"36.38\"/>\n    <path class=\"mcls-4\" d=\"M773.24,295.44c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n    <path class=\"mcls-4\" d=\"M947.95,281.22c-1.67-19.87-109.61-35.9-242.49-35.9s-240.82,16.03-242.49,35.9c.82-22.58,61.65-41.91,148.07-50.2.04,0,.07,0,.11-.01,28.99-2.76,60.86-4.3,94.31-4.3,29.64,0,58.02,1.2,84.27,3.41,91.77,7.71,157.36,27.66,158.22,51.11Z\"/>\n  </g>\n  <g id=\"Layer_3\" data-name=\"Layer 3\">\n    <path class=\"mcls-1\" d=\"M850.49,577.34c0,.75-.25,1.5-.73,2.23-7.45,11.37-71.42,20.27-149.27,20.27s-141.83-8.9-149.28-20.27c-.47-.73-.72-1.48-.72-2.23,0-.62.17-1.24.51-1.86v-.02s76.73-280.02,76.73-280.02c0-1.97,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.5,63.23-5.5s50.68,2.21,63.22,5.5c6.06,1.6,9.53,3.44,9.53,5.41l76.73,280.02v.02c.35.62.52,1.24.52,1.86Z\"/>\n    <path class=\"mcls-3\" d=\"M851.21,575.12c0,.75-.25,1.5-.72,2.22-7.45,11.38-71.43,20.28-149.28,20.28s-141.82-8.9-149.27-20.28c-.48-.72-.73-1.47-.73-2.22,0-4.05,7.15-7.85,19.65-11.15,25.83-6.78,74.52-11.35,130.35-11.35s104.5,4.57,130.35,11.35c12.5,3.3,19.65,7.1,19.65,11.15Z\"/>\n    <path class=\"mcls-2\" d=\"M773.14,296.52c0,.36-.12.73-.35,1.08-3.61,5.52-34.64,9.83-72.4,9.83s-68.79-4.32-72.4-9.83c-.23-.35-.35-.72-.35-1.08,0-1.96,3.47-3.81,9.53-5.41,12.53-3.29,36.15-5.51,63.22-5.51s50.69,2.22,63.22,5.51c6.06,1.6,9.53,3.44,9.53,5.41Z\"/>\n    <path class=\"mcls-4\" d=\"M784.71,281.69c0,1.03-.82,2.02-2.38,2.98l-9.45,11.85c.23-.35.35-.72.35-1.08,0-1.96-3.47-3.81-9.53-5.41-12.54-3.29-36.15-5.51-63.22-5.51s-50.7,2.22-63.22,5.51c-6.06,1.6-9.53,3.44-9.53,5.41,0,.36.12.73.35,1.08l-9.45-11.85c-1.55-.96-2.38-1.95-2.38-2.98,0-6.97,37.71-12.64,84.23-12.64s84.23,5.66,84.23,12.64Z\"/>\n    <path d=\"M700.49,291.79c-21.69,0-41.16,1.27-54.49,3.28v56.36h111.55v-55.95c-13.33-2.25-33.92-3.69-57.06-3.69Z\"/>\n  </g>\n</svg>"];
@@ -4426,7 +4426,7 @@ function loadingHouseHTML(){
 }
 
 function genericHouseOutline(){
-  /* Simple abstract house silhouette — no windows, no text, no detail.
+  /* Simple abstract house silhouette, no windows, no text, no detail.
      Uses currentColor so it themes automatically with dark/light mode. */
   return `<div class="photo-carousel" style="display:flex;align-items:center;justify-content:center;">
     <svg viewBox="0 0 120 90" width="120" height="90" xmlns="http://www.w3.org/2000/svg" style="opacity:0.22;color:var(--ink);">
@@ -4472,23 +4472,23 @@ async function renderPhotoBlock(c,slot){
   _mosaicPaused=false;
   if(!blockEl.isConnected)return;
   if(urls.length){
-    /* real photos found — show carousel */
+    /* real photos found, show carousel */
     blockEl.innerHTML=renderPhotoCarousel(urls,c.id);
     wirePhotoCarousel(blockEl,urls,c.id);
     return;
   }
-  /* no photos — try elevation/section plan as single fallback image */
+  /* no photos, try elevation/section plan as single fallback image */
   const fallbackUrl=await fetchPhotoFallbackUrl(c.id);
   if(!blockEl.isConnected)return;
   if(fallbackUrl){
     blockEl.innerHTML=`<div class="photo-carousel"><img class="active" src="${fallbackUrl}" alt="Building drawing" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--paper);opacity:1;"/></div>`;
     return;
   }
-  /* nothing found — generic house outline */
+  /* nothing found, generic house outline */
   blockEl.innerHTML=genericHouseOutline();
 }
 function monthlyTemp(c,s){
-  /* Synthetic fallback — used in demo mode and as basis for derived metrics */
+  /* Synthetic fallback, used in demo mode and as basis for derived metrics */
   const south=(c.lat||0)<0;
   const meanT=(c.mockMeanT!=null?c.mockMeanT:10)+[0,2.0,3.8][s];
   const amp=8+Math.abs(45-Math.abs(c.lat||45))*0.12;
@@ -4589,7 +4589,7 @@ function tempPrecipChart(c,s,epwData){
   return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="monthly temperature and precipitation">${g}</svg>`;
 }
 function solarBreakdownChart(c,s,epwData){
-  /* DNI + DHI stacked bars. Immediately shows direct/diffuse balance —
+  /* DNI + DHI stacked bars. Immediately shows direct/diffuse balance 
      high DNI fraction = clear/sunny = shading strategies relevant;
      high DHI fraction = overcast/diffuse = daylighting strategies relevant.
      Both shown in kWh/m²/day on the same absolute scale as GHI chart. */
@@ -4599,8 +4599,8 @@ function solarBreakdownChart(c,s,epwData){
     return noDataChart(300,86,'direct/diffuse breakdown: no DNI/DHI data');
   }
   const W=300,H=86,pad=34,maxG=AX.GHI_MAX,x=i=>pad+i*(W-pad-6)/11,barW=((W-pad-6)/11)*0.6,baseY=H-18;
-  const DIRECT_COL='#D4880F';  /* warm amber — direct beam */
-  const DIFF_COL='var(--slate)'; /* cool grey-blue — diffuse sky */
+  const DIRECT_COL='#D4880F';  /* warm amber, direct beam */
+  const DIFF_COL='var(--slate)'; /* cool grey-blue, diffuse sky */
   let g='';
   /* y-axis: same kWh/m²/day scale as the GHI chart, with ticks + labels */
   [0,3,6,9].forEach(v=>{
@@ -4655,7 +4655,7 @@ function ghiChart(c,s,epwData){
   return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="monthly solar radiation">${g}</svg>`;
 }
 function psychroChart(c,s,epwData){
-  /* Returns a canvas placeholder — actual drawing done by drawPsychroCanvas after DOM insertion */
+  /* Returns a canvas placeholder, actual drawing done by drawPsychroCanvas after DOM insertion */
   const id=`psychro-canvas-${s}`;
   return `<div class="chartwrap" style="padding:0;position:relative;">
     <canvas id="${id}" style="width:100%;display:block;" height="260"></canvas>
@@ -4680,13 +4680,13 @@ const DIN1946_POLY=[
 
 /* ASHRAE 55-2017 §5.2.1 Graphical Comfort Zone Method.
    Sources used:
-     - Upper humidity limit: 12 g/kg — explicitly stated in §5.2.1
+     - Upper humidity limit: 12 g/kg, explicitly stated in §5.2.1
      - Temperature range: Table 5.2.1.1
          Winter (1.0 clo, 1.1 met): 20.0–23.6°C operative temp
          Summer (0.5 clo, 1.1 met): 23.6–26.8°C operative temp
      - Operative temp ≈ dry-bulb (standard assumption, still air, Trad ≈ Tair)
      - Right boundary slope: at W=12 g/kg the warm limit is ~25.5°C
-       (standard Figure 5.2.1.1 — the upper temp decreases with humidity
+       (standard Figure 5.2.1.1, the upper temp decreases with humidity
        because evaporative cooling capacity drops)
      - No lower humidity limit in ASHRAE 55; polygon drawn to chart floor (0 g/kg) */
 const ASHRAE55_POLY=[
@@ -4773,7 +4773,7 @@ function drawPsychroCanvas(canvasId,epwData){
   }
 
   /* ── ASHRAE 55-2017 §5.2.1 comfort zone ── */
-  const a55Col=dark?'rgba(255,80,160,0.92)':'rgba(220,30,120,0.92)';  /* bright pink — distinct from blue data points */
+  const a55Col=dark?'rgba(255,80,160,0.92)':'rgba(220,30,120,0.92)';  /* bright pink, distinct from blue data points */
   const a55Poly=ASHRAE55_POLY.map(([T,w])=>[tx(T),wy(w)]);
   function buildA55Path(){
     ctx.beginPath();
@@ -4792,7 +4792,7 @@ function drawPsychroCanvas(canvasId,epwData){
   ctx.lineWidth=3;ctx.strokeText('ASHRAE 55',a55LabelX,a55LabelY);
   ctx.fillStyle=a55Col;ctx.fillText('ASHRAE 55',a55LabelX,a55LabelY);
 
-  /* ── DIN 1946-2 comfort zone — build path once, reuse for fill + hatch + stroke */
+  /* ── DIN 1946-2 comfort zone, build path once, reuse for fill + hatch + stroke */
   const dinCol=dark?'rgba(80,210,110,0.9)':'rgba(0,150,50,0.9)';
   const poly=DIN1946_POLY.map(([T,wVal,rhi])=>{
     const w=wVal!=null?wVal:humidityRatio(T,rhi==='lo'?0.30:0.65);
@@ -4800,7 +4800,7 @@ function drawPsychroCanvas(canvasId,epwData){
   });
   function buildPolyPath(){ctx.beginPath();poly.forEach(([px,py],i)=>i===0?ctx.moveTo(px,py):ctx.lineTo(px,py));ctx.closePath();}
 
-  /* hatching (Schraffur) — diagonal lines clipped to polygon */
+  /* hatching (Schraffur), diagonal lines clipped to polygon */
   ctx.save();
   buildPolyPath();ctx.clip();
   ctx.strokeStyle=dark?'rgba(80,210,110,0.28)':'rgba(0,150,50,0.22)';
@@ -4820,7 +4820,7 @@ function drawPsychroCanvas(canvasId,epwData){
   ctx.strokeStyle=dinCol;ctx.lineWidth=2.2;ctx.setLineDash([6,4]);
   ctx.stroke();ctx.setLineDash([]);
 
-  /* label — large and prominent */
+  /* label, large and prominent */
   const labelX=tx(22.5),labelY=wy(humidityRatio(20,0.65))-10;
   ctx.font=`bold 11px "IBM Plex Mono",monospace`;ctx.textAlign='center';
   ctx.strokeStyle=dark?'rgba(18,18,20,0.8)':'rgba(245,242,237,0.85)';
@@ -5088,7 +5088,7 @@ function extremesTabHTML(c,epwData){
 
   /* ── seasonal swing: annual range of monthly mean temperature ─
      max(monthly mean) − min(monthly mean). Unlike diurnal swing
-     this needs no hourly data and no hemisphere assumption — it
+     this needs no hourly data and no hemisphere assumption, it
      just takes whichever months are hottest/coldest, so it works
      the same way in both hemispheres. ─────────────────────────── */
   const monthlyMeans=(epwData&&epwData.temp)?epwData.temp.filter(t=>t!=null):[];
@@ -5175,7 +5175,7 @@ function extremesTabHTML(c,epwData){
       </div>
     </div>
     <div style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin-top:10px;line-height:1.6;display:flex;align-items:flex-start;gap:6px;">
-      <span>${SCENARIOS_LONG[scn]}  ${src}${MOCK?' — mock values':''}<br>Wet-bulb: Stull, R. (2011). <em>J. Atmos. Sci.</em> 68(10), 2267–2269. ${wbNote}</span>
+      <span>${SCENARIOS_LONG[scn]}  ${src}${MOCK?', mock values':''}<br>Wet-bulb: Stull, R. (2011). <em>J. Atmos. Sci.</em> 68(10), 2267–2269. ${wbNote}</span>
       <span class="action-info-icon" style="font-size:11px;position:relative;flex-shrink:0;" id="extremesInfoIcon">ⓘ
         <div class="action-info-pop" id="extremesInfoPop" style="bottom:calc(100% + 6px);top:auto;right:0;width:330px;">
           <div class="ai-head">_health risk thresholds</div>
@@ -5204,7 +5204,7 @@ function renderClimateTabContent(key,c,epwData,slot){
 async function renderClimateTabAsync(key,c,slot){
   const el=document.getElementById('climateTabContent-'+slot);
   if(!el)return;
-  /* same vernacularBIGBROTHER exception as caseDetailHTML — slot B always
+  /* same vernacularBIGBROTHER exception as caseDetailHTML, slot B always
      fetches present-day data during an active comparison */
   const displayScn=(bigBrotherActive&&slot==='B')?0:scn;
   let epwData=null;
@@ -5248,7 +5248,7 @@ function switchClimateSubTab(slot,key,c){
 
 /* ===================== 3D PERFORMANCE VIEWER =====================
    A small rotatable building model recolored as a heatmap, with several
-   diagrams to click through. Mock formulas only — visual demo of how the
+   diagrams to click through. Mock formulas only, visual demo of how the
    tool would surface Honeybee/EnergyPlus-style results. */
 const HEAT_RAMP=[[0.00,'#1F3A6B'],[0.25,'#5E6B73'],[0.50,'#8C7A2E'],[0.75,'#A4691E'],[1.00,'#C0291F']];
 function hexToRgb(h){const n=parseInt(h.slice(1),16);return{r:(n>>16)&255,g:(n>>8)&255,b:n&255};}
@@ -5267,16 +5267,16 @@ function vizCacheToSimData(vc){
   return{present:m(vc.present),ssp585_2050:m(vc.ssp585_2050),ssp585_2080:m(vc.ssp585_2080)};
 }
 const SIM_STEP={A:0,B:0};   /* continuous slider 0-8 per slot */
-let _simDrivingSlot=null;    /* set to 'A'|'B' while small slider is driving — prevents snap-back */
+let _simDrivingSlot=null;    /* set to 'A'|'B' while small slider is driving, prevents snap-back */
 const NDP_THRESHOLD=1000;   /* Artmann et al. 2007 h/yr */
 const SIM_CMAPS={
   /* tcp:  0=catastrophic (deep red) → 1=excellent (deep green). Clean semantic. */
   tcp: [[0.82,0.04,0.08],[0.95,0.25,0.0],[0.98,0.58,0.0],[0.88,0.88,0.0],[0.40,0.88,0.08],[0.04,0.72,0.22],[0.0,0.50,0.28]],
-  /* hsp:  mirror of tcp — 0=safe (deep green) → 1=overheating (deep red) */
+  /* hsp:  mirror of tcp, 0=safe (deep green) → 1=overheating (deep red) */
   hsp: [[0.0,0.50,0.28],[0.04,0.72,0.22],[0.40,0.88,0.08],[0.88,0.88,0.0],[0.98,0.58,0.0],[0.95,0.25,0.0],[0.82,0.04,0.08]],
-  /* ndp:  same direction as tcp — more hours = better cooling */
+  /* ndp:  same direction as tcp, more hours = better cooling */
   ndp: [[0.82,0.04,0.08],[0.95,0.25,0.0],[0.98,0.58,0.0],[0.88,0.88,0.0],[0.40,0.88,0.08],[0.04,0.72,0.22],[0.0,0.50,0.28]],
-  /* t_op: thermal — cold blue to hot red */
+  /* t_op: thermal, cold blue to hot red */
   t_op:[[0.08,0.16,0.72],[0.0,0.55,0.90],[0.0,0.82,0.58],[0.88,0.88,0.0],[0.98,0.50,0.0],[0.88,0.08,0.08]],
 };
 function simCmap(t,metric){
@@ -5326,7 +5326,7 @@ let bbNoMatch=false,bbCousin=null,bbCousinDist=null;
 let koppenOverlayActive=false,koppenOverlayLayer=null,_koppenRenderTimer=null;
 /* averageTYPOLOGY state */
 /* shapeSHIFT: a heuristic "what if the recommended fix were applied" preview
-   — not a re-simulation. Severity scales with how far into the future the
+  , not a re-simulation. Severity scales with how far into the future the
    scenario slider sits; which geometric levers move depends on which
    diagram tab is active (eaves/WWR/roof pitch for solar-driven problems,
    WWR for heat-loss). Mirrors the same logic already behind the Adaptive
@@ -5416,7 +5416,7 @@ function buildingDims(c,slot){
   return{W,D,H,pitch,eave};
 }
 function createNoDataCube(container,slot,label){
-  /* Wireframe-only cube — edges contrast against any background.
+  /* Wireframe-only cube, edges contrast against any background.
      Filled faces are intentionally omitted because they match the
      background colour in both light and dark mode and become invisible. */
   const w=container.clientWidth||300,h=container.clientHeight||210;
@@ -5434,7 +5434,7 @@ function createNoDataCube(container,slot,label){
     const dark=document.documentElement.getAttribute('data-theme')==='dark';
     const geo=new THREE.BoxGeometry(10,10,10);
 
-    /* Wireframe edges — clearly visible on both dark and light backgrounds */
+    /* Wireframe edges, clearly visible on both dark and light backgrounds */
     const edges=new THREE.LineSegments(
       new THREE.EdgesGeometry(geo),
       new THREE.LineBasicMaterial({color:dark?0xc0c0b0:0x606055})
@@ -5448,13 +5448,13 @@ function createNoDataCube(container,slot,label){
     const gPts2=[new THREE.Vector3(0,0,-18),new THREE.Vector3(0,0,18)];
     scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(gPts2),gMat));
 
-    /* HTML text overlay — always readable, theme-aware */
+    /* HTML text overlay, always readable, theme-aware */
     const lbl=document.createElement('div');
     lbl.style.cssText='position:absolute;bottom:10px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);pointer-events:none;letter-spacing:.04em;';
     lbl.textContent=label||'simulation not yet run';
     container.appendChild(lbl);
 
-    /* orbit controls — same pattern as regular viewer */
+    /* orbit controls, same pattern as regular viewer */
     const radius=22;let az=Math.PI*0.28,pol=Math.PI*0.36,dragging=false,lastX=0,lastY=0;
     function place(){
       camera.position.set(radius*Math.sin(pol)*Math.sin(az),radius*Math.cos(pol)+3,radius*Math.sin(pol)*Math.cos(az));
@@ -5474,7 +5474,7 @@ function createNoDataCube(container,slot,label){
     /* register before tick so VIEWERS[slot].raf = N works */
     const thisViewer={renderer,scene,camera,container,onDown,onMove,onUp,onResize,raf:0};
     VIEWERS[slot]=thisViewer;
-    /* Initial render — must happen before RAF so something is visible immediately */
+    /* Initial render, must happen before RAF so something is visible immediately */
     renderer.render(scene,camera);
     function tick(){
       if(VIEWERS[slot]!==thisViewer)return;
@@ -5502,7 +5502,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
   const _m0=simData.present||{};
   if(_m0.tcp==null&&_m0.hsp_hours==null&&_m0.ndp_hours==null&&_m0.t_op_mean==null){
     if(c&&c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null||c.sim.oh[0]!=null)){
-      /* Inject Excel metrics into simData — viz JSON geometry used, Excel metrics for display */
+      /* Inject Excel metrics into simData, viz JSON geometry used, Excel metrics for display */
       ['present','ssp585_2050','ssp585_2080'].forEach((scn,i)=>{
         if(!simData[scn]) simData[scn]={};
         if(simData[scn].tcp==null) simData[scn].tcp=c.sim.comfort?c.sim.comfort[i]:null;
@@ -5526,7 +5526,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
     scene.add(new THREE.AmbientLight(0xffffff,0.7));
     const dl=new THREE.DirectionalLight(0xffffff,0.6);dl.position.set(10,20,10);scene.add(dl);
     /* geometry: use viz JSON polygon if available, else EGG_SHAPES.
-       If neither exists — no real polygon known — show no-data cube.
+       If neither exists, no real polygon known, show no-data cube.
        Metrics still populate in the grid below via simData. */
     const {W,D,H,pitch}=buildingDims(c,slot);
     const _vizBld=vizCache&&(vizCache.present||vizCache.ssp585_2050||vizCache.ssp585_2080);
@@ -5547,7 +5547,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
     const ePts=poly.map(([x,y])=>new THREE.Vector3(x,eH,-y));ePts.push(ePts[0]);
     group.add(mkL(fPts));group.add(mkL(ePts));
     poly.forEach(([x,y])=>group.add(mkL([new THREE.Vector3(x,0,-y),new THREE.Vector3(x,eH,-y)])));
-    /* roof wireframe — read pre-computed segments from viz JSON.
+    /* roof wireframe, read pre-computed segments from viz JSON.
        Coordinates are already in Three.js space (Python _to3: [x, ridge_h, -y_dxf]).
        Covers all roof types: gable, hipped, conical, dome, barrel, gambrel, shed, flat. */
     const _roofSegs=(_vizBld&&_vizBld.roof_wire)||[];
@@ -5574,7 +5574,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
       group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([rA,rB]),rm()));
       ePts.slice(0,-1).forEach(p=>{const to=p.distanceTo(new THREE.Vector3(rA.x,eH,rA.z))<p.distanceTo(new THREE.Vector3(rB.x,eH,rB.z))?rA:rB;group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([p.clone(),to.clone()]),rm()));});
     }
-    /* inner wall face — polygon offset inward by wall_thick_m */
+    /* inner wall face, polygon offset inward by wall_thick_m */
     const _innerPoly=_vizBld&&_vizBld.building&&_vizBld.building.inner_polygon_2d;
     if(_innerPoly&&_innerPoly.length>2){
       const _wt=(_vizBld.building.wall_thick_m||0);
@@ -5595,7 +5595,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
         ]),_iMat));
       });
     }
-    /* window apertures from viz JSON — opening_w layer only */
+    /* window apertures from viz JSON, opening_w layer only */
     const _aps=_vizBld?(_vizBld.apertures||[]):[];
     _aps.forEach(ap=>{
       if(!ap.p0||!ap.p1||!ap.p2||!ap.p3)return;
@@ -5619,7 +5619,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
       const nearest=step<=2?'present':step<=6?'ssp585_2050':'ssp585_2080';
       const nearData=vizCache&&vizCache[nearest];
       const grid=nearData&&nearData.sensor_grid;
-      /* sensor grid only valid for tcp/hsp — those have real spatial proximity data.
+      /* sensor grid only valid for tcp/hsp, those have real spatial proximity data.
          t_op and ndp are zone-averaged only; showing a grid would imply per-cell
          EnergyPlus data we don't have. */
       const gridApplies=grid&&grid.cells&&grid.cells.length>0&&(metric==='tcp'||metric==='hsp');
@@ -5627,7 +5627,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
         const res=(grid.res||0.5)*1.01; /* 1% overlap eliminates seams */
         /* Local histogram stretch: find min/max of cell.n in THIS grid so the full
            colour spectrum is always used regardless of how clustered the raw proxy
-           scores are (circular plans give nearly equal distances — without stretch
+           scores are (circular plans give nearly equal distances, without stretch
            every cell maps to almost the same hue).
            Blend: 70% zone norm (so the overall hue strongly reflects the actual
            metric value and changes visibly as the slider moves) + 30% local
@@ -5648,7 +5648,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
         });
         floorMesh=cg;group.add(floorMesh);
       }else{
-        /* solid floor colour — zone-averaged metric (also fallback for t_op/ndp) */
+        /* solid floor colour, zone-averaged metric (also fallback for t_op/ndp) */
         const[r,g,b]=simCmap(norm,metric);
         const shape2d=new THREE.Shape(poly.map(([x,y])=>new THREE.Vector2(x,-y)));
         floorMesh=new THREE.Mesh(new THREE.ShapeGeometry(shape2d),new THREE.MeshBasicMaterial({color:new THREE.Color(r,g,b),transparent:true,opacity:0.55,side:THREE.DoubleSide}));
@@ -5673,27 +5673,27 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
     /* centroid of actual polygon for camera target */
     const pcx=poly.reduce((s,p)=>s+p[0],0)/poly.length;
     const pcy=poly.reduce((s,p)=>s+p[1],0)/poly.length;
-    /* North angle from viz JSON — radians, clockwise from DXF +Y to true north */
+    /* North angle from viz JSON, radians, clockwise from DXF +Y to true north */
     const _northRad=(_vizBld&&_vizBld.building&&_vizBld.building.north_angle_rad!=null)
       ?_vizBld.building.north_angle_rad:null;
-    /* North arrow — simple flat arrow lying on the ground plane */
+    /* North arrow, simple flat arrow lying on the ground plane */
     if(_northRad!==null){
       const bspan=Math.max(W||5,D||5);
       /* Arrow placed entirely outside the building:
          tail at 1.3×span from center (well beyond any eave),
-         tip at 0.8×span from center — both south of the building edge (≈0.5×span).
+         tip at 0.8×span from center, both south of the building edge (≈0.5×span).
          arLen = 0.5×span so arrow is proportional but never overlaps building. */
       const arLen=bspan*0.50; const y0=0.08;
       /* north direction in Three.js space */
       const _nnx=Math.sin(_northRad),_nnz=-Math.cos(_northRad);
-      /* tail: 1.3×span south of centroid; tip: 0.8×span south — both outside building */
+      /* tail: 1.3×span south of centroid; tip: 0.8×span south, both outside building */
       const _ox=pcx-_nnx*bspan*1.3; const _oz=-pcy-_nnz*bspan*1.3;
       const _tx=_ox+_nnx*arLen;  const _tz=_oz+_nnz*arLen;
       const _amat=new THREE.LineBasicMaterial({color:0x555555,transparent:true,opacity:0.75});
       /* body */
       group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(
         [new THREE.Vector3(_ox,y0,_oz),new THREE.Vector3(_tx,y0,_tz)]),_amat));
-      /* arrowhead — two lines forming V at tip */
+      /* arrowhead, two lines forming V at tip */
       const _hw=arLen*0.16,_hl=arLen*0.30;
       const _px=-_nnz,_pz=_nnx; /* perpendicular in ground plane */
       const _bx=_tx-_nnx*_hl,_bz=_tz-_nnz*_hl;
@@ -5770,7 +5770,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
     if(inp){inp.addEventListener('input',e=>{
       const s=+e.target.value;
       VIEWERS[slot]._setStep(s);
-      /* sync big slider tick highlight — flag prevents onScenarioChange snapping us back */
+      /* sync big slider tick highlight, flag prevents onScenarioChange snapping us back */
       const ns=s<=1?0:s<=5?1:2;
       _simDrivingSlot=slot;
       if(ns!==scn){scn=ns;renderSlider();onScenarioChange();}
@@ -5798,7 +5798,7 @@ function updateSimGrid(slot,step,simData){
     if(ndpBar){ndpBar.style.width=pct;ndpBar.style.background=col;}
     if(ndpState){
       ndpState.style.color=col;
-      ndpState.textContent=crossed?`${Math.round(ndpVal)} h/yr — ⚠ Artmann threshold crossed (< 1000 h/yr)`:near?`${Math.round(ndpVal)} h/yr — approaching Artmann threshold`:`${Math.round(ndpVal)} h/yr — thermal mass effective`;
+      ndpState.textContent=crossed?`${Math.round(ndpVal)} h/yr, ⚠ Artmann threshold crossed (< 1000 h/yr)`:near?`${Math.round(ndpVal)} h/yr, approaching Artmann threshold`:`${Math.round(ndpVal)} h/yr, thermal mass effective`;
     }
   }
   if(!el)return;
@@ -5821,12 +5821,12 @@ function updateSimGrid(slot,step,simData){
   const _c=(k,abbr)=>typeof arShowCite==='function'?`<button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,'${k}')" style="font-size:8px;vertical-align:middle;margin-left:3px">${abbr}</button>`:'' ;
   el.innerHTML=`
     <div class="sim-cell">
-      <div class="k">TCP — Thermal Comfort Probability ${_c('ashrae55','ⓘ')}${_c('dear2002','ⓘ')}</div>
+      <div class="k">TCP, Thermal Comfort Probability ${_c('ashrae55','ⓘ')}${_c('dear2002','ⓘ')}</div>
       <div class="v">${tcp??nd}<span class="u">${tcp!=null?' %':''}</span></div>
       <div class="ksub">% occupied hours within ASHRAE 55-2020 adaptive comfort bounds</div>
     </div>
     <div class="sim-cell">
-      <div class="k">HSP — Overheating Hours ${_c('ashrae55','ⓘ')}</div>
+      <div class="k">HSP, Overheating Hours ${_c('ashrae55','ⓘ')}</div>
       <div class="hsp-split">
         <div class="hsp-half">
           <div class="v">${hspPct??nd}<span class="u">${hspPct!=null?' %':''}</span></div>
@@ -5841,12 +5841,12 @@ function updateSimGrid(slot,step,simData){
       <div class="ksub">above ASHRAE 55-2020 adaptive upper limit (T_pma 10–33.5°C range only)</div>
     </div>
     <div class="sim-cell">
-      <div class="k">NDP — Night Discharge Potential ${_c('artmann2007','ⓘ')}</div>
+      <div class="k">NDP, Night Discharge Potential ${_c('artmann2007','ⓘ')}</div>
       <div class="v">${ndp??nd}${ndpWarn}<span class="u">${ndp!=null?' h/y':''}</span></div>
       <div class="ksub">Jun–Aug hours: T_out &lt; T_in and T_out &lt; 22°C (Artmann et al. 2007)</div>
     </div>
     <div class="sim-cell">
-      <div class="k">T_op — Mean Operative Temperature ${_c('dear2002','ⓘ')}</div>
+      <div class="k">T_op, Mean Operative Temperature ${_c('dear2002','ⓘ')}</div>
       <div class="v">${top??nd}<span class="u">${top!=null?' °C':''}</span></div>
       <div class="ksub">Annual mean; T_op = (T_air + T_MRT) / 2, ISO 7726:1998</div>
     </div>`;
@@ -5861,11 +5861,11 @@ function createViewer(container,c,slot){
        c.sim.comfort[0] = TCP present from Excel col BD. If null → sim not done,
        don't show data even if stale JSONs exist on R2. */
     /* Require both simulation data AND real DXF geometry (wall_thick from dxf_analyse).
-       Simulations without DXF used a fallback box — results are not building-specific. */
+       Simulations without DXF used a fallback box, results are not building-specific. */
     const _hasRealGeom=c.wallThk!=null||c.area!=null;
     const _hasSim=_hasRealGeom&&c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null||c.sim.oh[0]!=null);
     if(!_hasSim){createNoDataCube(container,slot);return;}
-    /* Has sim data — show loading cube while viz JSON fetches from R2 */
+    /* Has sim data, show loading cube while viz JSON fetches from R2 */
     if(SIM_VIZ_CACHE[cid]){buildSimViewer(container,c,SIM_VIZ_CACHE[cid],slot);return;}
     if(SIM_CACHE[cid]){buildSimViewer(container,c,SIM_CACHE[cid],slot);return;}
     createNoDataCube(container,slot,'>fetching simulation data...');
@@ -5940,7 +5940,7 @@ function createViewer(container,c,slot){
 
     /* rotate the building by its real recorded orientation (c.orientation,
        degrees, clockwise offset from a south-facing baseline) so the model's
-       solar-S/N/E/W walls — already used for real sun-exposure math above —
+       solar-S/N/E/W walls, already used for real sun-exposure math above 
        sit at the bearing the case study actually records, not a generic
        default. The north arrow below is added to the scene (not the group)
        so it stays fixed at true north regardless of that rotation or of
@@ -6008,7 +6008,7 @@ function applyDiagram(key,c,slot){
     mesh.material.map=tex;mesh.material.needsUpdate=true;
   });
   const cap=document.getElementById('diagramCaption-'+slot);
-  if(cap)cap.textContent=DIAGRAM_META[key].caption(c)+(shiftActive?' — shapeSHIFT preview: heuristic, not re-simulated.':'');
+  if(cap)cap.textContent=DIAGRAM_META[key].caption(c)+(shiftActive?', shapeSHIFT preview: heuristic, not re-simulated.':'');
   document.querySelectorAll(`.sim-tab[data-slot="${slot}"]`).forEach(b=>b.classList.toggle('active',b.dataset.diagram===key));
 }
 function wireDiagramTabs(c,slot){
@@ -6054,14 +6054,14 @@ function switchDiagramTab(slot,key,c){
 function mirrorSlot(slot){return slot==='A'?'B':'A';}
 function caseForSlot(slot){return slot==='A'?byId(selectedId):(compareId?byId(compareId):null);}
 /* run fn(otherSlot,otherCase) only when actively comparing and the
-   other case exists — shared by every tab system below */
+   other case exists, shared by every tab system below */
 function mirrorTabChange(slot,fn){
   if(!compareId)return;
   const oSlot=mirrorSlot(slot),oCase=caseForSlot(oSlot);
   if(oCase)fn(oSlot,oCase);
 }
 /* ═══════════════════════════════════════════════════════════════
-   vernacularBIGBROTHER — climate analogue matching
+   vernacularBIGBROTHER, climate analogue matching
    Finds the present-day case whose EPW fingerprint most closely
    matches the selected case's future EPW (2050 or 2080 SSP5-8.5).
    Distance metric: weighted normalised Euclidean across 6 climate
@@ -6076,7 +6076,7 @@ function computeBBFingerprint(epw){
   const tW=(T[11]+T[0]+T[1])/3;  /* Dec–Feb mean → heating strategy */
   const tAmp=tS-tW;               /* thermal amplitude → mass proxy  */
   const ghi=G.reduce((a,v,i)=>v!=null?a+v*DPM[i]:a,0);
-  /* wet-bulb temperature — Stull (2011) approximation, fuses dry-bulb
+  /* wet-bulb temperature, Stull (2011) approximation, fuses dry-bulb
      temp + RH into the single physically-meaningful diagnostic that the
      psychrometric chart's diagonal isolines already show. Computed from
      the same summer/winter month groupings as tS/tW so it stays a
@@ -6093,30 +6093,30 @@ function computeBBFingerprint(epw){
   const wbSummer=wetBulb(tS,rhS);
   const wbWinter=wetBulb(tW,rhW);
   /* annual precipitation total. Note: the FWG morphing pipeline does not
-     modify precipitation for future scenarios (per Belcher et al. 2005 —
+     modify precipitation for future scenarios (per Belcher et al. 2005 
      same rule this project already applies to future Köppen
      classification), so present-day precipitation is the correct value
      to compare on BOTH sides regardless of which scenario triggered the
-     search — the future EPW's precip field is just a copy of present. */
+     search, the future EPW's precip field is just a copy of present. */
   const precip=(P&&P.some(v=>v!=null))?P.reduce((a,v)=>v!=null?a+v:a,0):null;
   return{hdd,cdd,tSummer:tS,tWinter:tW,tAmp,ghi,wbSummer,wbWinter,precip};
 }
 /* Normalisation bounds from Central European TMYx station envelope;
    weights reflect relative morphological influence per driver.
-   wbSummer/wbWinter and precip are first-pass estimates — not yet
-   calibrated against the real corpus — see BB_MAX_DISTANCE note below. */
+   wbSummer/wbWinter and precip are first-pass estimates, not yet
+   calibrated against the real corpus, see BB_MAX_DISTANCE note below. */
 const BB_NORM={hdd:3500,cdd:800,tSummer:16,tWinter:22,tAmp:32,ghi:800,wbSummer:10,wbWinter:8,precip:900};
 const BB_W   ={hdd:1.4, cdd:1.4, tSummer:1.2, tWinter:1.2, tAmp:1.0, ghi:0.8, wbSummer:1.5, wbWinter:1.1, precip:1.1};
 /* Maximum climate-fingerprint distance for a match to count as a genuine
    analogue. Above this, the two stations differ enough (e.g. arid
-   highveld vs. equatorial rainforest — same failure mode that prompted
+   highveld vs. equatorial rainforest, same failure mode that prompted
    adding humidity/precipitation above) that morphological inference
    isn't defensible.
    bbDistance is a WEIGHTED RMS (root-mean-square across dimensions),
-   not a raw weighted sum — this keeps the threshold's meaning stable
+   not a raw weighted sum, this keeps the threshold's meaning stable
    if dimensions are added or removed later: a value of 1.0 means "on
    average, weighted, each dimension differs by about one typical
-   Central-European inter-station unit." Still a first-pass number —
+   Central-European inter-station unit." Still a first-pass number 
    calibrate against the real corpus's nearest-neighbour distribution
    once available (see conversation notes on this). */
 const BB_MAX_DISTANCE=1.15;
@@ -6175,7 +6175,7 @@ async function runBigBrother(){
     b.innerHTML='&gt;vernacular<em>BIGBROTHER</em> <span class="bb-progress">fetching…</span>';
     b.disabled=true;
   });
-  /* 1 — fetch future EPW for active case */
+  /* 1, fetch future EPW for active case */
   const paths=epwFwgPaths(a.epw);
   const futurePath=scn===1?paths.m2050:paths.m2080;
   let futureEpw;
@@ -6186,7 +6186,7 @@ async function runBigBrother(){
     }); return;
   }
   const fFuture=computeBBFingerprint(futureEpw);
-  /* 2 — batch-fetch all present EPWs, concurrency 5 */
+  /* 2, batch-fetch all present EPWs, concurrency 5 */
   const candidates=CASES.filter(c=>c.id!==selectedId&&c.epw&&c.hasCoord);
   const scored=[]; const BATCH=5;
   for(let i=0;i<candidates.length;i+=BATCH){
@@ -6210,7 +6210,7 @@ async function runBigBrother(){
   scored.sort((a,b)=>a.dist-b.dist);
   const best=scored[0];
   if(best.dist>BB_MAX_DISTANCE){
-    /* no genuine climate analogue in the dataset — don't silently show
+    /* no genuine climate analogue in the dataset, don't silently show
        a mismatched pairing (e.g. a hyper-arid station standing in for a
        humid subtropical one). Offer the nearest one as an explicit,
        clearly-labelled fallback instead. */
@@ -6235,7 +6235,7 @@ function applyBigBrotherResult(a,targetCase,dist){
   if(map&&a.hasCoord&&targetCase.hasCoord){
     const lineCol=scn===1?'#9A7870':'#E07010';
     const bbLatLngs=[[a.lat,a.lon],[targetCase.lat,targetCase.lon]];
-    const bbTip=`${targetCase.name||targetCase.id}  vernacularBIGBROTHER${dist!=null?' — climate distance '+dist.toFixed(2):''}`;
+    const bbTip=`${targetCase.name||targetCase.id}  vernacularBIGBROTHER${dist!=null?', climate distance '+dist.toFixed(2):''}`;
     /* invisible fat hit-area so the line is easy to catch/hover */
     const bbHit=L.polyline(bbLatLngs,{color:'#000',weight:16,opacity:0,interactive:true}).addTo(map);
     bbHit.bindTooltip(bbTip,{sticky:true});
@@ -6272,7 +6272,7 @@ function wireInfoIcon(iconId,popId){
   const pop=document.getElementById(popId);
   if(!icon||!pop)return;
   const portal=document.getElementById('infoPopoverPortal');
-  /* portal to body-level fixed overlay — escapes all stacking contexts */
+  /* portal to body-level fixed overlay, escapes all stacking contexts */
   if(portal&&pop.parentElement!==portal){
     portal.appendChild(pop);
   }
@@ -6280,13 +6280,13 @@ function wireInfoIcon(iconId,popId){
   pop.style.position='fixed';
   pop.style.pointerEvents='auto';
   pop.style.margin='0';
-  /* guard against double-wiring — stacked click listeners cancel each other out */
+  /* guard against double-wiring, stacked click listeners cancel each other out */
   if(icon.dataset.infoWired==='1')return;
   icon.dataset.infoWired='1';
   const popWidth=parseInt(pop.style.width)||330;
   icon.addEventListener('click',e=>{
     e.stopPropagation();
-    /* ensure the popover is in the top-level portal — the wire-time
+    /* ensure the popover is in the top-level portal, the wire-time
        move can miss if the portal or pop wasn't ready yet */
     const portalNow=document.getElementById('infoPopoverPortal');
     if(portalNow&&pop.parentElement!==portalNow){
@@ -6327,7 +6327,7 @@ document.addEventListener('click',()=>{
 });
 
 /* ═══════════════════════════════════════════════════════════════
-   averageTYPOLOGY — drops a draggable pin on the map, defines a
+   averageTYPOLOGY, drops a draggable pin on the map, defines a
    radius, collects all case studies within it, averages morphological
    parameters into a representative typology label, and shows one
    merged marker on the map. Multiple zones can coexist; a case
@@ -6368,7 +6368,7 @@ const METRIC_PAGES=[
    ['Construction period',c.year?(c.year):noData],
    ['Name',mv(c.name)],
    ['Case study ID',mv(c.id)],
-   ['Assigned EPW station',c.epw?(c.epw+(c.distToStation!=null?' — ≈'+c.distToStation+' km':'')):noData],
+   ['Assigned EPW station',c.epw?(c.epw+(c.distToStation!=null?', ≈'+c.distToStation+' km':'')):noData],
  ]},
  {label:'Dimensions & structure',rows:c=>[
    ['Floor area',fmt(c.area,' m²',0)],
@@ -6447,7 +6447,7 @@ function switchMetricPage(slot,page,c){
 /* ---- single case-detail block, reused for slot A (primary) and slot B (compare) ---- */
 function caseDetailHTML(c,slot){
   /* vernacularBIGBROTHER exception: slot B is a PRESENT-day station being
-     proposed as a future analogue — always show ITS present-day climate
+     proposed as a future analogue, always show ITS present-day climate
      here, regardless of the slider, so the user can visually check
      whether it really does resemble the selected case's projected
      future climate (shown in slot A at the active scenario). */
@@ -6456,7 +6456,7 @@ function caseDetailHTML(c,slot){
   return `
     <div class="panel-eyebrow">${c.region}   ${c.id}  ${c.country||'–'}</div>
     <div class="cs-title">${c.name||c.id}</div>
-    <div class="cs-sub">${c.hasCoord?c.lat.toFixed(3)+'°, '+c.lon.toFixed(3)+'°':'<span class="nodata">no coordinates</span>'} &nbsp;&nbsp; ${SCENARIOS_LONG[scn]}${c.year?' — built '+c.year:''}</div>
+    <div class="cs-sub">${c.hasCoord?c.lat.toFixed(3)+'°, '+c.lon.toFixed(3)+'°':'<span class="nodata">no coordinates</span>'} &nbsp;&nbsp; ${SCENARIOS_LONG[scn]}${c.year?', built '+c.year:''}</div>
 
     <div class="cs-main-tabs">
       <button class="cs-main-tab ${(currentCsTab[slot]||'building')==='building'?'active':''}" data-cstab="building" data-slot="${slot}"><span class="numeral">1</span> Building</button>
@@ -6491,7 +6491,7 @@ function caseDetailHTML(c,slot){
         ${bigBrotherActive&&slot==='B'?`<div style="background:var(--terracotta);color:#fff;font-family:var(--mono);font-size:10px;padding:6px 9px;margin:8px 0 0;display:flex;align-items:flex-start;gap:7px;line-height:1.4;"><span style="font-size:12px;flex:none;">◉</span><span><b>PRESENT-DAY CLIMATE SHOWN</b> for this side, regardless of the slider. Compare it against ${c.id===selectedId?'':(byId(selectedId)?byId(selectedId).name||byId(selectedId).id:'the selected case')}'s projected ${SCENARIOS_LONG[scn]} climate on the left.</span></div>`:''}
         <div class="koppen-strip">
           ${c.koppen.map((k,i)=>{
-  const _iBtn=i>0?`<button class="ar-cite" style="margin-left:2px;font-style:normal;" onclick="event.stopPropagation();arShowCite(this,['','≈ 2068 effective conditions. FWG applies CMIP6 deltas from a 1985–2014 baseline (centre ≈ 2000) onto TMYx 2011–2025 (centre ≈ 2018). This +18yr offset means the morphed 2050 file represents roughly 2068 climate. Conservative labelling — actual warming exceeds the nominal year. Rodrigues et al. (2023), Building and Environment 246.','≈ 2098 effective conditions. FWG 2066–2095 delta applied to TMYx 2018 base → roughly 2098 conditions. The 2080 label is conservative — results represent near-end-of-century warming. Rodrigues et al. (2023), Building and Environment 246.'][${i}])">ⓘ</button>`:'';
+  const _iBtn=i>0?`<button class="ar-cite" style="margin-left:2px;font-style:normal;" onclick="event.stopPropagation();arShowCite(this,['','≈ 2068 effective conditions. FWG applies CMIP6 deltas from a 1985–2014 baseline (centre ≈ 2000) onto TMYx 2011–2025 (centre ≈ 2018). This +18yr offset means the morphed 2050 file represents roughly 2068 climate. Conservative labelling, actual warming exceeds the nominal year. Rodrigues et al. (2023), Building and Environment 246.','≈ 2098 effective conditions. FWG 2066–2095 delta applied to TMYx 2018 base → roughly 2098 conditions. The 2080 label is conservative, results represent near-end-of-century warming. Rodrigues et al. (2023), Building and Environment 246.'][${i}])">ⓘ</button>`:'';
   return `<div class="koppen-box ${i===displayScn?'current':''}" style="cursor:pointer;" onclick="const t=document.querySelectorAll('.scenario-tick')[${i}];if(t)t.click();"><div class="scn">${SCENARIOS[i]}${_iBtn}</div><div class="code">${k||'<span class="nodata" style="font-size:10px">–</span>'}</div></div>`;
 }).join('')}
         </div>
@@ -6548,10 +6548,10 @@ function caseDetailHTML(c,slot){
           </button>
         </div>
         <div class="sim-grid" id="simGrid-${slot}" style="margin-top:10px;">
-          <div class="sim-cell"><div class="k">TCP — thermal comfort probability</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
-          <div class="sim-cell"><div class="k">HSP — overheating hours</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
-          <div class="sim-cell"><div class="k">NDP — night discharge</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
-          <div class="sim-cell"><div class="k">T_op — mean operative temp</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
+          <div class="sim-cell"><div class="k">TCP, thermal comfort probability</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
+          <div class="sim-cell"><div class="k">HSP, overheating hours</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
+          <div class="sim-cell"><div class="k">NDP, night discharge</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
+          <div class="sim-cell"><div class="k">T_op, mean operative temp</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
         </div>
         <button class="rec-toggle-btn" id="recToggleBtn-${slot}" style="margin-top:14px;">&gt;adaptive<em>RECOMMENDATIONS</em></button>
         <div class="rec-wrap" id="recWrap-${slot}" style="margin-top:10px;display:none;"></div>
@@ -6598,7 +6598,7 @@ function wireCaseDetail(c,slot){
       const open=wrap.style.display!=='none';
       wrap.style.display=open?'none':'block';
       recBtn.classList.toggle('active',!open);
-      /* generate on first open — lazy so it doesn't slow case load */
+      /* generate on first open, lazy so it doesn't slow case load */
       if(!open&&!_arBuilt){generateAdaptiveRecs(c,slot);_arBuilt=true;}
     });
   }
@@ -6625,7 +6625,7 @@ function switchCaseMainTab(slot,key,c){
   if(key==='climate'){
     /* EPW_CACHE makes repeat calls for an already-loaded scenario cheap,
        so it's safe to just always (re)load rather than track a loaded
-       flag per slot — simpler, and correct for compare-mode mirroring
+       flag per slot, simpler, and correct for compare-mode mirroring
        where this can now be triggered from the other slot's click. */
     renderClimateTabAsync(currentClimateTab[slot]||'psychro',c,slot);
   }
@@ -6635,14 +6635,14 @@ function switchCaseMainTab(slot,key,c){
 /* ---- similarity scoring, redesigned around the project's own findings:
    region/country is the documented confound (47–76% of variance, the
    eave-depth signal that collapsed under Japan-cluster control), so it's
-   not a positive score contributor here. Morphology is the primary gate —
+   not a positive score contributor here. Morphology is the primary gate 
    a line only exists at all if the two buildings actually share real
    structural traits (roof pitch, ψ, mass, WWR, eaves, construction);
    climate match is secondary, it explains *why* a morphological match
    might be more than coincidence rather than being scored as similarity
    on its own. Cross-region pairs that clear both bars get the "this is
-   independent convergence, not shared culture" highlight — the Norway/
-   Bavaria/Japan phenomenon the project is built around — everything else
+   independent convergence, not shared culture" highlight, the Norway/
+   Bavaria/Japan phenomenon the project is built around, everything else
    that still clears the morphology bar is shown more quietly. ---- */
 function similarityScore(a,b){
   let climateScore=0,strategyScore=0;
@@ -6774,7 +6774,7 @@ function renderSlider(){
     refreshKoppenOptions();applyScenarioPalette();refreshMap();applyFilter();renderPanel();renderLegend();renderLineLegend();
     /* sync sim sliders: scn 0/1/2 → step 0/4/8. Skip the slot driving the change. */
     const _tStep=scn*4;['A','B'].forEach(slot=>{
-      if(slot===_simDrivingSlot)return; /* this slot initiated the change — don't snap it back */
+      if(slot===_simDrivingSlot)return; /* this slot initiated the change, don't snap it back */
       if(VIEWERS[slot]&&VIEWERS[slot]._setStep){const _s=scn;VIEWERS[slot]._setStep(_tStep);scn=_s;}
       else{const inp=document.getElementById('simSlider-'+slot);if(inp)inp.value=_tStep;const yr=document.getElementById('simYear-'+slot);if(yr)yr.textContent=SIM_YEAR_LABELS[_tStep]||'';}
     });
@@ -6800,10 +6800,10 @@ document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>
   if(b.dataset.tab==='findings'){const fid=_currentFindingId||(FINDINGS[0]&&FINDINGS[0].items[0]&&FINDINGS[0].items[0].id);if(fid)setTimeout(()=>showFinding(fid),0);}}))
 
 /* TAB II */
-/* TAB II — FINDINGS / RECOMMENDATIONS
+/* TAB II, FINDINGS / RECOMMENDATIONS
    Text is NOT AI-generated: everything still to be written by the research
    team shows as lorem ipsum. Pink (dynamic) values from the draft are marked
-   with <span class="dyn-val"> — they will be recomputed from the dataset and
+   with <span class="dyn-val">, they will be recomputed from the dataset and
    can be made to blink via the >dynamicFINDINGS action button. The user's own
    draft bullet points are preserved verbatim in ochre .fc-userbullet blocks. */
 /* ═══════════════ DYNAMIC FINDINGS COMPUTATION ═══════════════
@@ -6819,7 +6819,7 @@ document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>
    2050 / 2080 under SSP5-8.5. */
 function fmtShiftCell(dict,presentZone){
   const keys=Object.keys(dict).sort((a,b)=>dict[b]-dict[a]);
-  if(!keys.length)return '<span class="nodata" style="font-size:11px;">—</span>';
+  if(!keys.length)return '<span class="nodata" style="font-size:11px;"></span>';
   return keys.map(z=>{
     const changed=z!==presentZone;
     return `<span style="${changed?'color:var(--terracotta-deep);font-weight:700;':'color:var(--ink-soft);'}">${z}</span> <span style="color:var(--ink-faint);">×${dict[z]}</span>`;
@@ -6878,7 +6878,7 @@ function fcInfo(head,body,cite){
 function wireAllFcInfo(){}
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   THERMAL MASS FINDING — simulation-driven, per Köppen zone
+   THERMAL MASS FINDING, simulation-driven, per Köppen zone
    Sources: Artmann et al. (2007) NDP threshold 1000 h/yr;
             Givoni (1976, 1994) arid/tropical zone assessment;
             Szokolay (2008) zone viability summary.
@@ -7103,13 +7103,16 @@ function wireThermalMassDropdown(){
   }
 }
 
-/* ═══════════ DYNAMIC FINDINGS — live computations ═══════════
+/* ─── global helpers needed by dynamic findings ───────────────────────────── */
+function yearNum(v){if(!v)return 0;const m=String(v).match(/\d{3,4}/);return m?+m[0]:0;}
+
+/* ═══════════ DYNAMIC FINDINGS, live computations ═══════════
    Everything here is derived from the loaded corpus + EPW data at runtime.
    Each derived number in the findings carries an ⓘ explaining its
    derivation and (where relevant) the academic source. */
 
 /* region helper reused below */
-function regionOf(c){return (c.region||c.country||'—');}
+function regionOf(c){return (c.region||c.country||'');}
 
 /* ---- 1  CORPUS STATS (cheap, synchronous) ---- */
 function computeCorpusStats(){
@@ -7157,7 +7160,7 @@ function fmtShiftCell(present,dest){
                            :`<span class="dyn-val">${z}·${dest[z]}</span>`;
     parts.push(tag);
   });
-  return parts.length?parts.join(' '):'<span style="color:var(--ink-faint)">—</span>';
+  return parts.length?parts.join(' '):'<span style="color:var(--ink-faint)"></span>';
 }
 function koppenShiftTableHTML(){
   const rows=computeKoppenShifts();
@@ -7283,7 +7286,7 @@ function culturalBiasTableHTML(){
     const r=etaSquaredByCountry(k);
     if(r){seen[label]=true;rows.push({label,...r});}
   });
-  if(!rows.length)return '<div class="fc-lowsample">Morphological metrics not present on the loaded corpus yet — η² will populate once roof pitch, wall thickness etc. are filled.</div>';
+  if(!rows.length)return '<div class="fc-lowsample">Morphological metrics not present on the loaded corpus yet, η² will populate once roof pitch, wall thickness etc. are filled.</div>';
   rows.sort((a,b)=>b.eta2-a.eta2);
   const body=rows.map(r=>`<tr>
     <td>${r.label}</td>
@@ -7298,12 +7301,12 @@ function culturalBiasTableHTML(){
     <tbody>${body}</tbody></table>`;
 }
 
-/* ─────────── 6  REQUIRED EAVE DEPTH — orientation + hemisphere aware ───────────
+/* ─────────── 6  REQUIRED EAVE DEPTH, orientation + hemisphere aware ───────────
    Method, in words:
    1. "Local summer" is hemisphere-dependent: for a Northern-hemisphere case we
       evaluate the JUNE solstice (declination +23.44°); for a Southern-hemisphere
       case we evaluate the DECEMBER solstice (declination −23.44°). This is the
-      hemisphere fix — the equator-facing wall (the one that needs the deepest
+      hemisphere fix, the equator-facing wall (the one that needs the deepest
       eave) is SOUTH in the north, but NORTH in the south; a fixed "summer =
       June" assumption would silently get every southern-hemisphere case wrong.
    2. For a given wall orientation (N/E/S/W), we scan the daylight hours of that
@@ -7355,7 +7358,7 @@ function eaveCriticalMoment(lat,wallOrient){
   }
   /* the wall only receives meaningful direct sun if the sun's azimuth actually
      gets within ~90° of facing it (cos of the difference stays positive) AND
-     the altitude there isn't just grazing sunrise/sunset light — near-horizon
+     the altitude there isn't just grazing sunrise/sunset light, near-horizon
      sun produces architecturally meaningless "required depths" in the
      hundreds of metres, so treat anything under 5° altitude as negligible too */
   if(!best||bestDiff>85||best.altitude<5)return null;
@@ -7373,7 +7376,7 @@ function requiredEaveDepthOriented(lat,wallOrient,h){
   return{depth,altitude:m.altitude,solarHour:m.solarHour,negligible:false};
 }
 function fmtSolarHour(h){
-  if(h==null)return '—';
+  if(h==null)return '';
   let hh=Math.floor(h),mm=Math.round((h-hh)*60);
   if(mm===60){mm=0;hh+=1;}
   hh=((hh%24)+24)%24;
@@ -7381,7 +7384,7 @@ function fmtSolarHour(h){
 }
 /* look up a case's actual measured eave depth for one orientation, tolerant
    of a few likely key spellings since the exact Excel column naming isn't
-   fixed yet — returns null (shown as "–") if not present. */
+   fixed yet, returns null (shown as "–") if not present. */
 function caseEaveByOrient(c,orient){
   /* c.eaveByOrient is a freeform Excel string, e.g. "N:0.146m / S:0.056m"
      -- never all four sides, usually just the pair that was measured. */
@@ -7402,7 +7405,7 @@ function medianAbsLatitude(){
 function eaveDepthTableHTML(orient,winH){
   orient=orient||'S';
   const withLat=CASES.filter(c=>c.lat!=null&&isFinite(c.lat));
-  if(!withLat.length)return '<div class="fc-lowsample">No case coordinates loaded — eave depth needs latitude.</div>';
+  if(!withLat.length)return '<div class="fc-lowsample">No case coordinates loaded, eave depth needs latitude.</div>';
   /* per point 3: adequacy uses each CASE'S OWN eave height, not the slider.
      The slider drives a separate reference calculator shown above the table. */
   const rows=withLat.map(c=>{
@@ -7419,17 +7422,17 @@ function eaveDepthTableHTML(orient,winH){
     let reqCell,timeCell,statusCell;
     if(usedH==null){
       reqCell='<span style="color:var(--ink-faint)">no eave height on record</span>';
-      timeCell='<span style="color:var(--ink-faint)">—</span>';
+      timeCell='<span style="color:var(--ink-faint)"></span>';
       statusCell='<span style="color:var(--ink-faint)">–</span>';
     }else if(!req||req.negligible){
       reqCell='<span style="color:var(--ink-faint)">negligible</span>';
-      timeCell='<span style="color:var(--ink-faint)">—</span>';
+      timeCell='<span style="color:var(--ink-faint)"></span>';
       statusCell='<span style="color:var(--ink-faint)">–</span>';
     }else{
       /* honesty flag: eave height on record can be multi-storey roofline
          (this corpus ranges 1.6-15.6 m), not window height, so a tall
          eaveH produces an architecturally large depth. Shown, not hidden. */
-      const tall=usedH>4.5?' <span class="fc-datatag" style="margin-left:4px;">tall eaveH — check</span>':'';
+      const tall=usedH>4.5?' <span class="fc-datatag" style="margin-left:4px;">tall eaveH, check</span>':'';
       reqCell=dynV(req.depth.toFixed(2)+' m')+tall;
       timeCell=fmtSolarHour(req.solarHour)+' solar';
       if(actual==null)statusCell='<span style="color:var(--ink-faint)">–</span>';
@@ -7455,7 +7458,7 @@ function eaveDepthTableHTML(orient,winH){
       <th>Case</th><th>Country</th><th>Lat</th><th>Eave height</th><th>Avg eave depth</th>
       <th>${orient} eave depth</th><th>Required (${orient})</th><th>Critical time</th><th>vs. required</th>
     </tr></thead><tbody>${body}</tbody></table>
-    <div class="fc-datatag">required depth per row uses that CASE'S OWN eave height (eaveH), not the slider above. Eave height is used here as a stand-in for the shaded window's height, which is a simplification — flagged inline ("tall eaveH") wherever it exceeds a plausible single window height, since this corpus's eaveH spans 1.6-15.6 m and the taller end is clearly multi-storey roofline.</div>`;
+    <div class="fc-datatag">required depth per row uses that CASE'S OWN eave height (eaveH), not the slider above. Eave height is used here as a stand-in for the shaded window's height, which is a simplification, flagged inline ("tall eaveH") wherever it exceeds a plausible single window height, since this corpus's eaveH spans 1.6-15.6 m and the taller end is clearly multi-storey roofline.</div>`;
 }
 
 
@@ -7467,10 +7470,10 @@ const FINDINGS=[
   {id:'corpus',title:'Overview of Corpus',eyebrow:'General finding · corpus',
    body:()=>{
      const s=computeCorpusStats()||{};
-     const yr=(s.yearMin&&s.yearMax)?`${s.yearMin}\u2013${s.yearMax}`:'—';
+     const yr=(s.yearMin&&s.yearMax)?`${s.yearMin}\u2013${s.yearMax}`:'';
      return ''
       +`<p style="line-height:1.7;margin-bottom:12px;">The corpus comprises ${dynV(s.n??0)} vernacular case studies, focusing on rural and unselfconscious architecture `
-        +fcInfo('unselfconscious architecture','Rapoport (1969) distinguishes "unselfconscious" vernacular building — produced within an inherited tradition without individual design authorship — from self-conscious, designer-led architecture. This corpus is restricted to the former: buildings built as part of a continuous cultural and climatic tradition, with form determined by accumulated selection pressure rather than individual decision.','Rapoport, A. (1969). <em>House Form and Culture</em>. Prentice-Hall.')
+        +fcInfo('unselfconscious architecture','Rapoport (1969) distinguishes "unselfconscious" vernacular building, produced within an inherited tradition without individual design authorship, from self-conscious, designer-led architecture. This corpus is restricted to the former: buildings built as part of a continuous cultural and climatic tradition, with form determined by accumulated selection pressure rather than individual decision.','Rapoport, A. (1969). <em>House Form and Culture</em>. Prentice-Hall.')
       +` (Rapoport, 1969), meaning architecture built within an inherited tradition rather than based on individual planning.</p>`
       +`<p style="line-height:1.7;margin-bottom:12px;">Originating from the Central Uplands in Germany and Czechia (K\u00f6ppen climate zones Cfb and Dfb), the corpus was systematically expanded across K\u00f6ppen climate zones `
         +fcInfo('Köppen–Geiger classification','Climate zones assigned per Kottek et al. (2006) using TMYx 2011–2025 EPW station data. The K\u00f6ppen–Geiger system classifies climates by temperature and precipitation thresholds into five primary groups (A tropical, B arid, C temperate, D continental, E polar) with sub-divisions for seasonality and temperature extremes.','Kottek, M., Grieser, J., Beck, C., Rudolf, B., &amp; Rubel, F. (2006). World map of the K\u00f6ppen–Geiger climate classification updated. <em>Meteorologische Zeitschrift</em>, 15(3), 259–263.')
@@ -7491,23 +7494,31 @@ const FINDINGS=[
   {id:'koppenshift',title:'Observed Köppen shifts & Vulnerabilities',eyebrow:'General finding · vulnerability',
    body:()=>{
      return ''
-      +ub('How do climates shift under which scenario, how do we morph, vernacular big brother. Vulnerabilities: which case studies, regions, typologies, construction types — based on overheating delta and simulation output.','draft · vulnerability')
-      +loremP(3)
+      +`<p style="line-height:1.7;margin-bottom:12px;">The climate will shift and Geiger Köppen zones will shift with it. More than half of Cfb (temperate oceanic) climate zones in this corpus will have shifted to Cfa (humid subtropical) or Csb (warm-summer mediterranean) by 2068 `
+        +fcInfo('Baseline mismatch note',
+          'The Future Weather Generator (Rodrigues et al. 2023) uses a 1985–2014 baseline (centre ≈ 2000) to compute climate deltas. The source TMYx EPW files have a 2011–2025 centre of ≈ 2018. The 18-year mismatch means the scenario labelled “2050” effectively represents conditions centred on approximately 2068, and “2080” on approximately 2098. This is conservative labelling, not an error.',
+          'Rodrigues, E., Fernandes, M. S., & Carvalho, D. (2023). Future Weather Generator. Building and Environment, 246, 110981.'
+        )+`, and even one case into BSh (hot steppe) by 2098. These predictions are based on climate scenario SSP5-8.5.</p>`
+      +`<p style="line-height:1.7;margin-bottom:14px;">The table below documents the Köppen zone shifts across the corpus. Zone transitions are morphed using the Future Weather Generator `
+        +fcInfo('Climate morphing method','Each present-day EPW is morphed using the delta method (Belcher et al. 2005): monthly dry-bulb temperature, solar radiation, and other variables are scaled by the difference between the GCM baseline and future projection. Precipitation is not morphed and present-day values are retained for Köppen classification, to avoid misclassification driven by precipitation rounding artefacts. Classification thresholds follow Kottek et al. (2006).','Belcher, S. E., Hacker, J. N., & Powell, D. S. (2005). Building Services Engineering Research and Technology, 26(1), 49–61. | Kottek, M. et al. (2006). Meteorologische Zeitschrift, 15(3), 259–263. | Rodrigues et al. (2023). Building and Environment, 246, 110981.')
+      +` (Rodrigues et al. 2023), with Köppen classification applied at each horizon.</p>`
       +`<p style="margin:14px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">KÖPPEN ZONE SHIFTS `
         +fcInfo('köppen shift table','For every case, its present Köppen zone (from the assigned TMYx EPW) is compared to its zone under the morphed EPW for 2050 and 2080 (SSP5-8.5). Each row groups cases by their present zone and shows how many stay vs move, and where they move to. Classification uses Kottek et al. (2006) thresholds; precipitation is not morphed, so seasonal precip criteria use present-day values.','Kottek, M. et al. (2006). World map of the Köppen-Geiger climate classification updated. Belcher et al. (2005) morphing methodology.')+`</p>`
       +`<p style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);margin-bottom:6px;">terracotta = zone changed · grey = stayed</p>`
       +koppenShiftTableHTML()
-      +ub('Typological mismatches (vernacularBIGBROTHER): if the vernacular big brother is too different, this could imply false optimization for the future.','draft · typological mismatch')
-      +`<p style="margin:14px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">TYPOLOGICAL MISMATCH `
-        +fcInfo('vernacularBIGBROTHER mismatch','For a case, its FUTURE climate fingerprint (from the morphed EPW) is matched to the nearest present-day climate fingerprint across the corpus — its "big brother", the place already living in that future climate. A large distance means no good present-day analogue exists, which could imply false optimization if the building is tuned to a climate no established tradition has faced. Distance is a weighted 9-dimensional climate RMS (HDD, CDD, summer/winter temp, amplitude, GHI, wet-bulb, precip).','vernacularBIGBROTHER · climate-analogue method. Rapoport (1969) selection-pressure framing.')+`</p>`
+      +`<p style="margin:24px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">VULNERABILITIES</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">Zone transitions are not uniformly distributed across construction types and regions. Case studies with high thermal mass (stone, brick, earth construction) in Cfb zones shifting toward Cfa or Csb face the most acute exposure: their passive strategy depends on night discharge, which declines as nights warm. Across the corpus, the cases with the largest overheating delta (HSP present to 2080) cluster in Mediterranean and subtropical zones, and in construction types with poor ventilation compatibility. Continental Dfb cases shift into Cfa, which brings humid subtropical summer conditions their morphology was not selected for.</p>`
+      +`<p style="line-height:1.7;margin-bottom:14px;">Simulation output provides a direct vulnerability signal: cases where NDP drops below the Artmann threshold (1,000 h/yr) by 2080 and simultaneously show TCP below 50% flag a fundamental strategy failure, not a marginal degradation. These cases require reassessment rather than incremental adaptation.</p>`
+      +`<p style="margin:24px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">TYPOLOGICAL MISMATCH `
+        +fcInfo('vernacularBIGBROTHER mismatch','For a case, its future climate fingerprint (from the morphed EPW) is matched to the nearest present-day climate fingerprint across the corpus, the place already living in that future climate. A large distance means no good present-day analogue exists in the corpus, which could imply false optimisation: the building is tuned to a climate that will no longer exist, without a verified vernacular tradition for the conditions ahead. Distance is a weighted 9-dimensional climate RMS (HDD, CDD, summer/winter temp, amplitude, GHI, wet-bulb, precip).','vernacularBIGBROTHER · climate-analogue method. Rapoport (1969) selection-pressure framing.')+`</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">The vernacularBIGBROTHER identifies which present-day case study already lives in the future climate of a selected building. Where the match distance is low, an established vernacular tradition provides a reference for adaptation. Where the distance is high, no analogue exists in the corpus, and any prescription based on climate-morphology correlation would be extrapolating beyond the observed sample.</p>`
       +`<div class="mismatch-opts" id="mismatchOpts">
           <button class="mismatch-btn" data-mismatch="single">Use the open case study</button>
           <button class="mismatch-btn" data-mismatch="all2050">Analyse all → 2050</button>
           <button class="mismatch-btn" data-mismatch="all2080">Analyse all → 2080</button>
         </div>`
-      +`<div class="mismatch-warn">Analyse-all fetches a morphed EPW for every case (~one file each) and can take 30-90s on first run. Results are cached for the session afterwards. Single-case is instant if the case is already open.</div>`
-      +`<div id="mismatchResult"></div>`
-      +loremP(4);
+      +`<div class="mismatch-warn">Analyse-all fetches a morphed EPW for every case and can take 30–90 s on first run. Results are cached for the session. Single-case is instant if the case is already open.</div>`
+      +`<div id="mismatchResult"></div>`;
    }},
 
   {id:'culturalbias',title:'Cultural Bias vs Cross-Cultural Convergence',eyebrow:'General finding · culture',
@@ -7515,7 +7526,7 @@ const FINDINGS=[
      return ''
       +ub('Showing that cross-cultural convergence is there, but also its limitations. Cultural factor in building morphology.','draft · culture')
       +`<p style="margin:6px 0 8px;">Cultural factor in building morphology `
-        +fcInfo('η² variance by country','Each morphological metric is decomposed by a one-way ANOVA grouping cases by country: η² = between-country sum of squares / total sum of squares. η² is the share of the metric\'s variance explained purely by which country a building is in. High η² (roof pitch ≈ 0.76, wall thickness ≈ 0.59) means culture, not climate, is the primary driver of form. Caveat: national traditions occupy distinct climate niches, so culture and climate co-vary — this is the central confound the simulation mandate addresses.','Interpretation: Rapoport, A. (1969). House Form and Culture. Method: one-way ANOVA η² (variance decomposition).')+`</p>`
+        +fcInfo('η² variance by country','Each morphological metric is decomposed by a one-way ANOVA grouping cases by country: η² = between-country sum of squares / total sum of squares. η² is the share of the metric\'s variance explained purely by which country a building is in. High η² (roof pitch ≈ 0.76, wall thickness ≈ 0.59) means culture, not climate, is the primary driver of form. Caveat: national traditions occupy distinct climate niches, so culture and climate co-vary, this is the central confound the simulation mandate addresses.','Interpretation: Rapoport, A. (1969). House Form and Culture. Method: one-way ANOVA η² (variance decomposition).')+`</p>`
       +culturalBiasTableHTML()
       +loremP(5)
       +ub('Metrics and attributes that survive cultural bias: roof pitch, wall thickness, [ further metric ].','draft · surviving metrics')
@@ -7525,7 +7536,7 @@ const FINDINGS=[
 
  {group:'B · Recommendations',items:[
 
-  {id:'disclaimer',title:'Disclaimer — naturalistic fallacy',eyebrow:'Recommendation · disclaimer',
+  {id:'disclaimer',title:'Disclaimer, naturalistic fallacy',eyebrow:'Recommendation · disclaimer',
    body:()=>{
      return ''
       +ub('Not based on correlations and future climates alone. It may be true that "cities accustomed to warmer climates have already developed passive strategies to combat heat stress," but that does NOT mean we should blindly rebuild vernacular architecture for a given climate. Simulation is required before prescription.','draft · naturalistic fallacy')
@@ -7537,8 +7548,8 @@ const FINDINGS=[
   {id:'thermalmass',title:'1. The thermal mass problem',eyebrow:'Recommendation · strategy viability',
    body:()=>{
      return ''
-      +`<p style="line-height:1.65;margin-bottom:12px;">Thermal mass stores daytime heat in walls and releases it at night — effective when outdoor air cools enough to flush the stored heat before the next day. The critical metric is Night Discharge Potential (NDP): the number of summer hours where outdoor temperature is simultaneously below indoor temperature and below 22°C. As nights warm under SSP5-8.5, NDP declines. Below the Artmann threshold of 1,000 h/yr, mass can no longer discharge fully and accumulates heat across successive days, inverting its role from cooling asset to liability. `
-        +fcInfo('Artmann threshold — methodology and sources',
+      +`<p style="line-height:1.65;margin-bottom:12px;">Thermal mass stores daytime heat in walls and releases it at night, effective when outdoor air cools enough to flush the stored heat before the next day. The critical metric is Night Discharge Potential (NDP): the number of summer hours where outdoor temperature is simultaneously below indoor temperature and below 22°C. As nights warm under SSP5-8.5, NDP declines. Below the Artmann threshold of 1,000 h/yr, mass can no longer discharge fully and accumulates heat across successive days, inverting its role from cooling asset to liability. `
+        +fcInfo('Artmann threshold, methodology and sources',
           'NDP is defined as the number of Jun–Aug hours where outdoor dry-bulb temperature is below both indoor operative temperature AND 22°C. The 1,000 h/yr threshold from Artmann et al. (2007) is the empirical minimum for thermal mass to deliver net summer cooling in Central European climates. Thermal mass per floor area (kJ/m²K) is approximated by the Honeybee EnergyPlus model. Grouped by present Köppen zone; arithmetic means across simulated cases. One case contributes to one zone only (present zone).',
           'Artmann, N., Manz, H., & Heiselberg, P. (2007). Applied Energy, 84(2), 187–201. | Givoni, B. (1976). Man, Climate and Architecture (2nd ed.). | Givoni, B. (1994). Passive and Low Energy Cooling of Buildings. | Szokolay, S. V. (2008). Introduction to Architectural Science (2nd ed.).'
         )+`</p>`
@@ -7552,7 +7563,7 @@ const FINDINGS=[
      return ''
       +ub('At what WWR, with what climate, is the optimal WWR / thermal-mass combination.','draft · WWR')
       +loremP(0)
-      +`<p style="margin:14px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">EXAMPLE — chosen case study `
+      +`<p style="margin:14px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">EXAMPLE, chosen case study `
         +fcInfo('WWR optimization','Optimal window-to-wall ratio balances daylight/solar gain against overheating and night-loss, per scenario. Requires an EnergyPlus WWR sweep on present + morphed EPWs; values are [SIM] until those runs complete. Simplified: does not yet account for orientation or wind.')+`</p>`
       +`<div class="fc-tmrow"><span class="tm-label">Current WWR</span><span>${dynV('[SIM] %')}</span></div>`
       +`<div class="fc-tmrow"><span class="tm-label">Optimized · Present / 2050 / 2080</span><span>${dynV('[SIM]')} / ${dynV('[SIM]')} / ${dynV('[SIM]')}</span></div>`
@@ -7565,9 +7576,9 @@ const FINDINGS=[
       +ub('From TW > xx°C, evaporation cooling fails. (Find academic source for the threshold value: at how many hours of TW > xx°C is evaporation cooling viable.)','draft · wet-bulb threshold')
       +`<p style="margin:8px 0;">Evaporative cooling loses effectiveness as wet-bulb temperature rises `
         +fcInfo('wet-bulb threshold','Evaporative cooling works by driving air toward its wet-bulb temperature, so its ceiling is set by TW, not dry-bulb. Above roughly 22-24°C wet-bulb the achievable temperature drop is too small to deliver comfort. The exact hour-count threshold still needs a cited source and is marked [SIM] until fixed. Wet-bulb hours are counted from present and morphed EPWs.','Givoni, B. (1994). Passive and Low Energy Cooling of Buildings. Exact threshold: source pending.')+`.</p>`
-      +`<div class="fc-tmrow"><span class="tm-label">Present</span><span>${dynV('[SIM] h')} — ${dynV('viable')}</span></div>`
-      +`<div class="fc-tmrow"><span class="tm-label">2050</span><span>${dynV('[SIM] h')} — ${dynV('marginal')}</span></div>`
-      +`<div class="fc-tmrow"><span class="tm-label">2080</span><span>${dynV('[SIM] h')} — ${dynV('failing')}</span></div>`;
+      +`<div class="fc-tmrow"><span class="tm-label">Present</span><span>${dynV('[SIM] h')}, ${dynV('viable')}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">2050</span><span>${dynV('[SIM] h')}, ${dynV('marginal')}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">2080</span><span>${dynV('[SIM] h')}, ${dynV('failing')}</span></div>`;
    }},
 
   {id:'eave',title:'4. Required eave depth (orientation + latitude)',eyebrow:'Recommendation · shading',
@@ -7575,11 +7586,11 @@ const FINDINGS=[
      return ''
       +ub('Required eave depth for each case study (from latitude): at which case study is which eave depth required.','draft · eave depth')
       +`<p style="margin:8px 0;">Required eave depth is solar geometry, evaluated per wall orientation and corrected for hemisphere `
-        +fcInfo('eave depth: orientation, hemisphere, worst time','Each wall (N/E/S/W) is evaluated on the case\'s own LOCAL summer solstice: June 21 north of the equator, December 21 south of it, so the equator-facing wall (deepest requirement) and pole-facing wall (usually negligible) land correctly in both hemispheres automatically. For that wall we scan every daylight hour of that solstice and find the moment the sun sits most directly in front of it (its "critical time") — solar noon for the equator-facing wall, a specific morning hour for East, an afternoon hour for West. The overhang depth to fully shade height h at that moment is D = h / tan(altitude). If the sun never swings around to face a wall that day (typical for the pole-facing side, or only grazes it below 5° altitude near sunrise/sunset), that wall is marked "negligible" rather than given a spurious number. Two different heights are used deliberately: the SLIDER above drives a quick reference figure (median corpus latitude, exploratory, not tied to any case); the TABLE below uses each case\'s own recorded eave height. That reuse is a simplification worth flagging plainly: eave height is roofline-above-grade, not window height, and in this corpus it ranges 1.6-15.6 m — for the taller end this produces an architecturally large "required depth" that should be read as an upper bound, not a literal recommendation. Rows are flagged "tall eaveH" wherever this applies. Horizontal overhangs are also fundamentally weak against low-angle East/West sun regardless of depth; vernacular traditions typically answer that with shutters or vertical elements instead, which is a separate, real limitation of this whole method, not a bug in the numbers.','Solar geometry (solstice declination ±23.44°, hemisphere-dependent, numeric solar-position search). Latitude + orientation fixed, so NOT morphed by climate scenario.')+`.</p>`
+        +fcInfo('eave depth: orientation, hemisphere, worst time','Each wall (N/E/S/W) is evaluated on the case\'s own LOCAL summer solstice: June 21 north of the equator, December 21 south of it, so the equator-facing wall (deepest requirement) and pole-facing wall (usually negligible) land correctly in both hemispheres automatically. For that wall we scan every daylight hour of that solstice and find the moment the sun sits most directly in front of it (its "critical time"), solar noon for the equator-facing wall, a specific morning hour for East, an afternoon hour for West. The overhang depth to fully shade height h at that moment is D = h / tan(altitude). If the sun never swings around to face a wall that day (typical for the pole-facing side, or only grazes it below 5° altitude near sunrise/sunset), that wall is marked "negligible" rather than given a spurious number. Two different heights are used deliberately: the SLIDER above drives a quick reference figure (median corpus latitude, exploratory, not tied to any case); the TABLE below uses each case\'s own recorded eave height. That reuse is a simplification worth flagging plainly: eave height is roofline-above-grade, not window height, and in this corpus it ranges 1.6-15.6 m, for the taller end this produces an architecturally large "required depth" that should be read as an upper bound, not a literal recommendation. Rows are flagged "tall eaveH" wherever this applies. Horizontal overhangs are also fundamentally weak against low-angle East/West sun regardless of depth; vernacular traditions typically answer that with shutters or vertical elements instead, which is a separate, real limitation of this whole method, not a bug in the numbers.','Solar geometry (solstice declination ±23.44°, hemisphere-dependent, numeric solar-position search). Latitude + orientation fixed, so NOT morphed by climate scenario.')+`.</p>`
       +`<div class="fc-calc-hint" id="eaveHint">Press <b>&gt;dynamicFINDINGS</b> to compute the eave-depth tables for the loaded corpus.</div>`
       +`<div id="eaveInteractive" style="display:none;">
           <div class="eave-slider-row">
-            <label for="eaveHSlider">Quick reference — window height (h), evaluated at the corpus median latitude</label>
+            <label for="eaveHSlider">Quick reference, window height (h), evaluated at the corpus median latitude</label>
             <div class="eave-slider-line">
               <input type="range" id="eaveHSlider" min="0.5" max="3" step="0.05" value="1.5">
               <span class="eave-slider-val" id="eaveHVal">1.50 m</span>
@@ -7690,7 +7701,7 @@ function renderEaveRefCalc(){
   const lat=medianAbsLatitude(); /* northern-hemisphere reference point by convention */
   const req=requiredEaveDepthOriented(lat,orient,h);
   if(!req||req.negligible){
-    host.innerHTML=`<span class="tm-label">At corpus median latitude (${lat.toFixed(1)}°N ref.), ${orient} wall</span><span style="color:var(--ink-faint)">negligible — sun does not face this wall on the solstice</span>`;
+    host.innerHTML=`<span class="tm-label">At corpus median latitude (${lat.toFixed(1)}°N ref.), ${orient} wall</span><span style="color:var(--ink-faint)">negligible, sun does not face this wall on the solstice</span>`;
   }else{
     host.innerHTML=`<span class="tm-label">At corpus median latitude (${lat.toFixed(1)}°N ref.), ${orient} wall, h=${h.toFixed(2)}m</span><span>${dynV(req.depth.toFixed(2)+' m')} required, critical time ${fmtSolarHour(req.solarHour)} solar</span>`;
   }
@@ -7732,11 +7743,11 @@ function wireMismatchButtons(){
       const mode=b.dataset.mismatch;
       const h=host();if(!h)return;
       if(mode==='single'){
-        if(!selectedId){h.innerHTML='<div class="fc-lowsample">Open a case study first — its vernacularBIGBROTHER is computed from the case you have selected.</div>';return;}
+        if(!selectedId){h.innerHTML='<div class="fc-lowsample">Open a case study first, its vernacularBIGBROTHER is computed from the case you have selected.</div>';return;}
         h.innerHTML='<div class="mismatch-prog">computing analogue for the open case…</div>';
         const c=byId(selectedId);
         const [r50,r80]=await Promise.all([computeMismatchSingle(selectedId,1),computeMismatchSingle(selectedId,2)]);
-        const line=(lbl,r)=>r?`<div class="fc-tmrow"><span class="tm-label">${lbl}</span><span>vBB: ${dynV(r.brother.name)} — ${dynV(r.severity)} <span style="color:var(--ink-faint)">(d=${r.dist.toFixed(2)})</span></span></div>`
+        const line=(lbl,r)=>r?`<div class="fc-tmrow"><span class="tm-label">${lbl}</span><span>vBB: ${dynV(r.brother.name)}, ${dynV(r.severity)} <span style="color:var(--ink-faint)">(d=${r.dist.toFixed(2)})</span></span></div>`
                              :`<div class="fc-tmrow"><span class="tm-label">${lbl}</span><span style="color:var(--ink-faint)">no analogue / EPW unavailable</span></div>`;
         h.innerHTML=`<p style="margin:6px 0;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">${(c&&(c.name||c.id))||selectedId}</p>`
           +line('2050 → analogue',r50)+line('2080 → analogue',r80);
@@ -7749,7 +7760,7 @@ function wireMismatchButtons(){
           const p=document.getElementById('mmProg');
           if(p)p.textContent=`analysing ${yr}: ${done} / ${total} cases…`;
         });
-        if(!rows.length){h.innerHTML='<div class="fc-lowsample">No results — EPW files may be unavailable in this environment.</div>';return;}
+        if(!rows.length){h.innerHTML='<div class="fc-lowsample">No results, EPW files may be unavailable in this environment.</div>';return;}
         const worst=rows.slice(0,12);
         const body=worst.map(r=>`<tr>
           <td class="ktd-zone">${r.id}</td>
@@ -7789,7 +7800,7 @@ function setupPipelineInteractions(){
   const svgEl=()=>pan.querySelector('svg');
   function apply(){
     /* pan via translate (cheap, no raster), zoom by resizing the SVG element
-       itself so the vector re-renders crisply at every scale — CSS transform
+       itself so the vector re-renders crisply at every scale, CSS transform
        scale() would rasterize-then-scale and blur on zoom-in. */
     pan.style.transform=`translate(${_pipeState.tx}px,${_pipeState.ty}px)`;
     const s=svgEl();
@@ -7889,7 +7900,7 @@ function setupPipelineInteractions(){
 /* ── GH simulation image viewer ──────────────────────────────────────────────
    Same pan + zoom + drag + fullscreen as the pipeline diagram.
    Image: 6312 × 2001 px raster (PNG served from R2).
-   Resize via width/height attributes (not CSS scale) — keeps crisp at all zoom
+   Resize via width/height attributes (not CSS scale), keeps crisp at all zoom
    levels and is consistent with the SVG approach in setupPipelineInteractions.
    ──────────────────────────────────────────────────────────────────────────── */
 let _ghSimState={scale:1,tx:0,ty:0};
@@ -8987,7 +8998,7 @@ function buildPipeline(){
              'Java_script_library','cloudflare','Building_somulations',
              'Vernacular_futures','Vernacular_futures-2']}
     };
-    /* groups that never dim — connectors, backgrounds, decorative only */
+    /* groups that never dim, connectors, backgrounds, decorative only */
     const NEUTRAL=new Set(['lines','world','Layer_1','Layer_3','Brain','Brain-2']);
     let activeTag=null;
     /* build the tag bar */
@@ -9007,7 +9018,7 @@ function buildPipeline(){
         const svgEl=document.querySelector('#pipePan svg');
         if(!svgEl)return;
         if(activeTag===key){
-          /* deselect — reset all */
+          /* deselect, reset all */
           activeTag=null;
           svgEl.querySelectorAll('g[id]').forEach(g=>{g.style.opacity='';});
           bar.querySelectorAll('button').forEach(b=>{
@@ -9129,7 +9140,7 @@ const SCENARIO_PAPER={
 const SCENARIO_ACCENT={
   light:[
     {c:'#7722CC',deep:'#4A1480',dim:'#EAE0F8'},       /* present: vivid violet */
-    {c:'#9A7870',deep:'#6E5048',dim:'#EDE4E0'},       /* 2050: muted dusty clay — cooler/less saturated than 2080 */
+    {c:'#9A7870',deep:'#6E5048',dim:'#EDE4E0'},       /* 2050: muted dusty clay, cooler/less saturated than 2080 */
     {c:'#E07010',deep:'#9E4E08',dim:'#FAE8CC'},       /* 2080: vibrant amber-orange */
   ],
   dark:[
@@ -9168,7 +9179,7 @@ function applyTheme(theme){
      colours follow the new theme immediately (not just on next open).
      Check the overlay's visibility rather than the eggOpen variable:
      applyTheme runs at load, before eggOpen (let) is initialized, so
-     touching that variable — even via typeof — throws a TDZ error. */
+     touching that variable, even via typeof, throws a TDZ error. */
   const _eggOv=document.getElementById('eggOverlay');
   if(_eggOv&&_eggOv.style.display==='flex'&&typeof eggBuildUfoSprite==='function')eggBuildUfoSprite();
 }
@@ -9186,7 +9197,7 @@ applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'dark':'
 /* ===================== EASTER EGG: ELEVATION RUNNER =====================
    Secret trigger: click any window's "×" three times within ~1.2s of each
    other. Obstacles are real architectural elevation drawings (Ansichten)
-   traced from the case studies' DXF files — convex-hull silhouettes of the
+   traced from the case studies' DXF files, convex-hull silhouettes of the
    actual "elevationNN" view geometry, not a fabricated shape. Cases without
    uploaded DXF source fall back to a simple parametric gable silhouette
    built from that case's own real roof pitch where available. */
@@ -9197,7 +9208,7 @@ let eggObstacles=[],eggFramesSinceSpawn=0,eggNextSpawnFrames=70;
 let eggSpeed=4.6,eggDistance=0,eggScore=0,eggHigh=0;
 let eggPool=[];
 
-/* ---- Climate runner milestones — academically sourced ---- */
+/* ---- Climate runner milestones, academically sourced ---- */
 const EGG_MILESTONES=[
   {a:1.2, title:'We are already here',
    desc:'Observed 2011–2020 mean warming. Climate change is present-tense.',
@@ -9424,7 +9435,7 @@ function openEggGame(){
   eggRaf=requestAnimationFrame(eggTick);
 }
 /* Build the player sprite: the little UFO saucer from the slider/loader
-   logo, but WITHOUT the light beam and the house — just the disc. Drawn
+   logo, but WITHOUT the light beam and the house, just the disc. Drawn
    once to an <img> we can blit each frame with ctx.drawImage. */
 let eggUfoImg=null,eggUfoReady=false,eggUfoTheme=null;
 function eggBuildUfoSprite(){
@@ -9627,7 +9638,7 @@ document.addEventListener('click',e=>{
 });
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   AVERAGE TYPOLOGY — clean rewrite v287
+   AVERAGE TYPOLOGY, clean rewrite v287
    Button in filter bar → floating window (separate from csPanel).
    Tabs: Building (photo+plan carousels) / Climate / Metrics / Members.
    No interaction with renderPanel() or csPanel.
@@ -9641,7 +9652,7 @@ function computeAvgZone(pinLat,pinLon,radius_km){
   if(!members.length)return{members:[],label:"TYPOLOGY_no_cases",domKoppen:"",domCountry:""};
   const plurality=(arr,fn)=>{const m={};arr.forEach(c=>{const v=fn(c);if(v!=null&&v!=="")m[v]=(m[v]||0)+1;});return Object.entries(m).sort((a,b)=>b[1]-a[1])[0]?.[0]||"";};
   const avgOf=fn=>{const v=members.map(fn).filter(x=>x!=null&&!isNaN(x));return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;};
-  const fmt=(v,d=1)=>v!=null?v.toFixed(d):"—";
+  const fmt=(v,d=1)=>v!=null?v.toFixed(d):"";
   const domKoppen=plurality(members,c=>c.koppen?.[0]||c.koppen||"");
   const domCountry=plurality(members,c=>c.country||"");
   const domStruct=plurality(members,c=>(c.structure||"").split("/")[0].trim());
@@ -9705,15 +9716,15 @@ async function renderAvgTypWin(){
       const kc={};
       z.members.forEach(c=>{const k=(Array.isArray(c.koppen)?c.koppen[i]:'')||'';if(k)kc[k]=(kc[k]||0)+1;});
       const top=Object.entries(kc).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,n])=>k+' ('+n+')').join(' · ');
-      return '<tr><td>'+scn+'</td><td>'+(top||'—')+'</td></tr>';
+      return '<tr><td>'+scn+'</td><td>'+(top||'')+'</td></tr>';
     }).join('');
     cP.innerHTML=
       '<p class="avgt-sec-head">Representative station</p>'+
       '<table class="avgt-metric-table">'+
-        '<tr><td>Station</td><td>'+(med?.epwStation||'—')+'</td></tr>'+
-        '<tr><td>Name</td><td>'+(med?.name||'—')+'</td></tr>'+
-        '<tr><td>Country</td><td>'+(med?.country||'—')+'</td></tr>'+
-        '<tr><td>Coordinates</td><td>'+((med?.lat?.toFixed(3)||'—')+'°, '+(med?.lon?.toFixed(3)||'—')+'°')+'</td></tr>'+
+        '<tr><td>Station</td><td>'+(med?.epwStation||'')+'</td></tr>'+
+        '<tr><td>Name</td><td>'+(med?.name||'')+'</td></tr>'+
+        '<tr><td>Country</td><td>'+(med?.country||'')+'</td></tr>'+
+        '<tr><td>Coordinates</td><td>'+((med?.lat?.toFixed(3)||'')+'°, '+(med?.lon?.toFixed(3)||'')+'°')+'</td></tr>'+
       '</table>'+
       '<p class="avgt-sec-head">Dominant Köppen by scenario</p>'+
       '<table class="avgt-metric-table">'+krows+'</table>';
@@ -9725,10 +9736,10 @@ async function renderAvgTypWin(){
     mP.innerHTML='<p class="avgt-empty">No case studies within radius.</p>';
   }else{
     const f=z.fmt;
-    const r2=(v,d)=>v!=null?f(v,d||1):'—';
+    const r2=(v,d)=>v!=null?f(v,d||1):'';
     const row=(a,b)=>'<tr><td>'+a+'</td><td>'+b+'</td></tr>';
     mP.innerHTML=
-      '<p class="avgt-sec-head">Envelope — averaged</p>'+
+      '<p class="avgt-sec-head">Envelope, averaged</p>'+
       '<table class="avgt-metric-table">'+
         row('Floor area',r2(z.avgArea)+' m²')+
         row('Building height',r2(z.avgHeight)+' m')+
@@ -9745,16 +9756,16 @@ async function renderAvgTypWin(){
       '</table>'+
       '<p class="avgt-sec-head">Dominant tags</p>'+
       '<table class="avgt-metric-table">'+
-        row('Köppen',z.domKoppen||'—')+
-        row('Country',z.domCountry||'—')+
-        row('Construction',z.domStruct||'—')+
-        row('Roof form',z.domRoofForm||'—')+
+        row('Köppen',z.domKoppen||'')+
+        row('Country',z.domCountry||'')+
+        row('Construction',z.domStruct||'')+
+        row('Roof form',z.domRoofForm||'')+
       '</table>'+
       '<p class="avgt-sec-head">Simulation (present / 2050 / 2080)</p>'+
       '<table class="avgt-metric-table">'+
-        row('TCP %',z.avgTcp.map((v)=>v!=null?f(v)+'%':'—').join(' / '))+
-        row('HSP h/yr',z.avgHsp.map((v)=>v!=null?Math.round(v)+' h':'—').join(' / '))+
-        row('NDP h/yr',z.avgNdp.map((v)=>v!=null?Math.round(v)+' h':'—').join(' / '))+
+        row('TCP %',z.avgTcp.map((v)=>v!=null?f(v)+'%':'').join(' / '))+
+        row('HSP h/yr',z.avgHsp.map((v)=>v!=null?Math.round(v)+' h':'').join(' / '))+
+        row('NDP h/yr',z.avgNdp.map((v)=>v!=null?Math.round(v)+' h':'').join(' / '))+
       '</table>';
   }
 
@@ -9866,7 +9877,7 @@ else if(window._hideLoader)window._hideLoader();
     document.getElementById('filterStripBtn')?.classList.remove('active');
   });
   /* clicking the vernacularfutures brand title returns to the Atlas
-     initial screen (Atlas tab active, mosaic reset) — like a home link */
+     initial screen (Atlas tab active, mosaic reset), like a home link */
   function goToAtlasHome(){
     /* reset any manual case-study drawer resize back to default */
     if(window._resetCsWidth)window._resetCsWidth();
@@ -9903,7 +9914,7 @@ else if(window._hideLoader)window._hideLoader();
     winTitle.addEventListener('click',goToAtlasHome);
   }
   /* keep the filter drawer's scrollable area clear of the fixed
-     averageTYPOLOGY footer bar — as typologies are added the bar grows
+     averageTYPOLOGY footer bar, as typologies are added the bar grows
      taller, so sync the drawer's bottom padding to the bar's height.
      This ensures the last filter row and the scrollbar's bottom arrow
      are always reachable, never hidden behind the bar. */
@@ -9928,7 +9939,7 @@ else if(window._hideLoader)window._hideLoader();
      The map's own left position when the drawer opens varies with which
      panels are open, so rather than assume, we MEASURE each control's real
      (untransformed) position once the layout has settled and nudge it right
-     by exactly the distance still needed to sit just past the drawer — 0px
+     by exactly the distance still needed to sit just past the drawer, 0px
      gap for the zoom control, 12px for the legend (their closed-tab gaps).
      This self-corrects in every mode and never double-shifts. */
   (function(){
@@ -9938,7 +9949,7 @@ else if(window._hideLoader)window._hideLoader();
       {get:()=>document.querySelector('.leaflet-top.leaflet-left'),gap:0},
       {get:()=>document.getElementById('mapLegend'),gap:12}
     ];
-    /* natural (untransformed) viewport-left of an element — offsetLeft is
+    /* natural (untransformed) viewport-left of an element, offsetLeft is
        unaffected by CSS transforms, so we can read it WITHOUT clearing the
        control's own transform (which caused a visible snap-back flicker) */
     const natLeft=(el)=>{const op=el.offsetParent;return (op?op.getBoundingClientRect().left:0)+el.offsetLeft;};
@@ -9955,7 +9966,7 @@ else if(window._hideLoader)window._hideLoader();
     /* A short rAF loop runs while the filter is open, re-pinning the controls
        to the drawer edge every frame. The grid reflow that moves the map is
        animated and its timing varies by mode, so continuously pinning (rather
-       than a one-shot shift) keeps them locked in place — no lag, no drift,
+       than a one-shot shift) keeps them locked in place, no lag, no drift,
        no overshoot. The loop self-stops once the filter is closed. */
     let running=false,raf;
     const tick=()=>{
@@ -10061,7 +10072,7 @@ else if(window._hideLoader)window._hideLoader();
     /* expand the case-study drawer to its maximum width (used when a
        comparison or vernacularBIGBROTHER view opens, so both columns / the
        long info text fit). Closes the filter drawer first if it is open,
-       per design — then the max is computed without the filter's left
+       per design, then the max is computed without the filter's left
        inset, giving the drawer the full span. Works in atlas + fullscreen. */
     window._maximizeCsWidth=function(){
       if(document.body.classList.contains('filter-open')){
@@ -10097,9 +10108,9 @@ else if(window._hideLoader)window._hideLoader();
     document.body.classList.toggle('atlas-active',isAtlas);
     if(isAtlas){setDeckTop();setTimeout(()=>{if(map)map.invalidateSize();},60);}
   }
-  /* set on load — Atlas is the default active tab.
+  /* set on load, Atlas is the default active tab.
      Desktop: case study panel opens by default (mosaic visible).
-     Mobile: stays closed — Google-Maps-style, user opens it manually.
+     Mobile: stays closed, Google-Maps-style, user opens it manually.
      (checking viewport directly, not the mobile-mode class, since
      mobile detection runs later in the script than this block) */
   setAtlasActive(true);
@@ -10110,7 +10121,7 @@ else if(window._hideLoader)window._hideLoader();
   }
   window.addEventListener('resize',()=>{if(document.body.classList.contains('atlas-active'))setDeckTop();});
 
-  /* wire hamburger tab buttons — reuse existing tab switching logic */
+  /* wire hamburger tab buttons, reuse existing tab switching logic */
   drawer.querySelectorAll('.hm-tab[data-tab]').forEach(btn=>{
     btn.addEventListener('click',()=>{
       /* sync with hidden tab-bar */
@@ -10269,7 +10280,7 @@ window.addEventListener('resize',()=>{clearTimeout(window._searchRowTimer);windo
       if(typeof map!=='undefined'&&map){
         map.invalidateSize();
         /* mobile: fit the view to show every case study marker at once,
-           like opening Google Maps — not an arbitrary fixed zoom level */
+           like opening Google Maps, not an arbitrary fixed zoom level */
         if(document.body.classList.contains('mobile-mode')){
           if(typeof markers!=='undefined'&&markers.length){
             const bounds=L.latLngBounds(markers.map(m=>m.getLatLng()));
@@ -10306,7 +10317,7 @@ window.addEventListener('resize',()=>{clearTimeout(window._searchRowTimer);windo
     });
   }
 })();
-/* fetch Excel and rebuild with real data — setAppMode always full now */
+/* fetch Excel and rebuild with real data, setAppMode always full now */
 /* ── Draggable floating slider in fullscreen mode ──────────── */
 (function(){
   const wrap=document.querySelector('.scenario-slider-wrap');
@@ -10391,7 +10402,7 @@ document.addEventListener('keydown',e=>{
     si=(si+1)%statusMessages.length;
     if(statusEl)statusEl.textContent=statusMessages[si];
   },700);
-  /* loader stays open — animation loops continuously — until the app
+  /* loader stays open, animation loops continuously, until the app
      signals it has finished its initial render */
   window._hideLoader=function(){
     loader.classList.add('loader-hidden');
@@ -10403,7 +10414,7 @@ document.addEventListener('keydown',e=>{
   /* the app's init chain runs BEFORE this loader IIFE and calls
      _hideLoader() before it exists (the guard just no-ops then). If init
      has already flagged itself ready, hide after a short minimum so the
-     animation is briefly seen rather than flashing — this is what kept
+     animation is briefly seen rather than flashing, this is what kept
      the loader up for ~10s (it was only ever hidden by the safety net). */
   /* play the full ping-pong sequence at least twice before dismissing,
      so the animation reads as a deliberate loop rather than a flash.
@@ -10458,7 +10469,7 @@ document.addEventListener('keydown',e=>{
     function pos(){
       var min=+input.min||0,max=+input.max||100,val=+input.value;
       var f=(max>min)?(val-min)/(max-min):0;
-      /* use layout offsets (unscaled), not getBoundingClientRect — the whole
+      /* use layout offsets (unscaled), not getBoundingClientRect, the whole
          scenario control is transform:scale(0.9), so screen-space rects don't
          match the coordinate system where left/top apply. Travel the full
          track width so the circle reaches + covers both ends. */
