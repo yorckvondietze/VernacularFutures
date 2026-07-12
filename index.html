@@ -7464,24 +7464,28 @@ function eaveDepthTableHTML(orient,winH){
 const FINDINGS=[
  {group:'A  General findings',items:[
 
-  {id:'corpus',title:'Overview of Corpus',eyebrow:'General finding  corpus',
+  {id:'corpus',title:'Overview of Corpus',eyebrow:'General finding · corpus',
    body:()=>{
-     const s=computeCorpusStats();
-     const yr=(s.yearMin&&s.yearMax)?`${s.yearMin}–${s.yearMax}`:'—';
+     const s=computeCorpusStats()||{};
+     const yr=(s.yearMin&&s.yearMax)?`${s.yearMin}\u2013${s.yearMax}`:'—';
      return ''
-      +ub('Overview of corpus: what is in the data, what our sample is, geographical and historical distribution; also the limitations of the sample.','draft · scope')
-      +loremP(0)
+      +`<p style="line-height:1.7;margin-bottom:12px;">The corpus comprises ${dynV(s.n??0)} vernacular case studies, focusing on rural and unselfconscious architecture `
+        +fcInfo('unselfconscious architecture','Rapoport (1969) distinguishes "unselfconscious" vernacular building — produced within an inherited tradition without individual design authorship — from self-conscious, designer-led architecture. This corpus is restricted to the former: buildings built as part of a continuous cultural and climatic tradition, with form determined by accumulated selection pressure rather than individual decision.','Rapoport, A. (1969). <em>House Form and Culture</em>. Prentice-Hall.')
+      +` (Rapoport, 1969), meaning architecture built within an inherited tradition rather than based on individual planning.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">Originating from the Central Uplands in Germany and Czechia (K\u00f6ppen climate zones Cfb and Dfb), the corpus was systematically expanded across K\u00f6ppen climate zones `
+        +fcInfo('Köppen–Geiger classification','Climate zones assigned per Kottek et al. (2006) using TMYx 2011–2025 EPW station data. The K\u00f6ppen–Geiger system classifies climates by temperature and precipitation thresholds into five primary groups (A tropical, B arid, C temperate, D continental, E polar) with sub-divisions for seasonality and temperature extremes.','Kottek, M., Grieser, J., Beck, C., Rudolf, B., &amp; Rubel, F. (2006). World map of the K\u00f6ppen–Geiger climate classification updated. <em>Meteorologische Zeitschrift</em>, 15(3), 259–263.')
+      +` (Kottek et al., 2006). However, the sample still carries a pronounced European-temperate bias: Dfb and Cfb zones account for a disproportionate share of the case studies, while tropical climate zones remain underrepresented.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">Selection for a case study required a minimum of one floor plan and one elevation drawing as well as verifiable original site coordinates. Approximate coordinates are flagged. The corpus therefore carries a bias towards academically documented cases regardless of climatic relevance.</p>`
+      +`<p style="line-height:1.7;margin-bottom:16px;">As the database is still growing, the current analysis is based on only ${dynV(s.withGeom??0)} case studies with geometric data. The sample size is not yet sufficient for definitive conclusions. Nevertheless, the simulations already provide meaningful insights and show clear trends regarding future climate performance. As the number and geographical and cultural distribution of case studies increases, the following dynamic findings will become increasingly reliable and scientifically more substantial.</p>`
       +`<p style="margin:16px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">CORPUS AT A GLANCE `
-        +fcInfo('corpus stats','Counted live from the loaded corpus: total records, and how many carry coordinates, extracted geometry, and an assigned EPW station. Köppen/country/region counts are distinct-value counts over the same set.')+`</p>`
-      +`<div class="fc-tmrow"><span class="tm-label">Case studies</span><span>${dynV(s.n)}</span></div>`
-      +`<div class="fc-tmrow"><span class="tm-label">With coordinates</span><span>${dynV(s.withCoord)}</span></div>`
-      +`<div class="fc-tmrow"><span class="tm-label">With extracted geometry</span><span>${dynV(s.withGeom)}</span></div>`
-      +`<div class="fc-tmrow"><span class="tm-label">With assigned EPW station</span><span>${dynV(s.withEpw)}</span></div>`
-      +`<div class="fc-tmrow"><span class="tm-label">Countries  regions</span><span>${dynV(s.nCountries)} · ${dynV(s.nRegions)}</span></div>`
-      +`<div class="fc-tmrow"><span class="tm-label">Köppen zones represented</span><span>${dynV(s.nKoppen)}</span></div>`
-      +`<div class="fc-tmrow"><span class="tm-label">Build-year range</span><span>${dynV(yr)}</span></div>`
-      +ub('Limitations of the sample: European-temperate bias, uneven geographical coverage, museum-relocation effects on station assignment.','draft · limitations')
-      +loremP(2);
+        +fcInfo('corpus stats','Counted live from the loaded corpus: total records, and how many carry coordinates, extracted geometry, and an assigned EPW station. K\u00f6ppen/country/region counts are distinct-value counts over the same set.')+`</p>`
+      +`<div class="fc-tmrow"><span class="tm-label">Case studies</span><span>${dynV(s.n??0)}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">With coordinates</span><span>${dynV(s.withCoord??0)}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">With extracted geometry</span><span>${dynV(s.withGeom??0)}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">With assigned EPW station</span><span>${dynV(s.withEpw??0)}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">Countries · regions</span><span>${dynV(s.nCountries??0)} · ${dynV(s.nRegions??0)}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">K\u00f6ppen zones represented</span><span>${dynV(s.nKoppen??0)}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">Build-year range</span><span>${dynV(yr)}</span></div>`;
    }},
 
   {id:'koppenshift',title:'Observed Köppen shifts & Vulnerabilities',eyebrow:'General finding · vulnerability',
@@ -7638,8 +7642,12 @@ function showFinding(id){
       <div class="ai-body">${loremParagraph(1)}</div>
     </div></span>
   </div>`;
-  document.getElementById('findingsContent').innerHTML=
-    actionBar+`<div class="fc-eyebrow">${it.eyebrow}</div><h2 class="fc-title">${it.title}</h2><div class="fc-body">${typeof it.body==='function'?it.body():it.body}</div>`;
+  let bodyHtml='';
+  try{bodyHtml=typeof it.body==='function'?it.body():it.body;}
+  catch(err){bodyHtml=`<p style="color:var(--rust);font-family:var(--mono);font-size:11px;">Error rendering finding: ${err.message}</p>`;}
+  const fc=document.getElementById('findingsContent');
+  fc._tmDelegated=false; /* reset so wireThermalMassDropdown re-attaches on every render */
+  fc.innerHTML=actionBar+`<div class="fc-eyebrow">${it.eyebrow}</div><h2 class="fc-title">${it.title}</h2><div class="fc-body">${bodyHtml}</div>`;
   /* wire interactions for this finding */
   const db=document.getElementById('dynFindBtn');
   if(db)db.addEventListener('click',()=>onDynamicFindings(id));
