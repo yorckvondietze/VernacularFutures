@@ -7723,26 +7723,29 @@ const FINDINGS=[
 
   {id:'culturalbias',title:'Cultural Bias vs Cross-Cultural Convergence',eyebrow:'General finding · culture',
    body:()=>{
+     const s=computeCorpusStats()||{};
      return ''
-      +ub('Showing that cross-cultural convergence is there, but also its limitations. Cultural factor in building morphology.','draft · culture')
-      +`<p style="margin:6px 0 8px;">Cultural factor in building morphology `
-        +fcInfo('η² variance by country','Each morphological metric is decomposed by a one-way ANOVA grouping cases by country: η² = between-country sum of squares / total sum of squares. η² is the share of the metric\'s variance explained purely by which country a building is in. High η² (roof pitch ≈ 0.76, wall thickness ≈ 0.59) means culture, not climate, is the primary driver of form. Caveat: national traditions occupy distinct climate niches, so culture and climate co-vary, this is the central confound the simulation mandate addresses.','Interpretation: Rapoport, A. (1969). House Form and Culture. Method: one-way ANOVA η² (variance decomposition).')+`</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">Country of origin explains a large share of all morphological variance in this corpus `
+        +fcInfo('η² variance decomposition','One-way ANOVA grouping by country: η² = between-country sum of squares / total sum of squares. It measures the share of a metric\'s variance accounted for purely by which country a building is from. A high η² means that knowing the country predicts the metric better than knowing the climate. Method follows Cohen (1988) for effect-size interpretation.','Rapoport, A. (1969). House Form and Culture. Prentice-Hall. | Cohen, J. (1988). Statistical power analysis for the behavioral sciences (2nd ed.).')
+      +`. A Japanese farmhouse and a Czech Bohemian cottage may share a temperate Köppen zone, but their wall thickness, roof pitch, and floor area are determined primarily by their building tradition, not by the climate they happen to share.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">This is the central confound: culture and climate co-vary. Each national tradition occupies a distinct climate niche, so in a pooled cross-cultural analysis the climate signal and the cultural signal are inseparable. Pooled Pearson correlations either disappear or reverse sign. Roof pitch is a clear case: pooled across all traditions ρ = −0.13 (steeper roofs in warmer climates, apparently) but within a single tradition the relationship is ρ = +0.41 (steeper roofs in colder, wetter zones, which is physically correct). The pooled result is misleading. Zero correlations in this corpus survive Benjamini-Hochberg FDR correction `
+        +fcInfo('Benjamini-Hochberg correction','Controlling the false discovery rate (FDR) at q < 0.05 across all tested morphological-climate pairs. At this threshold, no pooled cross-cultural Pearson correlation between morphological metric and climate variable in this corpus is statistically distinguishable from noise.','Benjamini, Y., & Hochberg, Y. (1995). Journal of the Royal Statistical Society: Series B, 57(1), 289–300.')
+      +` in the pooled sample. The cultural signal is simply too strong.</p>`
       +culturalBiasTableHTML()
-      +loremP(5)
-      +ub('Metrics and attributes that survive cultural bias: roof pitch, wall thickness, [ further metric ].','draft · surviving metrics')
-      +loremP(6);
+      +`<p style="line-height:1.7;margin-top:16px;margin-bottom:12px;">The correct approach is within-tradition analysis: fixing cultural origin and testing climate gradients within a single tradition. Roof pitch and wall thickness both show meaningful within-tradition correlations with temperature and precipitation. Eave depth, by contrast, largely collapses: it appears driven by a Japan cluster artifact rather than a climate gradient. These are the signals that justify the simulation mandate, because they suggest genuine climate-adaptive selection within traditions, even if pooled analysis obscures it.</p>`;
    }}
  ]},
 
  {group:'B · Recommendations',items:[
 
-  {id:'disclaimer',title:'Disclaimer, naturalistic fallacy',eyebrow:'Recommendation · disclaimer',
+  {id:'disclaimer',title:'Naturalistic fallacy',eyebrow:'Recommendation · disclaimer',
    body:()=>{
      return ''
-      +ub('Not based on correlations and future climates alone. It may be true that "cities accustomed to warmer climates have already developed passive strategies to combat heat stress," but that does NOT mean we should blindly rebuild vernacular architecture for a given climate. Simulation is required before prescription.','draft · naturalistic fallacy')
-      +`<p style="margin-top:8px;">The move from "traditions correlate with climate X" to "therefore build like this for climate X" is the naturalistic fallacy `
-        +fcInfo('naturalistic fallacy','Deriving a prescriptive "ought" (how we should build) directly from a descriptive "is" (what traditions did) is not valid on its own. Correlation between vernacular form and climate must be routed through physical simulation before it becomes a design recommendation.','Hume, D. (1739) A Treatise of Human Nature; Moore, G. E. (1903) Principia Ethica.')+`.</p>`
-      +loremP(7)+loremP(8);
+      +`<p style="line-height:1.7;margin-bottom:12px;">It may be true that vernacular buildings in warmer climates have developed envelope strategies that buffer heat. This study sets out to confirm and quantify this. But the observation that vernacular form correlates with climate does not, by itself, justify prescribing those forms for new construction under future climates.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">The move from "traditions in climate X have thick walls" to "therefore build thick walls for future climate X" is the naturalistic fallacy `
+        +fcInfo('Naturalistic fallacy (Hume, Moore)','Hume (1739) identified the is-ought problem: a descriptive statement about what is the case cannot by itself logically entail a prescriptive statement about what ought to be done. Moore (1903) formalised this as the naturalistic fallacy. Applied here: the observation that vernacular buildings in climate X have property Y cannot directly prescribe Y for new construction without an independent empirical test of whether Y actually produces the desired outcome under those conditions.','Hume, D. (1739). A Treatise of Human Nature. | Moore, G. E. (1903). Principia Ethica. Cambridge University Press.')
+      +`: deriving an ought from an is. Observing that builders in cold climates historically used thick walls does not prove that thick walls are the optimal strategy for a cold climate, and it certainly does not prove they are the optimal strategy for a future climate that does not yet exist.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">This is why simulation is the methodological core of vernacularFutures. The morphological correlations in this corpus establish which passive strategies to test. The EnergyPlus simulations establish whether they actually work, and under which future conditions they fail. The correlations are the hypothesis. The simulations are the test. Reading directly from the correlation to a design recommendation, without the simulation step, is not scientifically defensible.</p>`;
    }},
 
   {id:'strategies',title:'Best Strategies by Climate Zone',eyebrow:'Recommendation · strategy viability',
