@@ -2670,6 +2670,7 @@ const COLMAP_DEF={
   va:[h=>h==='v/a'],
   psi:[h=>h.includes('compactness')],
   thermalMass:[h=>h.includes('thermal_mass_walls')],
+  thermalMassHB:[h=>h.includes('thermal_mass')&&(h.includes('honeybee')||h.includes('hb')&&!h.includes('walls'))],
   wwr:[h=>h.startsWith('wwr')],
   hearth:[h=>h.includes('hearth')],
   roofPitch:[h=>h.startsWith('roof_pitch')],
@@ -2780,7 +2781,7 @@ const yearNum=v=>{if(!v)return 0;const m=String(v).match(/\d{3,4}/);return m?+m[
       structure,plinth:numOf(get('plinth')),wallThk:numOf(get('wallThk')),
       wallThkNS:numOf(get('wallThkNS')),wallThkEW:numOf(get('wallThkEW')),uWall:numOf(get('uWall')),
       volume:numOf(get('volume')),va:numOf(get('va')),psi:numOf(get('psi')),
-      thermalMass:numOf(get('thermalMass')),wwr:(v=>v!=null?+( v*100).toFixed(1):null)(numOf(get('wwr'))),
+      thermalMass:numOf(get('thermalMass')),thermalMassHB:numOf(get('thermalMassHB')),wwr:(v=>v!=null?+( v*100).toFixed(1):null)(numOf(get('wwr'))),
       windowOrient:get('windowOrient')||null,avgWinSize:numOf(get('avgWinSize')),avgWinWH:get('avgWinWH')||null,
       hearth:numOf(get('hearth')),roofForm:get('roofForm')||null,roofMat:get('roofMat')||null,
       roofPitch:numOf(get('roofPitch')),uRoof:numOf(get('uRoof')),atticH:numOf(get('atticH')),
@@ -5404,6 +5405,27 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
       group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([rA,rB]),rm()));
       ePts.slice(0,-1).forEach(p=>{const to=p.distanceTo(new THREE.Vector3(rA.x,eH,rA.z))<p.distanceTo(new THREE.Vector3(rB.x,eH,rB.z))?rA:rB;group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([p.clone(),to.clone()]),rm()));});
     }
+    /* inner wall face — polygon offset inward by wall_thick_m */
+    const _innerPoly=_vizBld&&_vizBld.building&&_vizBld.building.inner_polygon_2d;
+    if(_innerPoly&&_innerPoly.length>2){
+      const _wt=(_vizBld.building.wall_thick_m||0);
+      const _iMat=new THREE.LineBasicMaterial({color:dark?0x888880:0x888880,transparent:true,opacity:0.5});
+      /* inner wall outline at floor level */
+      const _iPtsF=_innerPoly.map(([x,y])=>new THREE.Vector3(x,0.01,-y));
+      _iPtsF.push(_iPtsF[0]);
+      group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(_iPtsF),_iMat));
+      /* inner wall outline at eave level */
+      const _iPtsE=_innerPoly.map(([x,y])=>new THREE.Vector3(x,eH,-y));
+      _iPtsE.push(_iPtsE[0]);
+      group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(_iPtsE),_iMat));
+      /* vertical inner wall edges at each vertex */
+      _innerPoly.forEach(([x,y])=>{
+        group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(x,0,  -y),
+          new THREE.Vector3(x,eH,-y)
+        ]),_iMat));
+      });
+    }
     /* window apertures from viz JSON — opening_w layer only */
     const _aps=_vizBld?(_vizBld.apertures||[]):[];
     _aps.forEach(ap=>{
@@ -6616,7 +6638,6 @@ const METRIC_PAGES=[
    ['Assigned EPW station',c.epw?(c.epw+(c.distToStation!=null?' — ≈'+c.distToStation+' km':'')):noData],
  ]},
  {label:'Dimensions & structure',rows:c=>[
-   ['Wall type',WALL_LABEL[c.wallType]||noData],
    ['Floor area',fmt(c.area,' m²',0)],
    ['Height',fmt(c.height,' m',1)],
    ['Floors',fmt(c.floors,'',0)],
@@ -6631,7 +6652,8 @@ const METRIC_PAGES=[
    ['Volume',fmt(c.volume,' m³',0)],
    ['V/A ratio',fmt(c.va,'',2)],
    ['Compactness ψ',fmt(c.psi,'',3)],
-   ['Thermal mass',fmt(c.thermalMass,' kJ/K',0)],
+   ['Total thermal mass walls (DXF) <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,'Total thermal mass of all wall elements from DXF geometry (dxf_analyse_v6.py). Calculated per wall polygon: Volume × VHC (Volumetric Heat Capacity from MAT_PROPS table per construction material). Summed across all wall elements. Unit: kJ/K total (not normalised per m²).')">ⓘ</button>',fmt(c.thermalMass,' kJ/K',0)],
+   ['Thermal mass Honeybee (approx.) <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,'Approximated by sim_corpus.py from construction material, actual wall thickness (Excel col 18) and floor area. Formula: (ρ×cp×t_wall×A_wall + ρ×cp×0.15m×A_floor + ρ×cp×0.20m×A_floor) / A_floor. Roof and floor use hardcoded thicknesses; floor inherits wall material properties. Conservative approximation only. Unit: kJ/m²K (per m² of floor area).')">ⓘ</button>',fmt(c.thermalMassHB,' kJ/m²K',1)],
  ]},
  {label:'Windows & openings',rows:c=>[
    ['WWR',fmt(c.wwr,'%',1)],
