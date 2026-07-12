@@ -6241,6 +6241,8 @@ function renderAvgTypologyZone(zone){
     L.DomEvent.stopPropagation(e);
     selectedId=null;
     renderAvgTypologyDetailPanel(zone);
+    document.body.classList.add('cs-open');
+    if(map)setTimeout(()=>map.invalidateSize(),0);
   });
   /* fade individual markers */
   markers.forEach(mk=>{
@@ -6288,7 +6290,10 @@ function updateAvgTypologyPanel(){
         document.querySelectorAll('.avgt-zone-panel').forEach(r=>r.classList.remove('zone-selected'));
         lbl.closest('.avgt-zone-panel').classList.add('zone-selected');
         _selectedZoneId=zid;
-        selectedId=null;renderAvgTypologyDetailPanel(zone);
+        selectedId=null;
+        renderAvgTypologyDetailPanel(zone);
+        document.body.classList.add('cs-open');
+        if(map)setTimeout(()=>map.invalidateSize(),0);
       }
     });
   });
@@ -6321,10 +6326,6 @@ function renderAvgTypologyDetailPanel(zone){
   const el=document.getElementById('csPanel');
   if(el)el.dataset.avgZoneId=zone.id;
   if(!el)return;
-  /* Ensure the case study panel is visible (cs-open) */
-  document.body.classList.add('cs-open');
-  if(map&&!document.body.classList.contains('map-fullscreen'))
-    setTimeout(()=>map.invalidateSize(),0);
   const{members,label,epwId}=computeAvgTypology(zone);
   zone.caseIds=members.map(c=>c.id);zone.label=label;zone.epwId=epwId;
   /* averaging helpers */
@@ -6579,12 +6580,10 @@ function addAvgTypologyZone(){
     document.querySelectorAll('.avgt-zone-panel').forEach(r=>r.classList.toggle('zone-selected',+r.dataset.zoneid===zone.id));
     selectedId=null;
     renderAvgTypologyDetailPanel(zone);
+    document.body.classList.add('cs-open');
+    if(map)setTimeout(()=>map.invalidateSize(),0);
   });
   renderAvgTypologyZone(zone);
-  /* Auto-open the detail panel and make the cs panel visible */
-  renderAvgTypologyDetailPanel(zone);
-  document.body.classList.add('cs-open');
-  if(map)setTimeout(()=>map.invalidateSize(),0);
 }
 
 function wireShapeShift(c,slot){
