@@ -3467,16 +3467,16 @@ function arMorph(c){
     const diurnal=['desert','steppe','mediterranean'].includes(fam2)||(fam2==='temperate'&&h2>=3);
     const tropical=['tropical'].includes(fam2)&&h2>=4;
     if(hi&&diurnal){
-      chunks.push({t:'p',h:arOk(`High thermal mass${tmpm2?` (≈${tmpm2} kJ/m²K)`:''} is well-matched to ${AR_KL[k0]||k0} conditions. Massive vernacular construction stores daytime heat and releases it at night, reducing peak indoor temperatures by 3–8°C in arid and Mediterranean climates — one of the most thermally effective passive strategies available. `)+arRef('givoni1976')+arRef('szokolay2008')});
+      chunks.push({t:'p',h:arOk(`High thermal mass${tmpm2?` (≈${tmpm2} kJ/m²K)`:''} is well-matched to ${AR_KL[k0]||k0} conditions. Daytime heat stored in walls releases overnight, attenuating peak indoor temperatures by 3–8°C in arid and Mediterranean conditions. `)+arRef('givoni1976')+arRef('szokolay2008')});
     } else if(hi&&tropical){
-      chunks.push({t:'p',h:arWarn(`High thermal mass in ${AR_KL[k0]||k0} conditions risks chronic heat accumulation. When night air temperatures remain above ~20°C, the thermal mass cannot discharge effectively — it delays rather than removes heat, and can elevate overnight temperatures above what lightweight construction would produce. Under SSP5-8.5 warming this risk intensifies further. `)+arRef('artmann2007')+arRef('givoni1976')});
+      chunks.push({t:'p',h:arWarn(`High thermal mass in ${AR_KL[k0]||k0} conditions: when nights remain above ~20°C, stored heat cannot discharge — it delays rather than removes the load, elevating overnight temperatures. This risk grows under SSP5-8.5. `)+arRef('artmann2007')+arRef('givoni1976')});
     } else if(lo&&h2>=3){
-      chunks.push({t:'p',h:arNote(`Low thermal mass means the building responds quickly to outdoor temperature swings — beneficial in winter for rapid warm-up, but limiting for summer peak attenuation. As climate warming increases summer heat stress in ${k2}, the absence of thermal buffering capacity means indoor temperatures will track outdoor peaks more closely. `)+arRef('szokolay2008')});
+      chunks.push({t:'p',h:arNote(`Low thermal mass: rapid response to outdoor swings — useful for winter warm-up, but no buffering of summer peaks. As summer heat stress rises in ${k2}, indoor temperatures will track outdoor peaks directly. `)+arRef('szokolay2008')});
     } else if(hi){
-      chunks.push({t:'p',h:arNote(`High thermal mass${tmpm2?` (≈${tmpm2} kJ/m²K)`:''}. In ${AR_KL[k0]||k0}, thermal mass is a neutral to moderate asset — effectiveness depends on night temperature availability for discharge. `)+arRef('szokolay2008')});
+      chunks.push({t:'p',h:arNote(`High thermal mass${tmpm2?` (≈${tmpm2} kJ/m²K)`:''}. In ${AR_KL[k0]||k0}, effectiveness depends on night-time discharge potential. `)+arRef('szokolay2008')});
     }
     if(hi&&h2>=3){
-      chunks.push({t:'p',h:arNote(`Artmann et al. (2007) establish a critical threshold of 1,000 Night Discharge Potential hours per year (Jun–Aug) for thermal mass to maintain effectiveness. Below this threshold, the mass begins accumulating heat across days rather than buffering it. Under 2080 SSP5-8.5 projections in ${k2}, this threshold is increasingly at risk — the simulation section quantifies this directly when data are available. `)+arRef('artmann2007')});
+      chunks.push({t:'p',h:arNote(`Artmann et al. (2007) establish a critical threshold of 1,000 Night Discharge Potential hours per year (Jun–Aug) for thermal mass to maintain effectiveness. Below this threshold, the mass begins accumulating heat across days rather than buffering it. Under 2080 SSP5-8.5 in ${k2}, this threshold is increasingly at risk. `)+arRef('artmann2007')});
     }
   }
 
@@ -3519,7 +3519,7 @@ function arMorph(c){
     } else if(ed<req*0.85){
       chunks.push({t:'p',h:arNote(`Eave depth ≈${ed.toFixed(2)} m — meaningful but short of the ≈${req.toFixed(2)} m needed for complete summer shading at latitude ${lat.toFixed(0)}°. Partially effective now; the shortfall becomes more significant as the hot season extends and intensifies under warming. `)+arRef('olgyay1963')});
     } else {
-      chunks.push({t:'p',h:arOk(`Eave depth ≈${ed.toFixed(2)} m at latitude ${lat.toFixed(0)}° — sufficient to shade a standard window at solar noon near the summer solstice (target ≈${req.toFixed(2)} m). This is one of the most thermally robust passive elements: it remains effective without energy use, and its benefit increases as solar intensity grows under climate warming. `)+arRef('olgyay1963')});
+      chunks.push({t:'p',h:arOk(`Eave depth ≈${ed.toFixed(2)} m at latitude ${lat.toFixed(0)}° — sufficient to shade a standard window at solar noon near the summer solstice (target ≈${req.toFixed(2)} m). Effective without energy use, and its benefit increases as solar intensity rises under warming. `)+arRef('olgyay1963')});
     }
   }
 
@@ -3529,7 +3529,7 @@ function arMorph(c){
     const cm=String(c.constrMethod||'').toLowerCase();
     const isMasonry=cm.includes('stone')||cm.includes('masonry')||cm.includes('brick')||cm.includes('earth')||cm.includes('clay')||cm.includes('adobe');
     if(wt>0.6&&isMasonry){
-      chunks.push({t:'p',h:arOk(`Wall thickness ${(wt*100).toFixed(0)} cm in massive construction provides substantial thermal inertia and moderate insulation. Vernacular walls of this depth have been shown to reduce peak indoor temperatures by 3–6°C relative to lightweight equivalents in continental and arid climates — a performance characteristic derived from iterative selection pressure over generations of occupation. `)+arRef('rapoport1969')+arRef('givoni1976')});
+      chunks.push({t:'p',h:arOk(`Wall thickness ${(wt*100).toFixed(0)} cm in massive construction provides substantial thermal inertia and moderate insulation. Vernacular walls of this depth reduce peak indoor temperatures by 3–6°C compared to lightweight equivalents in continental and arid conditions. `)+arRef('rapoport1969')+arRef('givoni1976')});
     } else if(wt>0.35&&isMasonry){
       chunks.push({t:'p',h:arNote(`Wall thickness ${(wt*100).toFixed(0)} cm. Adequate thermal mass at this scale; not as thermally dominant as the thickest vernacular walls, but contributes meaningfully to peak temperature attenuation and night-time storage. `)+arRef('szokolay2008')});
     } else if(wt<0.2&&h2<=2){
@@ -3541,13 +3541,13 @@ function arMorph(c){
   if(c.constrMethod){
     const cm=String(c.constrMethod).toLowerCase();
     if(cm.includes('stone')||cm.includes('masonry')){
-      chunks.push({t:'p',h:arOk(`Stone or masonry construction combines high thermal inertia with durability. These materials have historically been selected in vernacular traditions precisely for their capacity to store and release heat — a form of climate intelligence embedded in local material culture (Rapoport 1969). In climates with diurnal temperature swings >10°C, this remains a highly effective passive strategy. `)+arRef('rapoport1969')+arRef('givoni1976')});
+      chunks.push({t:'p',h:arOk(`Stone or masonry construction combines high thermal inertia with durability. High thermal inertia and durability. Effective where diurnal swings exceed 10°C. `)+arRef('rapoport1969')+arRef('givoni1976')});
     } else if(cm.includes('log')||cm.includes('timber_solid')){
-      chunks.push({t:'p',h:arNote(`Solid log or timber construction is thermally intermediate — higher insulation value per unit thickness than masonry, but lower thermal mass. The balance is well-suited to temperate and continental climates where both heating and cooling loads occur seasonally. As warming reduces heating demand and increases summer heat stress, the insulating quality becomes proportionally more valuable. `)+arRef('szokolay2008')+arRef('rapoport1969')});
+      chunks.push({t:'p',h:arNote(`Higher insulation per unit thickness than masonry, but lower thermal mass. Suited to temperate and continental climates with mixed seasonal loads. As heating demand falls and summer heat stress rises, the insulation value becomes more important. `)+arRef('szokolay2008')+arRef('rapoport1969')});
     } else if(cm.includes('earth')||cm.includes('clay')||cm.includes('adobe')){
-      chunks.push({t:'p',h:arNote(`Earth and clay construction combines high thermal mass with hygroscopic moisture buffering — a combination that is particularly effective in semi-arid and Mediterranean climates. Vulnerability under SSP5-8.5: more intense precipitation events in some regions and increased freeze-thaw cycling may degrade unprotected earth walls; maintenance and protective rendering become more important. `)+arRef('szokolay2008')+arRef('rapoport1969')});
+      chunks.push({t:'p',h:arNote(`High thermal mass with hygroscopic moisture buffering — effective in semi-arid and Mediterranean conditions. Under SSP5-8.5, increased precipitation and freeze-thaw cycles can degrade unprotected earth walls; protective rendering becomes more critical. `)+arRef('szokolay2008')+arRef('rapoport1969')});
     } else if(cm.includes('thatch')||cm.includes('organic')||cm.includes('bamboo')||cm.includes('wool')||cm.includes('felt')){
-      chunks.push({t:'p',h:arNote(`Lightweight organic construction (thatch, bamboo, felt, woven materials) provides minimal thermal mass but excellent ventilation compatibility. In hot humid climates, cross-ventilation is the primary comfort mechanism and mass is largely irrelevant — this construction type is well-calibrated for that context. Its vulnerability is to extreme wind events and fire, both of which may intensify under climate change. `)+arRef('olgyay1963')+arRef('rapoport1969')});
+      chunks.push({t:'p',h:arNote(`Minimal thermal mass, but compatible with high ventilation rates. In hot humid climates, cross-ventilation is the primary comfort mechanism and mass plays little role. Vulnerability: wind damage and fire risk, both of which may increase under climate change. `)+arRef('olgyay1963')+arRef('rapoport1969')});
     } else if(cm.includes('timber_frame')||cm.includes('frame')){
       chunks.push({t:'p',h:arNote(`Timber frame construction: structural frame with infill panels. Thermal performance depends strongly on the infill material. Frame construction generally has lower thermal mass than solid construction and may require supplementary thermal mass elements (heavy floors, masonry infill) to maintain summer comfort under increasing heat stress. `)+arRef('szokolay2008')});
     }
@@ -3555,15 +3555,15 @@ function arMorph(c){
 
   /* ── Roof form & pitch ───────────────────────────────────────────── */
   if(c.roofPitch&&+c.roofPitch>35){
-    chunks.push({t:'p',h:arOk(`Steep roof pitch (${(+c.roofPitch).toFixed(0)}°) creates a substantial ventilated attic void — the Kaltdach (cold roof) principle. This buffer zone decouples the occupied space from direct solar radiation on the roof surface, acting as a passive thermal filter. EnergyPlus simulations for this corpus include the attic zone as an unconditioned buffer, confirming its cooling effect. The strategy is self-reinforcing under warming: as solar intensity increases, the buffer becomes more valuable. `)+arRef('szokolay2008')});
+    chunks.push({t:'p',h:arOk(`Steep roof pitch (${(+c.roofPitch).toFixed(0)}°) creates a substantial ventilated attic void — the Kaltdach (cold roof) principle. This buffer zone decouples the occupied space from direct solar radiation on the roof surface, acting as a passive thermal filter. EnergyPlus simulations for this corpus include the attic as an unconditioned buffer, confirming its cooling effect. As solar intensity rises under warming, the buffer becomes more effective. `)+arRef('szokolay2008')});
   }
   if(c.roofForm){
     const rf=String(c.roofForm).toLowerCase();
     if(rf.includes('flat')&&h2>=3){
-      chunks.push({t:'p',h:arNote(`Flat roof: direct solar exposure on the roof surface is the primary summer heat gain pathway. Raising roof surface albedo from the typical 0.10–0.20 (dark gravel, asphalt) to 0.60–0.80 (white coating, reflective membrane) can reduce roof surface temperature by 20–30°C and peak interior temperature by 2–4°C — a low-cost high-return adaptation. `)+arRef('givoni1976')});
+      chunks.push({t:'p',h:arNote(`Flat roof: direct solar exposure on the roof surface is the primary summer heat gain pathway. Raising albedo from 0.10–0.20 (dark gravel/asphalt) to 0.60–0.80 (white coating) can reduce surface temperature by 20–30°C and peak interior temperature by 2–4°C. `)+arRef('givoni1976')});
     }
     if(rf.includes('conical')||rf.includes('dome')||rf.includes('barrel')){
-      chunks.push({t:'p',h:arNote(`${rf.charAt(0).toUpperCase()+rf.slice(1)} roof form: curved geometry minimises roof surface exposure to direct solar radiation across the day. This is a sophisticated passive solar control strategy embedded in the vernacular typology, particularly effective at low-to-mid latitudes where high sun angles would otherwise cause significant roof heat gain. `)+arRef('olgyay1963')});
+      chunks.push({t:'p',h:arNote(`${rf.charAt(0).toUpperCase()+rf.slice(1)} roof: curved geometry reduces solar exposure across the day — effective at low-to-mid latitudes where high sun angles drive roof heat gain. `)+arRef('olgyay1963')});
     }
   }
 
@@ -3571,8 +3571,8 @@ function arMorph(c){
   if(c.va!=null||c.psi!=null){
     const psi=c.psi!=null?+c.psi:null;
     if(psi!=null){
-      if(psi>0.7&&h2<=2) chunks.push({t:'p',h:arOk(`High compactness (ψ = ${psi.toFixed(2)}) minimises the surface-to-volume ratio, reducing heat loss in cold climates. A well-established vernacular response to cold and continental conditions — the compact blocky form of Central European and Nordic vernacular is the direct morphological expression of this principle. `)+arRef('rapoport1969')});
-      else if(psi<0.4&&h2>=4) chunks.push({t:'p',h:arOk(`Low compactness (ψ = ${psi.toFixed(2)}) maximises the ratio of exposed surface to volume. In hot climates this promotes heat dissipation through radiation and convection across a larger surface area — the morphological principle behind courtyard houses, elevated forms, and pavilion typologies. `)+arRef('olgyay1963')});
+      if(psi>0.7&&h2<=2) chunks.push({t:'p',h:arOk(`High compactness (ψ = ${psi.toFixed(2)}) minimises the surface-to-volume ratio, reducing heat loss — typical of cold and continental vernacular. `)+arRef('rapoport1969')});
+      else if(psi<0.4&&h2>=4) chunks.push({t:'p',h:arOk(`Low compactness (ψ = ${psi.toFixed(2)}) maximises the ratio of exposed surface to volume. In hot climates this increases exposed surface area, promoting heat dissipation — the logic behind courtyard houses and pavilion forms. `)+arRef('olgyay1963')});
     }
   }
 
@@ -5293,10 +5293,10 @@ function simInterp(d,step){
 }
 function simNorm(v,metric){
   if(v==null)return 0.5;
-  if(metric==='tcp') return Math.max(0,Math.min(1,v/100));       /* 0%=red, 100%=green */
-  if(metric==='hsp') return Math.max(0,Math.min(1,v/5000));      /* 0=green, 5000h=red */
-  if(metric==='ndp') return Math.max(0,Math.min(1,v/2000));      /* 0=red, 2000h=green */
-  return Math.max(0,Math.min(1,(v-14)/26));                       /* t_op: 14°C=blue, 40°C=red */
+  if(metric==='tcp') return Math.max(0,Math.min(1,v/100));        /* 0%=red, 100%=green */
+  if(metric==='hsp') return Math.max(0,Math.min(1,v/1500));       /* 0=green, 1500h=red (realistic max) */
+  if(metric==='ndp') return Math.max(0,Math.min(1,v/2000));       /* 0=red, 2000h=green; 1000h=Artmann midpoint */
+  return Math.max(0,Math.min(1,(v-14)/26));                        /* t_op: 14°C=blue, 40°C=red */
 }
 const SIM_YEAR_LABELS=['TMYx','~2030','~2040','2050','~2057','~2064','~2070','~2075','2080'];
 
@@ -5628,15 +5628,16 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
            colour spectrum is always used regardless of how clustered the raw proxy
            scores are (circular plans give nearly equal distances — without stretch
            every cell maps to almost the same hue).
-           We then blend 75% local-stretched / 25% zone-norm so the overall palette
-           stays in the right colour territory for the metric value. */
+           Blend: 70% zone norm (so the overall hue strongly reflects the actual
+           metric value and changes visibly as the slider moves) + 30% local
+           stretch (preserves spatial variation within the floor plan). */
         const nArr=grid.cells.map(c=>c.n);
         const nMin=Math.min(...nArr),nMax=Math.max(...nArr);
         const nR=Math.max(nMax-nMin,0.02); /* guard against degenerate flat grid */
         const cg=new THREE.Group();cg.isGroup=true;
         grid.cells.forEach(cell=>{
           const stretched=(cell.n-nMin)/nR;          /* 0=coldest cell, 1=hottest */
-          const t=Math.max(0,Math.min(1,norm*0.25+stretched*0.75));
+          const t=Math.max(0,Math.min(1,norm*0.70+stretched*0.30));
           const[r,g,b]=simCmap(t,metric);
           const geo=new THREE.PlaneGeometry(res,res);
           const mat=new THREE.MeshBasicMaterial({color:new THREE.Color(r,g,b),transparent:true,opacity:0.85,side:THREE.DoubleSide});
