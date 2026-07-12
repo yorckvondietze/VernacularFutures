@@ -6927,37 +6927,131 @@ function tmSimStats(zone){
 function tmNdpColor(v){return v==null?'var(--ink-faint)':v>=1000?'var(--moss,#2d7a2d)':'var(--rust)';}
 function tmNdpTag(v){if(v==null)return'\u2014';return Math.round(v)+' h/yr '+(v>=1000?'\u2713':'\u2717');}
 
+function tmZoneFamily(zone){
+  const z=zone||'';
+  if(z.startsWith('BW')||z.startsWith('BS'))return 'arid';
+  if(z.startsWith('Cs'))return 'mediterranean';
+  if(z.startsWith('Cf')||z.startsWith('Df')||z.startsWith('Dw')||z.startsWith('Ds'))return 'temperate';
+  if(z.startsWith('Af')||z.startsWith('Am')||z.startsWith('Aw'))return 'tropical';
+  if(z.startsWith('Cfa'))return 'humid-subtropical'; /* override Cf */
+  return 'temperate';
+}
+function tmGivoniThreshold(zone){
+  if(zone==='BWh'||zone==='BSh')return 15;
+  if(zone==='BWk'||zone==='BSk')return 12;
+  return 8; /* Szokolay 2008 general threshold */
+}
+function tmZoneInterpretation(zone,family,avgSwing){
+  const gt=tmGivoniThreshold(zone);
+  const swingOk=avgSwing!=null&&avgSwing>=gt;
+  if(family==='arid'){
+    return `<p style="font-size:10px;color:var(--ink-soft);margin-top:10px;line-height:1.55;">
+      <b>Arid zone \u2014 primary viability indicator: diurnal swing.</b>
+      Thermal mass here operates through time-lag (phase shift of 8\u201312 h), not nightly discharge.
+      The Artmann NDP metric is <em>not applicable</em>: its 22\u00b0C ceiling is calibrated for Central European
+      summers; desert nights commonly sit at 25\u201332\u00b0C and never cross it.
+      Givoni (1976) threshold for effective mass: daily swing &gt;${gt}\u00b0C.
+      This zone\u2019s mean swing: ${avgSwing!=null?avgSwing.toFixed(1)+'°C':'\u2014'} \u2014
+      <b style="color:${swingOk?'var(--moss,#2d7a2d)':'var(--rust)'}">${swingOk?'above threshold \u2713':'below threshold \u2717'}</b>.
+      <br>Givoni, B. (1976). <em>Man, Climate and Architecture</em> (2nd ed.).
+    </p>`;
+  }
+  if(family==='tropical'){
+    return `<p style="font-size:10px;color:var(--ink-soft);margin-top:10px;line-height:1.55;">
+      <b>Tropical zone \u2014 mass strategy not applicable.</b>
+      The Artmann NDP metric gives near-zero values by construction: the 22\u00b0C ceiling is never
+      reached in warm-humid summers. Vernacular selection in this zone moved toward lightweight
+      construction and cross-ventilation \u2014 precisely the correct response to warm nights and
+      high humidity. Low corpus thermal mass here is evidence of climate-adaptive selection,
+      not a failure of the strategy. TCP/HSP trajectory is the most informative output.
+      <br>Givoni, B. (1994). <em>Passive and Low Energy Cooling of Buildings</em>.
+    </p>`;
+  }
+  if(family==='mediterranean'){
+    return `<p style="font-size:10px;color:var(--ink-soft);margin-top:10px;line-height:1.55;">
+      <b>Mediterranean zone \u2014 both NDP and diurnal swing informative.</b>
+      Hot dry summers with still-cool nights make this zone well-suited for thermal mass at present.
+      As nights warm under SSP5-8.5, NDP approaches the Artmann threshold faster than in oceanic
+      or continental zones. Diurnal swing (Givoni threshold &gt;${gt}\u00b0C; mean here:
+      ${avgSwing!=null?avgSwing.toFixed(1)+'°C':'\u2014'}) is a secondary confirmatory indicator.
+      <br>Artmann et al. (2007); Givoni (1976).
+    </p>`;
+  }
+  /* temperate / continental */
+  return `<p style="font-size:10px;color:var(--ink-soft);margin-top:10px;line-height:1.55;">
+    <b>Temperate / continental zone \u2014 primary indicator: NDP (Artmann 2007).</b>
+    Diurnal swing contextual: it drives NDP variance within the zone.
+    Givoni general threshold &gt;${gt}\u00b0C; mean here: ${avgSwing!=null?avgSwing.toFixed(1)+'°C':'\u2014'}.
+    <br>Artmann, N., Manz, H., &amp; Heiselberg, P. (2007). <em>Applied Energy</em>, 84(2), 187\u2013201.
+  </p>`;
+}
+
 function thermalMassZoneRows(zone){
   const s=tmSimStats(zone);
   const f1=v=>v!=null?v.toFixed(1):'\u2014';
   const fi=v=>v!=null?Math.round(v)+'':'\u2014';
-  const lit=ZONE_TM_LIT[zone]||'See Artmann et al. (2007).';
   if(!s)return `<p style="font-size:11px;color:var(--ink-faint);margin:6px 0;">No simulation data for ${zone} yet.</p>`;
+
+  const family=tmZoneFamily(zone);
+  const isArid=family==='arid';
+  const isTropical=family==='tropical';
+
+  /* average diurnal swing for cases in this zone */
+  const swingVals=CASES.filter(c=>{
+    const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';
+    return k===zone&&c.diurnalSwing!=null;
+  }).map(c=>c.diurnalSwing);
+  const avgSwing=swingVals.length?+(swingVals.reduce((a,b)=>a+b,0)/swingVals.length).toFixed(1):null;
+  const gt=tmGivoniThreshold(zone);
+  const swingOk=avgSwing!=null&&avgSwing>=gt;
+
+  /* threshold crossing */
   const crossesByScn=s.ndp.map(v=>v!=null&&v<1000);
   let alert='';
-  if(crossesByScn[0])alert=`<p class="ar-warn" style="margin:6px 0 8px;">NDP already below 1,000 h/yr at present. Thermal mass is not functioning as a passive cooling strategy in this zone.</p>`;
-  else if(!crossesByScn[0]&&crossesByScn[1])alert=`<p class="ar-note" style="margin:6px 0 8px;">NDP crosses the Artmann threshold by 2050. Strategy viable at present; compromised mid-century.</p>`;
-  else if(!crossesByScn[0]&&!crossesByScn[1]&&crossesByScn[2])alert=`<p class="ar-note" style="margin:6px 0 8px;">NDP crosses the Artmann threshold by 2080. Strategy viable through 2050.</p>`;
+  if(isArid){
+    alert=`<p class="ar-note" style="margin:6px 0 8px;font-size:11px;">Arid zone: NDP not the primary viability metric. See diurnal swing below.</p>`;
+  }else if(isTropical){
+    alert=`<p class="ar-note" style="margin:6px 0 8px;font-size:11px;">Tropical/humid zone: NDP near zero by construction (22\u00b0C ceiling). Low mass in corpus likely reflects correct vernacular selection toward ventilation.</p>`;
+  }else if(crossesByScn[0]){
+    alert=`<p class="ar-warn" style="margin:6px 0 8px;">NDP already below 1,000 h/yr at present. Thermal mass is not functioning as a passive cooling strategy in this zone.</p>`;
+  }else if(!crossesByScn[0]&&crossesByScn[1]){
+    alert=`<p class="ar-note" style="margin:6px 0 8px;">NDP crosses the Artmann threshold by 2050. Strategy viable at present; compromised mid-century.</p>`;
+  }else if(!crossesByScn[0]&&!crossesByScn[1]&&crossesByScn[2]){
+    alert=`<p class="ar-note" style="margin:6px 0 8px;">NDP crosses the Artmann threshold by 2080. Strategy viable through 2050.</p>`;
+  }
+
+  /* NDP primary or secondary label */
+  const ndpLabel=isArid?'NDP (not primary \u2014 see below)':isTropical?'NDP (not applicable \u2014 see below)':'NDP (Artmann \u2713/\u2717 1000h)';
+
   const rows=['Present','2050','2080'].map((scn,i)=>`<tr>
       <td style="font-weight:700;white-space:nowrap;padding:4px 8px 4px 0;">${scn}</td>
-      <td style="color:${tmNdpColor(s.ndp[i])};font-weight:700;padding:4px 6px;">${dynV(tmNdpTag(s.ndp[i]))}</td>
+      <td style="color:${isArid||isTropical?'var(--ink-faint)':tmNdpColor(s.ndp[i])};font-weight:${isArid||isTropical?'400':'700'};padding:4px 6px;">${dynV(isArid||isTropical?fi(s.ndp[i])+' h/yr':tmNdpTag(s.ndp[i]))}</td>
       <td style="padding:4px 6px;">${dynV(f1(s.tcp[i])+'%')}</td>
       <td style="padding:4px 6px;">${dynV(fi(s.hsp[i])+' h/yr')}</td>
     </tr>`).join('');
+
   return `${alert}
     <table style="width:100%;border-collapse:collapse;font-size:11px;margin:6px 0 10px;">
       <thead><tr style="border-bottom:1px solid var(--line);">
         <th style="text-align:left;padding:4px 0;font-size:9px;color:var(--ink-faint);">SCENARIO</th>
-        <th style="text-align:left;padding:4px 6px;font-size:9px;color:var(--ink-faint);">NDP (1000h threshold)</th>
+        <th style="text-align:left;padding:4px 6px;font-size:9px;color:var(--ink-faint);">${ndpLabel}</th>
         <th style="text-align:left;padding:4px 6px;font-size:9px;color:var(--ink-faint);">TCP</th>
         <th style="text-align:left;padding:4px 6px;font-size:9px;color:var(--ink-faint);">HSP</th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>
+    <div class="fc-tmrow"><span class="tm-label">Mean diurnal swing (present EPW)</span>
+      <span>${dynV(avgSwing!=null?avgSwing.toFixed(1)+'\u00b0C':'\u2014')}
+        <span style="font-size:9px;color:${swingOk?'var(--moss,#2d7a2d)':'var(--rust)'};">
+          (Givoni threshold &gt;${gt}\u00b0C \u2014 ${swingOk?'\u2713 above':'\u2717 below'})
+        </span>
+      </span>
+    </div>
+    <p style="font-size:9px;color:var(--ink-faint);margin:2px 0 10px;">Diurnal swing shown for present EPW only. Under SSP5-8.5, nights warm faster than days \u2014 swing narrows. 2050/2080 values not yet extracted from morphed EPW.</p>
     ${s.tmpm2!=null?`<div class="fc-tmrow"><span class="tm-label">Mean thermal mass / floor area</span><span>${dynV(Math.round(s.tmpm2)+' kJ/m\u00b2K')}</span></div>`:''}
     <div class="fc-tmrow"><span class="tm-label">Simulated cases in zone</span><span>${dynV(s.n)}</span></div>
-    <p style="font-size:10px;color:var(--ink-soft);margin-top:8px;line-height:1.5;">${lit}</p>
-    <div class="fc-datatag">NDP: Jun\u2013Aug, T_outdoor &lt; T_indoor AND &lt; 22\u00b0C \u00b7 Artmann et al. (2007) threshold 1000 h/yr</div>`;
+    ${tmZoneInterpretation(zone,family,avgSwing)}
+    <div class="fc-datatag">NDP: Jun\u2013Aug, T_outdoor &lt; T_indoor AND &lt; 22\u00b0C \u00b7 Artmann (2007) \u00b7 Givoni (1976) swing thresholds</div>`;
 }
 
 function thermalMassZonePanel(zone,counts){
@@ -6966,6 +7060,11 @@ function thermalMassZonePanel(zone,counts){
   if(simN===0){
     return `<div class="fc-lowsample">No simulation output yet for ${zone} (${counts[zone]||0} case${(counts[zone]||0)===1?'':'s'} total).
       <button class="fc-showanyway" data-tmzone="${zone}">show morphological data</button>
+    </div><div id="tmForced-${zone}"></div>`;
+  }
+  if(simN<TM_MIN_N){
+    return `<div class="fc-lowsample">n=${simN} simulated case${simN===1?'':'s'} \u2014 below minimum sample size (n\u2265${TM_MIN_N}) for reliable zone average.
+      <button class="fc-showanyway" data-tmzone="${zone}">show anyway (low n)</button>
     </div><div id="tmForced-${zone}"></div>`;
   }
   return thermalMassZoneRows(zone);
