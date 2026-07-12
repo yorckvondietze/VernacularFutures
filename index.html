@@ -5446,10 +5446,30 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
     const ePts=poly.map(([x,y])=>new THREE.Vector3(x,eH,-y));ePts.push(ePts[0]);
     group.add(mkL(fPts));group.add(mkL(ePts));
     poly.forEach(([x,y])=>group.add(mkL([new THREE.Vector3(x,0,-y),new THREE.Vector3(x,eH,-y)])));
-    /* gable roof */
-    if(pitch>10){
+    /* roof wireframe — read pre-computed segments from viz JSON.
+       Coordinates are already in Three.js space (Python _to3: [x, ridge_h, -y_dxf]).
+       Covers all roof types: gable, hipped, conical, dome, barrel, gambrel, shed, flat. */
+    const _roofSegs=(_vizBld&&_vizBld.roof_wire)||[];
+    if(_roofSegs.length){
+      _roofSegs.forEach(seg=>{
+        if(!seg.start||!seg.end)return;
+        const pts=[new THREE.Vector3(seg.start[0],seg.start[1],seg.start[2]),
+                   new THREE.Vector3(seg.end[0],  seg.end[1],  seg.end[2])];
+        group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),rm()));
+      });
+    }else if(pitch>10){
+      /* fallback for cases without viz JSON roof_wire (no DXF polygon available) */
       const xs=poly.map(p=>p[0]),byMid=(Math.min(...poly.map(p=>p[1]))+Math.max(...poly.map(p=>p[1])))/2;
-      const rA=new THREE.Vector3(Math.min(...xs),ridgeH,-byMid),rB=new THREE.Vector3(Math.max(...xs),ridgeH,-byMid);
+      const zs=poly.map(p=>p[1]),bxMid=(Math.min(...xs)+Math.max(...xs))/2;
+      const xSpan=Math.max(...xs)-Math.min(...xs),zSpan=Math.max(...zs)-Math.min(...zs);
+      let rA,rB;
+      if(zSpan>xSpan){
+        rA=new THREE.Vector3(bxMid,ridgeH,-Math.min(...zs));
+        rB=new THREE.Vector3(bxMid,ridgeH,-Math.max(...zs));
+      }else{
+        rA=new THREE.Vector3(Math.min(...xs),ridgeH,-byMid);
+        rB=new THREE.Vector3(Math.max(...xs),ridgeH,-byMid);
+      }
       group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([rA,rB]),rm()));
       ePts.slice(0,-1).forEach(p=>{const to=p.distanceTo(new THREE.Vector3(rA.x,eH,rA.z))<p.distanceTo(new THREE.Vector3(rB.x,eH,rB.z))?rA:rB;group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([p.clone(),to.clone()]),rm()));});
     }
