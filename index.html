@@ -1826,17 +1826,17 @@ html[data-theme="dark"] .loader-status{
       <div class="mobile-sheet-close" id="filterSheetClose">✕ &nbsp;close filters</div>
       <div class="filter-group"><span class="fl">Country</span><select id="fRegion"><option value="">All countries</option></select></div>
       <div class="filter-group"><span class="fl">Köppen zone</span><select id="fKoppen"><option value="">All</option></select></div>
-      <div class="filter-group"><span class="fl">Roof pitch</span><select id="fRoof"><option value="">All</option><option value="steep">Steep ≥35°</option><option value="shallow">Shallow · &lt;35°</option></select></div>
-      <div class="filter-group"><span class="fl">Construction type</span><select id="fConstruction"><option value="">All</option><option value="timber_frame">Timber frame</option><option value="wood">Wood</option><option value="clay">Clay</option><option value="stone/masonry">Stone masonry</option><option value="log_construction">Log</option></select></div>
+      <div class="filter-group"><span class="fl">Corpus</span><select id="fCorpus"><option value="">All</option><option value="geometry">With geometry</option><option value="simulation">With simulation</option><option value="sim_orient">Simulation + orientation</option></select></div>
+      <div class="filter-group"><span class="fl">Roof pitch</span><select id="fRoof"><option value="">All</option><option value="steep">Steep ≥35°</option><option value="shallow">Shallow &lt;35°</option></select></div>
+      <div class="filter-group"><span class="fl">Construction</span><select id="fConstruction"><option value="">All</option><option value="stone">Stone / masonry</option><option value="timber_solid">Timber solid</option><option value="timber_frame_earth">Timber frame earth</option><option value="timber_light">Timber light</option><option value="earth_clay">Earth clay</option><option value="brick">Brick</option><option value="peat_turf">Peat / turf</option></select></div>
       <div class="filter-group"><span class="fl">Thermal mass per m²</span><select id="fMass"><option value="">All</option><option value="high">High ≥ median</option><option value="low">Low &lt; median</option></select></div>
+      <div class="filter-group"><span class="fl">Construction period</span><select id="fPeriod"><option value="">All</option><option value="ancient">3000–1000 BC</option><option value="classical">1000 BC–500 CE</option><option value="early-medieval">500–1000 CE</option><option value="medieval">1000–1400</option><option value="early-modern">1400–1700</option><option value="pre-industrial">1700–1850</option><option value="industrial">1850–1920</option><option value="modern">1920–present</option></select></div>
+      <div class="filter-group"><span class="fl">Compactness ψ</span><select id="fCompact"><option value="">All</option><option value="compact">Regular / compact ψ ≥ median</option><option value="elongated">Irregular / elongated ψ &lt; median</option></select></div>
+      <div class="filter-group"><span class="fl">WWR</span><select id="fWwr"><option value="">All</option><option value="high">High ≥ median</option><option value="low">Low &lt; median</option></select></div>
       <div class="filter-group"><span class="fl">Overheating Δ →2080</span><select id="fOhDelta"><option value="">All</option><option value="high">High ≥ median</option><option value="low">Low &lt; median</option></select></div>
       <div class="filter-group"><span class="fl">Comfort decline Δ →2080</span><select id="fComfortDelta"><option value="">All</option><option value="high">High ≥ median</option></select></div>
-      <div class="filter-group"><span class="fl">Solar exposure Δ →2080</span><select id="fSolarDelta"><option value="">All</option><option value="high">High ≥ median</option></select></div>
-      <div class="filter-group"><span class="fl">Köppen zone shift</span><select id="fKoppenDelta"><option value="">All</option><option value="yes">Shifts by 2080</option></select></div>
-      <div class="filter-group"><span class="fl">Compactness ψ</span><select id="fCompact"><option value="">All</option><option value="cubey">Compact ψ≥0.85</option><option value="rectangly">Elongated · ψ&lt;0.85</option></select></div>
-      <div class="filter-group"><span class="fl">WWR</span><select id="fWwr"><option value="">All</option><option value="high">High ≥ median</option><option value="low">Low &lt; median</option></select></div>
+      <div class="filter-group"><span class="fl">Köppen shift →2080</span><select id="fKoppenDelta"><option value="">All</option><option value="yes">Shifts by 2080</option></select></div>
       <div class="filter-group"><span class="fl">Diurnal swing<span class="action-info-icon" id="fDiurnalInfoIcon" style="font-size:10px;margin-left:4px;">ⓘ<div class="action-info-pop" id="fDiurnalInfoPop" style="width:290px;"><div class="ai-head">_diurnal swing threshold</div><div class="ai-body">Annual mean of daily (T<sub>max</sub> − T<sub>min</sub>). High-mass construction is desirable above roughly <b>10°C</b>; below <b>6°C</b>, low-mass construction generally performs best, and high mass can cause overheating in humid climates with limited night-time cooling. This filter uses 10°C as the high/low split.</div><div class="ai-cite">Reardon, C., McGee, C. &amp; Milne, G. (2020). Thermal mass. <em>YourHome: Australia's guide to environmentally sustainable homes</em>, Australian Government.</div></div></span></span><select id="fDiurnal"><option value="">All</option><option value="high">High ≥10°C</option><option value="low">Low &lt;10°C</option></select></div>
-      <div class="filter-group"><span class="fl">Construction period</span><select id="fPeriod"><option value="">All</option><option value="pre1500">Pre-1500</option><option value="1500-1700">1500–1700</option><option value="1700-1850">1700–1850</option><option value="1850-1920">1850–1920</option><option value="1920-1970">1920–1970</option><option value="1970-now">1970–present</option></select></div>
       <span class="filter-count" id="filterCount"></span>
       <button class="filter-reset" id="filterReset">Reset</button>
     </div>
@@ -2071,7 +2071,7 @@ const KOPPEN_LABEL={Af:'Tropical rainforest',Am:'Tropical monsoon',Aw:'Tropical 
  BWh:'Hot desert',BWk:'Cold desert',BSh:'Hot steppe',BSk:'Cold steppe',
  Csa:'Hot-summer Mediterranean',Csb:'Warm-summer Mediterranean',
  Cwa:'Humid subtropical (dry winter)',Cwb:'Subtropical highland',
- Cfa:'Humid subtropical',Cfb:'Oceanic',Cfc:'Subpolar oceanic',
+ Cfa:'Humid subtropical',Cfb:'Temperate oceanic',Cfc:'Subpolar oceanic',
  Dwa:'Humid continental (dry winter)',
  Dfa:'Hot-summer continental',Dfb:'Warm-summer continental',Dfc:'Subarctic',Dfd:'Extremely cold subarctic',
  ET:'Tundra'};
@@ -2233,7 +2233,7 @@ let _zoomAnimating=false;   /* prevent re-entrant zoom on rapid clicks */
 let _mosaicPaused=false;    /* pause mosaic batch probing while a case panel is loading */
 const LIGHT_TILE_URL='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 const DARK_TILE_URL='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-let fRegion='',fKoppen='',fRoof='',fConstruction='',fMass='',fOhDelta='',fComfortDelta='',fSolarDelta='',fKoppenDelta='',fCompact='',fWwr='',fDiurnal='',fPeriod='';
+let fRegion='',fKoppen='',fRoof='',fConstruction='',fMass='',fOhDelta='',fComfortDelta='',fKoppenDelta='',fCompact='',fWwr='',fDiurnal='',fPeriod='',fCorpus='';
 const byId=id=>CASES.find(c=>c.id===id);
 const grp=code=>code?code[0]:null;
 const noData='<span class="nodata">NO_DATA</span>';
@@ -2246,7 +2246,7 @@ const fmt=(v,u,d=2)=>v==null?noData:(typeof v==='number'?(+v.toFixed(d)):v)+(u||
    independent of the corpus; WWR, normalized thermal mass, and the three
    simulation deltas don't have an obvious universal cutoff, so those use a
    live median split instead. ---- */
-let DYN={wwrMed:0,massMed:0,ohDeltaMed:0,comfortDeltaMed:0,solarDeltaMed:0};
+let DYN={wwrMed:0,massMed:0,ohDeltaMed:0,comfortDeltaMed:0,solarDeltaMed:0,psiMed:0};
 function median(arr){
   const s=arr.filter(v=>v!=null&&isFinite(v)).sort((a,b)=>a-b);
   if(!s.length)return 0;
@@ -2265,7 +2265,8 @@ function computeDynamicThresholds(){
   DYN.massMed=median(CASES.map(caseMassNorm));
   DYN.ohDeltaMed=median(CASES.map(caseOhDelta));
   DYN.comfortDeltaMed=median(CASES.map(caseComfortDelta));
-  DYN.solarDeltaMed=median(CASES.map(caseSolarDelta));
+  DYN.psiMed=median(CASES.map(c=>c.psi));
+  DYN.solarDeltaMed=median(CASES.map(caseSolarDelta)); /* kept for other uses */
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2356,7 +2357,7 @@ function renderLineLegend(){
   const collapsed=el.classList.contains('collapsed');
   const rows=[
     {col:ink,dash:'dotted',label:'EPW station link'},
-    {col:bbCol,dash:'solid',label:'vernacularBIGBROTHER',arrowEnd:true},
+    {col:bbCol,dash:'solid',label:'vernacularBIGBROTHER'},
     {col:terra,dash:'dashed',label:'cross-climate convergence'},
     {col:terra,dash:'dotted-fine',label:'similar morphology / region'},
   ];
@@ -2414,30 +2415,40 @@ function pass(c){
   if(fKoppen&&c.koppen[scn]!==fKoppen)return false;
   if(fRoof==='steep'&&!(c.roofPitch!=null&&c.roofPitch>=35))return false;
   if(fRoof==='shallow'&&!(c.roofPitch!=null&&c.roofPitch<35))return false;
-  if(fConstruction&&c.structure!==fConstruction)return false;
+  /* construction: partial match so 'stone / timber_solid' matches 'stone' */
+  if(fConstruction&&!(c.structure&&c.structure.toLowerCase().includes(fConstruction)))return false;
   if(fMass==='high'&&!(caseMassNorm(c)!=null&&caseMassNorm(c)>=DYN.massMed))return false;
   if(fMass==='low'&&!(caseMassNorm(c)!=null&&caseMassNorm(c)<DYN.massMed))return false;
   if(fOhDelta==='high'&&!(caseOhDelta(c)!=null&&caseOhDelta(c)>=DYN.ohDeltaMed))return false;
   if(fOhDelta==='low'&&!(caseOhDelta(c)!=null&&caseOhDelta(c)<DYN.ohDeltaMed))return false;
   if(fComfortDelta==='high'&&!(caseComfortDelta(c)!=null&&caseComfortDelta(c)>=DYN.comfortDeltaMed))return false;
-  if(fSolarDelta==='high'&&!(caseSolarDelta(c)>=DYN.solarDeltaMed))return false;
   if(fKoppenDelta==='yes'&&!(c.koppen[0]&&c.koppen[2]&&c.koppen[0]!==c.koppen[2]))return false;
-  if(fCompact==='cubey'&&!(c.psi!=null&&c.psi>=0.85))return false;
-  if(fCompact==='rectangly'&&!(c.psi!=null&&c.psi<0.85))return false;
+  /* compactness: dynamic median — median ≈ 0.96 for 2D polygon compactness */
+  if(fCompact==='compact'&&!(c.psi!=null&&c.psi>=DYN.psiMed))return false;
+  if(fCompact==='elongated'&&!(c.psi!=null&&c.psi<DYN.psiMed))return false;
   if(fWwr==='high'&&!(c.wwr!=null&&c.wwr>=DYN.wwrMed))return false;
   if(fWwr==='low'&&!(c.wwr!=null&&c.wwr<DYN.wwrMed))return false;
   if(fDiurnal==='high'&&!(c.diurnalSwing!=null&&c.diurnalSwing>=10))return false;
   if(fDiurnal==='low'&&!(c.diurnalSwing!=null&&c.diurnalSwing<10))return false;
   if(fPeriod){
-    const y=yearNum(c.year);
-    if(!y)return false;
-    if(fPeriod==='pre1500'&&!(y<1500))return false;
-    if(fPeriod==='1500-1700'&&!(y>=1500&&y<1700))return false;
-    if(fPeriod==='1700-1850'&&!(y>=1700&&y<1850))return false;
-    if(fPeriod==='1850-1920'&&!(y>=1850&&y<1920))return false;
-    if(fPeriod==='1920-1970'&&!(y>=1920&&y<1970))return false;
-    if(fPeriod==='1970-now'&&!(y>=1970))return false;
+    /* parse year: negative = BC (e.g. "3000 BC" → -3000), positive = CE */
+    const s=String(c.year||'').toUpperCase();
+    const mBC=s.match(/(\d{1,5})\s*BC/);
+    const y=mBC?-parseInt(mBC[1]):yearNum(c.year);
+    if(y==null||y===0)return false;
+    if(fPeriod==='ancient'      &&!(y< -1000))return false;
+    if(fPeriod==='classical'    &&!(y>=-1000&&y<500))return false;
+    if(fPeriod==='early-medieval'&&!(y>=500&&y<1000))return false;
+    if(fPeriod==='medieval'     &&!(y>=1000&&y<1400))return false;
+    if(fPeriod==='early-modern' &&!(y>=1400&&y<1700))return false;
+    if(fPeriod==='pre-industrial'&&!(y>=1700&&y<1850))return false;
+    if(fPeriod==='industrial'   &&!(y>=1850&&y<1920))return false;
+    if(fPeriod==='modern'       &&!(y>=1920))return false;
   }
+  /* corpus completeness filter */
+  if(fCorpus==='geometry'   &&!(c.wallThk!=null||c.area!=null))return false;
+  if(fCorpus==='simulation' &&!(c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null)))return false;
+  if(fCorpus==='sim_orient' &&!(c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null)&&c.orientation!=null))return false;
   return true;
 }
 function applyFilter(){
@@ -2470,7 +2481,7 @@ function refreshKoppenOptions(){
     .sort((a,b)=> a[0]===b[0] ? a.localeCompare(b) : 'ABCDE'.indexOf(a[0])-'ABCDE'.indexOf(b[0]));
   codes.forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k+(KOPPEN_LABEL[k]?' — '+KOPPEN_LABEL[k]:'');ks.appendChild(o);});
 }
-const FILTER_SELECT_IDS=['fRoof','fConstruction','fMass','fOhDelta','fComfortDelta','fSolarDelta','fKoppenDelta','fCompact','fWwr','fDiurnal','fPeriod'];
+const FILTER_SELECT_IDS=['fRoof','fConstruction','fMass','fOhDelta','fComfortDelta','fKoppenDelta','fCompact','fWwr','fDiurnal','fPeriod','fCorpus'];
 function buildFilters(){
   computeDynamicThresholds();
   refreshRegionOptions();
@@ -2483,15 +2494,15 @@ function buildFilters(){
   document.getElementById('fMass').addEventListener('change',e=>{fMass=e.target.value;applyFilter();});
   document.getElementById('fOhDelta').addEventListener('change',e=>{fOhDelta=e.target.value;applyFilter();});
   document.getElementById('fComfortDelta').addEventListener('change',e=>{fComfortDelta=e.target.value;applyFilter();});
-  document.getElementById('fSolarDelta').addEventListener('change',e=>{fSolarDelta=e.target.value;applyFilter();});
   document.getElementById('fKoppenDelta').addEventListener('change',e=>{fKoppenDelta=e.target.value;applyFilter();});
+  document.getElementById('fCorpus').addEventListener('change',e=>{fCorpus=e.target.value;applyFilter();});
   document.getElementById('fCompact').addEventListener('change',e=>{fCompact=e.target.value;applyFilter();});
   document.getElementById('fWwr').addEventListener('change',e=>{fWwr=e.target.value;applyFilter();});
   document.getElementById('fDiurnal').addEventListener('change',e=>{fDiurnal=e.target.value;applyFilter();});
   document.getElementById('fPeriod').addEventListener('change',e=>{fPeriod=e.target.value;applyFilter();});
   wireInfoIcon('fDiurnalInfoIcon','fDiurnalInfoPop');
   document.getElementById('filterReset').addEventListener('click',()=>{
-    fRegion='';fKoppen='';fRoof='';fConstruction='';fMass='';fOhDelta='';fComfortDelta='';fSolarDelta='';fKoppenDelta='';fCompact='';fWwr='';
+    fRegion='';fKoppen='';fRoof='';fConstruction='';fMass='';fOhDelta='';fComfortDelta='';fKoppenDelta='';fCompact='';fWwr='';fPeriod='';fCorpus='';
     document.getElementById('fRegion').value='';document.getElementById('fKoppen').value='';
     FILTER_SELECT_IDS.forEach(id=>{document.getElementById(id).value='';});
     applyFilter();
@@ -2579,7 +2590,7 @@ function rebuildAppFromCases(newCases){
   clearSimLines();
   CASES=processCases(newCases);
   selectedId=null;compareId=null;pickingCompare=false;
-  fRegion='';fKoppen='';fRoof='';fConstruction='';fMass='';fOhDelta='';fComfortDelta='';fSolarDelta='';fKoppenDelta='';fCompact='';fWwr='';
+  fRegion='';fKoppen='';fRoof='';fConstruction='';fMass='';fOhDelta='';fComfortDelta='';fKoppenDelta='';fCompact='';fWwr='';fPeriod='';fCorpus='';
   document.getElementById('fRegion').value='';document.getElementById('fKoppen').value='';
   FILTER_SELECT_IDS.forEach(id=>{document.getElementById(id).value='';});
   computeDynamicThresholds();
@@ -6080,49 +6091,6 @@ function applyBigBrotherResult(a,targetCase,dist){
     }).addTo(map);
     bbLine.bindTooltip(bbTip,{sticky:true});
     bbLine._bbHit=bbHit;
-    /* single arrowhead at the destination end of the great-circle path */
-    (function(){
-      const toRad=d=>d*Math.PI/180, toDeg=r=>r*180/Math.PI;
-      function gcPt(lat1,lon1,lat2,lon2,t){
-        const φ1=toRad(lat1),λ1=toRad(lon1),φ2=toRad(lat2),λ2=toRad(lon2);
-        const d=2*Math.asin(Math.sqrt(Math.sin((φ2-φ1)/2)**2+Math.cos(φ1)*Math.cos(φ2)*Math.sin((λ2-λ1)/2)**2));
-        if(d<1e-10)return{lat:lat1,lon:lon1};
-        const A=Math.sin((1-t)*d)/Math.sin(d),B=Math.sin(t*d)/Math.sin(d);
-        const x=A*Math.cos(φ1)*Math.cos(λ1)+B*Math.cos(φ2)*Math.cos(λ2);
-        const y=A*Math.cos(φ1)*Math.sin(λ1)+B*Math.cos(φ2)*Math.sin(λ2);
-        const z=A*Math.sin(φ1)+B*Math.sin(φ2);
-        return{lat:toDeg(Math.atan2(z,Math.sqrt(x*x+y*y))),lon:toDeg(Math.atan2(y,x))};
-      }
-      function brng(lat1,lon1,lat2,lon2){
-        const dL=toRad(lon2-lon1),φ1=toRad(lat1),φ2=toRad(lat2);
-        const y=Math.sin(dL)*Math.cos(φ2);
-        const x=Math.cos(φ1)*Math.sin(φ2)-Math.sin(φ1)*Math.cos(φ2)*Math.cos(dL);
-        return(Math.atan2(y,x)*180/Math.PI+360)%360;
-      }
-      const t=0.93;
-      const p=gcPt(a.lat,a.lon,targetCase.lat,targetCase.lon,t);
-      const p2=gcPt(a.lat,a.lon,targetCase.lat,targetCase.lon,0.97);
-      const b=brng(p.lat,p.lon,p2.lat,p2.lon);
-      const icon=L.divIcon({
-        className:'',
-        html:`<svg width="16" height="16" viewBox="-8 -8 16 16" xmlns="http://www.w3.org/2000/svg"
-               style="transform:rotate(${b}deg);transform-origin:50% 50%;display:block;overflow:visible;">
-               <polygon points="0,-7 5,5 0,2 -5,5"
-                 fill="${lineCol}" opacity="0.95"/>
-             </svg>`,
-        iconSize:[16,16],iconAnchor:[8,8]
-      });
-      const MARKER_R=8; /* circleMarker radius (7px) + 1px visual margin */
-      const targetPx=map.latLngToContainerPoint([targetCase.lat,targetCase.lon]);
-      const b_rad=b*Math.PI/180;
-      const arrowPx=L.point(
-        targetPx.x - MARKER_R*Math.sin(b_rad),
-        targetPx.y + MARKER_R*Math.cos(b_rad)
-      );
-      const arrowLatLon=map.containerPointToLatLng(arrowPx);
-      const arrow=L.marker([arrowLatLon.lat,arrowLatLon.lng],{icon,interactive:false}).addTo(map);
-      bbLine._bbArrows=[arrow];
-    })();
     const farNote=dist>BB_MAX_DISTANCE
       ?`<br><span style="font-family:monospace;font-size:10px;color:#b94040;">Shown as closest cousin, below the similarity threshold for a genuine climate analogue (d=${dist.toFixed(2)}). Morphological inference should be treated with caution.</span>`
       :'';
