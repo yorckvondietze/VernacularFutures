@@ -6323,7 +6323,7 @@ function computeAvgTypology(zone){
   const avgPitch=pitchVals.length?pitchVals.reduce((a,b)=>a+b,0)/pitchVals.length:null;
   const pitchTag=avgPitch!=null?(avgPitch>=35?'steep':'shallow'):null;
   /* average thermal mass */
-  const massVals=members.map(c=>c.thermMass||c.mass).filter(v=>v!=null&&!isNaN(v));
+  const massVals=members.map(c=>c.thermalMass).filter(v=>v!=null&&!isNaN(v));
   const avgMass=massVals.length?massVals.reduce((a,b)=>a+b,0)/massVals.length:null;
   const massTag=avgMass!=null?(avgMass>=200?'highmass':'lowmass'):null;
   /* average WWR */
@@ -6437,7 +6437,8 @@ function updateAvgTypologyPanel(){
         lbl.closest('.avgt-zone-panel').classList.add('zone-selected');
         _selectedZoneId=zid;
         _selectedZoneId=zid;
-        selectedId=null;
+        selectedId=null;compareId=null;
+        _activeAvgZone=zone;
         renderAvgTypologyDetailPanel(zone);
       }
     });
@@ -6720,8 +6721,14 @@ function addAvgTypologyZone(){
     renderAvgTypologyZone(zone);
     if(_activeAvgZone===zone)renderAvgTypologyDetailPanel(zone);
   });
-  /* clicking the pin selects this zone (enables Delete key) and opens its panel */
-  /* pin is drag-only — no click handler */
+  /* clicking the pin opens the typology panel */
+  pin.on('click',(e)=>{
+    L.DomEvent.stopPropagation(e);
+    _selectedZoneId=zone.id;
+    selectedId=null;compareId=null;
+    _activeAvgZone=zone;
+    renderAvgTypologyDetailPanel(zone);
+  });
   renderAvgTypologyZone(zone);
 }
 
@@ -7082,6 +7089,13 @@ function drawSimilarityLines(){
 }
 
 function renderPanel(){
+  /* If a typology zone is active and no case is selected, re-render the
+     typology panel rather than wiping it. This prevents scenario changes,
+     filter updates, and map interactions from clearing the typology view. */
+  if(_activeAvgZone&&!selectedId){
+    renderAvgTypologyDetailPanel(_activeAvgZone);
+    return;
+  }
   disposeAllViewers();
   const el=document.getElementById('csPanel');
   const grid=document.querySelector('.explorer-grid');
