@@ -534,6 +534,8 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 .ai-warn{border-left:2px solid var(--rust);padding:6px 8px;margin-top:10px;font-size:11.5px;line-height:1.55;color:var(--ink-soft);}
 .ai-warn b{color:var(--rust);}
 /* ---- averageTYPOLOGY button ---- */
+.avgt-btn{display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:0.01em;padding:5px 10px;border:1px solid var(--moss,#3a7a3a);background:transparent;color:var(--moss,#3a7a3a);cursor:pointer;transition:background-color .2s,color .2s;white-space:nowrap;}
+.avgt-btn:hover{background:var(--moss,#3a7a3a);color:var(--paper);}
 .cscompare-btn{
   display:inline-flex;align-items:center;justify-content:center;
   font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:0.01em;
@@ -555,6 +557,15 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
   0%{transform:rotate(0deg);}
   100%{transform:rotate(1080deg);}
 }
+.avgt-zone-panel.zone-selected{outline:2px solid var(--terracotta);outline-offset:-1px;}
+.avgt-zone-panel{font-family:var(--mono);font-size:11px;padding:6px 10px;border:1px solid var(--line);background:var(--paper-dim);margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.avgt-zone-label{flex:1;min-width:0;font-size:10px;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.avgt-radius-slider{flex:0 0 100px;accent-color:var(--moss,#3a7a3a);}
+.avgt-remove{font-size:10px;cursor:pointer;opacity:0.5;flex:none;background:none;border:none;color:var(--ink);padding:0;font-family:var(--mono);}
+.avgt-remove:hover{opacity:1;}
+.avgt-persistent-bar{display:flex;align-items:flex-start;gap:8px;padding:6px 12px;border-bottom:1px solid var(--line);background:var(--paper);flex-wrap:wrap;}
+body.atlas-active:not(.filter-open) .avgt-persistent-bar{display:none!important;}
+.avgt-zones-list{margin-top:8px;}
 .bb-btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:0.01em;padding:5px 10px;border:1px solid var(--ochre);background:var(--ochre-dim);color:var(--ochre);cursor:pointer;transition:background-color .2s ease,color .2s ease;white-space:nowrap;}
 .bb-btn:hover:not(:disabled):not(.bb-disabled){background:var(--ochre);color:var(--paper);}
 .bb-btn.active{background:var(--ochre);color:var(--paper);}
@@ -946,6 +957,7 @@ body.atlas-active:not(.map-fullscreen) #map{
 /* Filter drawer: fixed left, slides open */
 body.atlas-active:not(.map-fullscreen) .filter-bar{
   position:fixed!important;
+  top:var(--deck-top,80px);left:40px;bottom:var(--avgt-bar-h,0px);
   width:0;overflow:hidden;
   flex-direction:column;align-items:stretch;gap:8px;
   background:var(--paper);border-right:none;
@@ -1063,6 +1075,7 @@ body.map-fullscreen .filter-bar{
   position:fixed!important;
   top:34px!important;
   left:40px!important;
+  bottom:var(--avgt-bar-h,0px)!important;
 }
 /* Fullscreen filter collapses fully when not open */
 body.map-fullscreen:not(.filter-open) .filter-bar{
@@ -1125,6 +1138,7 @@ body.atlas-active.cs-open .explorer-grid > .card-window .panel{
 }
 
 /* averageTYPOLOGY bar: fixed, bottom of filter drawer */
+body.atlas-active .avgt-persistent-bar{
   position:fixed!important;
   bottom:0;left:40px;
   width:0;overflow:hidden;
@@ -1132,8 +1146,11 @@ body.atlas-active.cs-open .explorer-grid > .card-window .panel{
   border-top:1px solid var(--line);border-right:1px solid var(--line-strong);
   z-index:501;transition:width .22s cubic-bezier(.4,0,.2,1);
 }
+body.atlas-active.filter-open .avgt-persistent-bar{
   width:20vw;min-width:260px;
 }
+body.map-fullscreen.filter-open .avgt-persistent-bar{z-index:9003!important;}
+body.map-fullscreen:not(.filter-open) .avgt-persistent-bar{display:none!important;}
 
 /* search row: shift when cs drawer open */
 /* search bar right:12px inside map-card is correct — map-col already shifts */
@@ -1533,6 +1550,7 @@ body.mobile-mode.atlas-active.filter-open .filter-bar{
 body.mobile-mode.atlas-active .filter-bar .filter-group select{
   font-size:15px!important;padding:12px 28px 12px 12px!important;
 }
+body.mobile-mode.atlas-active .avgt-persistent-bar{
   position:static!important;width:100%!important;
 }
 /* Köppen legend becomes a collapsed dropdown on mobile — otherwise it
@@ -1595,8 +1613,10 @@ body.mobile-mode.atlas-active #csPanel{
 body.mobile-mode.atlas-active .compare-toggle-btn,
 body.mobile-mode.atlas-active .cscompare-btn,
 body.mobile-mode.atlas-active .bb-btn,
+body.mobile-mode.atlas-active .avgt-btn,
 body.mobile-mode.atlas-active .metric-page-btn,
 body.mobile-mode.atlas-active .cs-tab,
+body.mobile-mode.atlas-active .avgt-remove{
   padding:11px 16px!important;font-size:12.5px!important;
 }
 body.mobile-mode.atlas-active .cs-chip{
@@ -1618,6 +1638,7 @@ body.mobile-mode.atlas-active .c-close svg{
   flex:none!important;
   width:14px!important;height:14px!important;
 }
+body.mobile-mode.atlas-active .avgt-radius-slider{
   height:24px!important;
 }
 
@@ -1826,6 +1847,10 @@ html[data-theme="dark"] .loader-status{
       <input type="text" class="cs-search-input" id="csSearch" placeholder="Search by name or ID (e.g. CS_5, Zbečno, Norway…)" autocomplete="off">
       <div class="cs-search-results" id="csSearchResults" style="display:none;"></div>
     </div>
+    <div class="avgt-persistent-bar" id="avgtPersistentBar">
+      <button class="avgt-btn" id="avgTypologyBtnPersistent">&gt;average<em>TYPOLOGY</em></button>
+      <span class="action-info-icon" id="avgTInfoIconPersistent" style="font-size:11px;position:relative;">ⓘ<div class="action-info-pop" id="avgTInfoPopPersistent" style="bottom:calc(100% + 4px);top:auto;left:0;right:auto;width:330px;"><div class="ai-head">_average<em>TYPOLOGY</em></div><div class="ai-body">Drops a draggable pin with an adjustable radius (50–600 km). All case studies within the radius are averaged into one representative typology. Label derived from dominant Köppen zone, construction type, roof pitch (steep ≥35° / shallow), thermal mass (high ≥200 kg·m⁻² / low) and WWR (low &lt;0.2 / high). The representative EPW is the spatial medoid, the station with minimum average haversine distance to all others in the zone. Multiple zones may be defined simultaneously; a case study may belong to more than one zone.</div><div class="ai-cite">Averaging: arithmetic mean of continuous metrics, plurality vote for categorical. EPW: spatial medoid (minimises total intra-zone travel distance).</div></div></span>
+      <div class="avgt-zones-list" id="avgTypologyZonesListPersistent"></div>
     </div>
     <div class="explorer-grid">
       <!-- ── deck layout icon strips (always visible in Atlas view) ── -->
@@ -5265,6 +5290,10 @@ let bigBrotherActive=false,bbLine=null,bbResultId=null;
 let bbNoMatch=false,bbCousin=null,bbCousinDist=null;
 let koppenOverlayActive=false,koppenOverlayLayer=null,_koppenRenderTimer=null;
 /* averageTYPOLOGY state */
+let avgTypologyZones=[];   /* [{pin:L.marker, circle:L.circle, radius_km, caseIds:[], panelId}] */
+let _avgTypNextId=1;       /* incrementing zone ID */
+let _activeAvgZone=null;
+let _selectedZoneId=0;       /* zone row selected in zones list */   /* which zone is currently shown in the case study panel */
 /* shapeSHIFT: a heuristic "what if the recommended fix were applied" preview
    — not a re-simulation. Severity scales with how far into the future the
    scenario slider sits; which geometric levers move depends on which
@@ -6277,7 +6306,453 @@ function haversineKm(lat1,lon1,lat2,lon2){
   const a=Math.sin(dL/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dO/2)**2;
   return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
+function computeAvgTypology(zone){
+  const {pinLat,pinLon,radius_km}=zone;
+  const members=CASES.filter(c=>c.hasCoord&&haversineKm(pinLat,pinLon,c.lat,c.lon)<=radius_km);
+  if(!members.length)return{members:[],label:'TYPOLOGY_no_cases',epwId:null};
+  /* dominant Köppen at current scenario */
+  const koppenCounts={};
+  members.forEach(c=>{const k=c.koppen[scn];if(k)koppenCounts[k]=(koppenCounts[k]||0)+1;});
+  const domKoppen=Object.entries(koppenCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||'?';
+  /* dominant structure/wall type */
+  const structCounts={};
+  members.forEach(c=>{const s=c.structure||c.wallType;if(s)structCounts[s]=(structCounts[s]||0)+1;});
+  const domStruct=Object.entries(structCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||null;
+  /* average roof pitch → steep/shallow */
+  const pitchVals=members.map(c=>c.roofPitch||c.pitch).filter(v=>v!=null&&!isNaN(v));
+  const avgPitch=pitchVals.length?pitchVals.reduce((a,b)=>a+b,0)/pitchVals.length:null;
+  const pitchTag=avgPitch!=null?(avgPitch>=35?'steep':'shallow'):null;
+  /* average thermal mass */
+  const massVals=members.map(c=>c.thermalMass).filter(v=>v!=null&&!isNaN(v));
+  const avgMass=massVals.length?massVals.reduce((a,b)=>a+b,0)/massVals.length:null;
+  const massTag=avgMass!=null?(avgMass>=200?'highmass':'lowmass'):null;
+  /* average WWR */
+  const wwrVals=members.map(c=>c.wwr).filter(v=>v!=null&&!isNaN(v));
+  const avgWWR=wwrVals.length?wwrVals.reduce((a,b)=>a+b,0)/wwrVals.length:null;
+  const wwrTag=avgWWR!=null?(avgWWR<20?'lowwwr':'highwwr'):null;
+  /* most central EPW: station with min avg haversine to all other members */
+  let bestEpw=null;
+  if(members.length===1){
+    bestEpw=members[0].epw;
+  }else{
+    let minAvgDist=Infinity;
+    members.forEach(m=>{
+      if(!m.epw||!m.hasCoord)return;
+      const avg=members.filter(o=>o.epw&&o.hasCoord&&o!==m)
+        .reduce((s,o)=>s+haversineKm(m.lat,m.lon,o.lat,o.lon),0)/(members.length-1);
+      if(avg<minAvgDist){minAvgDist=avg;bestEpw=m.epw;}
+    });
+  }
+  /* dominant country */
+  const countryCounts={};
+  members.forEach(c=>{if(c.country)countryCounts[c.country]=(countryCounts[c.country]||0)+1;});
+  const domCountry=Object.entries(countryCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||null;
+  /* build label: TYPOLOGY_Köppen_Country_... */
+  const parts=[domKoppen,domCountry,domStruct,pitchTag,massTag,wwrTag].filter(Boolean);
+  const label=`TYPOLOGY_${parts.join('_')}`;
+  return{members,label,epwId:bestEpw};
+}
+function renderAvgTypologyZone(zone){
+  const{members,label,epwId}=computeAvgTypology(zone);
+  zone.caseIds=members.map(c=>c.id);
+  zone.label=label;
+  zone.epwId=epwId;
+  /* update circle */
+  if(zone.circle){zone.circle.setLatLng([zone.pinLat,zone.pinLon]);zone.circle.setRadius(zone.radius_km*1000);}
+  /* remove old spokes */
+  (zone.spokes||[]).forEach(l=>map.removeLayer(l));
+  zone.spokes=[];
+  /* draw wobbly spokes — deterministic wobble via case index so they stay stable */
+  members.forEach((c,i)=>{
+    const midLat=(zone.pinLat+c.lat)/2;
+    const midLon=(zone.pinLon+c.lon)/2;
+    /* perpendicular offset: rotate (dLat,dLon) by 90°, scale by wobble factor */
+    const dLat=c.lat-zone.pinLat,dLon=c.lon-zone.pinLon;
+    const wobble=((i%5)-2)*0.08; /* deterministic -0.16 to +0.16 degrees */
+    const offLat=-dLon*wobble,offLon=dLat*wobble;
+    const spoke=L.polyline([
+      [zone.pinLat,zone.pinLon],
+      [midLat+offLat,midLon+offLon],
+      [c.lat,c.lon]
+    ],{color:'var(--terracotta)',weight:0.7,opacity:0.4,interactive:false,smoothFactor:1}).addTo(map);
+    zone.spokes.push(spoke);
+  });
+  /* update merged marker */
+  if(zone.mergedMarker)map.removeLayer(zone.mergedMarker);
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const borderCol=isDark?'#ffffff':'#000000';
+  const icon=L.divIcon({
+    className:'',
+    html:`<div style="width:18px;height:18px;border-radius:50%;background:var(--terracotta);border:2.5px solid ${borderCol};box-shadow:0 0 0 1px ${borderCol}40;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:7px;color:${borderCol};font-weight:700;">${members.length}</div>`,
+    iconSize:[18,18],iconAnchor:[9,9]
+  });
+  /* update draggable pin icon to show member count */
+  if(zone.pin){
+    zone.pin.setIcon(L.divIcon({
+      className:'',
+      html:`<div style="width:22px;height:22px;border-radius:50%;background:var(--terracotta);border:2.5px solid ${borderCol};display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:8px;color:#fff;font-weight:700;cursor:move;box-shadow:0 1px 6px rgba(0,0,0,.35);">${members.length||'Ø'}</div>`,
+      iconSize:[22,22],iconAnchor:[11,11]
+    }));
+  }
+  zone.mergedMarker=L.marker([zone.pinLat,zone.pinLon],{icon,zIndexOffset:500}).addTo(map);
+  zone.mergedMarker.on('click',(e)=>{
+    L.DomEvent.stopPropagation(e);
+    L.DomEvent.preventDefault(e);
+    _selectedZoneId=zone.id;
+    selectedId=null;compareId=null;
+    _activeAvgZone=zone;
+    renderAvgTypologyDetailPanel(zone);
+  });
+  /* fade individual markers */
+  markers.forEach(mk=>{
+    const inZone=avgTypologyZones.some(z=>z.caseIds.includes(mk._cid));
+    mk.setStyle({fillOpacity:inZone?0.25:0.92,opacity:inZone?0.25:1});
+  });
+  /* update panel */
+  updateAvgTypologyPanel();
+}
+function removeAvgTypologyZone(zoneId){
+  const idx=avgTypologyZones.findIndex(z=>z.id===zoneId);
+  if(idx<0)return;
+  const zone=avgTypologyZones[idx];
+  if(zone.pin)map.removeLayer(zone.pin);
+  if(zone.circle)map.removeLayer(zone.circle);
+  if(zone.mergedMarker)map.removeLayer(zone.mergedMarker);
+  (zone.spokes||[]).forEach(l=>map.removeLayer(l));
+  avgTypologyZones.splice(idx,1);
+  /* restore marker opacity */
+  markers.forEach(mk=>{
+    const inZone=avgTypologyZones.some(z=>(z.caseIds||[]).includes(mk._cid));
+    mk.setStyle({fillOpacity:inZone?0.25:0.92,opacity:inZone?0.25:1});
+  });
+  updateAvgTypologyPanel();
+}
+function updateAvgTypologyPanel(){
+  const el=document.getElementById('avgTypologyZonesListPersistent');
+  if(!el)return;
+  if(!avgTypologyZones.length){el.innerHTML='';return;}
+  el.innerHTML=avgTypologyZones.map(z=>`
+    <div class="avgt-zone-panel" data-zoneid="${z.id}">
+      <span class="avgt-zone-label" title="${z.label||''}">${z.label||'computing…'} <span style="opacity:0.5;">(${(z.caseIds||[]).length} CS)</span></span>
+      <input type="range" class="avgt-radius-slider" min="50" max="600" step="25" value="${z.radius_km}" data-zoneid="${z.id}">
+      <span style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);flex:none;" id="avgt-radius-label-${z.id}">${z.radius_km} km</span>
+      <button class="avgt-remove" data-zoneid="${z.id}" title="Remove zone">×</button>
+    </div>`).join('');
+  /* wire sliders, remove buttons, and label click → open detail panel */
+  el.querySelectorAll('.avgt-zone-label').forEach(lbl=>{
+    lbl.style.cursor='pointer';
+    lbl.addEventListener('click',()=>{
+      const zid=+lbl.closest('[data-zoneid]').dataset.zoneid;
+      const zone=avgTypologyZones.find(z=>z.id===zid);
+      if(zone){
+        /* highlight selected row */
+        document.querySelectorAll('.avgt-zone-panel').forEach(r=>r.classList.remove('zone-selected'));
+        lbl.closest('.avgt-zone-panel').classList.add('zone-selected');
+        _selectedZoneId=zid;
+        _selectedZoneId=zid;
+        selectedId=null;compareId=null;
+        _activeAvgZone=zone;
+        renderAvgTypologyDetailPanel(zone);
+      }
+    });
+  });
+  el.querySelectorAll('.avgt-radius-slider').forEach(sl=>{
+    /* 'input' = live drag: only update circle + label, never re-render DOM */
+    sl.addEventListener('input',()=>{
+      const zid=+sl.dataset.zoneid;
+      const zone=avgTypologyZones.find(z=>z.id===zid);
+      if(!zone)return;
+      zone.radius_km=+sl.value;
+      const lbl=document.getElementById('avgt-radius-label-'+zid);
+      if(lbl)lbl.textContent=sl.value+' km';
+      if(zone.circle)zone.circle.setRadius(zone.radius_km*1000);
+    });
+    /* 'change' = drag ended: full re-render (recalculates members, spokes, marker) */
+    sl.addEventListener('change',()=>{
+      const zid=+sl.dataset.zoneid;
+      const zone=avgTypologyZones.find(z=>z.id===zid);
+      if(!zone)return;
+      renderAvgTypologyZone(zone);
+      if(_activeAvgZone===zone)renderAvgTypologyDetailPanel(zone);
+    });
+  });
+  el.querySelectorAll('.avgt-remove').forEach(btn=>{
+    btn.addEventListener('click',()=>removeAvgTypologyZone(+btn.dataset.zoneid));
+  });
+}
+function renderAvgTypologyDetailPanel(zone){
+  _activeAvgZone=zone;
+  const el=document.getElementById('csPanel');
+  if(el)el.dataset.avgZoneId=zone.id;
+  if(!el)return;
+  /* Ensure the panel is visible and map resizes */
+  document.body.classList.add('cs-open');
+  if(map)setTimeout(()=>map.invalidateSize(),0);
+  const{members,label,epwId}=computeAvgTypology(zone);
+  zone.caseIds=members.map(c=>c.id);zone.label=label;zone.epwId=epwId;
+  /* averaging helpers */
+  function avgOf(fn){const vals=members.map(fn).filter(v=>v!=null&&!isNaN(+v));return vals.length?(vals.reduce((a,b)=>a+(+b),0)/vals.length):null;}
+  function avgFmt(fn,unit,dec){const v=avgOf(fn);return v!=null?(+v).toFixed(dec)+(unit||''):'<span class="nodata">–</span>';}
+  function pluralOf(fn){const counts={};members.forEach(c=>{const v=fn(c);if(v!=null&&v!=='')counts[v]=(counts[v]||0)+1;});const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];return top?top[0]:null;}
+  function pluralFmt(fn){const v=pluralOf(fn);return v!=null?String(v):'<span class="nodata">–</span>';}
+  /* find the medoid case (the one whose EPW was selected) */
+  const medoidCase=members.find(c=>c.epw===epwId)||members[0];
+  /* build averaged metric pages mirroring METRIC_PAGES */
+  const AVG_PAGES=[
+    {label:'Basic info',rows:()=>[
+      ['Members',members.length+' case studies'],
+      ['Dominant region',pluralFmt(c=>c.region)],
+      ['Countries',[...new Set(members.map(c=>c.country).filter(Boolean))].join(', ')||'–'],
+      ['Radius',zone.radius_km+' km'],
+      ['Pin coordinates',zone.pinLat.toFixed(3)+'°, '+zone.pinLon.toFixed(3)+'°'],
+      ['Construction period',(()=>{const ys=members.map(c=>yearNum(c.year)).filter(y=>y);return ys.length?(Math.min(...ys)+'–'+Math.max(...ys)):'–';})()],
+    ]},
+    {label:'Dimensions & structure',rows:()=>[
+      ['Dominant wall type',(()=>{const wt=pluralOf(c=>c.wallType);return wt?(WALL_LABEL[wt]||wt):'–';})()],
+      ['Avg floor area',avgFmt(c=>c.area,' m²',0)],
+      ['Avg height',avgFmt(c=>c.height,' m',1)],
+      ['Avg floors',avgFmt(c=>c.floors,'',1)],
+      ['Dominant context',pluralFmt(c=>c.context)],
+      ['Dominant structure',pluralFmt(c=>c.structure)],
+      ['Avg plinth height',avgFmt(c=>c.plinth,' m',2)],
+      ['Avg wall thickness',avgFmt(c=>c.wallThk,' m',3)],
+      ['Avg wall thickness N–S',avgFmt(c=>c.wallThkNS,' m',3)],
+      ['Avg wall thickness E–W',avgFmt(c=>c.wallThkEW,' m',3)],
+      ['Avg U-value wall',avgFmt(c=>c.uWall,' W/m²K',2)],
+      ['Avg volume',avgFmt(c=>c.volume,' m³',0)],
+      ['Avg V/A ratio',avgFmt(c=>c.va,'',2)],
+      ['Avg compactness ψ',avgFmt(c=>c.psi,'',3)],
+      ['Avg thermal mass',avgFmt(c=>c.thermalMass,' kJ/K',0)],
+    ]},
+    {label:'Windows & openings',rows:()=>[
+      ['Avg WWR',avgFmt(c=>c.wwr,'%',1)],
+      ['Dominant window orientation',pluralFmt(c=>c.windowOrient)],
+      ['Avg window size',avgFmt(c=>c.avgWinSize,' m²',2)],
+      ['Avg hearth/stove index',avgFmt(c=>c.hearth,'',3)],
+    ]},
+    {label:'Roof & eaves',rows:()=>[
+      ['Dominant roof form',pluralFmt(c=>c.roofForm)],
+      ['Dominant roof material',pluralFmt(c=>c.roofMat)],
+      ['Avg roof pitch',avgFmt(c=>c.roofPitch,'°',1)],
+      ['Avg U-value roof',avgFmt(c=>c.uRoof,' W/m²K',2)],
+      ['Avg attic height',avgFmt(c=>c.atticH,' m',2)],
+      ['Avg eave height',avgFmt(c=>c.eaveH,' m',2)],
+      ['Avg eave depth',avgFmt(c=>c.eaveDepth,' m',3)],
+      ['Avg rake / gable overhang',avgFmt(c=>c.rakeDepth,' m',3)],
+    ]},
+    {label:'Facade & special',rows:()=>[
+      ['Dominant facade material',pluralFmt(c=>c.facadeMat)],
+      ['Dominant facade colour',pluralFmt(c=>c.facadeColor)],
+      ['Dominant gable cladding',pluralFmt(c=>c.gableClad)],
+      ['Jettying (plurality)',pluralFmt(c=>c.jettying)],
+      ['Elevated ground floor (plurality)',pluralFmt(c=>c.elevGF)],
+      ['Shutters (plurality)',pluralFmt(c=>c.shutters)],
+      ['Courtyard (plurality)',pluralFmt(c=>c.courtyard)],
+      ['Balconies (plurality)',pluralFmt(c=>c.balconies)],
+    ]},
+  ];
+  /* Köppen distribution */
+  const koppenCounts={};
+  members.forEach(c=>{const k=c.koppen[scn];if(k)koppenCounts[k]=(koppenCounts[k]||0)+1;});
+  const koppenList=Object.entries(koppenCounts).sort((a,b)=>b[1]-a[1])
+    .map(([k,n])=>`<span style="color:${kcolor(k)};font-weight:700;">${k}</span> <span style="opacity:0.55;font-size:10px;">(${n})</span>`).join('&nbsp;·&nbsp;');
+  /* member chips */
+  const chips=members.map(c=>`<span class="cs-chip" style="cursor:pointer;font-size:9.5px;padding:3px 7px;border:1px solid var(--line);display:inline-flex;align-items:center;gap:4px;margin:2px 2px 2px 0;background:var(--paper-dim);border-radius:0;" data-cid="${c.id}"><span style="width:7px;height:7px;border-radius:50%;background:${kcolor(c.koppen[scn])};flex:none;display:inline-block;"></span><b>${c.id}</b> <span style="opacity:0.55;">${c.name||''}</span></span>`).join('');
+  const domRegion=pluralOf(c=>c.region)||'–';
+  /* metric page tabs */
+  const metricSubtabs=AVG_PAGES.map((p,i)=>`<button class="metric-page-btn climate-tab-square${i===0?' active':''}" data-avgmetricpage="${i}">${p.label}</button>`).join('');
+  const metricTable=pi=>{const page=AVG_PAGES[pi];return `<table style="width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px;">${page.rows().map(([k,v])=>`<tr style="border-bottom:1px solid var(--line);"><td style="padding:5px 0;color:var(--ink-soft);vertical-align:top;padding-right:10px;">${k}</td><td style="padding:5px 0;text-align:right;font-weight:700;">${v}</td></tr>`).join('')}</table>`;};
 
+  el.innerHTML=`
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:14px 16px 0;">
+      <div class="panel-eyebrow">${domRegion}  ${members.length} case studies  radius ${zone.radius_km} km</div>
+      <button id="avgTCloseBtn" style="background:none;border:none;cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--ink-faint);padding:0;flex:none;margin-top:1px;" title="Close typology view">× close</button>
+    </div>
+    <div class="cs-title" style="padding:4px 16px 0;font-size:18px;word-break:break-all;">${label}</div>
+    <div class="cs-sub" style="padding:2px 16px 10px;">Averaged typology  ${SCENARIOS_LONG[scn]}</div>
+    <div class="cs-main-tabs" style="padding:0 16px;">
+      <button class="cs-main-tab active" data-avgtab="building">Building</button>
+      <button class="cs-main-tab" data-avgtab="climate">Climate</button>
+      <button class="cs-main-tab" data-avgtab="metrics">Metrics &amp; Attributes</button>
+      <button class="cs-main-tab" data-avgtab="members">Members (${members.length})</button>
+    </div>
+
+    <div class="cs-panel active" id="avgT-panel-building" style="padding:14px 16px;">
+      <div class="media-col-head" style="font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px;">Photographs  all members</div>
+      <div id="avgTPhotoBlock" class="media-col-content" style="margin-bottom:18px;"><div class="photo-carousel" style="display:flex;align-items:center;justify-content:center;min-height:180px;"><span style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">Loading member photographs…</span></div></div>
+      <div class="media-col-head" style="font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px;">Aggregated drawings  all members</div>
+      <div id="avgTPlanBlock" class="media-col-content"><div class="photo-carousel" style="display:flex;align-items:center;justify-content:center;min-height:180px;"><span style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">Loading member drawings…</span></div></div>
+    </div>
+
+    <div class="cs-panel" id="avgT-panel-climate" style="padding:14px 16px;display:none;">
+      <div style="background:var(--terracotta);color:#fff;font-family:var(--mono);font-size:10px;padding:8px 10px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px;line-height:1.4;">
+        <span style="font-size:13px;flex:none;">◉</span>
+        <span><b>REPRESENTATIVE EPW: SPATIAL MEDOID.</b> Climate shown is not averaged. It is the single most central station in the zone: <b>${epwId||'n/a'}</b>${medoidCase?` (${medoidCase.id}${medoidCase.name?' — '+medoidCase.name:''})`:''}. Chosen by minimum mean great-circle distance to all other member stations.</span>
+      </div>
+      <div id="avgTClimateBlock"><div style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);padding:20px 0;text-align:center;">Loading medoid climate…</div></div>
+    </div>
+
+    <div class="cs-panel" id="avgT-panel-metrics" style="padding:14px 16px;display:none;">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin-bottom:10px;line-height:1.5;">Continuous metrics = arithmetic mean of members with data. Categorical = plurality (most common value). Non-null members only.</div>
+      <div class="climate-tabs-row">
+        <div class="metric-pager climate-tabs-sidebar" style="margin-bottom:0;">${metricSubtabs}</div>
+        <div class="climate-tabs-content"><div id="avgTMetricTable">${metricTable(0)}</div></div>
+      </div>
+    </div>
+
+    <div class="cs-panel" id="avgT-panel-members" style="padding:14px 16px;display:none;">
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px;">Köppen distribution</div>
+      <div style="font-family:var(--mono);font-size:11px;margin-bottom:14px;line-height:1.8;">${koppenList||'–'}</div>
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px;">Click to open individual case study</div>
+      <div style="line-height:2.2;">${chips}</div>
+    </div>`;
+
+  /* wire main tabs */
+  el.querySelectorAll('.cs-main-tab[data-avgtab]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      el.querySelectorAll('.cs-main-tab[data-avgtab]').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      el.querySelectorAll('[id^="avgT-panel-"]').forEach(p=>p.style.display='none');
+      const target=el.querySelector('#avgT-panel-'+btn.dataset.avgtab);
+      if(target)target.style.display='block';
+    });
+  });
+  /* wire metric subtabs */
+  el.querySelectorAll('.metric-page-btn[data-avgmetricpage]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      el.querySelectorAll('.metric-page-btn[data-avgmetricpage]').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const tbl=el.querySelector('#avgTMetricTable');
+      if(tbl)tbl.innerHTML=metricTable(+btn.dataset.avgmetricpage);
+    });
+  });
+  /* wire member chips */
+  el.querySelectorAll('.cs-chip[data-cid]').forEach(chip=>{
+    chip.addEventListener('click',()=>selectCase(chip.dataset.cid));
+  });
+  /* wire close */
+  const closeBtn=document.getElementById('avgTCloseBtn');
+  if(closeBtn)closeBtn.addEventListener('click',()=>{_activeAvgZone=null;_selectedZoneId=0;selectedId=null;renderPanel();});
+
+  /* async: load all member photographs stacked into one carousel */
+  (async()=>{
+    const allPhotos=[];
+    for(const c of members){
+      try{
+        const photos=await fetchPhotos(c.id);
+        if(photos&&photos.length){
+          photos.forEach(u=>allPhotos.push(u));
+        }
+      }catch(e){}
+    }
+    const block=document.getElementById('avgTPhotoBlock');
+    if(!block)return;
+    if(!allPhotos.length){
+      block.innerHTML=`<div class="photo-carousel" style="display:flex;align-items:center;justify-content:center;min-height:180px;"><span style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">No member photographs found</span></div>`;
+      return;
+    }
+    const carouselHtml=renderPhotoCarousel(allPhotos,'avgT-'+zone.id);
+    block.innerHTML=carouselHtml;
+    wirePhotoCarousel(block,allPhotos,'avgT-'+zone.id);
+  })();
+
+  /* async: load all member plans stacked into one carousel */
+  (async()=>{
+    const allPlans=[];
+    for(const c of members){
+      try{
+        const plans=await fetchPlans(c.id);
+        if(plans&&plans.length){
+          plans.forEach(p=>allPlans.push({url:p.url,label:`${c.id}  ${p.label}`}));
+        }
+      }catch(e){}
+    }
+    const block=document.getElementById('avgTPlanBlock');
+    if(!block)return;
+    if(!allPlans.length){
+      block.innerHTML=`<div class="photo-carousel" style="display:flex;align-items:center;justify-content:center;min-height:180px;"><span style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">No member drawings found</span></div>`;
+      return;
+    }
+    const carouselHtml=renderPlanCarousel(allPlans,'avgT-'+zone.id);
+    block.innerHTML=carouselHtml;
+    wirePlanCarousel(block,allPlans,'avgT-'+zone.id);
+  })();
+
+  /* async: load medoid climate */
+  (async()=>{
+    const block=document.getElementById('avgTClimateBlock');
+    if(!block||!epwId)return;
+    if(medoidCase){
+      block.innerHTML=`<div style="font-family:var(--mono);font-size:10px;color:var(--ink-soft);line-height:1.9;">
+        <div style="margin-bottom:8px;"><b>Medoid case:</b> ${medoidCase.id}${medoidCase.name?' — '+medoidCase.name:''}</div>
+        <div style="margin-bottom:8px;"><b>Köppen (${SCENARIOS[scn]}):</b> <span style="color:${kcolor(medoidCase.koppen[scn])};font-weight:700;">${medoidCase.koppen[scn]||'–'}</span></div>
+        <div style="opacity:0.7;">Open the medoid case study for its full climate analysis (psychrometric chart, wind, extremes).</div>
+        <div style="margin-top:10px;"><span class="cs-chip" style="cursor:pointer;font-size:10px;padding:4px 9px;border:1px solid var(--terracotta);display:inline-flex;align-items:center;gap:5px;background:var(--paper-dim);" data-cid="${medoidCase.id}"><span style="width:7px;height:7px;border-radius:50%;background:${kcolor(medoidCase.koppen[scn])};"></span><b>Open ${medoidCase.id}</b> →</span></div>
+      </div>`;
+      const chip=block.querySelector('.cs-chip[data-cid]');
+      if(chip)chip.addEventListener('click',()=>selectCase(chip.dataset.cid));
+    }
+  })();
+}
+
+function addAvgTypologyZone(){
+  if(!map)return;
+  const center=map.getCenter();
+  const zoneId=_avgTypNextId++;
+  const DEFAULT_RADIUS=200;
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const borderCol=isDark?'#ffffff':'#000000';
+  /* draggable pin */
+  const pin=L.marker([center.lat,center.lng],{
+    draggable:true,
+    icon:L.divIcon({
+      className:'',
+      html:`<div style="width:20px;height:20px;border-radius:50%;background:var(--terracotta);border:2.5px solid ${borderCol};display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:9px;color:#fff;font-weight:700;cursor:move;box-shadow:0 1px 4px rgba(0,0,0,.3);">Ø</div>`,
+      iconSize:[20,20],iconAnchor:[10,10]
+    }),
+    zIndexOffset:600
+  }).addTo(map);
+  /* radius circle */
+  const circle=L.circle([center.lat,center.lng],{
+    radius:DEFAULT_RADIUS*1000,
+    color:'var(--terracotta)',
+    weight:1.5,
+    dashArray:'6,4',
+    fill:true,
+    fillColor:'var(--terracotta)',
+    fillOpacity:0.06,
+    interactive:false
+  }).addTo(map);
+  const zone={id:zoneId,pin,circle,mergedMarker:null,pinLat:center.lat,pinLon:center.lng,radius_km:DEFAULT_RADIUS,caseIds:[],label:null,epwId:null};
+  avgTypologyZones.push(zone);
+  pin.on('drag',e=>{
+    zone.pinLat=e.latlng.lat;zone.pinLon=e.latlng.lng;
+    circle.setLatLng(e.latlng);
+    renderAvgTypologyZone(zone);
+  });
+  pin.on('dragend',()=>{
+    renderAvgTypologyZone(zone);
+    if(_activeAvgZone===zone)renderAvgTypologyDetailPanel(zone);
+  });
+  /* clicking the pin opens the typology panel */
+  pin.on('click',(e)=>{
+    L.DomEvent.stopPropagation(e);
+    _selectedZoneId=zone.id;
+    selectedId=null;compareId=null;
+    _activeAvgZone=zone;
+    renderAvgTypologyDetailPanel(zone);
+  });
+  renderAvgTypologyZone(zone);
+  /* auto-open the detail panel immediately — no click required */
+  _activeAvgZone=zone;
+  selectedId=null;compareId=null;
+  if(!document.body.classList.contains('cs-open')){
+    document.body.classList.add('cs-open');
+    document.getElementById('csStripBtn')?.classList.add('active');
+    setTimeout(()=>{if(map)map.invalidateSize();},260);
+  }
+  renderAvgTypologyDetailPanel(zone);
+}
 
 function wireShapeShift(c,slot){
   const btn=document.getElementById('shapeShiftBtn-'+slot);
@@ -6635,10 +7110,19 @@ function drawSimilarityLines(){
   });
 }
 
+function renderPanel(){
+  /* If a typology zone is active and no case is selected, re-render the
+     typology panel rather than wiping it. This prevents scenario changes,
+     filter updates, and map interactions from clearing the typology view. */
+  if(_activeAvgZone&&!selectedId){
+    renderAvgTypologyDetailPanel(_activeAvgZone);
+    return;
+  }
   disposeAllViewers();
   const el=document.getElementById('csPanel');
   const grid=document.querySelector('.explorer-grid');
   const wasCompare=grid&&grid.classList.contains('compare-active');
+  _activeAvgZone=null;
   if(!selectedId){
     pickingCompare=false;compareId=null;
     clearStationMarker();
@@ -6688,7 +7172,11 @@ function drawSimilarityLines(){
   if(bbCousinBtn)bbCousinBtn.addEventListener('click',showBBCousin);
   wireInfoIcon('bbCousinInfoIcon','bbCousinInfoPop');
   /* averageTYPOLOGY button */
+  const avgTBtn=document.getElementById('avgTypologyBtn');
+  if(avgTBtn)avgTBtn.addEventListener('click',addAvgTypologyZone);
+  wireInfoIcon('avgTInfoIcon','avgTInfoPop');
   /* repopulate zones list if zones exist */
+  if(avgTypologyZones.length)updateAvgTypologyPanel();
   /* close any open info popovers on outside click */
   setTimeout(()=>{
     document.addEventListener('click',()=>{
@@ -9403,9 +9891,13 @@ if(window._hideLoaderWhenReady)window._hideLoaderWhenReady();
 else if(window._hideLoader)window._hideLoader();
 /* wire persistent averageTYPOLOGY button */
 (function(){
+  const btn=document.getElementById('avgTypologyBtnPersistent');
+  if(btn)btn.addEventListener('click',addAvgTypologyZone);
+  wireInfoIcon('avgTInfoIconPersistent','avgTInfoPopPersistent');
   /* wire case study panel titlebar X → reset to mosaic */
   const csClose=document.getElementById('csPanelCloseBtn');
   if(csClose)csClose.addEventListener('click',()=>{
+    _activeAvgZone=null;selectedId=null;renderPanel();
     if(map)refreshMap();
     if(window._resetCsWidth)window._resetCsWidth();
     /* mobile: X also collapses the bottom sheet (no persistent
@@ -9435,6 +9927,7 @@ else if(window._hideLoader)window._hideLoader();
     const casesBtn=document.querySelector('.tab-btn[data-tab="cases"]');
     if(casesBtn)casesBtn.click();
     /* reset to the mosaic (clear any selected case / typology zone) */
+    selectedId=null;compareId=null;_activeAvgZone=null;_selectedZoneId=0;
     if(typeof renderPanel==='function')renderPanel();
     if(map)refreshMap();
     /* on desktop, ensure the case study drawer is open showing the mosaic */
@@ -9472,10 +9965,12 @@ else if(window._hideLoader)window._hideLoader();
         const h=bar.getBoundingClientRect().height||0;
         /* only apply when the bar is actually visible (filter open, not mobile static) */
         const visible=getComputedStyle(bar).position==='fixed'&&getComputedStyle(bar).display!=='none';
+        filterBar.style.setProperty('--avgt-bar-h',(visible?h:0)+'px');
       });
     };
     const ro=new ResizeObserver(sync);
     ro.observe(bar);
+    const zonesList=document.getElementById('avgTypologyZonesListPersistent');
     if(zonesList){
       ro.observe(zonesList);
       /* content changes (adding/removing typology zones) reflow the bar's
@@ -9901,10 +10396,14 @@ document.addEventListener('keydown',e=>{
     const ae=document.activeElement;
     if(ae&&(ae.tagName==='INPUT'||ae.tagName==='TEXTAREA'||ae.tagName==='SELECT'||ae.isContentEditable))return;
     /* find active zone: from detail panel, DOM attr, or selected list row */
+    const zoneId=_activeAvgZone?_activeAvgZone.id:
       (+document.getElementById('csPanel')?.dataset?.avgZoneId||0)||
+      _selectedZoneId||0;
+    const zone=avgTypologyZones.find(z=>z.id===zoneId);
     if(!zone)return;
     e.preventDefault();
     e.stopPropagation();
+    _activeAvgZone=null;_selectedZoneId=0;
     const el=document.getElementById('csPanel');
     if(el)delete el.dataset.avgZoneId;
     removeAvgTypologyZone(zoneId);
