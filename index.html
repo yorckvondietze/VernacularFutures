@@ -466,7 +466,7 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 /* other views scroll internally */
 #view-method{overflow-y:auto;padding:20px 28px;}
 #view-method .card-window{height:auto !important;display:block;}
-#view-findings{overflow-y:auto;padding:20px 28px;}
+#view-findings{overflow-y:auto;padding:12px 16px;}
 #view-admin{overflow-y:auto;padding:20px 28px;}
 #view-corpus{overflow-y:auto;padding:20px 28px;}
 #view-pipeline{overflow-y:auto;padding:20px 28px;}
@@ -601,7 +601,7 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 .ar-srcs summary::-webkit-details-marker{display:none}
 .ar-src-e{font-size:9.5px;line-height:1.55;color:var(--ink-soft);margin:0 0 5px;padding-left:14px;text-indent:-14px}
 
-.findings-grid{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start;}
+.findings-grid{display:grid;grid-template-columns:200px 1fr;gap:12px;align-items:start;}
 .findings-menu{background:var(--paper);border:1px solid var(--line);border-radius:0;padding:8px;position:sticky;top:14px;}
 .fm-group-label{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink-faint);padding:10px 12px 4px;}
 /* ── Findings: dynamic values, blink, action button, dropdowns ── */
@@ -6812,36 +6812,11 @@ document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>
    the whole corpus needs per-case EPW fetches so it runs on demand
    with a progress indicator and an up-front time warning. */
 
-/* ---- 1. Corpus stats (instant) ---- */
-function computeCorpusStats(){
-  const total=CASES.length;
-  const withCoord=CASES.filter(c=>c.hasCoord).length;
-  const withGeom=CASES.filter(c=>c.hasGeom).length;
-  const zones={};
-  CASES.forEach(c=>{const k=c.koppen&&c.koppen[0];if(k)zones[k]=(zones[k]||0)+1;});
-  const countries={};
-  CASES.forEach(c=>{if(c.country)countries[c.country]=(countries[c.country]||0)+1;});
-  const years=CASES.map(c=>yearNum(c.year)).filter(y=>y);
-  return {total,withCoord,withGeom,nZones:Object.keys(zones).length,zones,
-    nCountries:Object.keys(countries).length,
-    yearMin:years.length?Math.min(...years):null,yearMax:years.length?Math.max(...years):null};
-}
+/* --- computeCorpusStats and computeKoppenShifts defined further below --- */
 
 /* ---- 2. Köppen shift table (instant) ----
    For each present-day zone: how many cases, and what they turn into by
    2050 / 2080 under SSP5-8.5. */
-function computeKoppenShifts(){
-  const rows={}; /* presentZone -> {count, to2050:{zone:n}, to2080:{zone:n}} */
-  CASES.forEach(c=>{
-    const p=c.koppen&&c.koppen[0], k50=c.koppen&&c.koppen[1], k80=c.koppen&&c.koppen[2];
-    if(!p)return;
-    if(!rows[p])rows[p]={count:0,to2050:{},to2080:{}};
-    rows[p].count++;
-    if(k50)rows[p].to2050[k50]=(rows[p].to2050[k50]||0)+1;
-    if(k80)rows[p].to2080[k80]=(rows[p].to2080[k80]||0)+1;
-  });
-  return rows;
-}
 function fmtShiftCell(dict,presentZone){
   const keys=Object.keys(dict).sort((a,b)=>dict[b]-dict[a]);
   if(!keys.length)return '<span class="nodata" style="font-size:11px;">—</span>';
@@ -6902,49 +6877,123 @@ function fcInfo(head,body,cite){
 /* fcInfo (hover-based) defined above; wireAllFcInfo kept as no-op for compatibility */
 function wireAllFcInfo(){}
 
-/* ---- Thermal-mass threshold block (with köppen dropdown + n-gate) ---- */
-function thermalMassBlock(){
-  const counts=koppenSampleCounts();
-  const zones=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
-  const bigZones=zones.filter(z=>counts[z]>TM_MIN_N);
-  const opts=zones.map(z=>`<option value="${z}">${z} (n=${counts[z]})</option>`).join('');
-  const first=bigZones[0]||zones[0]||'Cfb';
-  return `
-    <select class="fc-ksel" id="tmKoppenSel">${opts}</select>
-    <div id="tmKoppenPanel">${thermalMassZonePanel(first,counts)}</div>`;
+/* ─────────────────────────────────────────────────────────────────────────────
+   THERMAL MASS FINDING — simulation-driven, per Köppen zone
+   Sources: Artmann et al. (2007) NDP threshold 1000 h/yr;
+            Givoni (1976, 1994) arid/tropical zone assessment;
+            Szokolay (2008) zone viability summary.
+   ─────────────────────────────────────────────────────────────────────────── */
+const ZONE_TM_LIT={
+  'BWh':'Hot desert: mass effective when diurnal swings >15\u00b0C allow nightly discharge. Givoni (1976).',
+  'BWk':'Cold desert: mass effective; significant diurnal swings ensure night cooling. Givoni (1976).',
+  'BSh':'Hot semi-arid: mass effective with swing >12\u00b0C. Givoni (1976); Szokolay (2008).',
+  'BSk':'Cold semi-arid: mass effective; continental nights provide discharge. Szokolay (2008).',
+  'Csa':'Mediterranean hot-summer: mass effective at present; threatened under SSP5-8.5 warming. Artmann et al. (2007).',
+  'Csb':'Mediterranean warm-summer: mass effective; discharge increasingly constrained by 2080. Artmann et al. (2007).',
+  'Cfa':'Humid subtropical: borderline \u2014 warm nights limit discharge. Monitor NDP closely. Artmann et al. (2007).',
+  'Cfb':'Temperate oceanic: primary calibration zone for Artmann et al. (2007). Robust at present; declining.',
+  'Cfc':'Subpolar oceanic: mass robustly effective. Artmann et al. (2007).',
+  'Dfa':'Hot-summer continental: mass highly effective; cold nights guarantee full discharge. Artmann et al. (2007).',
+  'Dfb':'Warm-summer continental: most robust zone for thermal mass in corpus. Artmann et al. (2007).',
+  'Dfc':'Subarctic: mass effective; extreme night temperatures ensure complete discharge. Artmann et al. (2007).',
+  'Dwa':'Monsoon continental: mass effective in dry season. Artmann et al. (2007).',
+  'Dwb':'Monsoon warm-summer continental: mass effective. Artmann et al. (2007).',
+  'Af':'Tropical rainforest: nights remain warm year-round; NDP typically <200 h/yr. Mass counterproductive. Givoni (1994).',
+  'Am':'Tropical monsoon: limited night cooling; mass accumulates heat rather than discharging it. Givoni (1994).',
+  'Aw':'Tropical savanna: dry-season nights provide some discharge; wet season problematic. Givoni (1994).',
+};
+
+function tmSimStats(zone){
+  const cases=CASES.filter(c=>{
+    const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';
+    return k===zone&&c.sim&&(c.sim.ndp||c.sim.comfort);
+  });
+  const n=cases.length;
+  if(!n)return null;
+  const avg=arr=>{const v=arr.filter(x=>x!=null&&isFinite(x));return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;};
+  const tmpm2=cases.map(c=>{
+    const m=c.thermalMassHB||c.thermalMass;const a=c.area;
+    return(m&&a&&a>0)?m/a:null;
+  });
+  return{n,
+    ndp:[avg(cases.map(c=>c.sim?.ndp?.[0])),avg(cases.map(c=>c.sim?.ndp?.[1])),avg(cases.map(c=>c.sim?.ndp?.[2]))],
+    tcp:[avg(cases.map(c=>c.sim?.comfort?.[0])),avg(cases.map(c=>c.sim?.comfort?.[1])),avg(cases.map(c=>c.sim?.comfort?.[2]))],
+    hsp:[avg(cases.map(c=>c.sim?.oh?.[0])),avg(cases.map(c=>c.sim?.oh?.[1])),avg(cases.map(c=>c.sim?.oh?.[2]))],
+    tmpm2:avg(tmpm2.filter(Boolean)),
+    caseIds:cases.map(c=>c.id),
+  };
 }
+
+function tmNdpColor(v){return v==null?'var(--ink-faint)':v>=1000?'var(--moss,#2d7a2d)':'var(--rust)';}
+function tmNdpTag(v){if(v==null)return'\u2014';return Math.round(v)+' h/yr '+(v>=1000?'\u2713':'\u2717');}
+
+function thermalMassZoneRows(zone){
+  const s=tmSimStats(zone);
+  const f1=v=>v!=null?v.toFixed(1):'\u2014';
+  const fi=v=>v!=null?Math.round(v)+'':'\u2014';
+  const lit=ZONE_TM_LIT[zone]||'See Artmann et al. (2007).';
+  if(!s)return `<p style="font-size:11px;color:var(--ink-faint);margin:6px 0;">No simulation data for ${zone} yet.</p>`;
+  const crossesByScn=s.ndp.map(v=>v!=null&&v<1000);
+  let alert='';
+  if(crossesByScn[0])alert=`<p class="ar-warn" style="margin:6px 0 8px;">NDP already below 1,000 h/yr at present. Thermal mass is not functioning as a passive cooling strategy in this zone.</p>`;
+  else if(!crossesByScn[0]&&crossesByScn[1])alert=`<p class="ar-note" style="margin:6px 0 8px;">NDP crosses the Artmann threshold by 2050. Strategy viable at present; compromised mid-century.</p>`;
+  else if(!crossesByScn[0]&&!crossesByScn[1]&&crossesByScn[2])alert=`<p class="ar-note" style="margin:6px 0 8px;">NDP crosses the Artmann threshold by 2080. Strategy viable through 2050.</p>`;
+  const rows=['Present','2050','2080'].map((scn,i)=>`<tr>
+      <td style="font-weight:700;white-space:nowrap;padding:4px 8px 4px 0;">${scn}</td>
+      <td style="color:${tmNdpColor(s.ndp[i])};font-weight:700;padding:4px 6px;">${dynV(tmNdpTag(s.ndp[i]))}</td>
+      <td style="padding:4px 6px;">${dynV(f1(s.tcp[i])+'%')}</td>
+      <td style="padding:4px 6px;">${dynV(fi(s.hsp[i])+' h/yr')}</td>
+    </tr>`).join('');
+  return `${alert}
+    <table style="width:100%;border-collapse:collapse;font-size:11px;margin:6px 0 10px;">
+      <thead><tr style="border-bottom:1px solid var(--line);">
+        <th style="text-align:left;padding:4px 0;font-size:9px;color:var(--ink-faint);">SCENARIO</th>
+        <th style="text-align:left;padding:4px 6px;font-size:9px;color:var(--ink-faint);">NDP (1000h threshold)</th>
+        <th style="text-align:left;padding:4px 6px;font-size:9px;color:var(--ink-faint);">TCP</th>
+        <th style="text-align:left;padding:4px 6px;font-size:9px;color:var(--ink-faint);">HSP</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    ${s.tmpm2!=null?`<div class="fc-tmrow"><span class="tm-label">Mean thermal mass / floor area</span><span>${dynV(Math.round(s.tmpm2)+' kJ/m\u00b2K')}</span></div>`:''}
+    <div class="fc-tmrow"><span class="tm-label">Simulated cases in zone</span><span>${dynV(s.n)}</span></div>
+    <p style="font-size:10px;color:var(--ink-soft);margin-top:8px;line-height:1.5;">${lit}</p>
+    <div class="fc-datatag">NDP: Jun\u2013Aug, T_outdoor &lt; T_indoor AND &lt; 22\u00b0C \u00b7 Artmann et al. (2007) threshold 1000 h/yr</div>`;
+}
+
 function thermalMassZonePanel(zone,counts){
   counts=counts||koppenSampleCounts();
-  const n=counts[zone]||0;
-  if(n<=TM_MIN_N){
-    return `<div class="fc-lowsample">
-      <span>sample size too low (${dynV('n='+n)})</span>
-      <button class="fc-showanyway" data-tmzone="${zone}">show anyway</button>
+  const simN=CASES.filter(c=>{const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';return k===zone&&c.sim&&(c.sim.ndp||c.sim.comfort);}).length;
+  if(simN===0){
+    return `<div class="fc-lowsample">No simulation output yet for ${zone} (${counts[zone]||0} case${(counts[zone]||0)===1?'':'s'} total).
+      <button class="fc-showanyway" data-tmzone="${zone}">show morphological data</button>
     </div><div id="tmForced-${zone}"></div>`;
   }
   return thermalMassZoneRows(zone);
 }
-function thermalMassZoneRows(zone){
-  /* thresholds are [SIM] placeholders until simulation output lands */
-  return `
-    <div class="fc-tmrow"><span class="tm-label">${zone} Present</span><span>thermal mass effective up to ~${dynV('[SIM] kg/m²')}</span></div>
-    <div class="fc-tmrow"><span class="tm-label">${zone} 2050</span><span>threshold drops to ~${dynV('[SIM] kg/m²')}</span></div>
-    <div class="fc-tmrow"><span class="tm-label">${zone} 2080</span><span>thermal mass threshold ~${dynV('[SIM] kg/m²')}</span></div>
-    <div class="fc-datatag">computed from morphed EPW + simulation  SSP5-8.5</div>`;
+
+function thermalMassBlock(){
+  const counts=koppenSampleCounts();
+  const zones=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+  const simZones=zones.filter(z=>CASES.some(c=>{const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';return k===z&&c.sim&&(c.sim.ndp||c.sim.comfort);}));
+  const opts=zones.map(z=>{
+    const sn=CASES.filter(c=>{const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';return k===z&&c.sim&&(c.sim.ndp||c.sim.comfort);}).length;
+    return `<option value="${z}">${z} \u2014 ${sn>0?sn+' simulated':'no sim'} / ${counts[z]} total</option>`;
+  }).join('');
+  const first=simZones[0]||zones[0]||'Cfb';
+  return `<select class="fc-ksel" id="tmKoppenSel">${opts}</select>
+    <div id="tmKoppenPanel">${thermalMassZonePanel(first,counts)}</div>`;
 }
+
 function tmForceShow(zone){
   const host=document.getElementById('tmForced-'+zone);
   if(host)host.innerHTML=thermalMassZoneRows(zone);
 }
 function wireThermalMassDropdown(){
   const sel=document.getElementById('tmKoppenSel');
-  if(sel){
-    sel.addEventListener('change',()=>{
-      const panel=document.getElementById('tmKoppenPanel');
-      if(panel)panel.innerHTML=thermalMassZonePanel(sel.value);
-    });
-  }
-  /* delegate "show anyway" clicks (buttons can be re-rendered by the dropdown) */
+  if(sel){sel.addEventListener('change',()=>{
+    const panel=document.getElementById('tmKoppenPanel');
+    if(panel)panel.innerHTML=thermalMassZonePanel(sel.value);
+  });}
   const content=document.getElementById('findingsContent');
   if(content&&!content._tmDelegated){
     content._tmDelegated=true;
@@ -7113,10 +7162,21 @@ function etaSquaredByCountry(metricKey){
 function culturalBiasTableHTML(){
   /* try common metric keys; show whichever exist on the cases */
   const candidates=[
-    ['roofPitch','Roof pitch'],['roof_pitch','Roof pitch'],
-    ['wallThickness','Wall thickness'],['wall_t','Wall thickness'],
-    ['compactness','Compactness ψ'],['psi','Compactness ψ'],
-    ['wwr','WWR'],['eaveDepth','Eave depth'],['thermalMass','Thermal mass']
+    ['roofPitch','Roof pitch'],
+    ['psi','Compactness ψ'],
+    ['wallThk','Wall thickness'],
+    ['wallThkNS','Wall thickness N/S'],
+    ['wallThkEW','Wall thickness E/W'],
+    ['eaveDepth','Eave depth'],
+    ['eaveH','Eave height'],
+    ['thermalMass','Thermal mass'],
+    ['wwr','WWR'],
+    ['area','Floor area'],
+    ['height','Building height'],
+    ['va','V/A ratio'],
+    ['uWall','U-value wall'],
+    ['uRoof','U-value roof'],
+    ['volume','Volume'],
   ];
   const seen={};const rows=[];
   candidates.forEach(([k,label])=>{
@@ -7374,14 +7434,14 @@ const FINDINGS=[
   {id:'thermalmass',title:'1. The thermal mass problem',eyebrow:'Recommendation · strategy viability',
    body:()=>{
      return ''
-      +ub('With higher heat and warmer nights, the thermal-mass effect reverses — the "death of thermal mass" as a strategy (when it is no longer viable). Also consider insulation vs thermal mass.','draft · thermal mass')
-      +loremP(9)
-      +`<p style="margin:16px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">THERMAL-MASS THRESHOLD BY KÖPPEN ZONE `
-        +fcInfo('thermal-mass thresholds','The effective-mass threshold is the wall mass above which night flush-out can no longer discharge the stored daytime heat, so mass stops helping and starts trapping heat. It falls as nights warm. Values require EnergyPlus runs on the morphed EPWs and are shown as [SIM] until those complete. Zones with n>'+String(TM_MIN_N)+' are shown by default; smaller samples are gated to avoid over-reading thin data.','Threshold concept: night-ventilation flush-out limit. Values pending simulation.')+`</p>`
+      +`<p style="line-height:1.65;margin-bottom:12px;">Thermal mass stores daytime heat in walls and releases it at night — effective when outdoor air cools enough to flush the stored heat before the next day. The critical metric is Night Discharge Potential (NDP): the number of summer hours where outdoor temperature is simultaneously below indoor temperature and below 22°C. As nights warm under SSP5-8.5, NDP declines. Below the Artmann threshold of 1,000 h/yr, mass can no longer discharge fully and accumulates heat across successive days, inverting its role from cooling asset to liability. `
+        +fcInfo('Artmann threshold — methodology and sources',
+          'NDP is defined as the number of Jun–Aug hours where outdoor dry-bulb temperature is below both indoor operative temperature AND 22°C. The 1,000 h/yr threshold from Artmann et al. (2007) is the empirical minimum for thermal mass to deliver net summer cooling in Central European climates. Thermal mass per floor area (kJ/m²K) is approximated by the Honeybee EnergyPlus model. Grouped by present Köppen zone; arithmetic means across simulated cases. One case contributes to one zone only (present zone).',
+          'Artmann, N., Manz, H., & Heiselberg, P. (2007). Applied Energy, 84(2), 187–201. | Givoni, B. (1976). Man, Climate and Architecture (2nd ed.). | Givoni, B. (1994). Passive and Low Energy Cooling of Buildings. | Szokolay, S. V. (2008). Introduction to Architectural Science (2nd ed.).'
+        )+`</p>`
+      +`<p style="margin:16px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">NDP · TCP · HSP BY KÖPPEN ZONE</p>`
       +thermalMassBlock()
-      +ub('(Probably viable where there is high diurnal swing.)','draft · caveat')
-      +`<div class="fc-tmrow" style="margin-top:14px;"><span class="tm-label">Problem by 2050</span><span>${dynV('[SIM]')}</span></div>`
-      +`<div class="fc-tmrow"><span class="tm-label">Problem by 2080 (incl. 2050)</span><span>${dynV('[SIM]')}</span></div>`;
+      +`<p style="font-size:10px;color:var(--ink-faint);margin-top:14px;line-height:1.5;">Grouping: cases assigned to present-day Köppen zone. Each case contributes its present/2050/2080 simulation output to the zone’s rows. One case study contributes to exactly one zone.</p>`;
    }},
 
   {id:'wwr',title:'2. Low WWR & ventilation under warming',eyebrow:'Recommendation · openings',
