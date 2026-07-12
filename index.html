@@ -6343,8 +6343,12 @@ function computeAvgTypology(zone){
       if(avg<minAvgDist){minAvgDist=avg;bestEpw=m.epw;}
     });
   }
-  /* build label */
-  const parts=[domKoppen,domStruct,pitchTag,massTag,wwrTag].filter(Boolean);
+  /* dominant country */
+  const countryCounts={};
+  members.forEach(c=>{if(c.country)countryCounts[c.country]=(countryCounts[c.country]||0)+1;});
+  const domCountry=Object.entries(countryCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||null;
+  /* build label: TYPOLOGY_Köppen_Country_... */
+  const parts=[domKoppen,domCountry,domStruct,pitchTag,massTag,wwrTag].filter(Boolean);
   const label=`TYPOLOGY_${parts.join('_')}`;
   return{members,label,epwId:bestEpw};
 }
@@ -6382,12 +6386,21 @@ function renderAvgTypologyZone(zone){
     html:`<div style="width:18px;height:18px;border-radius:50%;background:var(--terracotta);border:2.5px solid ${borderCol};box-shadow:0 0 0 1px ${borderCol}40;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:7px;color:${borderCol};font-weight:700;">${members.length}</div>`,
     iconSize:[18,18],iconAnchor:[9,9]
   });
+  /* update draggable pin icon to show member count */
+  if(zone.pin){
+    zone.pin.setIcon(L.divIcon({
+      className:'',
+      html:`<div style="width:22px;height:22px;border-radius:50%;background:var(--terracotta);border:2.5px solid ${borderCol};display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:8px;color:#fff;font-weight:700;cursor:move;box-shadow:0 1px 6px rgba(0,0,0,.35);">${members.length||'Ø'}</div>`,
+      iconSize:[22,22],iconAnchor:[11,11]
+    }));
+  }
   zone.mergedMarker=L.marker([zone.pinLat,zone.pinLon],{icon,zIndexOffset:500}).addTo(map);
   zone.mergedMarker.on('click',(e)=>{
     L.DomEvent.stopPropagation(e);
     L.DomEvent.preventDefault(e);
     _selectedZoneId=zone.id;
     selectedId=null;compareId=null;
+    _activeAvgZone=zone;
     renderAvgTypologyDetailPanel(zone);
   });
   /* fade individual markers */
@@ -6730,6 +6743,15 @@ function addAvgTypologyZone(){
     renderAvgTypologyDetailPanel(zone);
   });
   renderAvgTypologyZone(zone);
+  /* auto-open the detail panel immediately — no click required */
+  _activeAvgZone=zone;
+  selectedId=null;compareId=null;
+  if(!document.body.classList.contains('cs-open')){
+    document.body.classList.add('cs-open');
+    document.getElementById('csStripBtn')?.classList.add('active');
+    setTimeout(()=>{if(map)map.invalidateSize();},260);
+  }
+  renderAvgTypologyDetailPanel(zone);
 }
 
 function wireShapeShift(c,slot){
