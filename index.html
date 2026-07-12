@@ -578,7 +578,7 @@ body.atlas-active:not(.filter-open) .avgt-persistent-bar{display:none!important;
 .viewer3d-fallback{display:flex;align-items:center;justify-content:center;height:100%;font-family:var(--mono);font-size:11px;color:var(--ink-faint);text-align:center;padding:0 16px;}
 .viewer3d-hint{position:absolute;bottom:6px;right:8px;font-family:var(--mono);font-size:8.5px;color:var(--ink-faint);background:rgba(255,255,255,0.85);padding:1px 6px;border-radius:0;}
 .heat-legend{margin-top:9px;}
-.heat-legend-bar{height:8px;border-radius:0;background:linear-gradient(to right,#1F3A6B,#5E6B73,#8C7A2E,#A4691E,#C0291F);}
+.heat-legend-bar{height:8px;border-radius:0;background:linear-gradient(to right,#D10A14,#F29500,#E0E000,#0AB837,#00804A);}
 .heat-legend-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin-top:3px;}
 .diagram-caption{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);margin-top:8px;line-height:1.5;}
 .sim-cell{border:1px solid var(--line);border-radius:0;padding:9px 11px;}
@@ -5165,14 +5165,14 @@ function vizCacheToSimData(vc){
 const SIM_STEP={A:0,B:0};   /* continuous slider 0-8 per slot */
 const NDP_THRESHOLD=1000;   /* Artmann et al. 2007 h/yr */
 const SIM_CMAPS={
-  /* tcp:  0=catastrophic (red-purple) → 1=excellent (violet-blue). Full spectrum. */
-  tcp: [[0.62,0.0,0.30],[0.92,0.04,0.12],[0.98,0.38,0.0],[1.0,0.80,0.0],[0.45,0.95,0.05],[0.0,0.82,0.32],[0.0,0.68,0.78],[0.05,0.30,0.90]],
-  /* hsp:  0=safe (violet-blue) → 1=scorching (red-purple). Inverse of tcp. */
-  hsp: [[0.05,0.30,0.90],[0.0,0.68,0.78],[0.0,0.82,0.32],[0.45,0.95,0.05],[1.0,0.80,0.0],[0.98,0.38,0.0],[0.92,0.04,0.12],[0.62,0.0,0.30]],
-  /* ndp:  same direction as tcp — more NDP hours = better cooling = cooler colour */
-  ndp: [[0.62,0.0,0.30],[0.92,0.04,0.12],[0.98,0.38,0.0],[1.0,0.80,0.0],[0.45,0.95,0.05],[0.0,0.82,0.32],[0.0,0.68,0.78],[0.05,0.30,0.90]],
-  /* t_op: thermal camera palette — cold=deep violet, hot=glowing red */
-  t_op:[[0.15,0.0,0.55],[0.0,0.20,0.90],[0.0,0.75,0.95],[0.0,0.92,0.45],[1.0,0.95,0.0],[1.0,0.50,0.0],[0.90,0.05,0.10],[0.60,0.0,0.25]],
+  /* tcp:  0=catastrophic (deep red) → 1=excellent (deep green). Clean semantic. */
+  tcp: [[0.82,0.04,0.08],[0.95,0.25,0.0],[0.98,0.58,0.0],[0.88,0.88,0.0],[0.40,0.88,0.08],[0.04,0.72,0.22],[0.0,0.50,0.28]],
+  /* hsp:  mirror of tcp — 0=safe (deep green) → 1=overheating (deep red) */
+  hsp: [[0.0,0.50,0.28],[0.04,0.72,0.22],[0.40,0.88,0.08],[0.88,0.88,0.0],[0.98,0.58,0.0],[0.95,0.25,0.0],[0.82,0.04,0.08]],
+  /* ndp:  same direction as tcp — more hours = better cooling */
+  ndp: [[0.82,0.04,0.08],[0.95,0.25,0.0],[0.98,0.58,0.0],[0.88,0.88,0.0],[0.40,0.88,0.08],[0.04,0.72,0.22],[0.0,0.50,0.28]],
+  /* t_op: thermal — cold blue to hot red */
+  t_op:[[0.08,0.16,0.72],[0.0,0.55,0.90],[0.0,0.82,0.58],[0.88,0.88,0.0],[0.98,0.50,0.0],[0.88,0.08,0.08]],
 };
 function simCmap(t,metric){
   const c=SIM_CMAPS[metric]||SIM_CMAPS.t_op;t=Math.max(0,Math.min(1,t));
@@ -5197,8 +5197,22 @@ function simNorm(v,metric){
 const SIM_YEAR_LABELS=['TMYx','~2030','~2040','2050','~2057','~2064','~2070','~2075','2080'];
 
 DIAGRAM_META={
-  tcp:{label:'TCP %',caption:c=>{const m=simInterp(SIM_CACHE[c.id],SIM_STEP[c===byId(selectedId)?'A':'B']||0);return m&&m.tcp!=null?`${m.tcp.toFixed(1)}% thermal comfort probability (ASHRAE 55-2020 adaptive).`:'Simulation pending.';}},
-  hsp:{label:'HSP %',caption:c=>{const m=simInterp(SIM_CACHE[c.id],SIM_STEP[c===byId(selectedId)?'A':'B']||0);return m&&m.hsp!=null?`${Math.round(m.hsp)} h/yr overheating hours.`:'Simulation pending.';}},
+  tcp:{label:'TCP %',caption:c=>{
+    const step=SIM_STEP[c===byId(selectedId)?'A':'B']||0;
+    const m=simInterp(SIM_CACHE[c.id]||SIM_VIZ_CACHE[c.id]&&vizCacheToSimData(SIM_VIZ_CACHE[c.id]),step);
+    if(m&&m.tcp!=null)return `${m.tcp.toFixed(1)}% thermal comfort probability (ASHRAE 55-2020 adaptive).`;
+    const si=step<=4?0:1;const xl=c.sim&&c.sim.comfort?c.sim.comfort[step<=0?0:step<=4?1:2]:null;
+    if(xl!=null)return `${xl.toFixed(1)}% thermal comfort probability (ASHRAE 55-2020 adaptive).`;
+    return 'Simulation not yet run.';
+  }},
+  hsp:{label:'HSP %',caption:c=>{
+    const step=SIM_STEP[c===byId(selectedId)?'A':'B']||0;
+    const m=simInterp(SIM_CACHE[c.id]||SIM_VIZ_CACHE[c.id]&&vizCacheToSimData(SIM_VIZ_CACHE[c.id]),step);
+    if(m&&m.hsp!=null)return `${Math.round(m.hsp)} h/yr overheating hours.`;
+    const xl=c.sim&&c.sim.oh?c.sim.oh[step<=0?0:step<=4?1:2]:null;
+    if(xl!=null)return `${Math.round(xl)} h/yr overheating hours.`;
+    return 'Simulation not yet run.';
+  }},
 };
 let currentDiagram={A:'tcp',B:'tcp'};
 let shapeShiftOn={A:false,B:false};
@@ -5300,7 +5314,7 @@ function buildingDims(c,slot){
   }
   return{W,D,H,pitch,eave};
 }
-function createNoDataCube(container,slot){
+function createNoDataCube(container,slot,label){
   /* Wireframe-only cube — edges contrast against any background.
      Filled faces are intentionally omitted because they match the
      background colour in both light and dark mode and become invisible. */
@@ -5336,7 +5350,7 @@ function createNoDataCube(container,slot){
     /* HTML text overlay — always readable, theme-aware */
     const lbl=document.createElement('div');
     lbl.style.cssText='position:absolute;bottom:10px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);pointer-events:none;letter-spacing:.04em;';
-    lbl.textContent='NO_DATA — simulation not yet run';
+    lbl.textContent=label||'simulation not yet run';
     container.appendChild(lbl);
 
     /* orbit controls — same pattern as regular viewer */
@@ -5647,6 +5661,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
 function updateSimGrid(slot,step,simData){
   const el=document.getElementById('simGrid-'+slot);
   const m=simInterp(simData,step);
+  updateLegendGradient(slot,currentDiagram[slot]||'tcp');
   /* NDP bar */
   const ndpBar=document.getElementById('simNdpBar-'+slot);
   const ndpState=document.getElementById('simNdpState-'+slot);
@@ -5725,10 +5740,10 @@ function createViewer(container,c,slot){
     const _hasRealGeom=c.wallThk!=null||c.area!=null;
     const _hasSim=_hasRealGeom&&c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null||c.sim.oh[0]!=null);
     if(!_hasSim){createNoDataCube(container,slot);return;}
-    /* Use viz JSONs if available (try new naming then old _prefix convention) */
+    /* Has sim data — show loading cube while viz JSON fetches from R2 */
     if(SIM_VIZ_CACHE[cid]){buildSimViewer(container,c,SIM_VIZ_CACHE[cid],slot);return;}
     if(SIM_CACHE[cid]){buildSimViewer(container,c,SIM_CACHE[cid],slot);return;}
-    createNoDataCube(container,slot);
+    createNoDataCube(container,slot,'>fetching simulation data...');
     const SCNS=['present','ssp585_2050','ssp585_2080'];
     /* Try new naming (CS_91_present.json) then old (_CS_91_present.json) */
     Promise.all(SCNS.map(s=>
@@ -5884,8 +5899,22 @@ function wireDiagramTabs(c,slot){
     });
   }));
 }
+/* Update the gradient legend bar to match the active metric direction:
+   tcp/ndp = red (bad) → green (good)  |  hsp = green (good) → red (bad)
+   t_op = blue (cold) → red (hot) */
+const LEGEND_GRADIENTS={
+  tcp:'linear-gradient(to right,#D10A14,#F29500,#E0E000,#0AB837,#00804A)',
+  ndp:'linear-gradient(to right,#D10A14,#F29500,#E0E000,#0AB837,#00804A)',
+  hsp:'linear-gradient(to right,#00804A,#0AB837,#E0E000,#F29500,#D10A14)',
+  t_op:'linear-gradient(to right,#1428B8,#008CE5,#00D096,#E0E000,#F86400,#E0100D)',
+};
+function updateLegendGradient(slot,metric){
+  const bar=document.getElementById('simLegendBar-'+slot);
+  if(bar)bar.style.background=LEGEND_GRADIENTS[metric]||LEGEND_GRADIENTS.tcp;
+}
 function switchDiagramTab(slot,key,c){
   currentDiagram[slot]=key;
+  updateLegendGradient(slot,key);
   if(shapeShiftOn[slot]){
     disposeViewer(slot);
     createViewer(document.getElementById('viewer3d-'+slot),c,slot);
@@ -6801,7 +6830,7 @@ function caseDetailHTML(c,slot){
               </div>
               <div id="simNdpState-${slot}" style="font-family:var(--mono);font-size:8.5px;margin-top:3px;min-height:12px;color:var(--ink-faint);"></div>
             </div>
-            <div class="heat-legend"><div class="heat-legend-bar"></div><div class="heat-legend-labels"><span>low</span><span>high</span></div></div>
+            <div class="heat-legend"><div class="heat-legend-bar" id="simLegendBar-${slot}"></div><div class="heat-legend-labels"><span>low</span><span>high</span></div></div>
             <div class="diagram-caption" id="diagramCaption-${slot}"></div>
           </div>
         </div>
@@ -6838,7 +6867,7 @@ function wireCaseDetail(c,slot){
     disposeViewer(slot);
     const box=document.getElementById('viewer3d-'+slot);
     if(box){
-      createNoDataCube(box,slot);
+      createNoDataCube(box,slot,'>refetching simulation data...');
       fetch(`${DATA_BASE}/sim_output/full/${cid}.json`)
         .then(r=>r.ok?r.json():Promise.reject('404'))
         .then(data=>{
