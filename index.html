@@ -2670,7 +2670,7 @@ const COLMAP_DEF={
   va:[h=>h==='v/a'],
   psi:[h=>h.includes('compactness')],
   thermalMass:[h=>h.includes('thermal_mass_walls')],
-  thermalMassHB:[h=>h.includes('thermal_mass')&&(h.includes('honeybee')||h.includes('hb')&&!h.includes('walls'))],
+  thermalMassHB:[h=>h.includes('thermal_mass')&&(h.includes('honeybee')||h.includes('_hb'))],
   wwr:[h=>h.startsWith('wwr')],
   hearth:[h=>h.includes('hearth')],
   roofPitch:[h=>h.startsWith('roof_pitch')],
@@ -6626,6 +6626,9 @@ function wireShapeShift(c,slot){
 /* ---- metrics & tags: paginated table covering every workbook column ---- */
 function mv(v){return(v==null||v==='')?noData:v;}
 const WALL_LABEL={timber:'Lightweight timber',hybrid:'Timber + masonry',masonry:'Solid masonry',other:'Other'};
+/* Thermal mass tooltip texts */
+const _TM_DXF_TIP='Total thermal mass of all wall elements from DXF geometry (dxf_analyse_v6.py). Per wall polygon: Volume x VHC from MAT_PROPS lookup per material type. Summed across all walls. Unit: kJ/K total (not per m2).';
+const _TM_HB_TIP='Approximated by sim_corpus.py: (rho x cp x t_wall x A_wall + rho x cp x 0.15m x A_floor + rho x cp x 0.20m x A_floor) / A_floor. Roof + floor use hardcoded 0.15m and 0.20m thickness and inherit wall material. Unit: kJ/m2K (per floor area).';
 const METRIC_PAGES=[
  {label:'Basic info',rows:c=>[
    ['Location / region',mv(c.region)],
@@ -6652,8 +6655,8 @@ const METRIC_PAGES=[
    ['Volume',fmt(c.volume,' m³',0)],
    ['V/A ratio',fmt(c.va,'',2)],
    ['Compactness ψ',fmt(c.psi,'',3)],
-   ['Total thermal mass walls (DXF) <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,'Total thermal mass of all wall elements from DXF geometry (dxf_analyse_v6.py). Calculated per wall polygon: Volume × VHC (Volumetric Heat Capacity from MAT_PROPS table per construction material). Summed across all wall elements. Unit: kJ/K total (not normalised per m²).')">ⓘ</button>',fmt(c.thermalMass,' kJ/K',0)],
-   ['Thermal mass Honeybee (approx.) <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,'Approximated by sim_corpus.py from construction material, actual wall thickness (Excel col 18) and floor area. Formula: (ρ×cp×t_wall×A_wall + ρ×cp×0.15m×A_floor + ρ×cp×0.20m×A_floor) / A_floor. Roof and floor use hardcoded thicknesses; floor inherits wall material properties. Conservative approximation only. Unit: kJ/m²K (per m² of floor area).')">ⓘ</button>',fmt(c.thermalMassHB,' kJ/m²K',1)],
+   ['Total thermal mass walls (DXF) <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,_TM_DXF_TIP)">ⓘ</button>',fmt(c.thermalMass,' kJ/K',0)],
+   ['Thermal mass Honeybee approx. <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,_TM_HB_TIP)">ⓘ</button>',fmt(c.thermalMassHB,' kJ/m²K',1)],
  ]},
  {label:'Windows & openings',rows:c=>[
    ['WWR',fmt(c.wwr,'%',1)],
