@@ -5621,10 +5621,12 @@ function updateSimGrid(slot,step,simData){
   if(!el)return;
   const nd='<span class="nodata" style="font-size:11px">NO_DATA</span>';
   const tcp=m&&m.tcp!=null?m.tcp.toFixed(1):null;
-  const hspH=m&&m.hsp!=null?Math.round(m.hsp):null;
-  /* HSP % from case object (exact ASHRAE-applicable %) or approximate from h/8760 */
+  /* Get case object for Excel fallbacks */
   const _cslot=slot==='A'?selectedId:compareId;const _ccase=byId&&byId(_cslot);
   const _sidx=step<=2?0:step<=6?1:2;
+  /* hspH: viz JSON first, then Excel c.sim.oh (hours parsed from '0.2% | 8 h/y') */
+  const hspH=(m&&m.hsp!=null)?Math.round(m.hsp):
+             (_ccase&&_ccase.sim&&_ccase.sim.oh&&_ccase.sim.oh[_sidx]!=null)?Math.round(_ccase.sim.oh[_sidx]):null;
   const hspPct=_ccase&&_ccase.sim&&_ccase.sim.oh_pct&&_ccase.sim.oh_pct[_sidx]!=null
     ?_ccase.sim.oh_pct[_sidx].toFixed(1)
     :(hspH!=null?(hspH/8760*100).toFixed(1):null);
