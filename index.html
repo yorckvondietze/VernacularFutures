@@ -7312,6 +7312,7 @@ function computeCorpusStats(){
   const withCoord=CASES.filter(c=>c.hasCoord).length;
   const withGeom=CASES.filter(c=>c.hasGeom).length;
   const withEpw=CASES.filter(c=>c.epw).length;
+  const withSim=CASES.filter(c=>c.sim&&c.sim.ndp&&c.sim.ndp[0]!=null).length;
   const countries={},regions={},kz={};
   CASES.forEach(c=>{
     if(c.country)countries[c.country]=(countries[c.country]||0)+1;
@@ -7319,7 +7320,7 @@ function computeCorpusStats(){
     const k=(c.koppen&&c.koppen[0])||null;if(k)kz[k]=(kz[k]||0)+1;
   });
   const years=CASES.map(c=>yearNum(c.year)).filter(y=>y);
-  return {n,withCoord,withGeom,withEpw,
+  return {n,withCoord,withGeom,withEpw,withSim,
     nCountries:Object.keys(countries).length,
     nRegions:Object.keys(regions).length,
     nKoppen:Object.keys(kz).length,
@@ -7666,7 +7667,7 @@ const FINDINGS=[
   {id:'corpus',title:'Overview of Corpus',eyebrow:'General finding · corpus',
    body:()=>{
      const s=computeCorpusStats()||{};
-     const yr=(s.yearMin&&s.yearMax)?`${s.yearMin}\u2013${s.yearMax}`:'';
+     const yr=(s.yearMin&&s.yearMax)?`${s.yearMin}\u2013${s.yearMax}`:(s.yearMin?`from ${s.yearMin}`:'');
      return ''
       +`<p style="line-height:1.7;margin-bottom:12px;">The corpus comprises ${dynV(s.n??0)} vernacular case studies, focusing on rural and <em>unselfconscious</em> architecture `
         +fcInfo('unselfconscious architecture','Rapoport (1969) distinguishes "unselfconscious" vernacular building, produced within an inherited tradition without individual design authorship, from self-conscious, designer-led architecture. This corpus is restricted to the former: buildings built as part of a continuous cultural and climatic tradition, with form determined by accumulated selection pressure rather than individual decision.','Rapoport, A. (1969). <em>House Form and Culture</em>. Prentice-Hall.')
@@ -7682,6 +7683,7 @@ const FINDINGS=[
       +`<div class="fc-tmrow"><span class="tm-label">With coordinates</span><span>${dynV(s.withCoord??0)}</span></div>`
       +`<div class="fc-tmrow"><span class="tm-label">With extracted geometry</span><span>${dynV(s.withGeom??0)}</span></div>`
       +`<div class="fc-tmrow"><span class="tm-label">With assigned EPW station</span><span>${dynV(s.withEpw??0)}</span></div>`
+      +`<div class="fc-tmrow"><span class="tm-label">With EnergyPlus simulations</span><span>${dynV(s.withSim??0)}</span></div>`
       +`<div class="fc-tmrow"><span class="tm-label">Countries · regions</span><span>${dynV(s.nCountries??0)} · ${dynV(s.nRegions??0)}</span></div>`
       +`<div class="fc-tmrow"><span class="tm-label">K\u00f6ppen zones represented</span><span>${dynV(s.nKoppen??0)}</span></div>`
       +`<div class="fc-tmrow"><span class="tm-label">Build-year range</span><span>${dynV(yr)}</span></div>`;
