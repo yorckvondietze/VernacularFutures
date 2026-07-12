@@ -6261,16 +6261,10 @@ function renderAvgTypologyZone(zone){
   zone.mergedMarker=L.marker([zone.pinLat,zone.pinLon],{icon,zIndexOffset:500}).addTo(map);
   zone.mergedMarker.on('click',(e)=>{
     L.DomEvent.stopPropagation(e);
-    _activeAvgZone=zone;  /* claim the zone immediately */
-    /* 30ms delay lets any cascading case-study marker click settle,
-       then we reassert control and open the typology panel */
-    setTimeout(()=>{
-      if(!_activeAvgZone||_activeAvgZone.id!==zone.id)return;
-      selectedId=null;compareId=null;
-      renderAvgTypologyDetailPanel(zone);
-      document.body.classList.add('cs-open');
-      if(map)setTimeout(()=>map.invalidateSize(),0);
-    },30);
+    L.DomEvent.preventDefault(e);
+    _selectedZoneId=zone.id;
+    selectedId=null;compareId=null;
+    renderAvgTypologyDetailPanel(zone);
   });
   /* fade individual markers */
   markers.forEach(mk=>{
@@ -6318,11 +6312,9 @@ function updateAvgTypologyPanel(){
         document.querySelectorAll('.avgt-zone-panel').forEach(r=>r.classList.remove('zone-selected'));
         lbl.closest('.avgt-zone-panel').classList.add('zone-selected');
         _selectedZoneId=zid;
-        _activeAvgZone=zone;  /* set before selectedId=null to survive any renderPanel call */
+        _selectedZoneId=zid;
         selectedId=null;
         renderAvgTypologyDetailPanel(zone);
-        document.body.classList.add('cs-open');
-        if(map)setTimeout(()=>map.invalidateSize(),0);
       }
     });
   });
@@ -6355,6 +6347,9 @@ function renderAvgTypologyDetailPanel(zone){
   const el=document.getElementById('csPanel');
   if(el)el.dataset.avgZoneId=zone.id;
   if(!el)return;
+  /* Ensure the panel is visible and map resizes */
+  document.body.classList.add('cs-open');
+  if(map)setTimeout(()=>map.invalidateSize(),0);
   const{members,label,epwId}=computeAvgTypology(zone);
   zone.caseIds=members.map(c=>c.id);zone.label=label;zone.epwId=epwId;
   /* averaging helpers */
@@ -6602,19 +6597,7 @@ function addAvgTypologyZone(){
     if(_activeAvgZone===zone)renderAvgTypologyDetailPanel(zone);
   });
   /* clicking the pin selects this zone (enables Delete key) and opens its panel */
-  pin.on('click',(e)=>{
-    L.DomEvent.stopPropagation(e);
-    _selectedZoneId=zone.id;
-    _activeAvgZone=zone;
-    document.querySelectorAll('.avgt-zone-panel').forEach(r=>r.classList.toggle('zone-selected',+r.dataset.zoneid===zone.id));
-    setTimeout(()=>{
-      if(!_activeAvgZone||_activeAvgZone.id!==zone.id)return;
-      selectedId=null;compareId=null;
-      renderAvgTypologyDetailPanel(zone);
-      document.body.classList.add('cs-open');
-      if(map)setTimeout(()=>map.invalidateSize(),0);
-    },30);
-  });
+  /* pin is drag-only — no click handler */
   renderAvgTypologyZone(zone);
 }
 
@@ -6979,14 +6962,7 @@ function renderPanel(){
   const el=document.getElementById('csPanel');
   const grid=document.querySelector('.explorer-grid');
   const wasCompare=grid&&grid.classList.contains('compare-active');
-  /* Avg zone always takes priority — prevents cascading case-study marker
-     clicks from overwriting the zone panel while our setTimeout is pending */
-  if(_activeAvgZone){
-    renderAvgTypologyDetailPanel(_activeAvgZone);
-    document.body.classList.add('cs-open');
-    if(map)setTimeout(()=>map.invalidateSize(),0);
-    return;
-  }
+  _activeAvgZone=null;
   if(!selectedId){
     pickingCompare=false;compareId=null;
     clearStationMarker();
