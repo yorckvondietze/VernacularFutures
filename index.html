@@ -251,6 +251,9 @@ main{padding:6px 28px 50px;max-width:1500px;margin:0 auto;}
 .filter-group{display:flex;flex-direction:column;gap:4px;flex-shrink:0;}
 .filter-group .fl{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-faint);}
 .filter-group select{-webkit-appearance:none;-moz-appearance:none;appearance:none;font-family:var(--sans);font-size:12.5px;padding:5px 26px 5px 8px;border:1px solid var(--line);border-radius:0;background-color:var(--paper-dim);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;background-size:10px 6px;color:var(--ink);min-width:120px;cursor:pointer;}
+.cont-trad-btn{font-family:var(--mono);font-size:9px;letter-spacing:0.03em;padding:2px 7px;border:1px solid var(--line);background:var(--paper-dim);color:var(--ink-faint);cursor:pointer;margin-top:3px;width:100%;text-align:left;}
+.cont-trad-btn:hover{border-color:var(--terracotta);color:var(--terracotta-deep);}
+.cont-trad-btn.hiding{border-color:var(--rust);color:var(--rust);background:var(--rust-dim);}
 
 .filter-count{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin-left:auto;}
 .filter-reset{font-family:var(--mono);font-size:11px;background:transparent;border:1px solid var(--line);color:var(--ink-soft);padding:5px 10px;border-radius:0;cursor:pointer;}
@@ -1830,7 +1833,7 @@ html[data-theme="dark"] .loader-status{
       <div class="filter-group"><span class="fl">Roof pitch</span><select id="fRoof"><option value="">All</option><option value="steep">Steep ≥35°</option><option value="shallow">Shallow &lt;35°</option></select></div>
       <div class="filter-group"><span class="fl">Construction</span><select id="fConstruction"><option value="">All</option><option value="stone">Stone / masonry</option><option value="timber_solid">Timber solid</option><option value="timber_frame_earth">Timber frame earth</option><option value="timber_light">Timber light</option><option value="earth_clay">Earth clay</option><option value="brick">Brick</option><option value="peat_turf">Peat / turf</option></select></div>
       <div class="filter-group"><span class="fl">Thermal mass per m²</span><select id="fMass"><option value="">All</option><option value="high">High ≥ median</option><option value="low">Low &lt; median</option></select></div>
-      <div class="filter-group"><span class="fl">Construction period</span><select id="fPeriod"><option value="">All</option><option value="ancient">3000–1000 BC</option><option value="classical">1000 BC–500 CE</option><option value="early-medieval">500–1000 CE</option><option value="medieval">1000–1400</option><option value="early-modern">1400–1700</option><option value="pre-industrial">1700–1850</option><option value="industrial">1850–1920</option><option value="modern">1920–present</option></select></div>
+      <div class="filter-group"><span class="fl">Construction period</span><select id="fPeriod"><option value="">All</option><option value="ancient">3000–1000 BC</option><option value="classical">1000 BC–500 CE</option><option value="early-medieval">500–1000 CE</option><option value="medieval">1000–1400</option><option value="early-modern">1400–1700</option><option value="pre-industrial">1700–1850</option><option value="industrial">1850–1920</option><option value="modern">1920–present</option></select><button class="cont-trad-btn" id="contTradBtn" title="Toggle visibility of continuous-tradition cases">∞ continuous tradition — shown</button></div>
       <div class="filter-group"><span class="fl">Compactness ψ</span><select id="fCompact"><option value="">All</option><option value="compact">Regular / compact ψ ≥ median</option><option value="elongated">Irregular / elongated ψ &lt; median</option></select></div>
       <div class="filter-group"><span class="fl">WWR</span><select id="fWwr"><option value="">All</option><option value="high">High ≥ median</option><option value="low">Low &lt; median</option></select></div>
       <div class="filter-group"><span class="fl">Overheating Δ →2080</span><select id="fOhDelta"><option value="">All</option><option value="high">High ≥ median</option><option value="low">Low &lt; median</option></select></div>
@@ -2233,7 +2236,7 @@ let _zoomAnimating=false;   /* prevent re-entrant zoom on rapid clicks */
 let _mosaicPaused=false;    /* pause mosaic batch probing while a case panel is loading */
 const LIGHT_TILE_URL='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 const DARK_TILE_URL='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-let fRegion='',fKoppen='',fRoof='',fConstruction='',fMass='',fOhDelta='',fComfortDelta='',fKoppenDelta='',fCompact='',fWwr='',fDiurnal='',fPeriod='',fCorpus='';
+let fRegion='',fKoppen='',fRoof='',fConstruction='',fMass='',fOhDelta='',fComfortDelta='',fKoppenDelta='',fCompact='',fWwr='',fDiurnal='',fPeriod='',fCorpus='',fHideContinuous=false;
 const byId=id=>CASES.find(c=>c.id===id);
 const grp=code=>code?code[0]:null;
 const noData='<span class="nodata">NO_DATA</span>';
@@ -2430,20 +2433,18 @@ function pass(c){
   if(fWwr==='low'&&!(c.wwr!=null&&c.wwr<DYN.wwrMed))return false;
   if(fDiurnal==='high'&&!(c.diurnalSwing!=null&&c.diurnalSwing>=10))return false;
   if(fDiurnal==='low'&&!(c.diurnalSwing!=null&&c.diurnalSwing<10))return false;
-  if(fPeriod){
-    /* parse year: negative = BC (e.g. "3000 BC" → -3000), positive = CE */
-    const s=String(c.year||'').toUpperCase();
-    const mBC=s.match(/(\d{1,5})\s*BC/);
-    const y=mBC?-parseInt(mBC[1]):yearNum(c.year);
-    if(y==null||y===0)return false;
-    if(fPeriod==='ancient'      &&!(y< -1000))return false;
-    if(fPeriod==='classical'    &&!(y>=-1000&&y<500))return false;
-    if(fPeriod==='early-medieval'&&!(y>=500&&y<1000))return false;
-    if(fPeriod==='medieval'     &&!(y>=1000&&y<1400))return false;
-    if(fPeriod==='early-modern' &&!(y>=1400&&y<1700))return false;
-    if(fPeriod==='pre-industrial'&&!(y>=1700&&y<1850))return false;
-    if(fPeriod==='industrial'   &&!(y>=1850&&y<1920))return false;
-    if(fPeriod==='modern'       &&!(y>=1920))return false;
+  /* period filter: range overlap + continuous tradition toggle */
+  if(fPeriod||fHideContinuous){
+    const py=parseYearFull(c.year);
+    if(py.isContinuous){
+      if(fHideContinuous)return false; /* continuous always visible unless toggled off */
+      /* else: continuous cases pass through period filter without year check */
+    } else if(fPeriod){
+      if(!py.hasData||py.yMin==null)return false;
+      const [pMin,pMax]=PERIOD_RANGES[fPeriod]||[0,0];
+      /* include if ranges overlap: [yMin,yMax] ∩ [pMin,pMax] ≠ ∅ */
+      if(!(py.yMax>=pMin&&py.yMin<=pMax))return false;
+    }
   }
   /* corpus completeness filter */
   if(fCorpus==='geometry'   &&!(c.wallThk!=null||c.area!=null))return false;
@@ -2500,11 +2501,19 @@ function buildFilters(){
   document.getElementById('fWwr').addEventListener('change',e=>{fWwr=e.target.value;applyFilter();});
   document.getElementById('fDiurnal').addEventListener('change',e=>{fDiurnal=e.target.value;applyFilter();});
   document.getElementById('fPeriod').addEventListener('change',e=>{fPeriod=e.target.value;applyFilter();});
+  const _ctBtn=document.getElementById('contTradBtn');
+  if(_ctBtn)_ctBtn.addEventListener('click',()=>{
+    fHideContinuous=!fHideContinuous;
+    _ctBtn.textContent='∞ continuous tradition — '+(fHideContinuous?'hidden':'shown');
+    _ctBtn.classList.toggle('hiding',fHideContinuous);
+    applyFilter();
+  });
   wireInfoIcon('fDiurnalInfoIcon','fDiurnalInfoPop');
   document.getElementById('filterReset').addEventListener('click',()=>{
-    fRegion='';fKoppen='';fRoof='';fConstruction='';fMass='';fOhDelta='';fComfortDelta='';fKoppenDelta='';fCompact='';fWwr='';fPeriod='';fCorpus='';
+    fRegion='';fKoppen='';fRoof='';fConstruction='';fMass='';fOhDelta='';fComfortDelta='';fKoppenDelta='';fCompact='';fWwr='';fPeriod='';fCorpus='';fHideContinuous=false;
+    const _ctb=document.getElementById('contTradBtn');if(_ctb){_ctb.textContent='∞ continuous tradition — shown';_ctb.classList.remove('hiding');}
     document.getElementById('fRegion').value='';document.getElementById('fKoppen').value='';
-    FILTER_SELECT_IDS.forEach(id=>{document.getElementById(id).value='';});
+    FILTER_SELECT_IDS.forEach(id=>{document.getElementById(id).value='';});;
     applyFilter();
   });
   /* ---- case study search bar ---- */
@@ -2590,7 +2599,7 @@ function rebuildAppFromCases(newCases){
   clearSimLines();
   CASES=processCases(newCases);
   selectedId=null;compareId=null;pickingCompare=false;
-  fRegion='';fKoppen='';fRoof='';fConstruction='';fMass='';fOhDelta='';fComfortDelta='';fKoppenDelta='';fCompact='';fWwr='';fPeriod='';fCorpus='';
+  fRegion='';fKoppen='';fRoof='';fConstruction='';fMass='';fOhDelta='';fComfortDelta='';fKoppenDelta='';fCompact='';fWwr='';fPeriod='';fCorpus='';fHideContinuous=false;
   document.getElementById('fRegion').value='';document.getElementById('fKoppen').value='';
   FILTER_SELECT_IDS.forEach(id=>{document.getElementById(id).value='';});
   computeDynamicThresholds();
@@ -2789,6 +2798,66 @@ function parseWorkbookToCases(workbook){
     const n=parseFloat(v);return{pct:null,h:Number.isFinite(n)?n:null};
   };
 const yearNum=v=>{if(!v)return 0;const m=String(v).match(/\d{3,4}/);return m?+m[0]:0;};
+
+/* ── comprehensive year parser ────────────────────────────────────────────────
+   Returns {hasData, isContinuous, yMin, yMax, approx}
+   Handles: plain numbers, ranges 'YYYY-YYYY', approx '(approx)', BC/CE,
+   text centuries 'Late 19th – Early 20th', continuous tradition, prehistoric. */
+function parseYearFull(v){
+  if(v==null||v===undefined) return {hasData:false};
+  const raw=String(v).trim();
+  if(!raw||raw==='-'||raw==='–'||raw==='') return {hasData:false};
+  const s=raw.toLowerCase();
+
+  /* continuous tradition — always shown */
+  if(s.includes('continuous')||s.includes('tradition')){
+    return {hasData:true,isContinuous:true,yMin:null,yMax:null,approx:false};
+  }
+  /* prehistoric / over N years */
+  if(s.includes('prehistoric')||s.includes('pre-colonial')){
+    const cont=s.includes('present')||s.includes('continuous');
+    return {hasData:true,isContinuous:cont,yMin:-50000,yMax:cont?2100:0,approx:true};
+  }
+
+  const approx=s.includes('approx')||s.includes('ca.')||s.includes('circa')||
+               raw.startsWith('~')||s.includes('century')||s.includes('late ')||
+               s.includes('early ')||s.includes('mid ')||s.includes('period')||
+               s.includes('dynasty')||s.includes('era');
+
+  /* text-only century descriptions without 4-digit years */
+  if(!raw.match(/\d{4}/)&&raw.match(/\d{1,2}(st|nd|rd|th)/i)){
+    const cents=[...raw.matchAll(/(\d{1,2})(st|nd|rd|th)/gi)].map(m=>(+m[1]-1)*100);
+    if(cents.length){
+      const base=Math.min(...cents);const top=Math.max(...cents)+99;
+      const isLate=s.includes('late');const isEarly=s.includes('early');
+      return {hasData:true,yMin:isLate?base+70:base,yMax:isEarly?top-70:top,approx:true,isContinuous:false};
+    }
+  }
+
+  /* BC/BCE detection */
+  const isBC=s.includes(' bc')||s.includes('bc ')||s.includes('b.c.')||s.includes('bce');
+
+  /* extract all 3-4 digit numbers */
+  const nums=raw.match(/\d{3,4}/g);
+  if(!nums||!nums.length) return {hasData:false};
+
+  const years=nums.map(n=>isBC?-parseInt(n):parseInt(n));
+  const yMin=Math.min(...years);
+  const yMax=Math.max(...years);
+
+  return {hasData:true,yMin,yMax,approx,isContinuous:false};
+}
+
+const PERIOD_RANGES={
+  'ancient':        [-3000, -1000],
+  'classical':      [-1000,   500],
+  'early-medieval': [  500,  1000],
+  'medieval':       [ 1000,  1400],
+  'early-modern':   [ 1400,  1700],
+  'pre-industrial': [ 1700,  1850],
+  'industrial':     [ 1850,  1920],
+  'modern':         [ 1920,  2200],
+};
   const out=[];
   for(let r=headerRowIdx+1;r<rows.length;r++){
     const row=rows[r];if(!row)continue;
@@ -5163,6 +5232,7 @@ function vizCacheToSimData(vc){
   return{present:m(vc.present),ssp585_2050:m(vc.ssp585_2050),ssp585_2080:m(vc.ssp585_2080)};
 }
 const SIM_STEP={A:0,B:0};   /* continuous slider 0-8 per slot */
+let _simDrivingSlot=null;    /* set to 'A'|'B' while small slider is driving — prevents snap-back */
 const NDP_THRESHOLD=1000;   /* Artmann et al. 2007 h/yr */
 const SIM_CMAPS={
   /* tcp:  0=catastrophic (deep red) → 1=excellent (deep green). Clean semantic. */
@@ -5668,9 +5738,12 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
     if(inp){inp.addEventListener('input',e=>{
       const s=+e.target.value;
       VIEWERS[slot]._setStep(s);
-      /* sync main slider: 0→scn0, 1-5→scn1, 6-8→scn2 */
+      /* sync big slider tick highlight — flag prevents onScenarioChange snapping us back */
       const ns=s<=1?0:s<=5?1:2;
+      _simDrivingSlot=slot;
       if(ns!==scn){scn=ns;renderSlider();onScenarioChange();}
+      else{renderSlider();}
+      _simDrivingSlot=null;
     });}
     (function tick(){VIEWERS[slot].raf=requestAnimationFrame(tick);renderer.render(scene,camera);})();
     /* populate metrics grid and clear caption immediately on first build */
@@ -7089,8 +7162,9 @@ function renderSlider(){
     const bbWasActive=bigBrotherActive||bbNoMatch;
     fKoppen='';const ks=document.getElementById('fKoppen');if(ks)ks.value='';
     refreshKoppenOptions();applyScenarioPalette();refreshMap();applyFilter();renderPanel();renderLegend();renderLineLegend();
-    /* sync sim sliders: scn 0/1/2 → step 0/4/8 */
+    /* sync sim sliders: scn 0/1/2 → step 0/4/8. Skip the slot driving the change. */
     const _tStep=scn*4;['A','B'].forEach(slot=>{
+      if(slot===_simDrivingSlot)return; /* this slot initiated the change — don't snap it back */
       if(VIEWERS[slot]&&VIEWERS[slot]._setStep){const _s=scn;VIEWERS[slot]._setStep(_tStep);scn=_s;}
       else{const inp=document.getElementById('simSlider-'+slot);if(inp)inp.value=_tStep;const yr=document.getElementById('simYear-'+slot);if(yr)yr.textContent=SIM_YEAR_LABELS[_tStep]||'';}
     });
