@@ -7790,33 +7790,57 @@ const FINDINGS=[
       +`<div class="fc-tmrow"><span class="tm-label">2080</span><span>${dynV('[SIM] h')}, ${dynV('failing')}</span></div>`;
    }},
 
-  {id:'eave',title:'4. Required eave depth (orientation + latitude)',eyebrow:'Recommendation · shading',
+  {id:'eave',title:'4. Required eave depth for shading',eyebrow:'Recommendation · shading',
    body:()=>{
-     return ''
-      +ub('Required eave depth for each case study (from latitude): at which case study is which eave depth required.','draft · eave depth')
-      +`<p style="margin:8px 0;">Required eave depth is solar geometry, evaluated per wall orientation and corrected for hemisphere `
-        +fcInfo('eave depth: orientation, hemisphere, worst time','Each wall (N/E/S/W) is evaluated on the case\'s own LOCAL summer solstice: June 21 north of the equator, December 21 south of it, so the equator-facing wall (deepest requirement) and pole-facing wall (usually negligible) land correctly in both hemispheres automatically. For that wall we scan every daylight hour of that solstice and find the moment the sun sits most directly in front of it (its "critical time"), solar noon for the equator-facing wall, a specific morning hour for East, an afternoon hour for West. The overhang depth to fully shade height h at that moment is D = h / tan(altitude). If the sun never swings around to face a wall that day (typical for the pole-facing side, or only grazes it below 5° altitude near sunrise/sunset), that wall is marked "negligible" rather than given a spurious number. Two different heights are used deliberately: the SLIDER above drives a quick reference figure (median corpus latitude, exploratory, not tied to any case); the TABLE below uses each case\'s own recorded eave height. That reuse is a simplification worth flagging plainly: eave height is roofline-above-grade, not window height, and in this corpus it ranges 1.6-15.6 m, for the taller end this produces an architecturally large "required depth" that should be read as an upper bound, not a literal recommendation. Rows are flagged "tall eaveH" wherever this applies. Horizontal overhangs are also fundamentally weak against low-angle East/West sun regardless of depth; vernacular traditions typically answer that with shutters or vertical elements instead, which is a separate, real limitation of this whole method, not a bug in the numbers.','Solar geometry (solstice declination ±23.44°, hemisphere-dependent, numeric solar-position search). Latitude + orientation fixed, so NOT morphed by climate scenario.')+`.</p>`
-      +`<div class="fc-calc-hint" id="eaveHint">Press <b>&gt;dynamicFINDINGS</b> to compute the eave-depth tables for the loaded corpus.</div>`
-      +`<div id="eaveInteractive" style="display:none;">
-          <div class="eave-slider-row">
-            <label for="eaveHSlider">Quick reference, window height (h), evaluated at the corpus median latitude</label>
-            <div class="eave-slider-line">
-              <input type="range" id="eaveHSlider" min="0.5" max="3" step="0.05" value="1.5">
-              <span class="eave-slider-val" id="eaveHVal">1.50 m</span>
-            </div>
-            <div id="eaveRefCalc" class="fc-tmrow" style="margin-top:6px;"></div>
-          </div>
-          <div class="climate-tabs-row">
-            <div class="climate-tabs-sidebar" id="eaveOrientTabs">
-              <button class="climate-tab-square active" data-orient="N">North</button>
-              <button class="climate-tab-square" data-orient="E">East</button>
-              <button class="climate-tab-square" data-orient="S">South</button>
-              <button class="climate-tab-square" data-orient="W">West</button>
-            </div>
-            <div class="climate-tabs-content" id="eaveResult"></div>
-          </div>
-        </div>`
-      +`<div class="fc-transparency">IT HAS TO BE COMPLETELY TRANSPARENT HOW ALL OF THIS DATA IS GENERATED.</div>`;
+     const reqD=(h,lat)=>{const decl=lat>=0?23.44:-23.44;const alt=(90-Math.abs(lat-decl))*Math.PI/180;return alt>0.05?h/Math.tan(alt):null;};
+     const sunDir=lat=>{const a=Math.abs(lat);return lat>=0?(a>35?'South':a>15?'South + West':'West + South'):(a>35?'North':a>15?'North + West':'West + North');};
+     const col=(act,req)=>act==null||req==null?'var(--ink-faint)':act/req>=1?'var(--moss,#2d7a2d)':act/req>=0.5?'var(--ochre)':'var(--rust)';
+     const lbl=(act,req)=>{if(act==null)return '—';if(req==null)return act.toFixed(2)+' m';const r=act/req;return act.toFixed(2)+' m '+(r>=1?'✓':r>=0.5?'~':'✗');};
+     const cases=CASES.filter(c=>c.hasCoord&&c.lat!=null&&c.eaveH!=null).sort((a,b)=>{
+       const ra=reqD(a.eaveH,a.lat),rb=reqD(b.eaveH,b.lat);
+       const defA=ra&&a.eaveDepth!=null?a.eaveDepth/ra:99,defB=rb&&b.eaveDepth!=null?b.eaveDepth/rb:99;
+       return defA-defB;
+     });
+     const rows=cases.map(c=>{
+       const req=reqD(c.eaveH,c.lat);const clr=col(c.eaveDepth,req);const reqS=req!=null?req.toFixed(2)+' m':'—';
+       return `<tr>
+         <td style="padding:5px 6px;font-family:var(--mono);font-size:10px;">${c.id}</td>
+         <td style="padding:5px 6px;font-size:11px;">${c.name||''}</td>
+         <td style="padding:5px 6px;font-size:10px;color:var(--ink-faint);">${c.lat!=null?c.lat.toFixed(1)+'°':'—'}</td>
+         <td style="padding:5px 6px;font-size:10px;">${c.eaveH.toFixed(2)} m</td>
+         <td style="padding:5px 6px;font-size:10px;">${reqS}</td>
+         <td style="padding:5px 6px;font-weight:700;color:${clr};">${dynV(lbl(c.eaveDepth,req))}</td>
+         <td style="padding:5px 6px;font-size:10px;color:var(--ink-soft);">${sunDir(c.lat)}</td>
+       </tr>`;
+     }).join('');
+     const tableHtml=cases.length
+       ?`<div style="overflow-x:auto;"><table class="ktable"><thead><tr>
+           <th>ID</th><th>Name</th><th>Lat</th><th>Eave H</th><th>Required</th><th>Actual depth</th><th>Primary sun</th>
+         </tr></thead><tbody>${rows}</tbody></table></div>
+         <p style="font-size:9px;color:var(--ink-faint);margin-top:6px;">✓ adequate &nbsp;·&nbsp; ~ partial (≥50% of required) &nbsp;·&nbsp; ✗ insufficient. Sorted: worst first. D = eave height / tan(solstice noon altitude).</p>`
+       :`<p style="color:var(--ink-faint);font-size:11px;">No case studies with coordinates and eave height data loaded yet.</p>`;
+     return `<p style="line-height:1.7;margin-bottom:12px;">A horizontal overhang shades the wall below when its depth equals the wall height divided by the tangent of the sun's altitude at noon on the summer solstice. The table compares the required depth against each case study's recorded eave depth and colour-codes the result. ${fcInfo('Method and limitations',
+       'Required depth: D = eaveH / tan(90° − |lat − decl|), where decl = +23.44° (NH) or −23.44° (SH). Evaluated at solar noon on the summer solstice, the highest sun angle of the year, for the equator-facing wall.<br><br><b>Limitations:</b><br>· Window height not accounted for: the calculation uses eave height (roofline above grade), not the window head height. Actual required depth for a window below the eave is less than shown.<br>· East and west walls receive low-angle morning and afternoon sun that horizontal overhangs cannot block regardless of depth. Shutters, louvres or vertical fins are required on those facades.<br>· Fixed horizontal overhang only: retractable shading, vegetation or recessed windows not evaluated.<br>· No reflections, ground albedo or diffuse sky radiation.<br>· Solar geometry is latitude-fixed: required depth does not change with SSP5-8.5 (only outdoor temperature changes, not the sun angle).',
+       'Olgyay, V. (1963). Design with Climate. Princeton University Press. | Szokolay, S.V. (2008). Introduction to Architectural Science (2nd ed.).'
+     )}</p>
+     <p style="margin:0 0 8px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">CORPUS TABLE &nbsp;··&nbsp; ${dynV(cases.length)} case studies with eave height + coordinates</p>
+     ${tableHtml}
+     <p style="margin:28px 0 8px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">LOCATION CALCULATOR</p>
+     <p style="font-size:12px;margin-bottom:10px;">Click anywhere on the map to set a location, then adjust the slider for wall height.</p>
+     <div style="display:grid;grid-template-columns:1fr 240px;gap:14px;align-items:start;">
+       <div id="eaveMiniMap" style="height:260px;border:1px solid var(--line);"></div>
+       <div>
+         <div class="fc-tmrow" style="margin-bottom:10px;"><span class="tm-label">Wall / eave height</span>
+           <span><input type="range" id="eaveCalcSlider" min="0.5" max="5" step="0.1" value="2.0" style="width:90px;vertical-align:middle;"> <span id="eaveCalcH" style="font-family:var(--mono);">2.0 m</span></span>
+         </div>
+         <div class="fc-tmrow" style="margin-bottom:6px;"><span class="tm-label">Location</span><span id="eaveCalcLoc" style="font-size:10px;color:var(--ink-faint);">click map</span></div>
+         <div class="fc-tmrow" style="margin-bottom:6px;"><span class="tm-label">Primary sun</span><span id="eaveCalcDir" style="font-size:10px;color:var(--ink-soft);">—</span></div>
+         <div class="fc-tmrow" style="margin-top:14px;"><span class="tm-label" style="font-size:12px;">Required depth</span>
+           <span id="eaveCalcResult" style="font-size:22px;font-weight:700;font-family:var(--mono);color:var(--terracotta-deep);">—</span>
+         </div>
+         <p style="font-size:9px;color:var(--ink-faint);margin-top:8px;line-height:1.5;">Equator-facing wall, solar noon, summer solstice. Does not account for window position or E/W facades.</p>
+       </div>
+     </div>`;
    }}
  ]}
 ];
@@ -7875,6 +7899,7 @@ function showFinding(id){
   wireAllFcInfo();
   wireThermalMassDropdown();
   wireStratDropdown();
+  if(id==='eave')setTimeout(wireEaveControls,50);
   wireMismatchButtons();
 }
 
@@ -7883,11 +7908,6 @@ function showFinding(id){
    calculation (eave depth) that waits for an explicit press. */
 function onDynamicFindings(id){
   if(id==='eave'){
-    const hint=document.getElementById('eaveHint');
-    const interactive=document.getElementById('eaveInteractive');
-    if(hint)hint.style.display='none';
-    if(interactive)interactive.style.display='';
-    renderEaveTable();
     wireEaveControls();
     blinkDynamicFindings();
     return;
@@ -7896,51 +7916,41 @@ function onDynamicFindings(id){
   showFinding(id);
   requestAnimationFrame(()=>blinkDynamicFindings());
 }
-function currentEaveOrient(){
-  const active=document.querySelector('#eaveOrientTabs .climate-tab-square.active');
-  return active?active.dataset.orient:'N';
-}
-function currentEaveHeight(){
-  const slider=document.getElementById('eaveHSlider');
-  return slider?+slider.value:1.5;
-}
-function renderEaveRefCalc(){
-  const host=document.getElementById('eaveRefCalc');
-  if(!host)return;
-  const orient=currentEaveOrient(),h=currentEaveHeight();
-  const lat=medianAbsLatitude(); /* northern-hemisphere reference point by convention */
-  const req=requiredEaveDepthOriented(lat,orient,h);
-  if(!req||req.negligible){
-    host.innerHTML=`<span class="tm-label">At corpus median latitude (${lat.toFixed(1)}°N ref.), ${orient} wall</span><span style="color:var(--ink-faint)">negligible, sun does not face this wall on the solstice</span>`;
-  }else{
-    host.innerHTML=`<span class="tm-label">At corpus median latitude (${lat.toFixed(1)}°N ref.), ${orient} wall, h=${h.toFixed(2)}m</span><span>${dynV(req.depth.toFixed(2)+' m')} required, critical time ${fmtSolarHour(req.solarHour)} solar</span>`;
-  }
-}
-function renderEaveTable(){
-  const host=document.getElementById('eaveResult');
-  if(host)host.innerHTML=eaveDepthTableHTML(currentEaveOrient(),currentEaveHeight());
-  renderEaveRefCalc();
-}
+function renderEaveTable(){}  /* no-op: table renders in body() directly */
 function wireEaveControls(){
-  const tabs=document.getElementById('eaveOrientTabs');
-  if(tabs&&!tabs._wired){
-    tabs._wired=true;
-    tabs.querySelectorAll('.climate-tab-square').forEach(b=>{
-      b.addEventListener('click',()=>{
-        tabs.querySelectorAll('.climate-tab-square').forEach(x=>x.classList.remove('active'));
-        b.classList.add('active');
-        renderEaveTable();
-      });
-    });
-  }
-  const slider=document.getElementById('eaveHSlider');
-  if(slider&&!slider._wired){
-    slider._wired=true;
-    const val=document.getElementById('eaveHVal');
-    slider.addEventListener('input',()=>{
-      if(val)val.textContent=(+slider.value).toFixed(2)+' m';
-      renderEaveTable();
-    });
+  /* mini-map calculator */
+  const mapDiv=document.getElementById('eaveMiniMap');
+  const slider=document.getElementById('eaveCalcSlider');
+  const hLabel=document.getElementById('eaveCalcH');
+  const locOut=document.getElementById('eaveCalcLoc');
+  const dirOut=document.getElementById('eaveCalcDir');
+  const resOut=document.getElementById('eaveCalcResult');
+  if(!mapDiv||mapDiv._eaveMapInit)return;
+  mapDiv._eaveMapInit=true;
+  if(typeof L==='undefined')return;
+  const miniMap=L.map(mapDiv,{zoomControl:true,attributionControl:false}).setView([47,10],3);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{maxZoom:18}).addTo(miniMap);
+  let marker=null;
+  const calc=()=>{
+    if(!marker)return;
+    const lat=marker.getLatLng().lat;
+    const h=slider?+slider.value:2.0;
+    const decl=lat>=0?23.44:-23.44;
+    const alt=(90-Math.abs(lat-decl))*Math.PI/180;
+    const req=alt>0.05?(h/Math.tan(alt)):null;
+    const a=Math.abs(lat);
+    const dir=lat>=0?(a>35?'South':a>15?'South + West':'West + South'):(a>35?'North':a>15?'North + West':'West + North');
+    if(locOut)locOut.textContent=lat.toFixed(2)+'\u00b0, '+marker.getLatLng().lng.toFixed(2)+'\u00b0';
+    if(dirOut)dirOut.textContent=dir;
+    if(resOut)resOut.textContent=req!=null?req.toFixed(2)+' m':'\u2014';
+  };
+  miniMap.on('click',e=>{
+    if(marker)marker.setLatLng(e.latlng);
+    else marker=L.marker(e.latlng).addTo(miniMap);
+    calc();
+  });
+  if(slider){
+    slider.addEventListener('input',()=>{if(hLabel)hLabel.textContent=(+slider.value).toFixed(1)+' m';calc();});
   }
 }
 
