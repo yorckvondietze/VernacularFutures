@@ -6631,8 +6631,10 @@ function wireShapeShift(c,slot){
 function mv(v){return(v==null||v==='')?noData:v;}
 const WALL_LABEL={timber:'Lightweight timber',hybrid:'Timber + masonry',masonry:'Solid masonry',other:'Other'};
 /* Thermal mass tooltip texts */
-const _TM_DXF_TIP='Total thermal mass of all wall elements from DXF geometry (dxf_analyse_v6.py). Per wall polygon: Volume x VHC from MAT_PROPS lookup per material type. Summed across all walls. Unit: kJ/K total (not per m2).';
-const _TM_HB_TIP='Approximated by sim_corpus.py: (rho x cp x t_wall x A_wall + rho x cp x 0.15m x A_floor + rho x cp x 0.20m x A_floor) / A_floor. Roof + floor use hardcoded 0.15m and 0.20m thickness and inherit wall material. Unit: kJ/m2K (per floor area).';
+const _TM_DXF_TIP='Total thermal mass of all wall elements from DXF geometry (dxf_analyse_v6.py). Per wall polygon: Volume × VHC from MAT_PROPS lookup per material type. Summed across all walls. Unit (total row): kJ/K. Unit (specific row): kJ/m²K = total ÷ floor area — this is the standard building-physics normalisation, comparable across buildings of different sizes.';
+const _UWALL_TIP='<b>How derived:</b> U = λ / t_wall, where λ is the thermal conductivity of the wall material (W/mK) from the ISO 10456:2007 / EN 1745:2020 material lookup table in MAT_PROPS, and t_wall is the measured wall thickness from the DXF floor plan.<br><br><b>Accuracy:</b> The formula is single-layer and does not account for surface resistances, mortar joints, mixed-material walls, or composite assemblies. For homogeneous massive construction (stone, adobe, brick) errors are typically ±20–30%. For timber-frame or mixed construction the single-layer approximation can be off by a factor of two or more. The value should be treated as an order-of-magnitude estimate, not a certified thermal performance figure. Source material properties: ISO 10456:2007, EN 1745:2020.';
+const _UROOF_TIP='<b>How derived:</b> Same method as U-value wall — U = λ / t, using the roof material conductivity from MAT_PROPS and an estimated or recorded roof thickness. For roofs without explicit thickness data, a default of 0.20m is assumed.<br><br><b>Accuracy:</b> Roof assemblies in vernacular buildings are often multi-layer (rafter + insulating fill + tiles) and highly variable. The single-layer approximation is least reliable here. Values should be read as indicative only. Thatched roofs in particular have measured U-values that vary widely by moisture content and density (0.2–0.6 W/m²K), and the lookup value may not reflect field conditions. Source material properties: ISO 10456:2007, EN 1745:2020.';
+const _TM_HB_TIP='Approximated by sim_corpus.py: (rho x cp x t_wall x A_wall + rho x cp x 0.15m x A_floor + rho x cp x 0.20m x A_floor) / A_floor. Roof + floor use hardcoded 0.15m and 0.20m thickness and inherit wall material. Unit: kJ/m²K (per floor area).<br><br><b>Limitation — interior walls not accounted for:</b> Only the exterior envelope walls extracted from the DXF floor plan are included. Internal partition walls, which can contribute substantial thermal mass in stone or adobe construction, are not modelled. The Honeybee simulation likewise treats only the exterior shell. This means thermal mass is systematically underestimated for buildings with thick internal load-bearing walls — a common feature in Mediterranean, Central European timber-frame with masonry infill, and North African earthen construction. The DXF-derived total (column above) has the same limitation.';
 const METRIC_PAGES=[
  {label:'Basic info',rows:c=>[
    ['Location / region',mv(c.region)],
@@ -6655,12 +6657,13 @@ const METRIC_PAGES=[
    ['Wall thickness',fmt(c.wallThk,' m',3)],
    ['Wall thickness N–S',fmt(c.wallThkNS,' m',3)],
    ['Wall thickness E–W',fmt(c.wallThkEW,' m',3)],
-   ['U-value wall',fmt(c.uWall,' W/m²K',2)],
+   ['U-value wall <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,_UWALL_TIP)">ⓘ</button>',fmt(c.uWall,' W/m²K',2)],
    ['Volume',fmt(c.volume,' m³',0)],
    ['V/A ratio',fmt(c.va,'',2)],
    ['Compactness ψ',fmt(c.psi,'',3)],
-   ['Total thermal mass walls (DXF) <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,_TM_DXF_TIP)">ⓘ</button>',fmt(c.thermalMass,' kJ/K',0)],
-   ['Thermal mass Honeybee approx. <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,_TM_HB_TIP)">ⓘ</button>',fmt(c.thermalMassHB,' kJ/m²K',1)],
+   ['DXF_Analyse thermal mass, walls (total) <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,_TM_DXF_TIP)">ⓘ</button>',fmt(c.thermalMass,' kJ/K',0)],
+   ['DXF_Analyse thermal mass, walls (specific) <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,_TM_DXF_TIP)">ⓘ</button>',(c.thermalMass!=null&&c.area>0)?((c.thermalMass/c.area).toFixed(1)+' kJ/m²K'):noData],
+   ['HONEYBEE thermal mass approx. (specific) <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,_TM_HB_TIP)">ⓘ</button>',fmt(c.thermalMassHB,' kJ/m²K',1)],
  ]},
  {label:'Windows & openings',rows:c=>[
    ['WWR',fmt(c.wwr,'%',1)],
@@ -6673,7 +6676,7 @@ const METRIC_PAGES=[
    ['Roof form',mv(c.roofForm)],
    ['Roof material',mv(c.roofMat)],
    ['Roof pitch',c.roofPitch!=null?c.roofPitch+'°':noData],
-   ['U-value roof',fmt(c.uRoof,' W/m²K',2)],
+   ['U-value roof <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,_UROOF_TIP)">ⓘ</button>',fmt(c.uRoof,' W/m²K',2)],
    ['Attic height',fmt(c.atticH,' m',2)],
    ['Eave height',fmt(c.eaveH,' m',2)],
    ['Eave depth',fmt(c.eaveDepth,' m',3)],
@@ -6809,6 +6812,7 @@ function caseDetailHTML(c,slot){
               <input type="range" id="simSlider-${slot}" min="0" max="8" step="1" value="${SIM_STEP[slot]||0}" style="flex:1;accent-color:var(--terracotta);cursor:pointer;">
               <span id="simYear-${slot}" style="color:var(--ink);font-weight:600;min-width:32px;text-align:right;">${SIM_YEAR_LABELS[SIM_STEP[slot]||0]||'TMYx'}</span>
               <span>2080</span>
+              <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,'Intermediate slider positions (2030–2075) are linearly interpolated between the three simulated snapshots: Present TMYx, 2050 SSP5-8.5, and 2080 SSP5-8.5. Only those three EPWs were morphed and simulated. Positions between them are estimates, not separate EnergyPlus runs. The interpolation is linear: a position halfway between Present and 2050 shows the arithmetic mean of those two results.')" style="font-size:8px;flex-shrink:0;">ⓘ</button>
             </div>
             <div style="padding:2px 0 4px;">
               <div style="font-family:var(--mono);font-size:8.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">NDP night discharge potential</div>
@@ -6849,6 +6853,22 @@ function wireCaseDetail(c,slot){
   wireShapeShift(c,slot);
   renderPhotoBlock(c,slot);
   renderPlanBlock(c,slot);
+  /* Orientation / north warning card — shown above viewer when north not defined */
+  (function renderOrientWarn(){
+    const wrap=document.getElementById('simFsWrap-'+slot);
+    if(!wrap)return;
+    const existWarn=wrap.querySelector('.sim-orient-warn');
+    if(existWarn)existWarn.remove();
+    const noOrient=c.orientation==null;
+    if(noOrient){
+      const w=document.createElement('div');
+      w.className='sim-ashrae-warn sim-orient-warn';
+      w.style.cssText='grid-column:1/-1;margin:0 0 8px;';
+      w.innerHTML='<b>No building orientation recorded.</b> The DXF drawings for this case study do not include a north arrow or orientation marker. The 3D viewer is showing the building in an assumed orientation (0° — plan north = true north). Window positions and solar exposure in the simulation may be rotated relative to reality. Thermal performance under warming can be significantly affected by orientation, especially for glazing and eave shading. Treat the simulation output with caution until orientation is confirmed and the DXF is re-analysed.';
+      const block=wrap.querySelector('.block');
+      if(block)block.insertBefore(w,block.firstChild);
+    }
+  })();
   /* refetch simulation button */
   const rfBtn=document.getElementById('simRefetchBtn-'+slot);
   if(rfBtn){rfBtn.addEventListener('click',()=>{
