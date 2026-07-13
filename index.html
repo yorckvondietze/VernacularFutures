@@ -6146,15 +6146,11 @@ function createViewer(container,c,slot){
   if(!MOCK){
     const cid=c&&c.id;
     if(!cid){createNoDataCube(container,slot);return;}
-    /* Gate: only show simulation viewer if Excel yellow columns confirm sim ran.
-       c.sim.comfort[0] = TCP present from Excel col BD. If null → sim not done,
-       don't show data even if stale JSONs exist on R2. */
-    /* Require both simulation data AND real DXF geometry (wall_thick from dxf_analyse).
-       Simulations without DXF used a fallback box, results are not building-specific. */
+    /* Viz JSONs on R2 are authoritative. Excel yellow columns (c.sim) are a hint
+       only — they lag when xlsx was not re-uploaded after a sim run.
+       Always attempt R2 fetch; only show permanent no-data if R2 also returns nothing. */
     const _hasRealGeom=c.wallThk!=null||c.area!=null;
-    const _hasSim=_hasRealGeom&&c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null||c.sim.oh[0]!=null);
-    if(!_hasSim){createNoDataCube(container,slot);return;}
-    /* Has sim data, show loading cube while viz JSON fetches from R2 */
+    /* Cache hits — serve immediately */
     if(SIM_VIZ_CACHE[cid]){buildSimViewer(container,c,SIM_VIZ_CACHE[cid],slot);return;}
     if(SIM_CACHE[cid]){buildSimViewer(container,c,SIM_CACHE[cid],slot);return;}
     createNoDataCube(container,slot,'>fetching simulation data...');
@@ -6183,7 +6179,12 @@ function createViewer(container,c,slot){
           const activeId=slot==='A'?selectedId:compareId;
           const box=document.getElementById('viewer3d-'+slot);
           if(activeId===cid&&box){disposeViewer(slot);buildSimViewer(box,c,data,slot);}
-        }).catch(()=>{});
+        }).catch(()=>{
+          /* Nothing on R2 — definitive no-data */
+          const activeId=slot==='A'?selectedId:compareId;
+          const box=document.getElementById('viewer3d-'+slot);
+          if(activeId===cid&&box)createNoDataCube(box,slot);
+        });
     });
     return;
   }
