@@ -1762,6 +1762,9 @@ html[data-theme="dark"] .loader-status{
 .avgt-carousel-item{display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
 .avgt-carousel-item img{height:110px;width:auto;max-width:160px;object-fit:cover;border:1px solid var(--line);}
 .avgt-carousel-item span{font-size:8px;color:var(--ink-faint);margin-top:3px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;}
+/* average typology connecting lines — wobbly SVG animation */
+.avgt-line-path{stroke:var(--terracotta);stroke-width:1.5px;fill:none;stroke-dasharray:6 4;animation:avgt-wobble 2.4s ease-in-out infinite;opacity:0.55;}
+@keyframes avgt-wobble{0%,100%{stroke-dashoffset:0}50%{stroke-dashoffset:20}}
 .avgt-launch-btn{font-family:var(--mono);font-size:10px;font-weight:700;padding:5px 12px;border:1px solid var(--terracotta);background:transparent;color:var(--terracotta);cursor:pointer;white-space:nowrap;flex-shrink:0;letter-spacing:.01em;}
 .avgt-launch-btn:hover{background:var(--terracotta);color:var(--paper);}
 .avgt-launch-btn.active{background:var(--terracotta);color:var(--paper);}
@@ -1892,6 +1895,7 @@ html[data-theme="dark"] .loader-status{
   <section class="view active" id="view-cases">
     <div class="filter-bar">
       <div class="mobile-sheet-close" id="filterSheetClose">✕ &nbsp;close filters</div>
+      <button class="avgt-launch-btn" id="avgTypBtn">&gt;average<em>TYPOLOGY</em></button>
       <div class="filter-group"><span class="fl">Country</span><select id="fRegion"><option value="">All countries</option></select></div>
       <div class="filter-group"><span class="fl">Köppen zone</span><select id="fKoppen"><option value="">All</option></select></div>
       <div class="filter-group"><span class="fl">Corpus</span><select id="fCorpus"><option value="">All</option><option value="geometry">With geometry</option><option value="simulation">With simulation</option><option value="sim_orient">Simulation + orientation</option></select></div>
@@ -1907,7 +1911,6 @@ html[data-theme="dark"] .loader-status{
       <div class="filter-group"><span class="fl">Diurnal swing<span class="action-info-icon" id="fDiurnalInfoIcon" style="font-size:10px;margin-left:4px;">ⓘ<div class="action-info-pop" id="fDiurnalInfoPop" style="width:290px;"><div class="ai-head">_diurnal swing threshold</div><div class="ai-body">Annual mean of daily (T<sub>max</sub> − T<sub>min</sub>). High-mass construction is desirable above roughly <b>10°C</b>; below <b>6°C</b>, low-mass construction generally performs best, and high mass can cause overheating in humid climates with limited night-time cooling. This filter uses 10°C as the high/low split.</div><div class="ai-cite">Reardon, C., McGee, C. &amp; Milne, G. (2020). Thermal mass. <em>YourHome: Australia's guide to environmentally sustainable homes</em>, Australian Government.</div></div></span></span><select id="fDiurnal"><option value="">All</option><option value="high">High ≥10°C</option><option value="low">Low &lt;10°C</option></select></div>
       <span class="filter-count" id="filterCount"></span>
       <button class="filter-reset" id="filterReset">Reset</button>
-      <button class="avgt-launch-btn" id="avgTypBtn">&gt;average<em>TYPOLOGY</em></button>
     </div>
     <div class="cs-search-row">
       <input type="text" class="cs-search-input" id="csSearch" placeholder="Search by name or ID (e.g. CS_5, Zbečno, Norway…)" autocomplete="off">
@@ -10416,7 +10419,7 @@ document.addEventListener('click',e=>{
    No interaction with renderPanel() or csPanel.
    Label: TYPOLOGY_[domKöppen]_[domCountry]
    ═══════════════════════════════════════════════════════════════════════════ */
-let _avgPin=null,_avgCircle=null;
+let _avgPin=null,_avgCircle=null,_avgLines=[];
 const AVG_DEFAULT_RADIUS=200;
 
 function computeAvgZone(pinLat,pinLon,radius_km){
@@ -10452,6 +10455,32 @@ async function renderAvgTypWin(){
   document.getElementById('avgTypSubtitle').textContent=
     z.members.length+' case stud'+(z.members.length===1?'y':'ies')+'  ·  '+r+' km radius';
 
+  /* ── map visual updates ─────────────────────────────────────────────── */
+  /* 1. Dim markers of CS inside circle, restore others */
+  document.querySelectorAll('.leaflet-marker-icon').forEach(el=>{
+    const csid=el.dataset.csid;
+    if(!csid)return;
+    const inCircle=z.members.some(c=>c.id===csid);
+    el.style.opacity=inCircle?'0.38':'1';
+  });
+
+  /* 2. Remove old wobbly lines, draw fresh ones */
+  _avgLines.forEach(l=>map.removeLayer(l));
+  _avgLines=[];
+  if(_avgPin&&z.members.length){
+    const pinLL=_avgPin.getLatLng();
+    z.members.forEach(c=>{
+      if(c.lat==null||c.lon==null)return;
+      /* gentle polyline — Leaflet supports it natively, we animate via CSS dashoffset */
+      const pts=[[pinLL.lat,pinLL.lng],[c.lat,c.lon]];
+      const line=L.polyline(pts,{
+        color:'var(--terracotta)',weight:1.4,opacity:0.45,dashArray:'6 4',
+        className:'avgt-line-path',interactive:false
+      }).addTo(map);
+      _avgLines.push(line);
+    });
+  }
+
   /* BUILDING */
   const bP=document.getElementById('avgt-panel-building');
   if(!z.members.length){
@@ -10459,7 +10488,10 @@ async function renderAvgTypWin(){
   }else{
     bP.innerHTML='<p class="avgt-sec-head">Photos</p><div class="avgt-carousel-wrap" id="avgt-photos"><span style="font-size:10px;color:var(--ink-faint)">loading…</span></div><p class="avgt-sec-head" style="margin-top:12px">Floor plans</p><div class="avgt-carousel-wrap" id="avgt-plans"><span style="font-size:10px;color:var(--ink-faint)">loading…</span></div>';
     Promise.all(z.members.map(async c=>{
-      const[ph,pl]=await Promise.all([fetchPhotos(c.id),fetchPlans(c.id)]);
+      const[ph,pl]=await Promise.all([
+        fetchPhotos(c.id).catch(()=>[]),
+        fetchPlans(c.id).catch(()=>[])
+      ]);
       return{c,ph,pl};
     })).then(res=>{
       const pr=document.getElementById('avgt-photos');
@@ -10468,13 +10500,18 @@ async function renderAvgTypWin(){
       const ap=[],apl=[];
       res.forEach(({c,ph,pl})=>{
         ph.slice(0,2).forEach(u=>ap.push({u,l:c.id+' · '+c.name}));
-        pl.slice(0,1).forEach(p=>apl.push({u:p.url,l:c.id+' · '+c.name}));
+        pl.slice(0,1).forEach(p=>apl.push({u:p.url||p,l:c.id+' · '+c.name}));
       });
       const ih=arr=>arr.length
-        ?arr.map(p=>'<div class="avgt-carousel-item"><img src="'+p.u+'" loading="lazy" alt="'+p.l+'"><span>'+p.l+'</span></div>').join('')
-        :'<span style="font-size:10px;color:var(--ink-faint)">No images found.</span>';
+        ?arr.map(p=>`<div class="avgt-carousel-item"><img src="${p.u}" loading="lazy" onerror="this.closest('.avgt-carousel-item').style.display='none'" alt="${p.l}"><span>${p.l}</span></div>`).join('')
+        :'<span style="font-size:10px;color:var(--ink-faint)">No images found for these case studies.</span>';
       pr.innerHTML=ih(ap);
       plr.innerHTML=ih(apl);
+    }).catch(()=>{
+      const pr=document.getElementById('avgt-photos');
+      const plr=document.getElementById('avgt-plans');
+      if(pr)pr.innerHTML='<span style="font-size:10px;color:var(--ink-faint)">Could not load images.</span>';
+      if(plr)plr.innerHTML='<span style="font-size:10px;color:var(--ink-faint)">Could not load plans.</span>';
     });
   }
 
@@ -10484,22 +10521,33 @@ async function renderAvgTypWin(){
     cP.innerHTML='<p class="avgt-empty">No case studies within radius.</p>';
   }else{
     const med=z.medoid;
-    const krows=['present','2050 SSP5-8.5','2080 SSP5-8.5'].map((scn,i)=>{
+    /* Representative climate: show medoid case's climate chart if available */
+    const medCaseEl=med?`<p class="avgt-sec-head">Representative climate — ${med.name} (${med.id})</p>
+      <p style="font-size:10px;color:var(--ink-soft);margin:0 0 8px;">Medoid station: ${med.epwStation||'—'} &nbsp;·&nbsp; ${med.lat?.toFixed(3)||''}°, ${med.lon?.toFixed(3)||''}°</p>
+      <div id="avgt-climate-chart" style="margin-bottom:12px;">
+        <span style="font-size:10px;color:var(--ink-faint)">loading climate chart…</span>
+      </div>`:'';
+    const krows=['Present TMYx','2050 SSP5-8.5','2080 SSP5-8.5'].map((scn,i)=>{
       const kc={};
       z.members.forEach(c=>{const k=(Array.isArray(c.koppen)?c.koppen[i]:'')||'';if(k)kc[k]=(kc[k]||0)+1;});
       const top=Object.entries(kc).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,n])=>k+' ('+n+')').join(' · ');
-      return '<tr><td>'+scn+'</td><td>'+(top||'')+'</td></tr>';
+      return '<tr><td>'+scn+'</td><td>'+(top||'—')+'</td></tr>';
     }).join('');
     cP.innerHTML=
-      '<p class="avgt-sec-head">Representative station</p>'+
+      medCaseEl+
+      '<p class="avgt-sec-head">Dominant Köppen across '+z.members.length+' case studies</p>'+
+      '<table class="avgt-metric-table">'+krows+'</table>'+
+      '<p class="avgt-sec-head">All stations in circle</p>'+
       '<table class="avgt-metric-table">'+
-        '<tr><td>Station</td><td>'+(med?.epwStation||'')+'</td></tr>'+
-        '<tr><td>Name</td><td>'+(med?.name||'')+'</td></tr>'+
-        '<tr><td>Country</td><td>'+(med?.country||'')+'</td></tr>'+
-        '<tr><td>Coordinates</td><td>'+((med?.lat?.toFixed(3)||'')+'°, '+(med?.lon?.toFixed(3)||'')+'°')+'</td></tr>'+
-      '</table>'+
-      '<p class="avgt-sec-head">Dominant Köppen by scenario</p>'+
-      '<table class="avgt-metric-table">'+krows+'</table>';
+        z.members.map(c=>`<tr><td>${c.id}</td><td>${c.epwStation||'—'}</td><td style="color:var(--ink-faint)">${(Array.isArray(c.koppen)?c.koppen[0]:'')||''}</td></tr>`).join('')+
+      '</table>';
+    /* Render medoid climate chart using existing chart function */
+    if(med&&typeof buildClimateChart==='function'){
+      setTimeout(()=>{
+        const chartEl=document.getElementById('avgt-climate-chart');
+        if(chartEl)buildClimateChart(med,chartEl);
+      },60);
+    }
   }
 
   /* METRICS */
@@ -10508,36 +10556,50 @@ async function renderAvgTypWin(){
     mP.innerHTML='<p class="avgt-empty">No case studies within radius.</p>';
   }else{
     const f=z.fmt;
-    const r2=(v,d)=>v!=null?f(v,d||1):'';
+    const r2=(v,d)=>v!=null?f(v,d||1):'-';
     const row=(a,b)=>'<tr><td>'+a+'</td><td>'+b+'</td></tr>';
+    const n=z.members.length;
+    /* Construction material distribution */
+    const structCounts={};
+    z.members.forEach(c=>{const s=(c.structure||'unknown').split('/')[0].trim().toLowerCase();structCounts[s]=(structCounts[s]||0)+1;});
+    const structRows=Object.entries(structCounts).sort((a,b)=>b[1]-a[1])
+      .map(([k,v])=>row(k,v+' ('+Math.round(v/n*100)+'%)')).join('');
+    /* Roof form distribution */
+    const roofCounts={};
+    z.members.forEach(c=>{const rf=(c.roofForm||'unknown');roofCounts[rf]=(roofCounts[rf]||0)+1;});
+    const roofRows=Object.entries(roofCounts).sort((a,b)=>b[1]-a[1])
+      .map(([k,v])=>row(k,v+' ('+Math.round(v/n*100)+'%)')).join('');
+    /* Köppen distribution */
+    const kopCounts={};
+    z.members.forEach(c=>{const k=(Array.isArray(c.koppen)?c.koppen[0]:'')||'?';kopCounts[k]=(kopCounts[k]||0)+1;});
+    const kopRows=Object.entries(kopCounts).sort((a,b)=>b[1]-a[1])
+      .map(([k,v])=>row(k,v+' ('+Math.round(v/n*100)+'%)')).join('');
     mP.innerHTML=
-      '<p class="avgt-sec-head">Envelope, averaged</p>'+
+      '<p class="avgt-sec-head">Geometry (averages, n='+n+')</p>'+
       '<table class="avgt-metric-table">'+
         row('Floor area',r2(z.avgArea)+' m²')+
         row('Building height',r2(z.avgHeight)+' m')+
         row('Eave height',r2(z.avgEaveH)+' m')+
         row('Eave depth',r2(z.avgEaveDepth,2)+' m')+
         row('Wall thickness',r2(z.avgWallThk,2)+' m')+
-        row('Wall thickness N/S',r2(z.avgWallThkNS,2)+' m')+
-        row('Wall thickness E/W',r2(z.avgWallThkEW,2)+' m')+
         row('WWR',r2(z.avgWwr)+' %')+
         row('Roof pitch',r2(z.avgRoofPitch)+'°')+
         row('Compactness ψ',r2(z.avgPsi,3))+
         row('V/A ratio',r2(z.avgVA,2))+
         row('Thermal mass',r2(z.avgThermalMass)+' kJ/(m²K)')+
       '</table>'+
-      '<p class="avgt-sec-head">Dominant tags</p>'+
-      '<table class="avgt-metric-table">'+
-        row('Köppen',z.domKoppen||'')+
-        row('Country',z.domCountry||'')+
-        row('Construction',z.domStruct||'')+
-        row('Roof form',z.domRoofForm||'')+
-      '</table>'+
+      '<p class="avgt-sec-head">Construction material</p>'+
+      '<table class="avgt-metric-table">'+structRows+'</table>'+
+      '<p class="avgt-sec-head">Roof form</p>'+
+      '<table class="avgt-metric-table">'+roofRows+'</table>'+
+      '<p class="avgt-sec-head">Köppen (present)</p>'+
+      '<table class="avgt-metric-table">'+kopRows+'</table>'+
       '<p class="avgt-sec-head">Simulation (present / 2050 / 2080)</p>'+
       '<table class="avgt-metric-table">'+
-        row('TCP %',z.avgTcp.map((v)=>v!=null?f(v)+'%':'').join(' / '))+
-        row('HSP h/yr',z.avgHsp.map((v)=>v!=null?Math.round(v)+' h':'').join(' / '))+
-        row('NDP h/yr',z.avgNdp.map((v)=>v!=null?Math.round(v)+' h':'').join(' / '))+
+        row('TCP %',z.avgTcp.map((v)=>v!=null?f(v)+'%':'-').join(' / '))+
+        row('HSP h/yr',z.avgHsp.map((v)=>v!=null?Math.round(v)+' h':'-').join(' / '))+
+        row('NDP h/yr',z.avgNdp.map((v)=>v!=null?Math.round(v)+' h':'-').join(' / '))+
+        row('Country',z.domCountry||'-')+
       '</table>';
   }
 
@@ -10566,6 +10628,9 @@ function closeAvgTypWin(){
   document.getElementById("avgTypBtn").classList.remove("active");
   if(_avgPin){map.removeLayer(_avgPin);_avgPin=null;}
   if(_avgCircle){map.removeLayer(_avgCircle);_avgCircle=null;}
+  _avgLines.forEach(l=>map.removeLayer(l));_avgLines=[];
+  /* restore all marker opacities */
+  document.querySelectorAll('.leaflet-marker-icon').forEach(el=>{el.style.opacity='';});
 }
 function addAvgTypZone(){
   const win=document.getElementById("avgTypWin");
@@ -10577,9 +10642,9 @@ function addAvgTypZone(){
   const isDark=document.documentElement.classList.contains("dark");
   const bc=isDark?"#ffffff":"#111111";
   _avgPin=L.marker([center.lat,center.lng],{draggable:true,
-    icon:L.divIcon({className:"",html:"<div style='width:24px;height:24px;background:var(--terracotta);border:2px solid "+bc+";display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:11px;font-weight:700;color:#fff;cursor:move;'>Ø</div>",iconSize:[24,24],iconAnchor:[12,12]}),
+    icon:L.divIcon({className:'',html:"<div style='width:26px;height:26px;background:var(--terracotta);border:2.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:10px;font-weight:700;color:#fff;cursor:move;box-shadow:0 2px 8px rgba(0,0,0,.35);'>Ø</div>",iconSize:[26,26],iconAnchor:[13,13]}),
     zIndexOffset:500}).addTo(map);
-  _avgCircle=L.circle([center.lat,center.lng],{radius:r*1000,color:"var(--terracotta)",weight:1.5,dashArray:"6,4",fill:true,fillColor:"var(--terracotta)",fillOpacity:0.05,interactive:false}).addTo(map);
+  _avgCircle=L.circle([center.lat,center.lng],{radius:r*1000,color:'var(--terracotta)',weight:1.5,dashArray:'6,4',fill:true,fillColor:'var(--terracotta)',fillOpacity:0.05,interactive:false}).addTo(map);
   _avgPin.on("drag",e=>{_avgCircle.setLatLng(e.latlng);renderAvgTypWin();});
   _avgPin.on("dragend",()=>renderAvgTypWin());
   openAvgTypWin();
