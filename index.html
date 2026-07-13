@@ -595,6 +595,19 @@ html[data-theme="dark"] .viewer3d-fs-btn:hover{background:rgba(11,10,22,0.95);co
 .sim-fs-wrap.sim-fullscreen .climate-tabs-sidebar{
   align-self:flex-start;
 }
+/* left column: sidebar buttons stacked; sim-grid appended below by JS in fullscreen */
+.sim-left-col{
+  display:flex;flex-direction:column;gap:8px;flex:none;
+}
+/* in fullscreen the left col holds metric cells too — needs real width */
+.sim-fs-wrap.sim-fullscreen .sim-left-col{
+  width:180px;
+}
+/* sim-grid when inside the left col: single flex column, compact cells */
+.sim-left-col .sim-grid{
+  display:flex!important;flex-direction:column!important;
+  gap:5px!important;margin-top:0!important;
+}
 .sim-fs-wrap.sim-fullscreen .viewer3d-canvas-box{
   flex:1;min-height:0;height:auto!important;
 }
@@ -610,7 +623,10 @@ html[data-theme="dark"] .viewer3d-fs-btn:hover{background:rgba(11,10,22,0.95);co
   display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:0!important;
 }
 .sim-fs-wrap.sim-fullscreen .action-btn-wrap{margin-top:0!important;}
-/* fullscreen: .block must fill remaining height and scroll to expose metric grid */
+/* in fullscreen: square buttons stretch to full left-col width */
+.sim-fs-wrap.sim-fullscreen .climate-tab-square{
+  width:100%!important;height:72px;
+}
 .sim-fs-wrap.sim-fullscreen > .block{
   flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;
 }
@@ -5589,7 +5605,16 @@ function toggleSimFullscreen(slot){
     wrap._escHandler=onEsc;
   }else{
     if(wrap._escHandler){document.removeEventListener('keydown',wrap._escHandler);wrap._escHandler=null;}
-    /* restore renderer size to normal */
+  /* move sim-grid into left col when entering fullscreen, restore on exit */
+  const grid=document.getElementById('simGrid-'+slot);
+  const leftCol=document.getElementById('simLeftCol-'+slot);
+  const recBtn=document.getElementById('recToggleBtn-'+slot);
+  if(entering){
+    if(grid&&leftCol)leftCol.appendChild(grid);
+  }else{
+    if(grid&&recBtn&&recBtn.parentNode)recBtn.parentNode.insertBefore(grid,recBtn);
+  }
+  /* restore renderer size to normal */
     if(v&&v.renderer){
       requestAnimationFrame(()=>{
         if(!box)return;
@@ -6821,8 +6846,11 @@ function caseDetailHTML(c,slot){
         </div>
       <div class="block" style="margin-top:12px;">
         <div class="climate-tabs-row">
-          <div class="diagram-tabs sim-tabs-sidebar climate-tabs-sidebar" id="diagramTabs-${slot}">
-            ${Object.keys(DIAGRAM_META).map(k=>`<button class="diagram-tab sim-tab climate-tab-square ${k===dtab?'active':''}" data-diagram="${k}" data-slot="${slot}">${DIAGRAM_META[k].label}</button>`).join('')}
+          <!-- left col: diagram-tab buttons; sim-grid moved here by JS on fullscreen enter -->
+          <div class="sim-left-col" id="simLeftCol-${slot}">
+            <div class="diagram-tabs sim-tabs-sidebar climate-tabs-sidebar" id="diagramTabs-${slot}">
+              ${Object.keys(DIAGRAM_META).map(k=>`<button class="diagram-tab sim-tab climate-tab-square ${k===dtab?'active':''}" data-diagram="${k}" data-slot="${slot}">${DIAGRAM_META[k].label}</button>`).join('')}
+            </div>
           </div>
           <div class="climate-tabs-content">
             <div class="viewer3d-canvas-box" id="viewer3d-${slot}"><div class="viewer3d-hint">drag to rotate</div><button class="viewer3d-fs-btn" title="fullscreen" onclick="toggleSimFullscreen('${slot}')">⛶</button></div>
@@ -6845,12 +6873,12 @@ function caseDetailHTML(c,slot){
             <div class="heat-legend"><div class="heat-legend-bar" id="simLegendBar-${slot}"></div><div class="heat-legend-labels"><span>low</span><span>high</span></div></div>
             <div class="diagram-caption" id="diagramCaption-${slot}"></div>
             </div><!-- /sim-fs-controls -->
+            <div class="action-btn-wrap" style="margin-top:6px;">
+              <button class="sim-refetch-btn" id="simRefetchBtn-${slot}" data-slot="${slot}" data-cid="${c.id}">
+                <span class="rfetch-arrow">↙</span>&gt;refetch <em>SIMULATION</em>
+              </button>
+            </div>
           </div>
-        </div>
-        <div class="action-btn-wrap" style="margin-top:10px;">
-          <button class="sim-refetch-btn" id="simRefetchBtn-${slot}" data-slot="${slot}" data-cid="${c.id}">
-            <span class="rfetch-arrow">↙</span>&gt;refetch <em>SIMULATION</em>
-          </button>
         </div>
         <div class="sim-grid" id="simGrid-${slot}" style="margin-top:10px;">
           <div class="sim-cell"><div class="k">TCP, thermal comfort probability</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
