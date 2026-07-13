@@ -4219,6 +4219,13 @@ function selectCaseCore(id){
   selectedId=id;compareId=null;pickingCompare=false;
   renderPanel();
   if(map)refreshMap();
+  /* zoom map to the selected case — works whether triggered from a marker
+     click or from the mosaic; keeps current zoom if already > 9 */
+  const _sc=byId(id);
+  if(map&&_sc&&_sc.hasCoord){
+    const _z=Math.max(map.getZoom(),9);
+    map.flyTo([_sc.lat,_sc.lon],_z,{duration:0.8,easeLinearity:0.4});
+  }
 }
 
 function selectCase(id){
