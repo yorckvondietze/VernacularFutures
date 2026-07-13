@@ -7382,6 +7382,12 @@ function loremParagraph(seed){
 }
 
 function dynV(v){return '<span class="dyn-val">'+v+'</span>';}
+function dynSev(sev){
+  const col=sev==='close analogue'?'var(--moss,#2d7a2d)':
+             sev==='loose analogue'?'var(--ochre)':
+             sev==='marginal mismatch'?'var(--rust)':
+             sev==='major mismatch'?'#b02020':'var(--ink-faint)';
+  return '<span class="dyn-val" style="background:transparent;border:1px solid '+col+';color:'+col+'">'+sev+'</span>';}
 /* inline ⓘ explaining how a number is derived (+ optional academic cite) */
 function fcInfo(head,body,cite){
   return '<span class="fc-info" tabindex="0">ⓘ<span class="fc-info-pop">'
@@ -7996,7 +8002,8 @@ function koppenShiftTableHTML(){
    fingerprint, nearest = big brother. Distance → mismatch severity. */
 function bbSeverity(dist){
   if(dist==null||!isFinite(dist))return 'no analogue';
-  if(dist<0.55)return 'close analogue';
+  if(dist<0.25)return 'close analogue';
+  if(dist<0.55)return 'loose analogue';
   if(dist<BB_MAX_DISTANCE)return 'marginal mismatch';
   return 'major mismatch';
 }
@@ -8555,7 +8562,7 @@ function showFinding(id){
     <button class="dynfind-btn" id="dynFindBtn">&gt;dynamic<em>FINDINGS</em></button>
     <span class="action-info-icon" id="dynFindInfoIcon" style="font-size:12px;position:relative;">ⓘ<div class="action-info-pop" id="dynFindInfoPop" style="width:320px;">
       <div class="ai-head">dynamicFindings</div>
-      <div class="ai-body">${loremParagraph(1)}</div>
+      <div class="ai-body">dynamicFINDINGS generates live findings, that are always based on the current corpus. Click to refetch data.</div>
     </div></span>
   </div>`;
   let bodyHtml='';
@@ -8693,7 +8700,7 @@ function wireMismatchButtons(){
               <p style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin:0 0 4px;">${lbl}</p>
               <div class="fc-tmrow"><span class="tm-label">${cs.id} \u00b7 ${cs.name||''}</span><span style="font-size:9px;color:var(--ink-soft);">subject</span></div>
               <div class="fc-tmrow"><span class="tm-label">${dynV(r.brother.id)} \u00b7 ${dynV(r.brother.name||r.brother.id)}</span><span style="font-size:9px;color:var(--ink-soft);">vernacularBIGBROTHER</span></div>
-              <div class="fc-tmrow"><span class="tm-label">Mismatch</span><span>${dynV(r.severity)} <span style="color:var(--ink-faint);font-size:9px;">(d\u202f=\u202f${r.dist.toFixed(2)}, pool n\u202f=\u202f${r.poolN||'?'})</span></span></div>
+              <div class="fc-tmrow"><span class="tm-label">Mismatch</span><span>${dynSev(r.severity)} <span style="color:var(--ink-faint);font-size:9px;">(d\u202f=\u202f${r.dist.toFixed(2)}, pool n\u202f=\u202f${r.poolN||'?'})</span></span></div>
             </div>`
           :`<div class="fc-tmrow"><span class="tm-label">${lbl}</span><span style="color:var(--ink-faint)">no analogue found or EPW unavailable</span></div>`;
         h.innerHTML=line('2050 SSP5-8.5',r50)+line('2080 SSP5-8.5',r80);
@@ -8711,7 +8718,7 @@ function wireMismatchButtons(){
         const body=worst.map(r=>`<tr>
           <td style="padding:5px 6px;font-family:var(--mono);font-size:10px;">${r.id}<br><span style="color:var(--ink-soft);font-size:9px;">${r.name}</span></td>
           <td style="padding:5px 6px;font-family:var(--mono);font-size:10px;">${dynV(r.brotherId)}<br><span style="color:var(--ink-soft);font-size:9px;">${dynV(r.brother)}</span></td>
-          <td style="padding:5px 6px;">${dynV(r.severity)}</td>
+          <td style="padding:5px 6px;">${dynSev(r.severity)}</td>
           <td style="padding:5px 6px;color:var(--ink-faint);font-size:10px;">${r.dist.toFixed(2)}</td>
         </tr>`).join('');
         h.innerHTML=`<p style="margin:8px 0 6px;font-family:var(--mono);font-size:10px;color:var(--ink-faint);">ALL MISMATCHES \u2192 ${yr} &nbsp;\u00b7\u00b7&nbsp; geometry cases (n\u202f=\u202f${rows.length}), sorted worst\u2192best</p>`
