@@ -5874,6 +5874,7 @@ function createNoDataCube(container,slot,label){
     window.addEventListener('pointermove',onMove);
     window.addEventListener('pointerup',onUp);
     window.addEventListener('resize',onResize);
+    requestAnimationFrame(()=>requestAnimationFrame(onResize));
 
     /* register before tick so VIEWERS[slot].raf = N works */
     const thisViewer={renderer,scene,camera,container,onDown,onMove,onUp,onResize,raf:0};
@@ -6211,6 +6212,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
     container.addEventListener('pointermove',e=>{onHover(e);if(!drag)return;az-=(e.clientX-lx)*0.006;pol=Math.max(0.15,Math.min(1.45,pol-(e.clientY-ly)*0.006));lx=e.clientX;ly=e.clientY;place();});
     container.addEventListener('pointerdown',onDown);
     window.addEventListener('pointerup',onUp);window.addEventListener('resize',onResize);
+    requestAnimationFrame(()=>requestAnimationFrame(onResize));
     /* expose update hooks */
     VIEWERS[slot]={renderer,scene,camera,container,onDown,onMove,onUp,onResize,raf:null,
       _updateScene:updateScene,
@@ -6458,6 +6460,7 @@ function createViewer(container,c,slot){
     window.addEventListener('pointermove',onMove);
     window.addEventListener('pointerup',onUp);
     window.addEventListener('resize',onResize);
+    requestAnimationFrame(()=>requestAnimationFrame(onResize));
 
     function tick(){
       VIEWERS[slot].raf=requestAnimationFrame(tick);
@@ -7309,7 +7312,7 @@ document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>
   b.classList.add('active');document.getElementById('view-'+b.dataset.tab).classList.add('active');
   if(b.dataset.tab==='cases'&&map)setTimeout(()=>map.invalidateSize(),60);
   if(b.dataset.tab==='method'&&typeof _pipeFit==='function')setTimeout(_pipeFit,60);
-  if(b.dataset.tab==='findings'){const fid=_currentFindingId||(FINDINGS[0]&&FINDINGS[0].items[0]&&FINDINGS[0].items[0].id);if(fid)setTimeout(()=>showFinding(fid),0);}}))
+  if(b.dataset.tab==='findings'){const fid=_currentFindingId||(FINDINGS[0]&&FINDINGS[0].items[0]&&FINDINGS[0].items[0].id);if(fid)setTimeout(()=>showFinding(fid),0);ensureSimDataPrefetched();}}))
 
 /* TAB II */
 /* TAB II, FINDINGS / RECOMMENDATIONS
@@ -8572,6 +8575,50 @@ function showFinding(id){
   wireMismatchButtons();
 }
 
+
+/* ── Batch-prefetch viz JSONs for all EGG_SHAPES cases ──────────────────────
+   Called when the Findings tab opens or when >dynamicFINDINGS is pressed.
+   Fetches are run 4 at a time so we don't hammer R2 with 35 simultaneous
+   requests. After each batch, if the current finding is visible, re-render it
+   so values appear as they arrive.                                           */
+function prefetchAllSimData(onDone){
+  const ids=Object.keys(EGG_SHAPES||{});
+  const todo=ids.filter(id=>!SIM_VIZ_CACHE[id]&&!SIM_CACHE[id]);
+  if(!todo.length){if(onDone)onDone();return;}
+  const SCNS=['present','ssp585_2050','ssp585_2080'];
+  function fetchOne(id){
+    return Promise.all(SCNS.map(s=>
+      fetch(`${DATA_BASE}/sim_output/viz/${id}_${s}.json`)
+        .then(r=>r.ok?r.json():null).catch(()=>null)
+        .then(d=>d||fetch(`${DATA_BASE}/sim_output/viz/_${id}_${s}.json`)
+          .then(r=>r.ok?r.json():null).catch(()=>null))
+    )).then(([p,s5,s8])=>{
+      if(p||s5||s8)SIM_VIZ_CACHE[id]={present:p,ssp585_2050:s5,ssp585_2080:s8};
+    }).catch(()=>{});
+  }
+  /* run in batches of 4 */
+  function runBatch(i){
+    if(i>=todo.length){
+      /* all done — re-render current finding once */
+      if(_currentFindingId&&typeof showFinding==='function')showFinding(_currentFindingId);
+      if(onDone)onDone();
+      return;
+    }
+    Promise.all(todo.slice(i,i+4).map(fetchOne)).then(()=>{
+      /* partial re-render after each batch so values appear incrementally */
+      if(_currentFindingId&&typeof showFinding==='function')showFinding(_currentFindingId);
+      runBatch(i+4);
+    });
+  }
+  runBatch(0);
+}
+let _simPrefetchStarted=false;
+function ensureSimDataPrefetched(){
+  if(_simPrefetchStarted)return;
+  _simPrefetchStarted=true;
+  prefetchAllSimData();
+}
+
 /* what the >dynamicFINDINGS button does depends on the finding:
    always blink the dynamic values; additionally trigger any deferred
    calculation (eave depth) that waits for an explicit press. */
@@ -8581,7 +8628,10 @@ function onDynamicFindings(id){
     blinkDynamicFindings();
     return;
   }
-  /* Re-render body with current CASES, then blink the updated values */
+  /* Kick off sim data prefetch (no-op if already done), then re-render */
+  _simPrefetchStarted=false; /* allow re-trigger on explicit button press */
+  prefetchAllSimData(()=>requestAnimationFrame(()=>blinkDynamicFindings()));
+  /* Re-render immediately with whatever data is already cached */
   showFinding(id);
   requestAnimationFrame(()=>blinkDynamicFindings());
 }
