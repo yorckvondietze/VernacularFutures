@@ -585,7 +585,7 @@ html[data-theme="dark"] .viewer3d-fs-btn:hover{background:rgba(11,10,22,0.95);co
 .viewer3d-canvas-box.viewer3d-fullscreen .viewer3d-hint{bottom:14px;right:16px;}
 .viewer3d-canvas-box.viewer3d-fullscreen .viewer3d-fs-btn{top:14px;right:16px;font-size:15px;}
 .heat-legend{margin-top:9px;}
-.heat-legend-bar{height:8px;border-radius:0;background:linear-gradient(to right,#D10A14,#F29500,#E0E000,#0AB837,#00804A);}
+.heat-legend-bar{height:8px;border-radius:0;background:linear-gradient(to right,#A50026,#D73027,#F46D43,#FDAE61,#FEE08B,#D9EF8B,#A6D96A,#66BD63,#1A9850,#006837);}
 .heat-legend-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin-top:3px;}
 .diagram-caption{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);margin-top:8px;line-height:1.5;}
 .sim-cell{border:1px solid var(--line);border-radius:0;padding:9px 11px;}
@@ -6222,14 +6222,18 @@ function wireDiagramTabs(c,slot){
     });
   }));
 }
-/* Update the gradient legend bar to match the active metric direction:
-   tcp/ndp = red (bad) → green (good)  |  hsp = green (good) → red (bad)
-   t_op = blue (cold) → red (hot) */
+/* Legend gradient bars derived directly from SIM_CMAPS stops —
+   guaranteed to always match the sensor grid colours exactly.
+   toCSS() converts each RGB 0-1 stop to a CSS rgb() colour. */
+function cmapToGradient(stops,dir='to right'){
+  const s=stops.map(([r,g,b])=>`rgb(${Math.round(r*255)},${Math.round(g*255)},${Math.round(b*255)})`).join(',');
+  return `linear-gradient(${dir},${s})`;
+}
 const LEGEND_GRADIENTS={
-  tcp:'linear-gradient(to right,#D10A14,#F29500,#E0E000,#0AB837,#00804A)',
-  ndp:'linear-gradient(to right,#D10A14,#F29500,#E0E000,#0AB837,#00804A)',
-  hsp:'linear-gradient(to right,#00804A,#0AB837,#E0E000,#F29500,#D10A14)',
-  t_op:'linear-gradient(to right,#1428B8,#008CE5,#00D096,#E0E000,#F86400,#E0100D)',
+  tcp: cmapToGradient(SIM_CMAPS.tcp),   /* crimson → forest green */
+  hsp: cmapToGradient(SIM_CMAPS.hsp),   /* pale teal → deep maroon */
+  ndp: cmapToGradient(SIM_CMAPS.ndp),   /* deep red → forest green */
+  t_op:cmapToGradient(SIM_CMAPS.t_op),  /* indigo → crimson        */
 };
 function updateLegendGradient(slot,metric){
   const bar=document.getElementById('simLegendBar-'+slot);
