@@ -9953,36 +9953,6 @@ function openEggGame(){
   eggReset();
   document.getElementById('eggOverlay').style.display='flex';
   eggLastTs=0;
-  /* wire canvas click for char-select + jump */
-  const canvas=document.getElementById('eggCanvas');
-  if(canvas&&!canvas._eggClickWired){
-    canvas._eggClickWired=true;
-    canvas.addEventListener('click',e=>{
-      if(!eggOpen)return;
-      if(eggSelecting){
-        /* check which box was clicked */
-        const rect=canvas.getBoundingClientRect();
-        const scaleX=EGG_W/rect.width;
-        const cx=(e.clientX-rect.left)*scaleX;
-        const cy=(e.clientY-rect.top)*(EGG_H/rect.height);
-        const boxes=canvas._eggSelBoxes||[];
-        let hit=false;
-        for(const b of boxes){
-          if(cx>=b.x&&cx<=b.x+b.w&&cy>=b.y&&cy<=b.y+b.h){
-            eggCharacter=b.key;
-            hit=true;
-            break;
-          }
-        }
-        if(!hit){
-          /* click outside boxes = confirm selection and start */
-          eggSelecting=false;
-        }
-        return;
-      }
-      eggJump();
-    });
-  }
   eggRaf=requestAnimationFrame(eggTick);
 }
 /* ── Character sprites for _climate_runner ──────────────────────────────────
@@ -10031,7 +10001,6 @@ function closeEggGame(){
 }
 function eggJump(){
   if(!eggOpen)return;
-  if(eggSelecting){eggSelecting=false;return;} /* space confirms char selection */
   if(!eggStarted){eggStarted=true;return;}
   if(eggGameOver){eggReset();eggStarted=true;return;}
   if(eggPlayerY>=0){eggPlayerVY=EGG_JUMP_V;}
@@ -10223,10 +10192,29 @@ function eggDraw(){
 }
 
 document.getElementById('eggCloseBtn').addEventListener('click',()=>closeEggGame());
-document.getElementById('eggCanvas').addEventListener('pointerdown',e=>{e.preventDefault();eggJump();});
+document.getElementById('eggCanvas').addEventListener('pointerdown',e=>{
+  e.preventDefault();
+  if(eggSelecting){
+    /* hit-test the character boxes */
+    const canvas=document.getElementById('eggCanvas');
+    const rect=canvas.getBoundingClientRect();
+    const cx=(e.clientX-rect.left)*(EGG_W/rect.width);
+    const cy=(e.clientY-rect.top)*(EGG_H/rect.height);
+    const boxes=canvas._eggSelBoxes||[];
+    let hit=false;
+    for(const b of boxes){
+      if(cx>=b.x&&cx<=b.x+b.w&&cy>=b.y&&cy<=b.y+b.h){
+        eggCharacter=b.key;hit=true;break;
+      }
+    }
+    if(!hit)eggSelecting=false; /* click outside boxes = confirm + start */
+    return;
+  }
+  eggJump();
+});
 document.addEventListener('keydown',e=>{
   if(!eggOpen)return;
-  if(e.code==='Space'||e.key===' '||e.code==='ArrowUp'||e.key==='ArrowUp'){e.preventDefault();eggJump();}
+  if(e.code==='Space'||e.key===' '||e.code==='ArrowUp'||e.key==='ArrowUp'){e.preventDefault();if(eggSelecting){eggSelecting=false;}else{eggJump();}}
   else if(e.key==='Escape'){closeEggGame();}
 });
 document.addEventListener('click',e=>{
