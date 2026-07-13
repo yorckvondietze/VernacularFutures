@@ -2478,7 +2478,7 @@ function rebuildMarkers(){
   const bounds=[];
   CASES.filter(c=>c.hasCoord).forEach(c=>{
     const mk=L.circleMarker([c.lat,c.lon],{radius:7,weight:0,fillColor:kcolor(c.koppen[scn]),fillOpacity:0.92});
-    mk.bindTooltip(`<b>${c.name||c.id}</b><br>${c.region}  ${c.koppen[scn]||'–'}`,{direction:'top',offset:[0,-6]});
+    mk.bindTooltip(`<b>${c.name||c.id}</b><br>${c.id}  ${c.region}  ${c.koppen[scn]||'–'}`,{direction:'top',offset:[0,-6]});
     mk.on('click',()=>selectCase(c.id));mk._cid=c.id;mk.addTo(map);markers.push(mk);bounds.push([c.lat,c.lon]);
   });
   if(bounds.length)map.fitBounds(bounds,{padding:[30,30]});
@@ -5797,11 +5797,24 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
     }
     /* window apertures from viz JSON, opening_w layer only */
     const _aps=_vizBld?(_vizBld.apertures||[]):[];
+    /* Terracotta outline + semi-transparent fill — visible on both dark and light backgrounds */
+    const WIN_COLOR=0xE07010;
     _aps.forEach(ap=>{
       if(!ap.p0||!ap.p1||!ap.p2||!ap.p3)return;
-      const winMat=new THREE.LineBasicMaterial({color:0xffffff,opacity:0.9,transparent:true});
       const pts=[ap.p0,ap.p1,ap.p2,ap.p3,ap.p0].map(([x,y,z])=>new THREE.Vector3(x,z,-y));
+      /* outline */
+      const winMat=new THREE.LineBasicMaterial({color:WIN_COLOR,opacity:1,transparent:false});
       group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),winMat));
+      /* filled face — two triangles so it renders as a solid quad */
+      const [p0,p1,p2,p3]=pts;
+      const fGeo=new THREE.BufferGeometry();
+      const verts=new Float32Array([
+        p0.x,p0.y,p0.z, p1.x,p1.y,p1.z, p2.x,p2.y,p2.z,
+        p0.x,p0.y,p0.z, p2.x,p2.y,p2.z, p3.x,p3.y,p3.z,
+      ]);
+      fGeo.setAttribute('position',new THREE.BufferAttribute(verts,3));
+      const fMat=new THREE.MeshBasicMaterial({color:WIN_COLOR,transparent:true,opacity:0.22,side:THREE.DoubleSide});
+      group.add(new THREE.Mesh(fGeo,fMat));
     });
     /* ground plane */
     const gd=new THREE.Mesh(new THREE.PlaneGeometry(60,60),new THREE.MeshBasicMaterial({color:dark?0x111113:0xe8e4de,transparent:true,opacity:0.35}));
