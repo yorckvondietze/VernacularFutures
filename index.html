@@ -606,6 +606,10 @@ html[data-theme="dark"] .viewer3d-fs-btn:hover{background:rgba(11,10,22,0.95);co
   display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:0!important;
 }
 .sim-fs-wrap.sim-fullscreen .action-btn-wrap{margin-top:0!important;}
+/* fullscreen: .block must fill remaining height and scroll to expose metric grid */
+.sim-fs-wrap.sim-fullscreen > .block{
+  flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;
+}
 /* fullscreen close button row */
 .sim-fs-header{display:none;justify-content:space-between;align-items:center;margin-bottom:8px;}
 .sim-fs-wrap.sim-fullscreen .sim-fs-header{display:flex;}
