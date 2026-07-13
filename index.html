@@ -798,6 +798,15 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 .pcb-icon::before{transform:rotate(45deg);}
 .pcb-icon::after{transform:rotate(-45deg);}
 /* collapsed state = + (horizontal + vertical bars) */
+.card-collapse-btn .pcb-icon::before,.card-collapse-btn .pcb-icon::after{
+  content:'';position:absolute;left:0;top:calc(50% - 0.7px);
+  width:14px;height:1.4px;background:var(--ink-faint);
+  transition:transform .25s ease;
+}
+.card-collapse-btn .pcb-icon::before{transform:rotate(45deg);}
+.card-collapse-btn .pcb-icon::after{transform:rotate(-45deg);}
+.card-window.card-collapsed .card-collapse-btn .pcb-icon::before{transform:rotate(0deg);}
+.card-window.card-collapsed .card-collapse-btn .pcb-icon::after{transform:rotate(90deg);}
 .pipeline-window.collapsed .pcb-icon::before{transform:rotate(90deg);}
 .pipeline-window.collapsed .pcb-icon::after{transform:rotate(0deg);}
 .pipe-collapse-btn:hover .pcb-icon::before,
@@ -1988,8 +1997,8 @@ html[data-theme="dark"] .loader-status{
       </div>
 
       <div class="card-window" style="margin:24px 0;">
-        <div class="card-titlebar"><span class="win-title">_team_and_contact</span><span class="win-controls"><span class="c-close"></span></span></div>
-        <div class="team-grid">
+        <div class="card-titlebar card-collapsible" data-target="team-grid-body"><span class="win-title">_team_and_contact</span><span class="win-controls"><button class="pipe-collapse-btn card-collapse-btn" title="collapse / expand" aria-label="collapse"><span class="pcb-icon"></span></button></span></div>
+        <div class="team-grid" id="team-grid-body">
           <div class="team-block">
             <div class="team-label">Research team</div>
             <div class="team-value">Sinem Vatansever<br>Moritz Saul<br>Yorck von Dietze<br>Toprak Tilic</div>
@@ -2013,8 +2022,8 @@ html[data-theme="dark"] .loader-status{
         </div>
       </div>
       <div class="card-window" style="margin:24px 0;">
-        <div class="card-titlebar"><span class="win-title">_sources_bibliography</span><span class="win-controls"><span class="c-close"></span></span></div>
-        <p style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);padding:10px 22px 0;letter-spacing:0.06em;">APA 7TH EDITION &nbsp;&nbsp; <span style="border-left:2px solid var(--terracotta);padding-left:6px;">terracotta border = primary source</span></p>
+        <div class="card-titlebar card-collapsible" data-target="bib-body"><span class="win-title">_sources_bibliography</span><span class="win-controls"><button class="pipe-collapse-btn card-collapse-btn" title="collapse / expand" aria-label="collapse"><span class="pcb-icon"></span></button></span></div>
+        <div id="bib-body"><p style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);padding:10px 22px 0;letter-spacing:0.06em;">APA 7TH EDITION &nbsp;&nbsp; <span style="border-left:2px solid var(--terracotta);padding-left:6px;">terracotta border = primary source</span></p>
         <ul class="source-list">
           <li><span class="src-au">Antonescu, G., Pescari, R.-I., Socalici, A., &amp; Taus, D.</span> (2023). Thermophysical characteristics of clay for efficient rammed earth wall construction. <span class="src-j">Materials</span>, 16(17), 5978.</li>
           <li><span class="src-au">Armstrong McKay, D. I., Staal, A., Abrams, J. F., Winkelmann, R., Sakschewski, B., Loriani, S., Fetzer, I., Cornell, S. E., Rockström, J., &amp; Lenton, T. M.</span> (2022). Exceeding 1.5°C global warming could trigger multiple climate tipping points. <span class="src-j">Science</span>, 377(6611), eabn7950.</li>
@@ -2069,7 +2078,7 @@ html[data-theme="dark"] .loader-status{
           <li><span class="src-au">White, J. A., Waybright, T., &amp; Henninger, R. H.</span> (Eds.). (2022). <span class="src-j">Climate.OneBuilding.org: Repository of free climate data for building performance simulation</span> [Data set].</li>
           <li><span class="src-au">Xu, C., Kohler, T. A., Lenton, T. M., Svenning, J.-C., &amp; Scheffer, M.</span> (2020). Future of the human climate niche. <span class="src-j">Proceedings of the National Academy of Sciences</span>, 117(21), 11350–11355.</li>
           <li><span class="src-au">Yen, Y. C.</span> (1981). Review of thermal properties of snow, ice and sea ice. U.S. Army Cold Regions Research and Engineering Laboratory.</li>
-        </ul>
+        </ul></div>
       </div>
     </div>
   </section>
@@ -5317,15 +5326,74 @@ function vizCacheToSimData(vc){
 const SIM_STEP={A:0,B:0};   /* continuous slider 0-8 per slot */
 let _simDrivingSlot=null;    /* set to 'A'|'B' while small slider is driving, prevents snap-back */
 const NDP_THRESHOLD=1000;   /* Artmann et al. 2007 h/yr */
+/* ── Sensor grid colormaps ───────────────────────────────────────────────────
+   Every array is RGB 0-1 at equally-spaced stops.  simCmap() lerps between
+   them so you always get a smooth continuous gradient.
+
+   TCP  (t=0 → worst comfort, t=1 → best comfort)
+        Based on RdYlGn diverging scheme (ColorBrewer), standard in ASHRAE 55 /
+        EN 15251 compliance mapping.  Deep red at 0 % → amber → pale yellow →
+        yellow-green → forest green at 100 %.
+
+   HSP  (t=0 → no overheating, t=1 → max overheating)
+        Sequential warm scheme used in overheating literature (e.g. Artmann et
+        al. 2007/2008).  Pale teal at 0 h/yr transitions through gold at the
+        1000 h/yr Artmann threshold to deep maroon at the saturation end.
+
+   NDP  (t=0 → no discharge potential, t=1 → excellent cooling potential)
+        Mirrors HSP but inverted: red (no potential) → amber → cool green/teal.
+        Artmann 1000 h/yr maps to the amber band (t ≈ 0.5 on the 2000 h scale).
+
+   T_op (t=0 → ~10 °C cold, t=1 → ~40 °C very hot)
+        Standard diverging thermometric palette (RdYlBl-derived), identical to
+        ERA5 / CMIP6 near-surface temperature plots in climate science.          */
 const SIM_CMAPS={
-  /* tcp:  0=catastrophic (deep red) → 1=excellent (deep green). Clean semantic. */
-  tcp: [[0.82,0.04,0.08],[0.95,0.25,0.0],[0.98,0.58,0.0],[0.88,0.88,0.0],[0.40,0.88,0.08],[0.04,0.72,0.22],[0.0,0.50,0.28]],
-  /* hsp:  mirror of tcp, 0=safe (deep green) → 1=overheating (deep red) */
-  hsp: [[0.0,0.50,0.28],[0.04,0.72,0.22],[0.40,0.88,0.08],[0.88,0.88,0.0],[0.98,0.58,0.0],[0.95,0.25,0.0],[0.82,0.04,0.08]],
-  /* ndp:  same direction as tcp, more hours = better cooling */
-  ndp: [[0.82,0.04,0.08],[0.95,0.25,0.0],[0.98,0.58,0.0],[0.88,0.88,0.0],[0.40,0.88,0.08],[0.04,0.72,0.22],[0.0,0.50,0.28]],
-  /* t_op: thermal, cold blue to hot red */
-  t_op:[[0.08,0.16,0.72],[0.0,0.55,0.90],[0.0,0.82,0.58],[0.88,0.88,0.0],[0.98,0.50,0.0],[0.88,0.08,0.08]],
+  tcp:[
+    [0.647,0.000,0.149],  /* 0 %   — deep crimson  */
+    [0.843,0.188,0.153],  /* 14 %  — red            */
+    [0.957,0.427,0.263],  /* 29 %  — orange-red     */
+    [0.992,0.682,0.380],  /* 43 %  — warm amber     */
+    [0.996,0.878,0.545],  /* 57 %  — pale gold      */
+    [0.851,0.937,0.545],  /* 71 %  — yellow-green   */
+    [0.651,0.851,0.416],  /* 79 %  — light green    */
+    [0.400,0.741,0.388],  /* 86 %  — medium green   */
+    [0.102,0.596,0.314],  /* 93 %  — green          */
+    [0.000,0.408,0.216],  /* 100 % — forest green   */
+  ],
+  hsp:[
+    [0.910,0.961,0.961],  /* 0 h    — pale teal-white (negligible)  */
+    [0.639,0.831,0.831],  /* 150 h  — light teal                    */
+    [0.361,0.737,0.722],  /* 300 h  — teal                          */
+    [0.200,0.627,0.588],  /* 500 h  — medium teal-green             */
+    [0.949,0.812,0.392],  /* 750 h  — gold (approaching threshold)  */
+    [0.941,0.627,0.188],  /* 1000 h — amber  ←  Artmann threshold   */
+    [0.878,0.298,0.188],  /* 1500 h — orange-red                    */
+    [0.753,0.094,0.125],  /* 2000 h — crimson                       */
+    [0.439,0.000,0.063],  /* 3000 h — deep maroon                   */
+  ],
+  ndp:[
+    [0.502,0.000,0.149],  /* 0 h    — deep red (no potential)    */
+    [0.796,0.094,0.114],  /* 250 h  — red                        */
+    [0.957,0.306,0.169],  /* 500 h  — orange-red                 */
+    [0.992,0.627,0.247],  /* 750 h  — amber                      */
+    [0.996,0.859,0.447],  /* 1000 h — pale gold  ← Artmann       */
+    [0.741,0.902,0.588],  /* 1300 h — yellow-green               */
+    [0.471,0.773,0.475],  /* 1600 h — medium green               */
+    [0.141,0.518,0.267],  /* 1800 h — green                      */
+    [0.000,0.267,0.106],  /* 2000 h — deep forest green           */
+  ],
+  t_op:[
+    [0.192,0.212,0.584],  /* ~10 °C — deep indigo-blue            */
+    [0.271,0.459,0.706],  /* ~14 °C — blue                        */
+    [0.455,0.678,0.820],  /* ~18 °C — steel blue                  */
+    [0.671,0.851,0.914],  /* ~21 °C — pale blue (lower comfort)   */
+    [0.996,0.996,0.749],  /* ~23 °C — cream/neutral (comfort)     */
+    [0.996,0.878,0.565],  /* ~25 °C — pale amber (upper comfort)  */
+    [0.992,0.682,0.380],  /* ~28 °C — amber                       */
+    [0.957,0.427,0.263],  /* ~32 °C — orange-red                  */
+    [0.843,0.188,0.153],  /* ~36 °C — red                         */
+    [0.647,0.000,0.149],  /* ~40 °C — deep crimson                */
+  ],
 };
 function simCmap(t,metric){
   const c=SIM_CMAPS[metric]||SIM_CMAPS.t_op;t=Math.max(0,Math.min(1,t));
@@ -5342,10 +5410,10 @@ function simInterp(d,step){
 }
 function simNorm(v,metric){
   if(v==null)return 0.5;
-  if(metric==='tcp') return Math.max(0,Math.min(1,v/100));        /* 0%=red, 100%=green */
-  if(metric==='hsp') return Math.max(0,Math.min(1,v/1500));       /* 0=green, 1500h=red (realistic max) */
-  if(metric==='ndp') return Math.max(0,Math.min(1,v/2000));       /* 0=red, 2000h=green; 1000h=Artmann midpoint */
-  return Math.max(0,Math.min(1,(v-14)/26));                        /* t_op: 14°C=blue, 40°C=red */
+  if(metric==='tcp') return Math.max(0,Math.min(1,v/100));         /* 0%=deep red, 100%=forest green */
+  if(metric==='hsp') return Math.max(0,Math.min(1,v/3000));        /* 0=teal, 3000h=maroon (Artmann at 0.33) */
+  if(metric==='ndp') return Math.max(0,Math.min(1,v/2000));        /* 0=red, 2000h=forest green (Artmann at 0.5) */
+  return Math.max(0,Math.min(1,(v-10)/30));                         /* t_op: 10°C=indigo, 40°C=crimson */
 }
 const SIM_YEAR_LABELS=['TMYx','~2030','~2040','2050','~2057','~2064','~2070','~2075','2080'];
 
@@ -5684,15 +5752,21 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
         const nMin=Math.min(...nArr),nMax=Math.max(...nArr);
         const nR=Math.max(nMax-nMin,0.02); /* guard against degenerate flat grid */
         const cg=new THREE.Group();cg.isGroup=true;
+        const hasRadiance=grid.method==='radiance_adaptive_comfort_map';
         grid.cells.forEach(cell=>{
           const cellN=metric==='tcp'?(cell.n_tcp??cell.n):cell.n;
           const stretched=(cellN-nMin)/nR;          /* 0=best cell, 1=worst */
-          const t=Math.max(0,Math.min(1,norm*0.70+stretched*0.30));
+          /* 60 % zone-level norm + 40 % local stretch → richer colour variance
+             while still showing the true metric magnitude across buildings     */
+          const t=Math.max(0,Math.min(1,norm*0.60+stretched*0.40));
           const[r,g,b]=simCmap(t,metric);
           const geo=new THREE.PlaneGeometry(res,res);
-          const mat=new THREE.MeshBasicMaterial({color:new THREE.Color(r,g,b),transparent:true,opacity:0.85,side:THREE.DoubleSide});
+          const mat=new THREE.MeshBasicMaterial({color:new THREE.Color(r,g,b),transparent:true,opacity:0.88,side:THREE.DoubleSide});
           const mesh=new THREE.Mesh(geo,mat);mesh.rotation.x=-Math.PI/2;mesh.position.set(cell.x,0.02,-cell.y);
           mesh.userData.cellVal=t;
+          mesh.userData.cellN=cellN;          /* per-cell metric fraction 0-1 */
+          mesh.userData.cellTemp=cell.t;      /* actual T_op in °C            */
+          mesh.userData.hasRadiance=hasRadiance;
           cg.add(mesh);
         });
         floorMesh=cg;group.add(floorMesh);
@@ -5787,20 +5861,44 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
         /* retrieve the cell value stored as userData */
         if(obj.userData.cellVal!=null){
           const metric=currentDiagram[slot]||'tcp';
+          const cellN=obj.userData.cellN;
+          const cellTemp=obj.userData.cellTemp;
+          const hasRad=obj.userData.hasRadiance;
           const mv=simInterp(simData,SIM_STEP[slot]||0);
           let disp;
-          if(!mv){
+          if(cellN!=null&&hasRad){
+            /* Radiance path: show real per-cell values */
+            if(metric==='tcp'){
+              disp=`TCP: ${(cellN*100).toFixed(1)}%`;
+            }else if(metric==='hsp'){
+              /* cell.n = hsp_pct/100 for Radiance output */
+              disp=`HSP: ${(cellN*100).toFixed(1)}% of occ. hrs`;
+            }else if(metric==='t_op'&&cellTemp!=null){
+              disp=`T_op: ${cellTemp.toFixed(1)}°C`;
+            }else if(metric==='ndp'){
+              disp=mv&&mv.ndp!=null?`NDP: ${Math.round(mv.ndp)} h/yr (zone)`:`NDP: –`;
+            }else{
+              disp=`T_op: ${cellTemp!=null?cellTemp.toFixed(1)+'°C':'–'}`;
+            }
+          }else if(cellTemp!=null){
+            /* Proxy path: only real per-point data is T_op */
+            if(metric==='t_op'){
+              disp=`T_op: ${cellTemp.toFixed(1)}°C`;
+            }else{
+              /* Show spatial T_op as only honest per-cell value; zone metric in parens */
+              const zoneLabel=metric==='tcp'&&mv&&mv.tcp!=null?` (zone TCP ${mv.tcp.toFixed(1)}%)`
+                             :metric==='hsp'&&mv&&mv.hsp!=null?` (zone HSP ${Math.round(mv.hsp)} h/yr)`
+                             :metric==='ndp'&&mv&&mv.ndp!=null?` (zone NDP ${Math.round(mv.ndp)} h/yr)`:'';
+              disp=`T_op: ${cellTemp.toFixed(1)}°C${zoneLabel}`;
+            }
+          }else if(!mv){
             disp=`${metric.toUpperCase()}: loading…`;
-          }else if(metric==='tcp'){
-            disp=mv.tcp!=null?`TCP: ${mv.tcp.toFixed(1)}%`:`TCP: –`;
-          }else if(metric==='hsp'){
-            disp=mv.hsp!=null?`HSP: ${Math.round(mv.hsp)} h/yr`:`HSP: –`;
-          }else if(metric==='ndp'){
-            disp=mv.ndp!=null?`NDP: ${Math.round(mv.ndp)} h/yr`:`NDP: –`;
-          }else if(metric==='t_op'){
-            disp=mv.t_op!=null?`T_op: ${mv.t_op.toFixed(1)}°C`:`T_op: –`;
           }else{
-            disp=`${metric}: ${obj.userData.cellVal.toFixed(2)}`;
+            if(metric==='tcp') disp=mv.tcp!=null?`TCP: ${mv.tcp.toFixed(1)}%`:`TCP: –`;
+            else if(metric==='hsp') disp=mv.hsp!=null?`HSP: ${Math.round(mv.hsp)} h/yr`:`HSP: –`;
+            else if(metric==='ndp') disp=mv.ndp!=null?`NDP: ${Math.round(mv.ndp)} h/yr`:`NDP: –`;
+            else if(metric==='t_op') disp=mv.t_op!=null?`T_op: ${mv.t_op.toFixed(1)}°C`:`T_op: –`;
+            else disp=`${metric}: –`;
           }
           tooltip.textContent=disp;
           tooltip.style.display='block';
@@ -9268,99 +9366,8 @@ function buildPipeline(){
       <rect class="pcls-cls-3" x="1330.77" y="1581.89" width="185" height="355.32" rx="26.3" ry="26.3"/>
     </g>
     <g>
-      <g>
-        <path class="pcls-cls-40" d="M1714.55,1704.43l-5.42.74s-.04,0-.04-.02l1.2-.64v.04c-.35.19-.7.37-1.05.56l4.97-.68-1.66-.16-2.22.28-.03-.04,2.25-.28,2,.2Z"/>
-        <g>
-          <path class="pcls-cls-40" d="M1744.64,1710.63s-.02-.03-.03-.06l-2.21-6.66-.15-.47-.19-.58-.11-.36s-.02-.06-.05-.09l-.53-.03h-.2s-.2-.02-.2-.02h-.17s-.24-.02-.24-.02h-.16s-.15-.02-.15-.02h-.22s-.17-.02-.17-.02h-.2s-.6-.04-.6-.04h-.16s-.15-.02-.15-.02h-.2s-.23-.02-.23-.02c-.06,0-.13.02-.18-.02,0,0-.01,0-.02,0l-6.66-.35-13.3-.7-.18-.02s-.06,0-.09,0l-.02-.04-1.15-.05-1.05.56h-.01s-.02.02-.02.02c0,0,0,0-.01,0-.66.35-1.32.7-1.97,1.05v.04s2.26-.26,2.26-.26l1.88.14-4.96.63c-.06,0-.09,0-.13-.02-.01,0-.03-.02-.04-.02-.02,0-.19.1-.27.14-.02,0-.03.02-.03.02h0s-.06.04-.06.04c-.66.34-1.35.71-2,1.07,0,0,0,.03,0,.04l2.25-.28,2,.2-5.42.74s-.04,0-.04-.02l-.05-.02c-1.45.77-2.91,1.54-4.38,2.32-.01.02-.02.04-.03.06v5.5h.04s39.92,0,39.92,0c.03.01.05,0,.05-.02v-2.35ZM1719.73,1702.71l1.98.15-1.87.26-2.88.39-2.01-.16,4.79-.64ZM1716.1,1705.18l-3.18.46-2.3-.23,3.04-.43,3.12-.42,2.21.21-2.9.41ZM1721.16,1703.79l-2.1-.17,4.81-.67,2.06.15-3.32.48-1.45.21ZM1728.15,1703.69l-2.62.4-2.18-.19,4.67-.69,2.12.16-2,.32Z"/>
-          <path class="pcls-cls-40" d="M1714.55,1704.43l-5.42.74s-.04,0-.04-.02c.05,0,.09-.01.15-.04l4.97-.68-1.66-.16-2.22.28-.03-.04,2.25-.28,2,.2Z"/>
-          <path class="pcls-cls-40" d="M1717.79,1702.61l-4.96.63c-.06,0-.09,0-.13-.02,1.56-.21,3.12-.41,4.69-.6l-1.48-.11-2.23.26-.03-.04,2.25-.26,1.88.14Z"/>
-          <path class="pcls-cls-40" d="M1717.98,1701.15s-.06,0-.09,0c.02-.05.05-.05.09,0Z"/>
-          <path class="pcls-cls-40" d="M1718.15,1701.17l-.18-.02s.09-.02.13,0c.02,0,.03.02.05.02Z"/>
-          <path class="pcls-cls-40" d="M1731.45,1701.87l-13.3-.7.02-.04c4.42.23,8.84.46,13.25.69l.02.04Z"/>
-          <path class="pcls-cls-40" d="M1738.11,1702.22l-6.66-.35h.16s.02,0,.04-.01h.02s.01-.02.01-.02h.01c2.13.11,4.25.22,6.37.33,0,0,.02,0,.03,0v.02s.02.01.02.02Z"/>
-          <path class="pcls-cls-40" d="M1738.13,1702.21s-.01,0-.02,0c0-.02,0-.02.02,0Z"/>
-          <path class="pcls-cls-40" d="M1738.31,1702.23c-.06,0-.13.02-.18-.02.06,0,.12,0,.18.02Z"/>
-          <path class="pcls-cls-40" d="M1738.74,1702.25h-.2c.07-.03.14-.03.2,0Z"/>
-          <path class="pcls-cls-40" d="M1738.89,1702.26h-.15c0-.07.14-.06.15,0Z"/>
-          <path class="pcls-cls-40" d="M1739.05,1702.27h-.16c.06-.03.12-.02.16,0Z"/>
-          <path class="pcls-cls-40" d="M1739.65,1702.3l-.6-.03s0-.04.02-.04c.09,0,.49,0,.56.03l.02.04Z"/>
-          <path class="pcls-cls-40" d="M1739.85,1702.31h-.2c.07-.03.14-.03.2,0Z"/>
-          <path class="pcls-cls-40" d="M1740.03,1702.31h-.17c.01-.07.16-.06.17,0Z"/>
-          <path class="pcls-cls-40" d="M1740.24,1702.33h-.22c.08-.03.15-.03.22,0Z"/>
-          <path class="pcls-cls-40" d="M1740.4,1702.33h-.15c0-.07.15-.05.15,0Z"/>
-          <path class="pcls-cls-40" d="M1740.56,1702.34h-.16c.05-.02.11-.03.16,0Z"/>
-          <path class="pcls-cls-40" d="M1740.79,1702.35h-.24c0-.06.08-.05.11-.03.07-.02.12,0,.13.03Z"/>
-          <path class="pcls-cls-40" d="M1740.96,1702.36h-.17s.03-.02.05-.02c.04,0,.09,0,.12.02Z"/>
-          <path class="pcls-cls-40" d="M1741.16,1702.37h-.2c.02-.07.18-.06.2,0Z"/>
-          <path class="pcls-cls-40" d="M1741.36,1702.38h-.2c.07-.03.14-.02.2,0Z"/>
-          <path class="pcls-cls-40" d="M1741.94,1702.5s-.02-.06-.05-.09l-.53-.03s.05-.05.1-.03c.07,0,.42,0,.45.02.04.02.07.08.03.12Z"/>
-          <path class="pcls-cls-40" d="M1742.05,1702.86l-.11-.36c.08.11.12.23.11.36Z"/>
-          <path class="pcls-cls-40" d="M1742.28,1703.4l-.03.04-.19-.58s.04,0,.04,0c.04.1.17.44.18.54Z"/>
-          <path class="pcls-cls-40" d="M1742.42,1703.89s0,.01-.02.02l-.15-.47s0,0,0,.01c.01.02.03.05.05.09.02.04.04.08.05.12,0,.02.02.04.02.06,0,.02,0,.03.01.05.02.06.03.11.03.12Z"/>
-          <path class="pcls-cls-40" d="M1744.64,1710.63s-.02-.03-.03-.06l-2.21-6.66h.04s2.15,6.52,2.15,6.52l.04.21Z"/>
-          <g>
-            <path class="pcls-cls-40" d="M1731.69,1701.84s-.02,0-.02,0c0,0-.01,0-.02,0-.01,0-.02,0-.04,0-.02,0-.03,0-.05,0h-.11s-13.3-.68-13.3-.68c-.02,0-.03-.02-.05-.02-.04,0-.08,0-.13,0-.03,0-.06,0-.09,0,0-.03.02-.06.04-.09.06-.02.14-.01.21,0l.02-.04c4.51.23,9,.47,13.49.7l.02.04c.05.03.05.06.02.07Z"/>
-            <path class="pcls-cls-40" d="M1738.29,1702.13l-.15.02s-.03.02-.04.03c0,0,0,.02,0,.03,0,0,0,.01,0,.02l-6.66-.35c.07-.03.13-.04.21-.03,0-.03,0-.04,0-.06l.02-.04c2.2.12,4.4.23,6.6.34v.05Z"/>
-            <g>
-              <path class="pcls-cls-40" d="M1742.4,1703.91l-.15-.47c.08.03.1.1.11.19l.07.21s0,.06-.03.08Z"/>
-              <path class="pcls-cls-40" d="M1742.05,1702.86l-.11-.36s.05.06.08.1l.06.1s-.02.11-.02.16Z"/>
-              <path class="pcls-cls-40" d="M1718.15,1701.17l-.18-.02.05-.02s.06-.02.08,0c.02,0,.03.03.04.05Z"/>
-              <path class="pcls-cls-40" d="M1740.24,1702.33h-.22c.1-.05.2-.06.22,0Z"/>
-              <path class="pcls-cls-40" d="M1740.96,1702.36h-.17c.06-.06.15-.05.17,0Z"/>
-              <path class="pcls-cls-40" d="M1738.74,1702.25h-.2c.09-.05.19-.06.2,0Z"/>
-              <path class="pcls-cls-40" d="M1739.85,1702.31h-.2s.12-.04.12-.04c.04,0,.07,0,.08.04Z"/>
-              <path class="pcls-cls-40" d="M1738.31,1702.23c-.06,0-.13.02-.18-.02.05-.03.14-.04.18.02Z"/>
-              <path class="pcls-cls-40" d="M1741.36,1702.38h-.2c.06-.05.14-.05.2,0Z"/>
-              <path class="pcls-cls-40" d="M1740.56,1702.34h-.16c.05-.04.13-.06.16,0Z"/>
-              <path class="pcls-cls-40" d="M1739.05,1702.27h-.16s.09-.04.09-.04c.04,0,.07,0,.08.04Z"/>
-            </g>
-          </g>
-        </g>
-        <path class="pcls-cls-40" d="M1713.65,1702.74l-.95.5v-.04c.3-.16.61-.32.91-.48l.04.02Z"/>
-        <path class="pcls-cls-40" d="M1717.79,1702.61l-4.96.63c-.06,0-.09,0-.13-.02,1.56-.21,3.12-.41,4.69-.6l-1.48-.11-2.23.26-.03-.04,2.25-.26,1.88.14Z"/>
-      </g>
-      <g>
-        <path class="pcls-cls-13" d="M1710.3,1704.56c-.36.18-.71.37-1.06.56-.05.02-.1.03-.15.03l1.2-.63v.04Z"/>
-        <g>
-          <path class="pcls-cls-13" d="M1744.64,1712.99s-.01.03-.05.02h-39.95v-5.5s.01-.04.03-.06c1.46-.78,2.92-1.55,4.38-2.32l.04.02c.05,0,.1-.01.15-.03.35-.19.7-.38,1.06-.56v-.04s-.02-.04-.01-.05c.65-.36,1.34-.73,2-1.07l.06-.03h.01s.01-.02.03-.02c.07-.04.25-.14.27-.14.01,0,.03.01.04.02l.95-.49v-.05c.65-.35,1.31-.7,1.97-1.05h.01l.03-.02h.01l1.05-.56,1.15.06.02.04s.06,0,.09-.01l.17.02,13.3.7,6.66.35s.01-.01.02-.01c.05.03.12.01.18.01l.23.02h.2s.15.02.15.02h.16l.6.03.2.02h.39s.15.02.15.02h.17s.23.02.23.02h.17s.2.02.2.02h.2s.53.04.53.04c.03.03.03.07.05.09l.11.36.2.58.15.47,2.2,6.66s.02.04.03.06v2.36Z"/>
-          <path class="pcls-cls-13" d="M1717.98,1701.15s-.06.01-.09.01c0-.01.01-.02.02-.03.02-.02.05,0,.07.02Z"/>
-          <path class="pcls-cls-13" d="M1718.15,1701.17l-.17-.02s.09-.01.12,0c.02,0,.04.01.05.02Z"/>
-          <path class="pcls-cls-13" d="M1731.45,1701.87l-13.3-.7.02-.04c4.42.24,8.84.47,13.26.69l.02.05Z"/>
-          <path class="pcls-cls-13" d="M1738.11,1702.22l-6.66-.35h.16s.02-.01.04-.02h.01s.02-.01.03-.01c2.12.11,4.25.22,6.37.33.01.01.02.01.03.01v.02s.02.01.02.02Z"/>
-          <path class="pcls-cls-13" d="M1738.31,1702.22c-.06,0-.13.02-.18-.01.06-.01.13,0,.18.01Z"/>
-          <path class="pcls-cls-13" d="M1738.89,1702.26h-.15c.01-.07.14-.06.15,0Z"/>
-          <path class="pcls-cls-13" d="M1739.65,1702.29l-.6-.03s.01-.03.02-.03c.09-.01.49,0,.56.03l.02.03Z"/>
-          <path class="pcls-cls-13" d="M1740.02,1702.31h-.17c.01-.06.16-.05.17,0Z"/>
-          <path class="pcls-cls-13" d="M1740.39,1702.33h-.15c.01-.06.15-.05.15,0Z"/>
-          <path class="pcls-cls-13" d="M1740.56,1702.34h-.17c.06-.02.12-.03.17,0Z"/>
-          <path class="pcls-cls-13" d="M1740.79,1702.35h-.23c0-.06.07-.05.1-.03.07-.01.12,0,.13.03Z"/>
-          <path class="pcls-cls-13" d="M1740.96,1702.36h-.17s.03-.03.05-.02c.02-.01.03-.02.05-.01.02,0,.05.01.07.03Z"/>
-          <path class="pcls-cls-13" d="M1741.16,1702.37h-.2c.01-.07.18-.05.2,0Z"/>
-          <path class="pcls-cls-13" d="M1741.94,1702.5s-.02-.06-.05-.09l-.53-.03s.04-.05.1-.02c.06-.01.41,0,.45.02.03.02.06.08.03.12Z"/>
-          <path class="pcls-cls-13" d="M1742.05,1702.86l-.11-.36c.08.11.12.23.11.36Z"/>
-          <path class="pcls-cls-13" d="M1742.27,1703.4l-.02.04-.2-.58s.04-.01.05,0c.04.1.16.44.17.54Z"/>
-          <path class="pcls-cls-13" d="M1742.41,1703.89s0,.01-.01.02l-.15-.47h.01s.03.06.04.1c.02.04.04.08.05.12.01.02.01.04.02.06,0,.02.01.03.01.04.03.07.04.12.03.13Z"/>
-          <path class="pcls-cls-13" d="M1744.63,1710.63s-.01-.02-.03-.06l-2.2-6.66h.04l2.16,6.51.03.21Z"/>
-          <g>
-            <path class="pcls-cls-13" d="M1731.69,1701.84s-.02.01-.03.01h-.01s-.03.01-.04.01c-.02,0-.03,0-.05-.01-.04,0-.07.01-.11.02l-13.3-.7s-.03-.02-.05-.02c-.03-.01-.08-.01-.12,0-.03.01-.06.01-.09.01,0-.01.01-.02.02-.03,0-.03.01-.05.02-.06.06-.01.14-.01.21,0l.02-.04c4.5.23,9,.47,13.49.7l.02.04s.05.06.02.07Z"/>
-            <path class="pcls-cls-13" d="M1738.29,1702.08v.04l-.15.02s-.03.01-.04.03v.03s.01.01.01.02l-6.66-.35s.07-.02.11-.02c.03-.01.06-.01.1-.01.01-.03.01-.05.01-.07l.02-.03c2.2.11,4.4.23,6.6.34Z"/>
-            <g>
-              <path class="pcls-cls-13" d="M1742.4,1703.91l-.15-.47h.01c.07.04.09.1.1.19l.07.2s.01.07-.03.08Z"/>
-              <path class="pcls-cls-13" d="M1742.05,1702.86l-.11-.36s.05.06.08.1l.05.1c.03.05-.01.11-.02.16Z"/>
-              <path class="pcls-cls-13" d="M1718.15,1701.17l-.17-.02.05-.02s.06-.02.08,0c.02,0,.03.03.04.05Z"/>
-              <path class="pcls-cls-13" d="M1740.24,1702.32c-.06-.03-.13-.03-.22-.01.1-.04.21-.04.22.01Z"/>
-              <path class="pcls-cls-13" d="M1740.96,1702.36h-.17s.03-.03.05-.02c.02-.01.03-.02.05-.01.02,0,.05.01.07.03Z"/>
-              <path class="pcls-cls-13" d="M1738.74,1702.25c-.06-.03-.13-.03-.2-.01.09-.05.18-.05.2.01Z"/>
-              <path class="pcls-cls-13" d="M1739.85,1702.31c-.06-.03-.12-.03-.2-.02l.12-.03s.07.01.08.05Z"/>
-              <path class="pcls-cls-13" d="M1738.31,1702.22c-.06,0-.13.02-.18-.01.06-.03.14-.04.18.01Z"/>
-              <path class="pcls-cls-13" d="M1741.36,1702.38c-.07-.02-.14-.02-.2,0,.06-.04.14-.04.2,0Z"/>
-              <path class="pcls-cls-13" d="M1740.56,1702.34h-.17c.06-.04.13-.06.17,0Z"/>
-              <path class="pcls-cls-13" d="M1739.05,1702.26s-.1-.02-.16,0l.09-.03s.06.01.07.03Z"/>
-            </g>
-          </g>
-        </g>
-        <path class="pcls-cls-13" d="M1713.65,1702.74l-.95.49v-.04c.3-.16.61-.32.91-.48l.04.03Z"/>
-      </g>
+      
+      
       <path class="pcls-cls-40" d="M1715.67,1701.66l-2.02,1.08-.95.5-.37.19s.02-.03.02-.05h0s0-.05-.02-.07h0l.29-.15v-.05s.02,0,.02,0c.28-.15.56-.29.84-.44l.04.02.6-.33s0-.06.03-.03c0,0,0,0,.01,0l1.46-.77.02.04v.03s.02.04.02.04Z"/>
       <g>
         <path class="pcls-cls-40" d="M1743.38,1673.01l.03.03c-.49,1.34-.98,2.68-1.49,4.02l-.04.02-25.17,1.31c-3.19-1.75-6.38-3.53-9.57-5.32v-.05s36.22,0,36.22,0Z"/>
@@ -9440,7 +9447,60 @@ function buildPipeline(){
         <path class="pcls-cls-32" d="M1743.5,1673.01h1.14s0,37.3,0,37.3h-.04s-2.13-6.42-2.13-6.42c-.11-.36-.23-.72-.36-1.08,0-.1-.04-.2-.1-.29-.04-.07-.04-.12,0-.15,0-.19-.02-.37-.02-.56h-.03s0-24.71,0-24.71l1.49-4.06.05-.02Z"/>
       </g>
     </g>
-    <g>
+    
+  
+  <g><g>
+        <path class="pcls-cls-40" d="M1714.55,1704.43l-5.42.74s-.04,0-.04-.02l1.2-.64v.04c-.35.19-.7.37-1.05.56l4.97-.68-1.66-.16-2.22.28-.03-.04,2.25-.28,2,.2Z"/>
+        <g>
+          <path class="pcls-cls-40" d="M1744.64,1710.63s-.02-.03-.03-.06l-2.21-6.66-.15-.47-.19-.58-.11-.36s-.02-.06-.05-.09l-.53-.03h-.2s-.2-.02-.2-.02h-.17s-.24-.02-.24-.02h-.16s-.15-.02-.15-.02h-.22s-.17-.02-.17-.02h-.2s-.6-.04-.6-.04h-.16s-.15-.02-.15-.02h-.2s-.23-.02-.23-.02c-.06,0-.13.02-.18-.02,0,0-.01,0-.02,0l-6.66-.35-13.3-.7-.18-.02s-.06,0-.09,0l-.02-.04-1.15-.05-1.05.56h-.01s-.02.02-.02.02c0,0,0,0-.01,0-.66.35-1.32.7-1.97,1.05v.04s2.26-.26,2.26-.26l1.88.14-4.96.63c-.06,0-.09,0-.13-.02-.01,0-.03-.02-.04-.02-.02,0-.19.1-.27.14-.02,0-.03.02-.03.02h0s-.06.04-.06.04c-.66.34-1.35.71-2,1.07,0,0,0,.03,0,.04l2.25-.28,2,.2-5.42.74s-.04,0-.04-.02l-.05-.02c-1.45.77-2.91,1.54-4.38,2.32-.01.02-.02.04-.03.06v5.5h.04s39.92,0,39.92,0c.03.01.05,0,.05-.02v-2.35ZM1719.73,1702.71l1.98.15-1.87.26-2.88.39-2.01-.16,4.79-.64ZM1716.1,1705.18l-3.18.46-2.3-.23,3.04-.43,3.12-.42,2.21.21-2.9.41ZM1721.16,1703.79l-2.1-.17,4.81-.67,2.06.15-3.32.48-1.45.21ZM1728.15,1703.69l-2.62.4-2.18-.19,4.67-.69,2.12.16-2,.32Z"/>
+          <path class="pcls-cls-40" d="M1714.55,1704.43l-5.42.74s-.04,0-.04-.02c.05,0,.09-.01.15-.04l4.97-.68-1.66-.16-2.22.28-.03-.04,2.25-.28,2,.2Z"/>
+          <path class="pcls-cls-40" d="M1717.79,1702.61l-4.96.63c-.06,0-.09,0-.13-.02,1.56-.21,3.12-.41,4.69-.6l-1.48-.11-2.23.26-.03-.04,2.25-.26,1.88.14Z"/>
+          <path class="pcls-cls-40" d="M1717.98,1701.15s-.06,0-.09,0c.02-.05.05-.05.09,0Z"/>
+          <path class="pcls-cls-40" d="M1718.15,1701.17l-.18-.02s.09-.02.13,0c.02,0,.03.02.05.02Z"/>
+          <path class="pcls-cls-40" d="M1731.45,1701.87l-13.3-.7.02-.04c4.42.23,8.84.46,13.25.69l.02.04Z"/>
+          <path class="pcls-cls-40" d="M1738.11,1702.22l-6.66-.35h.16s.02,0,.04-.01h.02s.01-.02.01-.02h.01c2.13.11,4.25.22,6.37.33,0,0,.02,0,.03,0v.02s.02.01.02.02Z"/>
+          <path class="pcls-cls-40" d="M1738.13,1702.21s-.01,0-.02,0c0-.02,0-.02.02,0Z"/>
+          <path class="pcls-cls-40" d="M1738.31,1702.23c-.06,0-.13.02-.18-.02.06,0,.12,0,.18.02Z"/>
+          <path class="pcls-cls-40" d="M1738.74,1702.25h-.2c.07-.03.14-.03.2,0Z"/>
+          <path class="pcls-cls-40" d="M1738.89,1702.26h-.15c0-.07.14-.06.15,0Z"/>
+          <path class="pcls-cls-40" d="M1739.05,1702.27h-.16c.06-.03.12-.02.16,0Z"/>
+          <path class="pcls-cls-40" d="M1739.65,1702.3l-.6-.03s0-.04.02-.04c.09,0,.49,0,.56.03l.02.04Z"/>
+          <path class="pcls-cls-40" d="M1739.85,1702.31h-.2c.07-.03.14-.03.2,0Z"/>
+          <path class="pcls-cls-40" d="M1740.03,1702.31h-.17c.01-.07.16-.06.17,0Z"/>
+          <path class="pcls-cls-40" d="M1740.24,1702.33h-.22c.08-.03.15-.03.22,0Z"/>
+          <path class="pcls-cls-40" d="M1740.4,1702.33h-.15c0-.07.15-.05.15,0Z"/>
+          <path class="pcls-cls-40" d="M1740.56,1702.34h-.16c.05-.02.11-.03.16,0Z"/>
+          <path class="pcls-cls-40" d="M1740.79,1702.35h-.24c0-.06.08-.05.11-.03.07-.02.12,0,.13.03Z"/>
+          <path class="pcls-cls-40" d="M1740.96,1702.36h-.17s.03-.02.05-.02c.04,0,.09,0,.12.02Z"/>
+          <path class="pcls-cls-40" d="M1741.16,1702.37h-.2c.02-.07.18-.06.2,0Z"/>
+          <path class="pcls-cls-40" d="M1741.36,1702.38h-.2c.07-.03.14-.02.2,0Z"/>
+          <path class="pcls-cls-40" d="M1741.94,1702.5s-.02-.06-.05-.09l-.53-.03s.05-.05.1-.03c.07,0,.42,0,.45.02.04.02.07.08.03.12Z"/>
+          <path class="pcls-cls-40" d="M1742.05,1702.86l-.11-.36c.08.11.12.23.11.36Z"/>
+          <path class="pcls-cls-40" d="M1742.28,1703.4l-.03.04-.19-.58s.04,0,.04,0c.04.1.17.44.18.54Z"/>
+          <path class="pcls-cls-40" d="M1742.42,1703.89s0,.01-.02.02l-.15-.47s0,0,0,.01c.01.02.03.05.05.09.02.04.04.08.05.12,0,.02.02.04.02.06,0,.02,0,.03.01.05.02.06.03.11.03.12Z"/>
+          <path class="pcls-cls-40" d="M1744.64,1710.63s-.02-.03-.03-.06l-2.21-6.66h.04s2.15,6.52,2.15,6.52l.04.21Z"/>
+          <g>
+            <path class="pcls-cls-40" d="M1731.69,1701.84s-.02,0-.02,0c0,0-.01,0-.02,0-.01,0-.02,0-.04,0-.02,0-.03,0-.05,0h-.11s-13.3-.68-13.3-.68c-.02,0-.03-.02-.05-.02-.04,0-.08,0-.13,0-.03,0-.06,0-.09,0,0-.03.02-.06.04-.09.06-.02.14-.01.21,0l.02-.04c4.51.23,9,.47,13.49.7l.02.04c.05.03.05.06.02.07Z"/>
+            <path class="pcls-cls-40" d="M1738.29,1702.13l-.15.02s-.03.02-.04.03c0,0,0,.02,0,.03,0,0,0,.01,0,.02l-6.66-.35c.07-.03.13-.04.21-.03,0-.03,0-.04,0-.06l.02-.04c2.2.12,4.4.23,6.6.34v.05Z"/>
+            <g>
+              <path class="pcls-cls-40" d="M1742.4,1703.91l-.15-.47c.08.03.1.1.11.19l.07.21s0,.06-.03.08Z"/>
+              <path class="pcls-cls-40" d="M1742.05,1702.86l-.11-.36s.05.06.08.1l.06.1s-.02.11-.02.16Z"/>
+              <path class="pcls-cls-40" d="M1718.15,1701.17l-.18-.02.05-.02s.06-.02.08,0c.02,0,.03.03.04.05Z"/>
+              <path class="pcls-cls-40" d="M1740.24,1702.33h-.22c.1-.05.2-.06.22,0Z"/>
+              <path class="pcls-cls-40" d="M1740.96,1702.36h-.17c.06-.06.15-.05.17,0Z"/>
+              <path class="pcls-cls-40" d="M1738.74,1702.25h-.2c.09-.05.19-.06.2,0Z"/>
+              <path class="pcls-cls-40" d="M1739.85,1702.31h-.2s.12-.04.12-.04c.04,0,.07,0,.08.04Z"/>
+              <path class="pcls-cls-40" d="M1738.31,1702.23c-.06,0-.13.02-.18-.02.05-.03.14-.04.18.02Z"/>
+              <path class="pcls-cls-40" d="M1741.36,1702.38h-.2c.06-.05.14-.05.2,0Z"/>
+              <path class="pcls-cls-40" d="M1740.56,1702.34h-.16c.05-.04.13-.06.16,0Z"/>
+              <path class="pcls-cls-40" d="M1739.05,1702.27h-.16s.09-.04.09-.04c.04,0,.07,0,.08.04Z"/>
+            </g>
+          </g>
+        </g>
+        <path class="pcls-cls-40" d="M1713.65,1702.74l-.95.5v-.04c.3-.16.61-.32.91-.48l.04.02Z"/>
+        <path class="pcls-cls-40" d="M1717.79,1702.61l-4.96.63c-.06,0-.09,0-.13-.02,1.56-.21,3.12-.41,4.69-.6l-1.48-.11-2.23.26-.03-.04,2.25-.26,1.88.14Z"/>
+      </g></g></g>
+  <g id="ext_icon_3"><g>
       <path class="pcls-cls-37" d="M1730.12,1649.24c-4.37,1.71-9.12,2.3-13.74,1.63-2.05-.3-3.95-.96-5.67-2.06l-2.49-1.41c-3.31-2.16-5.55-5.49-6.36-9.37-.46-2.2-.5-4.4-.21-6.66.57-4.37,2.51-8.43,5.44-11.71l1.29-1.37c-3.92-.96-10.22-1.85-13.59.53-2.4,1.7-2,4.58-.78,7.03,1.23,2.47,3.04,4.5,5.01,6.4.14.13.14.34.06.46-.11.16-.3.23-.51.11-2.55-1.44-4.88-3.19-6.87-5.34-2.64-2.85-6.43-8.42-2.82-11.51.76-.65,1.64-1.06,2.61-1.35,5.49-1.66,13.56-.04,18.98,1.88,3.74-2.92,8.18-4.82,12.79-5.64,2.13-.38,4.21-.49,6.37-.34,2.92.21,5.6,1.22,7.97,2.9l1.88,1.24,1.11-4.25c.03-.13.18-.24.33-.25l7.18-.3,2.71,1.69c.19.08.27.26.22.48l-2.26,9.07,7.36-.29,2.77,1.72c.19.11.28.29.21.52l-1.76,7.04c-.07.19-.19.28-.4.29l-10.64.46-2.71,10.78c-.05.21-.12.33-.32.37l-3.27.21-2.14,2.12c-1.11,1.1-2.36,1.98-3.68,2.82,4.54.9,11.92,1.83,15.83-.51,1.33-.79,2.03-2.17,1.87-3.72-.28-2.61-2.06-4.93-3.78-6.86-.11-.13-.09-.31-.02-.42.05-.09.24-.23.39-.15,3.22,1.72,6.53,4.49,8.05,7.86,1.06,2.36,1.15,4.97-.98,6.62-2.16,1.67-5.35,2.04-8.07,2.14l-4.46-.17c-4.37-.41-8.67-1.31-12.89-2.72Z"/>
       <g>
         <path class="pcls-cls-40" d="M1748.67,1651.39c-5.72.33-12.06-.83-17.57-2.53l2.17-1.14c4.94.97,13.3,2.22,17.49-.72,1.15-.81,1.8-2.08,1.82-3.5.03-2.29-1.26-4.5-2.64-6.31,2.51,1.61,5.03,4.07,6.13,6.85.76,1.92.82,3.88-.79,5.29-.82.71-1.79,1.15-2.86,1.44-1.24.34-2.46.54-3.75.62Z"/>
@@ -9470,8 +9530,50 @@ function buildPipeline(){
           </g>
         </g>
       </g>
-    </g>
-  </g>
+    </g></g>
+  
+  <g id="ext_icon_2"><g>
+        <path class="pcls-cls-13" d="M1710.3,1704.56c-.36.18-.71.37-1.06.56-.05.02-.1.03-.15.03l1.2-.63v.04Z"/>
+        <g>
+          <path class="pcls-cls-13" d="M1744.64,1712.99s-.01.03-.05.02h-39.95v-5.5s.01-.04.03-.06c1.46-.78,2.92-1.55,4.38-2.32l.04.02c.05,0,.1-.01.15-.03.35-.19.7-.38,1.06-.56v-.04s-.02-.04-.01-.05c.65-.36,1.34-.73,2-1.07l.06-.03h.01s.01-.02.03-.02c.07-.04.25-.14.27-.14.01,0,.03.01.04.02l.95-.49v-.05c.65-.35,1.31-.7,1.97-1.05h.01l.03-.02h.01l1.05-.56,1.15.06.02.04s.06,0,.09-.01l.17.02,13.3.7,6.66.35s.01-.01.02-.01c.05.03.12.01.18.01l.23.02h.2s.15.02.15.02h.16l.6.03.2.02h.39s.15.02.15.02h.17s.23.02.23.02h.17s.2.02.2.02h.2s.53.04.53.04c.03.03.03.07.05.09l.11.36.2.58.15.47,2.2,6.66s.02.04.03.06v2.36Z"/>
+          <path class="pcls-cls-13" d="M1717.98,1701.15s-.06.01-.09.01c0-.01.01-.02.02-.03.02-.02.05,0,.07.02Z"/>
+          <path class="pcls-cls-13" d="M1718.15,1701.17l-.17-.02s.09-.01.12,0c.02,0,.04.01.05.02Z"/>
+          <path class="pcls-cls-13" d="M1731.45,1701.87l-13.3-.7.02-.04c4.42.24,8.84.47,13.26.69l.02.05Z"/>
+          <path class="pcls-cls-13" d="M1738.11,1702.22l-6.66-.35h.16s.02-.01.04-.02h.01s.02-.01.03-.01c2.12.11,4.25.22,6.37.33.01.01.02.01.03.01v.02s.02.01.02.02Z"/>
+          <path class="pcls-cls-13" d="M1738.31,1702.22c-.06,0-.13.02-.18-.01.06-.01.13,0,.18.01Z"/>
+          <path class="pcls-cls-13" d="M1738.89,1702.26h-.15c.01-.07.14-.06.15,0Z"/>
+          <path class="pcls-cls-13" d="M1739.65,1702.29l-.6-.03s.01-.03.02-.03c.09-.01.49,0,.56.03l.02.03Z"/>
+          <path class="pcls-cls-13" d="M1740.02,1702.31h-.17c.01-.06.16-.05.17,0Z"/>
+          <path class="pcls-cls-13" d="M1740.39,1702.33h-.15c.01-.06.15-.05.15,0Z"/>
+          <path class="pcls-cls-13" d="M1740.56,1702.34h-.17c.06-.02.12-.03.17,0Z"/>
+          <path class="pcls-cls-13" d="M1740.79,1702.35h-.23c0-.06.07-.05.1-.03.07-.01.12,0,.13.03Z"/>
+          <path class="pcls-cls-13" d="M1740.96,1702.36h-.17s.03-.03.05-.02c.02-.01.03-.02.05-.01.02,0,.05.01.07.03Z"/>
+          <path class="pcls-cls-13" d="M1741.16,1702.37h-.2c.01-.07.18-.05.2,0Z"/>
+          <path class="pcls-cls-13" d="M1741.94,1702.5s-.02-.06-.05-.09l-.53-.03s.04-.05.1-.02c.06-.01.41,0,.45.02.03.02.06.08.03.12Z"/>
+          <path class="pcls-cls-13" d="M1742.05,1702.86l-.11-.36c.08.11.12.23.11.36Z"/>
+          <path class="pcls-cls-13" d="M1742.27,1703.4l-.02.04-.2-.58s.04-.01.05,0c.04.1.16.44.17.54Z"/>
+          <path class="pcls-cls-13" d="M1742.41,1703.89s0,.01-.01.02l-.15-.47h.01s.03.06.04.1c.02.04.04.08.05.12.01.02.01.04.02.06,0,.02.01.03.01.04.03.07.04.12.03.13Z"/>
+          <path class="pcls-cls-13" d="M1744.63,1710.63s-.01-.02-.03-.06l-2.2-6.66h.04l2.16,6.51.03.21Z"/>
+          <g>
+            <path class="pcls-cls-13" d="M1731.69,1701.84s-.02.01-.03.01h-.01s-.03.01-.04.01c-.02,0-.03,0-.05-.01-.04,0-.07.01-.11.02l-13.3-.7s-.03-.02-.05-.02c-.03-.01-.08-.01-.12,0-.03.01-.06.01-.09.01,0-.01.01-.02.02-.03,0-.03.01-.05.02-.06.06-.01.14-.01.21,0l.02-.04c4.5.23,9,.47,13.49.7l.02.04s.05.06.02.07Z"/>
+            <path class="pcls-cls-13" d="M1738.29,1702.08v.04l-.15.02s-.03.01-.04.03v.03s.01.01.01.02l-6.66-.35s.07-.02.11-.02c.03-.01.06-.01.1-.01.01-.03.01-.05.01-.07l.02-.03c2.2.11,4.4.23,6.6.34Z"/>
+            <g>
+              <path class="pcls-cls-13" d="M1742.4,1703.91l-.15-.47h.01c.07.04.09.1.1.19l.07.2s.01.07-.03.08Z"/>
+              <path class="pcls-cls-13" d="M1742.05,1702.86l-.11-.36s.05.06.08.1l.05.1c.03.05-.01.11-.02.16Z"/>
+              <path class="pcls-cls-13" d="M1718.15,1701.17l-.17-.02.05-.02s.06-.02.08,0c.02,0,.03.03.04.05Z"/>
+              <path class="pcls-cls-13" d="M1740.24,1702.32c-.06-.03-.13-.03-.22-.01.1-.04.21-.04.22.01Z"/>
+              <path class="pcls-cls-13" d="M1740.96,1702.36h-.17s.03-.03.05-.02c.02-.01.03-.02.05-.01.02,0,.05.01.07.03Z"/>
+              <path class="pcls-cls-13" d="M1738.74,1702.25c-.06-.03-.13-.03-.2-.01.09-.05.18-.05.2.01Z"/>
+              <path class="pcls-cls-13" d="M1739.85,1702.31c-.06-.03-.12-.03-.2-.02l.12-.03s.07.01.08.05Z"/>
+              <path class="pcls-cls-13" d="M1738.31,1702.22c-.06,0-.13.02-.18-.01.06-.03.14-.04.18.01Z"/>
+              <path class="pcls-cls-13" d="M1741.36,1702.38c-.07-.02-.14-.02-.2,0,.06-.04.14-.04.2,0Z"/>
+              <path class="pcls-cls-13" d="M1740.56,1702.34h-.17c.06-.04.13-.06.17,0Z"/>
+              <path class="pcls-cls-13" d="M1739.05,1702.26s-.1-.02-.16,0l.09-.03s.06.01.07.03Z"/>
+            </g>
+          </g>
+        </g>
+        <path class="pcls-cls-13" d="M1713.65,1702.74l-.95.49v-.04c.3-.16.61-.32.91-.48l.04.03Z"/>
+      </g></g>
   <g id="Köppen-geiger_classification" data-name="Köppen-geiger classification">
     <g>
       <g>
@@ -9519,13 +9621,14 @@ function buildPipeline(){
         ids:['DXF_analysis','Future_weather_generation_cleanup',
              'Köppen-geiger_classification','Extracting_images',
              'weather_data_assignment','climate_data_visualization',
-             'energy_plus_cleanup.py']},
+             'energy_plus_cleanup.py','translation']},
       output:{label:'Script output',color:'#0088CC',
         ids:['Morped_epw_file','simulation_analysis','Visual_Documentation',
              'Structured_data_collection']},
       external:{label:'External',color:'#22BB44',
         ids:['Worldwide_climate_data','Future_weather_generator',
-             'Java_script_library','cloudflare','Building_simulations']}
+             'Java_script_library','cloudflare','Building_simulations',
+             'Vernacular_futures-2','ext_icon_2','ext_icon_3']}
     };
     /* groups that never dim, connectors, backgrounds, decorative only */
     const NEUTRAL=new Set(['lines','world','Layer_1','Layer_3','Brain','Brain-2']);
@@ -9575,7 +9678,21 @@ function buildPipeline(){
   })();
 }
 
-document.getElementById('openGameBtn').addEventListener('click',()=>openEggGame());
+/* card collapse buttons (team, bibliography) — same mechanic as pipe-collapse-btn */
+document.querySelectorAll('.card-collapsible').forEach(titlebar=>{
+  const win=titlebar.closest('.card-window');
+  const targetId=titlebar.dataset.target;
+  const body=document.getElementById(targetId);
+  if(!body||!win)return;
+  let collapsed=false;
+  titlebar.style.cursor='pointer';
+  titlebar.addEventListener('click',()=>{
+    collapsed=!collapsed;
+    body.style.display=collapsed?'none':'';
+    /* mirror pipeline-window.collapsed approach: class on the window parent */
+    if(collapsed){win.classList.add('card-collapsed');}else{win.classList.remove('card-collapsed');}
+  });
+});
 
 /* (removed: obsolete wheel→horizontal-scroll hijack. The filter is now
    a vertical column, so this handler was preventing normal vertical
@@ -10138,7 +10255,9 @@ function eggDraw(){
     return;
   }
 
-
+  /* ground line */
+  ctx.strokeStyle=lineColor;ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(0,EGG_GROUND_Y+0.5);ctx.lineTo(EGG_W,EGG_GROUND_Y+0.5);ctx.stroke();
 
   ctx.font='8.5px "IBM Plex Mono",monospace';ctx.textAlign='center';
   eggObstacles.forEach(o=>{
