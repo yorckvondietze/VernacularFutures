@@ -6099,7 +6099,7 @@ function updateSimGrid(slot,step,simData){
     const _tcp0=_simFull.present.tcp;const _tcp2=_simFull.ssp585_2080.tcp;
     if(_tcp0!=null&&_tcp2!=null&&_tcp2>_tcp0+1)_tcpReversal=true;
   }
-  const _showWarn=(_topVal!=null&&_topVal>25)||_tcpReversal;
+  const _showWarn=(_topVal!=null&&_topVal>29)||_tcpReversal;
   const _warnCard=_showWarn?`<div class="sim-ashrae-warn" style="grid-column:1/-1;">
     <b>Watch out with the TCP values here.</b> ASHRAE 55 only runs the comfort calculation for hours when outdoor temperatures are between 10 and 33.5 degrees. In very hot climates, a lot of summer hours are already above that ceiling and get dropped from the count entirely. Under warming, even more hours fall outside this range, so the formula is working with a smaller and smaller slice of the year. This can make TCP look like it is getting better when things are actually getting worse. The building is not becoming more comfortable — the metric is just measuring fewer of the bad hours. Look at HSP and T_op for a more honest picture of what warming means for this building.
   </div>`:'';
