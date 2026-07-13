@@ -5787,12 +5787,20 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
         if(obj.userData.cellVal!=null){
           const metric=currentDiagram[slot]||'tcp';
           const mv=simInterp(simData,SIM_STEP[slot]||0);
-          const label=metric==='tcp'?'TCP':'metric';
-          const raw=obj.userData.cellVal;
           let disp;
-          if(metric==='tcp') disp=`TCP: ${(raw*100).toFixed(0)}%`;
-          else if(metric==='hsp') disp=`HSP: ${(raw*100).toFixed(0)}%`;
-          else disp=`${label}: ${raw.toFixed(2)}`;
+          if(!mv){
+            disp=`${metric.toUpperCase()}: loading…`;
+          }else if(metric==='tcp'){
+            disp=mv.tcp!=null?`TCP: ${mv.tcp.toFixed(1)}%`:`TCP: –`;
+          }else if(metric==='hsp'){
+            disp=mv.hsp!=null?`HSP: ${Math.round(mv.hsp)} h/yr`:`HSP: –`;
+          }else if(metric==='ndp'){
+            disp=mv.ndp!=null?`NDP: ${Math.round(mv.ndp)} h/yr`:`NDP: –`;
+          }else if(metric==='t_op'){
+            disp=mv.t_op!=null?`T_op: ${mv.t_op.toFixed(1)}°C`:`T_op: –`;
+          }else{
+            disp=`${metric}: ${obj.userData.cellVal.toFixed(2)}`;
+          }
           tooltip.textContent=disp;
           tooltip.style.display='block';
           tooltip.style.left=(e.clientX-rect.left+10)+'px';
