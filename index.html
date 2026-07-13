@@ -5680,12 +5680,13 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
            Blend: 70% zone norm (so the overall hue strongly reflects the actual
            metric value and changes visibly as the slider moves) + 30% local
            stretch (preserves spatial variation within the floor plan). */
-        const nArr=grid.cells.map(c=>c.n);
+        const nArr=grid.cells.map(c=>metric==='tcp'?(c.n_tcp??c.n):c.n);
         const nMin=Math.min(...nArr),nMax=Math.max(...nArr);
         const nR=Math.max(nMax-nMin,0.02); /* guard against degenerate flat grid */
         const cg=new THREE.Group();cg.isGroup=true;
         grid.cells.forEach(cell=>{
-          const stretched=(cell.n-nMin)/nR;          /* 0=coldest cell, 1=hottest */
+          const cellN=metric==='tcp'?(cell.n_tcp??cell.n):cell.n;
+          const stretched=(cellN-nMin)/nR;          /* 0=best cell, 1=worst */
           const t=Math.max(0,Math.min(1,norm*0.70+stretched*0.30));
           const[r,g,b]=simCmap(t,metric);
           const geo=new THREE.PlaneGeometry(res,res);
@@ -5787,12 +5788,20 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
         if(obj.userData.cellVal!=null){
           const metric=currentDiagram[slot]||'tcp';
           const mv=simInterp(simData,SIM_STEP[slot]||0);
-          const label=metric==='tcp'?'TCP':'metric';
-          const raw=obj.userData.cellVal;
           let disp;
-          if(metric==='tcp') disp=`TCP: ${(raw*100).toFixed(0)}%`;
-          else if(metric==='hsp') disp=`HSP: ${(raw*100).toFixed(0)}%`;
-          else disp=`${label}: ${raw.toFixed(2)}`;
+          if(!mv){
+            disp=`${metric.toUpperCase()}: loading…`;
+          }else if(metric==='tcp'){
+            disp=mv.tcp!=null?`TCP: ${mv.tcp.toFixed(1)}%`:`TCP: –`;
+          }else if(metric==='hsp'){
+            disp=mv.hsp!=null?`HSP: ${Math.round(mv.hsp)} h/yr`:`HSP: –`;
+          }else if(metric==='ndp'){
+            disp=mv.ndp!=null?`NDP: ${Math.round(mv.ndp)} h/yr`:`NDP: –`;
+          }else if(metric==='t_op'){
+            disp=mv.t_op!=null?`T_op: ${mv.t_op.toFixed(1)}°C`:`T_op: –`;
+          }else{
+            disp=`${metric}: ${obj.userData.cellVal.toFixed(2)}`;
+          }
           tooltip.textContent=disp;
           tooltip.style.display='block';
           tooltip.style.left=(e.clientX-rect.left+10)+'px';
@@ -9505,18 +9514,18 @@ function buildPipeline(){
     const TAGS={
       human:{label:'Human input',color:'#7722CC',
         ids:['Archival_Research','Mannual_annotation','Digitizing_plans',
-             'Data_evaluation','Findings']},
+             'Data_evaluation','Findings','Image_collection']},
       script:{label:'Script task',color:'#E07010',
-        ids:['DXF_analysis','Future_weather_generation_cleanup','translation',
+        ids:['DXF_analysis','Future_weather_generation_cleanup',
              'Köppen-geiger_classification','Extracting_images',
-             'weather_data_assignment','climate_data_visualization']},
+             'weather_data_assignment','climate_data_visualization',
+             'energy_plus_cleanup.py']},
       output:{label:'Script output',color:'#0088CC',
         ids:['Morped_epw_file','simulation_analysis','Visual_Documentation',
              'Structured_data_collection']},
       external:{label:'External',color:'#22BB44',
         ids:['Worldwide_climate_data','Future_weather_generator',
-             'Java_script_library','cloudflare','Building_somulations',
-             'Vernacular_futures','Vernacular_futures-2']}
+             'Java_script_library','cloudflare','Building_simulations']}
     };
     /* groups that never dim, connectors, backgrounds, decorative only */
     const NEUTRAL=new Set(['lines','world','Layer_1','Layer_3','Brain','Brain-2']);
