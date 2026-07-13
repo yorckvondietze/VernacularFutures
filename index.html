@@ -3720,14 +3720,27 @@ function arMorph(c){
 }
 
 function arSim(c){
-  const hasSim=c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null||c.sim.oh[0]!=null);
+  /* Excel yellow-column values first */
+  let hasSim=c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null||c.sim.oh[0]!=null);
+  /* Fall back to R2 viz cache (populated when user visits the Simulation tab) */
+  const _vc=!hasSim?(SIM_VIZ_CACHE[c.id]||SIM_CACHE[c.id]||null):null;
+  const _vsd=_vc?vizCacheToSimData(_vc):null;
+  if(!hasSim&&_vsd){
+    const _sk=['present','ssp585_2050','ssp585_2080'];
+    hasSim=_sk.some(s=>_vsd[s]&&(_vsd[s].tcp!=null||_vsd[s].ndp_hours!=null||_vsd[s].hsp_hours!=null));
+  }
   if(!hasSim) return [{t:'nodata',h:'<p class="ar-nodata">no_simulations</p>'}];
   /* Require real DXF geometry (wall_thick from dxf_analyse).
      Without it, sim_corpus.py used a fallback square box, results are from
      a fictional geometry and must not be shown as building performance data. */
   const hasRealGeom=c.wallThk!=null||c.area!=null;
   if(!hasRealGeom) return [{t:'nodata',h:'<p class="ar-nodata">no_simulations</p>'}];
-  const tcp=c.sim.comfort,hsp=c.sim.oh,ndp=c.sim.ndp,top=c.sim.topMean;
+  /* Build metric arrays: Excel takes priority; viz cache fills any gaps */
+  function _vv(key,i){if(!_vsd)return null;const s=_vsd[['present','ssp585_2050','ssp585_2080'][i]];if(!s)return null;return key==='tcp'?s.tcp:key==='hsp'?s.hsp_hours:key==='ndp'?s.ndp_hours:s.t_op_mean;}
+  const tcp=(c.sim.comfort&&c.sim.comfort.some(v=>v!=null))?c.sim.comfort:[0,1,2].map(i=>_vv('tcp',i));
+  const hsp=(c.sim.oh&&c.sim.oh.some(v=>v!=null))?c.sim.oh:[0,1,2].map(i=>_vv('hsp',i));
+  const ndp=(c.sim.ndp&&c.sim.ndp.some(v=>v!=null))?c.sim.ndp:[0,1,2].map(i=>_vv('ndp',i));
+  const top=(c.sim.topMean&&c.sim.topMean.some(v=>v!=null))?c.sim.topMean:[0,1,2].map(i=>_vv('top',i));
   const NT=1000;
   const kp=Array.isArray(c.koppen)?c.koppen:[c.koppen,c.koppen50,c.koppen80];
   const k0=kp[0],k2=kp[2]||kp[1]||kp[0];
@@ -6194,6 +6207,11 @@ function createViewer(container,c,slot){
         const activeId=slot==='A'?selectedId:compareId;
         const box=document.getElementById('viewer3d-'+slot);
         if(activeId===cid&&box){disposeViewer(slot);buildSimViewer(box,c,vc,slot);}
+        /* Re-render adaptive recommendations if already open and showing no_simulations */
+        const _rw=document.getElementById('recWrap-'+slot);
+        if(_rw&&_rw.style.display!=='none'&&_rw.querySelector('.ar-nodata')){
+          generateAdaptiveRecs(c,slot);
+        }
         return;
       }
       /* Fallback: old full JSON for metrics only (box geometry) */
