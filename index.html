@@ -977,6 +977,24 @@ body:not(.mobile-mode) .app-header .header-logo-center{height:0;overflow:visible
 .hm-tab:hover{background:var(--paper-dim);color:var(--ink);}
 .hm-tab.active{color:var(--terracotta-deep);border-left-color:var(--terracotta);font-weight:600;}
 .hm-tab .numeral{font-family:var(--serif);font-size:15px;font-weight:600;color:inherit;opacity:0.7;}
+/* findings subtabs inside hamburger nav */
+.hm-subgroup{padding:5px 0 2px 40px;font-family:var(--mono);font-size:8px;letter-spacing:0.09em;text-transform:uppercase;color:var(--ink-faint);}
+.hm-subtab{
+  display:flex;align-items:center;
+  width:100%;text-align:left;
+  padding:9px 18px 9px 40px;
+  background:none;border:none;
+  font-family:var(--mono);font-size:10px;letter-spacing:0.03em;
+  color:var(--ink-soft);cursor:pointer;
+  border-left:3px solid transparent;
+  transition:background-color .12s,color .12s;
+  line-height:1.35;
+}
+.hm-subtab:hover{background:var(--paper-dim);color:var(--ink);}
+.hm-subtab.active{color:var(--terracotta-deep);border-left-color:var(--terracotta);font-weight:600;}
+/* subtabs only visible when findings is the active context */
+.hm-subtabs-wrap{display:none;}
+.hm-subtabs-wrap.visible{display:block;}
 
 /* ═══════════════════════════════════════════════════════
    DECK LAYOUT, Atlas view (Tab I)
@@ -1507,68 +1525,9 @@ body.mobile-mode .metric-table{
 body.mobile-mode .viewer3d-canvas-box canvas{max-width:100%!important;height:auto!important;}
 
 
-/* ── MOBILE: findings nav as left slide-in drawer ────────────────────────
-   The 180px sidebar becomes a fixed drawer, hidden off-screen to the left.
-   A sticky strip at the top of the content shows the current topic title
-   and a ☰ icon to open the drawer. Desktop is completely unaffected. */
-body.mobile-mode .findings-grid{
-  display:block!important;
-  padding:0!important;
-  gap:0!important;
-}
-body.mobile-mode .findings-menu{
-  position:fixed!important;
-  left:0!important;top:var(--deck-top,90px)!important;bottom:0!important;
-  width:min(280px,82vw)!important;
-  height:auto!important;
-  overflow-y:auto!important;overflow-x:hidden!important;
-  -webkit-overflow-scrolling:touch!important;
-  background:var(--paper)!important;
-  border:none!important;
-  border-right:2px solid var(--line-strong)!important;
-  border-radius:0!important;
-  padding:14px 0 40px!important;
-  z-index:650!important;
-  transform:translateX(-100%);
-  transition:transform .25s cubic-bezier(.4,0,.2,1);
-  box-shadow:4px 0 28px rgba(0,0,0,.18);
-}
-body.mobile-mode.findings-nav-open .findings-menu{
-  transform:translateX(0)!important;
-}
-/* backdrop overlay */
-.findings-nav-backdrop{
-  display:none;
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.38);
-  z-index:645;
-  touch-action:none;
-}
-body.mobile-mode.findings-nav-open .findings-nav-backdrop{display:block;}
-/* nav toggle strip: sticky at top of findings content, mobile only */
-.findings-nav-strip{display:none;}
-body.mobile-mode .findings-nav-strip{
-  display:flex!important;
-  align-items:center;
-  gap:10px;
-  padding:12px 14px;
-  border-bottom:1px solid var(--line-strong);
-  background:var(--paper);
-  position:sticky;
-  top:0;z-index:10;
-  cursor:pointer;
-  user-select:none;
-  min-height:44px;
-  box-sizing:border-box;
-}
-body.mobile-mode .findings-nav-strip:hover{background:var(--paper-dim);}
-.findings-nav-strip-icon{font-family:var(--mono);font-size:14px;flex-shrink:0;color:var(--ink-soft);}
-.findings-nav-strip-title{
-  flex:1;font-family:var(--mono);font-size:10.5px;
-  letter-spacing:0.04em;color:var(--terracotta-deep);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.findings-nav-strip-chevron{color:var(--ink-faint);font-family:var(--mono);font-size:13px;flex-shrink:0;}
+/* findings: sidebar hidden on mobile, nav lives in hamburger */
+body.mobile-mode .findings-grid{display:block!important;padding:0!important;gap:0!important;}
+body.mobile-mode .findings-menu{display:none!important;}
 
 /* findings / method views still scrollable */
 body.mobile-mode #view-findings,
@@ -2919,66 +2878,80 @@ function showDataLoadFailure(msg){
   el.innerHTML=`<span>⚠ Could not load case data from R2, showing no data instead of a placeholder. (${msg||'connection failed'})</span>
     <button id="dataLoadRetryBtn" style="font-family:var(--mono);font-size:11px;padding:3px 9px;border:1px solid #fff;background:transparent;color:#fff;cursor:pointer;">retry</button>`;
   document.getElementById('dataLoadRetryBtn').addEventListener('click',()=>{FULL_CASES_RAW=null;
-/* ── Mobile findings nav drawer ───────────────────────────────────────────
-   Injects a backdrop + sticky strip into the findings view on mobile.
-   On desktop the strip is display:none and no class changes happen. */
+
+/* ── Findings subtabs inside hamburger nav ───────────────────────────────
+   Called after buildFindingsMenu() so FINDINGS is populated. Injects
+   .hm-subgroup + .hm-subtab rows after the II Findings hm-tab button.
+   Works on both mobile and desktop (hamburger is available in both). */
 (function(){
-  function initFindingsDrawer(){
-    const isMob=document.body.classList.contains('mobile-mode');
-    /* backdrop: appended to body so it overlays everything */
-    if(!document.getElementById('findingsNavBackdrop')){
-      const bd=document.createElement('div');
-      bd.id='findingsNavBackdrop';
-      bd.className='findings-nav-backdrop';
-      document.body.appendChild(bd);
-      bd.addEventListener('click',()=>document.body.classList.remove('findings-nav-open'));
-    }
-    if(!isMob)return;
-    /* strip: injected once, after the card-titlebar inside findings card-window */
-    const view=document.getElementById('view-findings');
-    if(!view||document.getElementById('findingsNavStrip'))return;
-    const cw=view.querySelector('.card-window');
-    if(!cw)return;
-    const strip=document.createElement('div');
-    strip.id='findingsNavStrip';
-    strip.className='findings-nav-strip';
-    strip.innerHTML=
-      '<span class="findings-nav-strip-icon">&#9776;</span>'+
-      '<span class="findings-nav-strip-title" id="findingsNavTitle">select topic</span>'+
-      '<span class="findings-nav-strip-chevron">&#8250;</span>';
-    const tb=cw.querySelector('.card-titlebar');
-    if(tb)tb.insertAdjacentElement('afterend',strip);
-    else cw.insertAdjacentElement('afterbegin',strip);
-    strip.addEventListener('click',()=>document.body.classList.toggle('findings-nav-open'));
-    /* close drawer when a finding item is tapped */
-    const menu=document.getElementById('findingsMenu');
-    if(menu&&!menu._mobileDrawerBound){
-      menu._mobileDrawerBound=true;
-      menu.addEventListener('click',e=>{
-        if(e.target.closest('.fm-item'))document.body.classList.remove('findings-nav-open');
+  function buildHmFindingsSubtabs(){
+    const nav=document.querySelector('#hamburgerDrawer .hm-nav');
+    const findingsBtn=nav&&nav.querySelector('.hm-tab[data-tab="findings"]');
+    if(!nav||!findingsBtn||!window.FINDINGS)return;
+    /* idempotent: remove old subtab block first */
+    const old=document.getElementById('hmFindingsSubtabs');
+    if(old)old.remove();
+    const wrap=document.createElement('div');
+    wrap.id='hmFindingsSubtabs';
+    wrap.className='hm-subtabs-wrap';
+    FINDINGS.forEach(g=>{
+      const gl=document.createElement('div');
+      gl.className='hm-subgroup';
+      gl.textContent=g.group;
+      wrap.appendChild(gl);
+      g.items.forEach(it=>{
+        const btn=document.createElement('button');
+        btn.className='hm-subtab';
+        btn.textContent=it.title;
+        btn.dataset.fid=it.id;
+        btn.addEventListener('click',()=>{
+          /* navigate to findings tab */
+          document.querySelectorAll('.tab-btn,.hm-tab').forEach(t=>t.classList.remove('active'));
+          document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+          findingsBtn.classList.add('active');
+          document.getElementById('view-findings')?.classList.add('active');
+          /* show the chosen finding */
+          if(typeof showFinding==='function')showFinding(it.id);
+          /* close hamburger */
+          document.getElementById('hamburgerDrawer')?.classList.remove('open');
+          document.getElementById('hamburgerOverlay')?.classList.remove('open');
+        });
+        wrap.appendChild(btn);
       });
-    }
-    /* sync title to whatever is currently active */
-    const active=document.querySelector('.fm-item.active');
-    if(active){const t=document.getElementById('findingsNavTitle');if(t)t.textContent=active.textContent;}
+    });
+    findingsBtn.insertAdjacentElement('afterend',wrap);
+    /* show subtabs immediately if findings is already active */
+    syncHmSubtabs();
   }
-  /* init after findings menu is built (MutationObserver on the nav element) */
-  const menu=document.getElementById('findingsMenu');
-  if(menu){
-    const obs=new MutationObserver(()=>{initFindingsDrawer();obs.disconnect();});
-    obs.observe(menu,{childList:true,subtree:false});
+
+  /* show/hide subtab block based on whether findings tab is active */
+  function syncHmSubtabs(){
+    const wrap=document.getElementById('hmFindingsSubtabs');
+    if(!wrap)return;
+    const findingsActive=document.getElementById('view-findings')?.classList.contains('active');
+    wrap.classList.toggle('visible',!!findingsActive);
+    /* sync active state on individual subtab */
+    const curId=window._currentFindingId;
+    if(curId)wrap.querySelectorAll('.hm-subtab').forEach(b=>b.classList.toggle('active',b.dataset.fid===curId));
   }
-  /* also init when user switches to findings tab */
+
+  /* hook: expand subtabs when findings tab is opened */
   document.addEventListener('click',e=>{
     const btn=e.target.closest('.tab-btn,.hm-tab');
-    if(btn&&btn.dataset.tab==='findings')setTimeout(initFindingsDrawer,80);
+    if(!btn)return;
+    setTimeout(syncHmSubtabs,30);
   });
-  /* close drawer when leaving findings tab */
-  document.querySelectorAll('.tab-btn,.hm-tab').forEach(b=>{
-    if(b.dataset.tab&&b.dataset.tab!=='findings'){
-      b.addEventListener('click',()=>document.body.classList.remove('findings-nav-open'));
-    }
-  });
+
+  /* build once findings menu is populated */
+  const menu=document.getElementById('findingsMenu');
+  if(menu){
+    const obs=new MutationObserver(()=>{
+      if(menu.querySelector('.fm-item')){obs.disconnect();buildHmFindingsSubtabs();}
+    });
+    obs.observe(menu,{childList:true});
+  }
+  /* expose so showFinding can sync active subtab */
+  window._syncHmSubtabs=syncHmSubtabs;
 })();
 setAppMode();});
 }
@@ -8517,9 +8490,9 @@ function showFinding(id){
   if(!it)return;
   document.querySelectorAll('.fm-item').forEach(b=>b.classList.toggle('active',b.dataset.fid===id));
   _currentFindingId=id;
-  /* sync mobile nav strip title */
-  const _mnt=document.getElementById('findingsNavTitle');
-  if(_mnt)_mnt.textContent=it.title;
+  /* sync hamburger subtab highlight */
+  if(typeof window._syncHmSubtabs==='function')window._syncHmSubtabs();
+
   /* action bar: >dynamicFINDINGS button + ⓘ (user will write the copy) */
   const actionBar=`<div class="findings-actionbar">
     <button class="dynfind-btn" id="dynFindBtn">&gt;dynamic<em>FINDINGS</em></button>
