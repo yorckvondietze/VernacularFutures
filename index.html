@@ -2174,6 +2174,7 @@ html[data-theme="dark"] .loader-status{
     <div class="egg-body">
       <div style="position:relative;">
         <canvas id="eggCanvas" width="560" height="200"></canvas>
+        <button id="eggStartBtn" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:0.06em;padding:9px 22px;border:1.5px solid var(--terracotta);background:var(--terracotta);color:#fff;cursor:pointer;border-radius:0;z-index:2;box-shadow:0 2px 12px rgba(0,0,0,0.25);">&#9654; start</button>
       </div>
       <div class="egg-footer">
         <span id="eggScoreLine">score 0  high 0</span>
@@ -2621,8 +2622,12 @@ function pass(c){
   }
   /* corpus completeness filter */
   if(fCorpus==='geometry'   &&!(c.wallThk!=null||c.area!=null))return false;
-  if(fCorpus==='simulation' &&!(c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null)))return false;
-  if(fCorpus==='sim_orient' &&!(c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null)&&c.orientation!=null))return false;
+  /* hasSim mirrors the recommendations panel: comfort (TCP) OR ndp OR oh (HSP).
+     All three yellow columns are checked so the filter isn't blind to runs that
+     only wrote one metric, which is common during incremental pipeline runs. */
+  const _hasSim=c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null||c.sim.oh[0]!=null);
+  if(fCorpus==='simulation' &&!_hasSim)return false;
+  if(fCorpus==='sim_orient' &&!(_hasSim&&c.orientation!=null))return false;
   return true;
 }
 function applyFilter(){
@@ -2916,10 +2921,20 @@ const COLMAP_DEF={
   special:[h=>h.startsWith('special_characteristics')],
   notes:[h=>h==='notes'],
   source:[h=>h.startsWith('source')],
-  oh00:[h=>(h.toLowerCase().includes('hsp')||h.toLowerCase().includes('overheating'))&&h.includes('_00')],oh50:[h=>(h.toLowerCase().includes('hsp')||h.toLowerCase().includes('overheating'))&&h.includes('_50')],oh80:[h=>(h.toLowerCase().includes('hsp')||h.toLowerCase().includes('overheating'))&&h.includes('_80')],
-  cf00:[h=>(h.includes('adaptive_comfort')||h.toLowerCase().includes('tcp')||h.toLowerCase().startsWith('cf'))&&h.includes('_00')],cf50:[h=>(h.includes('adaptive_comfort')||h.toLowerCase().includes('tcp')||h.toLowerCase().startsWith('cf'))&&h.includes('_50')],cf80:[h=>(h.includes('adaptive_comfort')||h.toLowerCase().includes('tcp')||h.toLowerCase().startsWith('cf'))&&h.includes('_80')],
-  ndp00:[h=>h.includes('ndp')&&h.includes('_00')],ndp50:[h=>h.includes('ndp')&&h.includes('_50')],ndp80:[h=>h.includes('ndp')&&h.includes('_80')],
-  topMean00:[h=>h.includes('t_op_mean')&&h.includes('_00')],topMean50:[h=>h.includes('t_op_mean')&&h.includes('_50')],topMean80:[h=>h.includes('t_op_mean')&&h.includes('_80')],
+  /* Sim columns accept _00/_present/_0 (present), _50/_2050 (2050), _80/_2080 (2080).
+     Both underscore-separated and concatenated variants accepted (e.g. ndp_00 and ndp00). */
+  oh00:[h=>(h.toLowerCase().includes('hsp')||h.toLowerCase().includes('overheating'))&&(h.includes('_00')||h.includes('_present')||/hsp0*$/.test(h)||/overheating0*$/.test(h))],
+  oh50:[h=>(h.toLowerCase().includes('hsp')||h.toLowerCase().includes('overheating'))&&(h.includes('_50')||h.includes('_2050'))],
+  oh80:[h=>(h.toLowerCase().includes('hsp')||h.toLowerCase().includes('overheating'))&&(h.includes('_80')||h.includes('_2080'))],
+  cf00:[h=>(h.includes('adaptive_comfort')||h.toLowerCase().includes('tcp')||h.toLowerCase().startsWith('cf'))&&(h.includes('_00')||h.includes('_present')||/tcp0*$/.test(h)||/(^cf|adaptive_comfort)0*$/.test(h))],
+  cf50:[h=>(h.includes('adaptive_comfort')||h.toLowerCase().includes('tcp')||h.toLowerCase().startsWith('cf'))&&(h.includes('_50')||h.includes('_2050'))],
+  cf80:[h=>(h.includes('adaptive_comfort')||h.toLowerCase().includes('tcp')||h.toLowerCase().startsWith('cf'))&&(h.includes('_80')||h.includes('_2080'))],
+  ndp00:[h=>h.includes('ndp')&&(h.includes('_00')||h.includes('_present')||/ndp0*$/.test(h))],
+  ndp50:[h=>h.includes('ndp')&&(h.includes('_50')||h.includes('_2050'))],
+  ndp80:[h=>h.includes('ndp')&&(h.includes('_80')||h.includes('_2080'))],
+  topMean00:[h=>h.includes('t_op_mean')&&(h.includes('_00')||h.includes('_present'))],
+  topMean50:[h=>h.includes('t_op_mean')&&(h.includes('_50')||h.includes('_2050'))],
+  topMean80:[h=>h.includes('t_op_mean')&&(h.includes('_80')||h.includes('_2080'))],
 };
 function findCol(headers,matchers){
   for(const m of matchers){for(let i=0;i<headers.length;i++){if(m((headers[i]||'').toString().trim().toLowerCase()))return i;}}
@@ -7752,7 +7767,7 @@ function computeCorpusStats(){
   const withCoord=CASES.filter(c=>c.hasCoord).length;
   const withGeom=CASES.filter(c=>c.hasGeom).length;
   const withEpw=CASES.filter(c=>c.epw).length;
-  const withSim=CASES.filter(c=>c.sim&&c.sim.ndp&&c.sim.ndp[0]!=null).length;
+  const withSim=CASES.filter(c=>c.sim&&(c.sim.comfort[0]!=null||c.sim.ndp[0]!=null||c.sim.oh[0]!=null)).length;
   const countries={},regions={},kz={};
   CASES.forEach(c=>{
     if(c.country)countries[c.country]=(countries[c.country]||0)+1;
@@ -10472,6 +10487,7 @@ function eggReset(){
   eggStarted=false;eggGameOver=false;
   eggHigh=eggGetHigh();
   eggUpdateScoreLine();
+  const _sb=document.getElementById('eggStartBtn');if(_sb)_sb.style.display='block';
 }
 function openEggGame(){
   if(eggOpen)return;
@@ -10531,8 +10547,8 @@ function closeEggGame(){
 }
 function eggJump(){
   if(!eggOpen)return;
-  if(!eggStarted){eggStarted=true;return;}
-  if(eggGameOver){eggReset();eggStarted=true;return;}
+  if(!eggStarted){eggStarted=true;const _sb=document.getElementById('eggStartBtn');if(_sb)_sb.style.display='none';return;}
+  if(eggGameOver){eggReset();eggStarted=true;const _sb=document.getElementById('eggStartBtn');if(_sb)_sb.style.display='none';return;}
   if(eggPlayerY>=0){eggPlayerVY=EGG_JUMP_V;}
 }
 function eggSpawnObstacle(){
@@ -10724,6 +10740,7 @@ function eggDraw(){
 }
 
 document.getElementById('eggCloseBtn').addEventListener('click',()=>closeEggGame());
+document.getElementById('eggStartBtn').addEventListener('click',()=>{const _sb=document.getElementById('eggStartBtn');if(_sb)_sb.style.display='none';eggJump();});
 document.getElementById('eggCanvas').addEventListener('pointerdown',e=>{
   e.preventDefault();
   if(eggSelecting){
