@@ -566,7 +566,7 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 .diagram-tab{font-family:var(--mono);font-size:10.5px;padding:5px 9px;border-radius:0;border:1px solid var(--line);background:var(--paper-dim);color:var(--ink-soft);cursor:pointer;}
 .diagram-tab:hover{border-color:var(--terracotta);color:var(--terracotta-deep);}
 .diagram-tab.active{background:var(--ink);border-color:var(--ink);color:var(--paper);font-weight:600;}
-.viewer3d-canvas-box{width:100%;height:210px;border-radius:0;border:1px solid var(--line);overflow:hidden;background:linear-gradient(to bottom,var(--paper),var(--paper-dim));position:relative;cursor:grab;touch-action:none;}
+.viewer3d-canvas-box{width:100%;height:340px;border-radius:0;border:1px solid var(--line);overflow:hidden;background:linear-gradient(to bottom,var(--paper),var(--paper-dim));position:relative;cursor:grab;touch-action:none;}
 .viewer3d-canvas-box:active{cursor:grabbing;}
 .viewer3d-canvas-box canvas{display:block;}
 .viewer3d-fallback{display:flex;align-items:center;justify-content:center;height:100%;font-family:var(--mono);font-size:11px;color:var(--ink-faint);text-align:center;padding:0 16px;}
@@ -601,8 +601,18 @@ html[data-theme="dark"] .viewer3d-fs-btn:hover{background:rgba(11,10,22,0.95);co
 }
 /* in fullscreen the left col holds metric cells too — needs real width */
 .sim-fs-wrap.sim-fullscreen .sim-left-col{
-  width:180px;
+  width:auto;
 }
+/* fullscreen: hide all but viewer, TCP/HSP buttons, and slider */
+.sim-fs-wrap.sim-fullscreen .sim-ndp-wrap{display:none!important;}
+.sim-fs-wrap.sim-fullscreen .heat-legend{display:none!important;}
+.sim-fs-wrap.sim-fullscreen .diagram-caption{display:none!important;}
+.sim-fs-wrap.sim-fullscreen .sim-grid{display:none!important;}
+.sim-fs-wrap.sim-fullscreen .action-btn-wrap{display:none!important;}
+.sim-fs-wrap.sim-fullscreen .rec-toggle-btn{display:none!important;}
+.sim-fs-wrap.sim-fullscreen .rec-wrap{display:none!important;}
+.sim-fs-wrap.sim-fullscreen .sim-orient-warn{display:none!important;}
+.sim-fs-wrap.sim-fullscreen .sim-ashrae-warn{display:none!important;}
 /* sim-grid when inside the left col: single flex column, compact cells */
 .sim-left-col .sim-grid{
   display:flex!important;flex-direction:column!important;
@@ -6994,8 +7004,7 @@ function caseDetailHTML(c,slot){
     <div class="cs-panel ${currentCsTab[slot]==='simulation'?'active':''}" data-cspanel="simulation" data-slot="${slot}">
       <div class="sim-fs-wrap" id="simFsWrap-${slot}">
         <div class="sim-fs-header">
-          <span style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">${c.id} · ${c.name}</span>
-          <button onclick="toggleSimFullscreen('${slot}')" style="font-family:var(--mono);font-size:11px;background:none;border:1px solid var(--line);cursor:pointer;padding:3px 8px;color:var(--ink-soft);">✕ exit fullscreen</button>
+          <button onclick="toggleSimFullscreen('${slot}')" style="font-family:var(--mono);font-size:11px;background:none;border:1px solid var(--line);cursor:pointer;padding:3px 8px;color:var(--ink-soft);">exit</button>
         </div>
       <div class="block" style="margin-top:12px;">
         <div class="climate-tabs-row">
@@ -7015,7 +7024,7 @@ function caseDetailHTML(c,slot){
               <span>2080</span>
               <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,'Intermediate slider positions (2030–2075) are linearly interpolated between the three simulated snapshots: Present TMYx, 2050 SSP5-8.5, and 2080 SSP5-8.5. Only those three EPWs were morphed and simulated. Positions between them are estimates, not separate EnergyPlus runs. The interpolation is linear: a position halfway between Present and 2050 shows the arithmetic mean of those two results.')" style="font-size:8px;flex-shrink:0;">ⓘ</button>
             </div>
-            <div style="padding:2px 0 4px;">
+            <div class="sim-ndp-wrap" style="padding:2px 0 4px;">
               <div style="font-family:var(--mono);font-size:8.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">NDP night discharge potential</div>
               <div style="position:relative;height:7px;background:var(--line);border-radius:4px;overflow:visible;">
                 <div id="simNdpBar-${slot}" style="height:100%;border-radius:4px;transition:width .35s,background .35s;width:0%;background:#1D9E75;"></div>
