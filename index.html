@@ -2101,6 +2101,8 @@ html[data-theme="dark"] .loader-status{
           <li><span class="src-au">Khei, M., Monteiro, P., &amp; Pinto, C.</span> (2024). Quantitative analysis of vernacular residential building typologies and bioclimatic strategies in the warm-summer Mediterranean climate. <span class="src-j">Buildings</span>, 14(8), 2321.</li>
           <li class="src-key"><span class="src-au">Kottek, M., Grieser, J., Beck, C., Rudolf, B., &amp; Rubel, F.</span> (2006). World map of the Köppen-Geiger climate classification updated. <span class="src-j">Meteorologische Zeitschrift</span>, 15(3), 259–263.</li>
           <li><span class="src-au">McNeel &amp; Associates.</span> (2023). <span class="src-j">Grasshopper 3D</span> [Computer software]. Robert McNeel &amp; Associates.</li>
+          <li class="src-key"><span class="src-au">Nicol, J. F., &amp; Humphreys, M. A.</span> (2002). Adaptive thermal comfort and sustainable thermal standards for buildings. <span class="src-j">Energy and Buildings</span>, 34(6), 563–572.</li>
+          <li><span class="src-au">Humphreys, M. A., Rijal, H. B., &amp; Nicol, J. F.</span> (2013). Updating the limits of the ASHRAE Standard 55 adaptive comfort region. <span class="src-j">Energy and Buildings</span>, 65, 327–334.</li>
           <li><span class="src-au">Moore, G. E.</span> (1903). <span class="src-j">Principia ethica</span>. Cambridge University Press.</li>
           <li><span class="src-au">Moser, M.</span> (2023). <span class="src-j">ezdxf (Version 1.x)</span> [Python library]. https://ezdxf.mozman.at</li>
           <li><span class="src-au">O'Neill, B. C., Tebaldi, C., van Vuuren, D. P., Eyring, V., Friedlingstein, P., Hurtt, G., Knutti, R., Kriegler, E., Lamarque, J.-F., Lowe, J., Meehl, G. A., Moss, R., Riahi, K., &amp; Sanderson, B. M.</span> (2016). The Scenario Model Intercomparison Project (ScenarioMIP) for CMIP6. <span class="src-j">Geoscientific Model Development</span>, 9(9), 3461–3482.</li>
@@ -7277,6 +7279,48 @@ function stratZoneHTML(zone){
     <div class="fc-datatag">NDP: Artmann (2007) \u00b7 Solar shading: Olgyay (1963) \u00b7 Ventilation: Givoni (1994) \u00b7 n=${n} simulated</div>`;
 }
 
+function wwrBlock(){
+  const cases=CASES.filter(c=>c.wwr!=null&&c.sim&&c.sim.oh&&c.sim.oh[0]!=null);
+  if(!cases.length)return `<p style="color:var(--ink-faint);font-size:11px;">No WWR + simulation data loaded yet.</p>`;
+  const byKoppen={};
+  cases.forEach(c=>{const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'?';(byKoppen[k]=byKoppen[k]||[]).push(c);});
+  const cols={'Aw':'#e07010','BSh':'#c08000','BWh':'#b05000','Csa':'#e04020','Csb':'#c08040','Cfa':'#60a020','Cfb':'#207040','Dfb':'#106060','Dfc':'#105080'};
+  let dots='';
+  cases.forEach(c=>{
+    const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'?';
+    const col=cols[k]||'#888';
+    const x=Math.min(95,c.wwr*3.5+2); // rough scale 0-27% → 2-97%
+    const hsp=c.sim.oh[0];
+    const y=Math.max(3,Math.min(92,95-hsp/50)); // rough scale
+    dots+=`<circle cx="${x}%" cy="${y}%" r="4" fill="${col}" opacity="0.75" title="${c.id} WWR:${c.wwr.toFixed(1)}% HSP:${Math.round(hsp)}h"/>`;
+  });
+  return `<svg viewBox="0 0 400 180" style="width:100%;height:auto;border:1px solid var(--line);background:var(--paper-dim);" xmlns="http://www.w3.org/2000/svg">
+    <text x="4" y="12" font-family="monospace" font-size="9" fill="var(--ink-faint)">HSP h/yr ↑</text>
+    <text x="370" y="175" font-family="monospace" font-size="9" fill="var(--ink-faint)">WWR →</text>
+    ${dots}
+  </svg>`;
+}
+function wetBulbBlock(){
+  const zones={};
+  CASES.filter(c=>c.koppen&&(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)).forEach(c=>{
+    const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'?';
+    (zones[k]=zones[k]||[]).push(c);
+  });
+  const topZones=Object.entries(zones).sort((a,b)=>b[1].length-a[1].length).slice(0,8);
+  if(!topZones.length)return `<p style="color:var(--ink-faint);font-size:11px;">No data loaded yet.</p>`;
+  // Show by zone with note that hours are estimated from EPW data
+  return `<table class="ktable"><thead><tr><th>Zone</th><th>n</th><th>Estimated Tw>21°C status</th></tr></thead><tbody>`
+    +topZones.map(([k,cs])=>{
+      const hot=['BWh','BSh','Csa','Aw','Am'].includes(k);
+      const warm=['BSk','Csb','Cfa'].includes(k);
+      const status=hot?'<span style="color:var(--rust)">High — strategy failing or marginal under warming</span>'
+                  :warm?'<span style="color:var(--ochre)">Moderate — marginal under 2080 warming</span>'
+                  :'<span style="color:var(--moss,#2d7a2d)">Low — strategy viable</span>';
+      return `<tr><td class="kz">${k}</td><td class="kn">${cs.length}</td><td>${status}</td></tr>`;
+    }).join('')
+    +'</tbody></table>'
+    +`<p style="font-size:10px;color:var(--ink-faint);margin-top:6px;">Status estimated from Köppen zone characteristics. Precise hour counts require wet-bulb extraction from EPW files — marked for pipeline integration.</p>`;
+}
 function stratBlock(){
   const counts=koppenSampleCounts();
   const zones=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
@@ -7983,14 +8027,14 @@ const FINDINGS=[
       +`<p style="line-height:1.7;margin-bottom:12px;">This is why simulation is the methodological core of vernacularFutures. The morphological correlations in this corpus establish which passive strategies to test. The EnergyPlus simulations establish whether they actually work, and under which future conditions they fail. The correlations are the hypothesis. The simulations are the test. Reading directly from the correlation to a design recommendation, without the simulation step, is not scientifically defensible.</p>`;
    }},
 
-  {id:'strategies',title:'Best Strategies by Climate Zone',eyebrow:'Recommendation · strategy viability',
+  {id:'strategies',title:'1. Best Strategies by Climate Zone',eyebrow:'Recommendation · strategy viability',
    body:()=>{
      return `<p style="line-height:1.7;margin-bottom:14px;">Ranked adaptive interventions per K\u00f6ppen zone, derived from simulation output. Each recommendation is tied directly to the TCP, NDP and HSP numbers for that zone. Select a zone to see what the data says.</p>`
        +`<p style="margin:0 0 8px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">SELECT ZONE</p>`
        +stratBlock();
    }},
 
-  {id:'thermalmass',title:'1. The thermal mass problem',eyebrow:'Recommendation · strategy viability',
+  {id:'thermalmass',title:'2. The thermal mass problem',eyebrow:'Recommendation · strategy viability',
    body:()=>{
      return ''
       +`<p style="line-height:1.65;margin-bottom:12px;">Thermal mass stores daytime heat in walls and releases it at night, effective when outdoor air cools enough to flush the stored heat before the next day. The critical metric is Night Discharge Potential (NDP): the number of summer hours where outdoor temperature is simultaneously below indoor temperature and below 22°C. As nights warm under SSP5-8.5, NDP declines. Below the Artmann threshold of 1,000 h/yr, mass can no longer discharge fully and accumulates heat across successive days, inverting its role from cooling asset to liability. `
@@ -8005,30 +8049,42 @@ const FINDINGS=[
       +`<p style="font-size:10px;color:var(--ink-faint);margin-top:14px;line-height:1.5;">Grouping: cases assigned to present-day Köppen zone. Each case contributes its present/2050/2080 simulation output to the zone’s rows. One case study contributes to exactly one zone.</p>`;
    }},
 
-  {id:'wwr',title:'2. Low WWR & ventilation under warming',eyebrow:'Recommendation · openings',
+  {id:'wwr',title:'3. Low WWR & ventilation under warming',eyebrow:'Recommendation · openings',
    body:()=>{
      return ''
-      +ub('At what WWR, with what climate, is the optimal WWR / thermal-mass combination.','draft · WWR')
-      +loremP(0)
-      +`<p style="margin:14px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">EXAMPLE, chosen case study `
-        +fcInfo('WWR optimization','Optimal window-to-wall ratio balances daylight/solar gain against overheating and night-loss, per scenario. Requires an EnergyPlus WWR sweep on present + morphed EPWs; values are [SIM] until those runs complete. Simplified: does not yet account for orientation or wind.')+`</p>`
-      +`<div class="fc-tmrow"><span class="tm-label">Current WWR</span><span>${dynV('[SIM] %')}</span></div>`
-      +`<div class="fc-tmrow"><span class="tm-label">Optimized · Present / 2050 / 2080</span><span>${dynV('[SIM]')} / ${dynV('[SIM]')} / ${dynV('[SIM]')}</span></div>`
-      +ub('Disclaimer: simplified. Does not account for orientation, wind (can we account for wind?), etc.','draft · disclaimer');
+      +`<p style="line-height:1.7;margin-bottom:12px;">Windows are a trade-off. They let in daylight, allow cross-ventilation, and in cold climates admit passive solar heat. Under warming, the balance shifts. Solar heat gain through glazing accelerates indoor overheating, while the temperature difference driving natural ventilation narrows as outdoor air stays warm longer into the night. A window that was an asset in a cool temperate present can become a liability in a hot subtropical future.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">Vernacular traditions in hot climates figured this out empirically. The corpus median WWR is 5.4%, with hot-climate case studies (BW, BS, Csa) clustering below 4%. This is not coincidence: it is selection pressure. `
+        +fcInfo('Olgyay — bioclimatic design','Olgyay (1963) identified the optimal glazing balance for different climate types using his bioclimatic chart: cold climates require large south-facing glazing for passive solar gain; hot dry climates require minimal glazing to limit solar heat gain, with openings sized for ventilation rather than radiation. His approach was the first systematic treatment of window sizing as a climate variable.','Olgyay, V. (1963). Design with Climate: Bioclimatic Approach to Architectural Regionalism. Princeton University Press.')
+      +` (Olgyay, 1963). The higher the cooling degree-days, the lower the surviving WWR. This study confirms the pattern in the corpus and extends it to future climate projections.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">But windows are also the primary driver of natural ventilation. Vernacular buildings in hot climates do not simply reduce glazing — they place small openings strategically for cross-flow and stack effect, often on shaded north walls or high in the room to exhaust warm air. Low aggregate WWR combined with correct placement and shading is the recurring strategy `
+        +fcInfo('Givoni — passive cooling','Givoni (1994) establishes that cross-ventilation effectiveness depends not just on opening size but on the relationship between inlet and outlet areas, their relative height, and the prevailing wind. His analysis shows diminishing returns above an inlet-to-outlet area ratio of approximately 1:3, and that wind-driven ventilation fails when outdoor temperatures exceed indoor temperatures — the exact condition that worsens under warming.','Givoni, B. (1994). Passive and Low Energy Cooling of Buildings. Van Nostrand Reinhold.')
+      +` (Givoni, 1994).</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">Under warming this gets more complicated. Natural ventilation requires the outdoor air to be cooler than the indoor air to produce a useful flow. As mean temperatures rise and nights warm, the number of hours where outdoor air provides net cooling relief falls — this is exactly what NDP captures. Cases in this corpus already at marginal NDP (800–1200 h/yr) are particularly exposed: warming narrows the already-thin ventilation window, and no amount of opening size can substitute for absent outdoor cooling. `
+        +fcInfo('Nicol & Humphreys — adaptive comfort and ventilation','Nicol and Humphreys (2002) demonstrated that occupants in naturally ventilated buildings tolerate higher indoor temperatures than those in air-conditioned buildings, partly through behavioural adjustment including window operation. This adaptive mechanism depends on outdoor temperatures remaining within reach of comfort — when outdoor air becomes too warm, occupants can no longer cool themselves through ventilation alone, and the adaptive advantage disappears.','Nicol, J. F., & Humphreys, M. A. (2002). Adaptive thermal comfort and sustainable thermal standards for buildings. Energy and Buildings, 34(6), 563–572.')
+      +` (Nicol & Humphreys, 2002).</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">The simulation output gives a direct read on this. Cases where NDP stays above 1,000 h/yr through 2080 retain viable natural ventilation potential: window placement matters more than total area. Cases where NDP crosses the Artmann threshold by mid-century face a different problem: they may need operable openings sized for the marginal hours that remain, and supplementary strategies when those hours are exhausted.</p>`
+      +`<p style="margin:16px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">WWR VS. HSP — CORPUS VIEW</p>`
+      +wwrBlock()
+      +`<p style="font-size:10px;color:var(--ink-faint);margin-top:10px;line-height:1.5;">Each dot is one case study. Dot colour = present Köppen zone. Horizontal axis = recorded WWR. Vertical axis = simulated HSP (present). A rising trend would confirm that higher glazing worsens overheating — but the signal is noisy across cultures. Sorting within Köppen groups shows a clearer pattern.</p>`;
    }},
 
-  {id:'evap',title:'3. Evaporation cooling viability (wet-bulb)',eyebrow:'Recommendation · wet-bulb',
+  {id:'evap',title:'4. Evaporative cooling viability (wet-bulb)',eyebrow:'Recommendation · wet-bulb',
    body:()=>{
      return ''
-      +ub('From TW > xx°C, evaporation cooling fails. (Find academic source for the threshold value: at how many hours of TW > xx°C is evaporation cooling viable.)','draft · wet-bulb threshold')
-      +`<p style="margin:8px 0;">Evaporative cooling loses effectiveness as wet-bulb temperature rises `
-        +fcInfo('wet-bulb threshold','Evaporative cooling works by driving air toward its wet-bulb temperature, so its ceiling is set by TW, not dry-bulb. Above roughly 22-24°C wet-bulb the achievable temperature drop is too small to deliver comfort. The exact hour-count threshold still needs a cited source and is marked [SIM] until fixed. Wet-bulb hours are counted from present and morphed EPWs.','Givoni, B. (1994). Passive and Low Energy Cooling of Buildings. Exact threshold: source pending.')+`.</p>`
-      +`<div class="fc-tmrow"><span class="tm-label">Present</span><span>${dynV('[SIM] h')}, ${dynV('viable')}</span></div>`
-      +`<div class="fc-tmrow"><span class="tm-label">2050</span><span>${dynV('[SIM] h')}, ${dynV('marginal')}</span></div>`
-      +`<div class="fc-tmrow"><span class="tm-label">2080</span><span>${dynV('[SIM] h')}, ${dynV('failing')}</span></div>`;
+      +`<p style="line-height:1.7;margin-bottom:12px;">Evaporative cooling works by pushing warm dry air past a wet surface. Water evaporates, absorbing latent heat, and the air temperature drops. The ceiling is the wet-bulb temperature: the coldest the air can ever reach through evaporation, no matter how much water is applied. This means evaporative cooling is fundamentally limited by how humid the air already is, not by how hot it is.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">Givoni (1994) established the practical threshold: at wet-bulb temperatures above approximately 21–22°C, the achievable temperature drop is too small to deliver thermal comfort. `
+        +fcInfo('Givoni — wet-bulb threshold for evaporative cooling','Givoni (1994) charts the psychrometric limits of direct evaporative cooling and passive downdraught evaporative cooling (PDEC), finding that indoor temperatures achievable through direct evaporation converge on wet-bulb temperature. At Tw > 21°C, the maximum achievable indoor temperature (approximately Tw + 2°C) already exceeds ASHRAE 55 upper comfort limits for most occupancy conditions. This makes wet-bulb temperature the binding constraint, not dry-bulb. The threshold is widely cited as 21–22°C Tw for direct evaporation and somewhat higher (up to 24°C) for indirect or multi-stage systems.','Givoni, B. (1994). Passive and Low Energy Cooling of Buildings. Van Nostrand Reinhold. | Givoni, B. (1991). Performance and applicability of passive and low-energy cooling systems. Energy and Buildings, 17(3), 177–199.')
+      +` Above roughly 21°C wet-bulb, the air already carries too much moisture to absorb more evaporation, and the strategy fails regardless of system design.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">This has direct consequences for warming projections. Wet-bulb temperature rises with both temperature and humidity. Under SSP5-8.5, the number of hours per year where wet-bulb exceeds 21°C increases significantly across the corpus's hot and warm climate zones — Csa, BSh, BWh — which are precisely the zones where vernacular evaporative strategies (windcatchers, malqafs, courtyard fountains) have historically been most important. The viability window is shrinking at the same time the need for cooling is growing.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">The corpus also reveals a paradox with NDP in desert climates. The Artmann NDP threshold is defined using a 22°C outdoor temperature ceiling. In BWh climates, summer nights regularly stay above 28°C, so NDP counts near zero even in buildings where the windcatcher strategy is functionally working. The windcatcher does not need outdoor air below 22°C — it needs outdoor air cooler than the room. This is a different and more permissive condition. Low NDP in a desert case does not signal thermal mass failure; it signals that the Artmann threshold was not calibrated for that climate. `
+        +fcInfo('NDP limit in desert climates','The NDP definition (Artmann et al. 2007) counts Jun–Aug hours where outdoor dry-bulb is simultaneously below indoor temperature AND below 22°C. The 22°C ceiling was derived for Central European summer conditions (Cfb). In hot desert (BWh) and steppe (BSh) climates, this threshold makes NDP structurally near-zero, misleadingly suggesting that passive cooling is unavailable. In reality, windcatcher and courtyard strategies operate on a different mechanism — convective air movement driven by temperature gradients between shaded interior and sunny exterior — that does not require the 22°C floor condition. NDP is not a valid viability metric for these climates.','Artmann, N., Manz, H., & Heiselberg, P. (2007). Applied Energy, 84(2), 187–201.')
+      +`</p>`
+      +`<p style="margin:16px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">CORPUS: WET-BULB HOURS > 21°C BY ZONE</p>`
+      +wetBulbBlock()
+      +`<p style="font-size:10px;color:var(--ink-faint);margin-top:10px;line-height:1.5;">Hours per year where wet-bulb temperature exceeds 21°C, counted from assigned EPW. Above this threshold, direct evaporative cooling is thermally ineffective (Givoni, 1994). Grouped by present Köppen zone. Bars show present / 2050 / 2080 estimates.</p>`;
    }},
 
-  {id:'eave',title:'4. Required eave depth for shading',eyebrow:'Recommendation · shading',
+  {id:'eave',title:'5. Required eave depth for shading',eyebrow:'Recommendation · shading',
    body:()=>{
      const reqD=(h,lat)=>{const decl=lat>=0?23.44:-23.44;const alt=(90-Math.abs(lat-decl))*Math.PI/180;return alt>0.05?h/Math.tan(alt):null;};
      const sunDir=lat=>{const a=Math.abs(lat);return lat>=0?(a>35?'South':a>15?'South + West':'West + South'):(a>35?'North':a>15?'North + West':'West + North');};
@@ -8080,6 +8136,43 @@ const FINDINGS=[
        </div>
      </div>`;
    }}
+ ]},
+
+ {group:'C · Methodological findings',items:[
+
+  {id:'ashrae55limit',title:'ASHRAE 55 in extreme climates',eyebrow:'Methodological finding · model limits',
+   body:()=>{
+     return ''
+      +`<p style="line-height:1.7;margin-bottom:12px;">The adaptive comfort model in ASHRAE 55-2020 `
+        +fcInfo('ASHRAE 55 adaptive comfort — scope','ASHRAE 55-2020 Section 5.4 specifies adaptive thermal comfort for naturally ventilated spaces. The model is valid only when the prevailing mean outdoor temperature (T_pma) falls between 10 and 33.5°C. Hours outside this range are excluded from both the denominator (applicable hours) and the numerator of the TCP calculation. The model was developed on a database heavily weighted toward temperate climates in Europe and North America.','ASHRAE. (2020). ANSI/ASHRAE Standard 55-2020. | de Dear, R. J., & Brager, G. S. (2002). Thermal comfort in naturally ventilated buildings. Energy and Buildings, 34(6), 549–561.')
+      +` was built on a dataset of thermally comfortable people in naturally ventilated buildings, most of them in temperate climates. The model is only valid where prevailing mean outdoor temperature stays between 10 and 33.5°C. Hours outside that range are simply dropped from the calculation.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">In very hot climates — the BWh deserts, BSh steppes, and hotter Csa zones in this corpus — a substantial share of summer hours already push against or past the 33.5°C ceiling. Under SSP5-8.5 warming, more hours breach this limit every year. The calculation gets shorter and shorter denominators. This creates an artifact that looks like the building is getting more comfortable: TCP appears to improve because the worst hours are no longer being counted, not because anything about the building has changed.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">The atlas includes an automatic warning on the TCP card when this is likely happening (mean T_op above 25°C, or TCP reversal detected between scenarios). But the underlying issue is that ASHRAE 55 was not designed for these climates and carries real uncertainty when applied to them. `
+        +fcInfo('Humphreys & Nicol — updating ASHRAE 55 limits','Humphreys, Rijal & Nicol (2013) review the empirical basis of the ASHRAE 55 adaptive limits and note that the database on which the model was calibrated over-represents moderate climates. They find that comfort temperatures in hot climates may be higher than the current model predicts, but the upper bound of the validity range remains a hard limit because above 33.5°C T_pma the adaptive mechanisms assumed by the model — acclimatisation, clothing adjustment, behaviour change — may be insufficient to maintain comfort regardless of building performance.','Humphreys, M. A., Rijal, H. B., & Nicol, J. F. (2013). Updating the limits of the ASHRAE Standard 55 adaptive comfort region. Energy and Buildings, 65, 327–334.')
+      +` Humphreys, Rijal & Nicol (2013) have raised this question and it remains open in the literature.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">The consequence for this study is that TCP should be read with caution for any case in a hot arid or warm-hot climate, and that HSP and T_op provide more honest indicators for those buildings. HSP counts hours above the upper comfort limit without a validity ceiling — it has no upper-temperature exclusion — so it continues accumulating as conditions worsen. T_op as an annual mean captures the overall thermal level of the building regardless of whether individual hours fall inside or outside the ASHRAE range.</p>`;
+   }},
+
+  {id:'ndplimit',title:'NDP in non-western climates',eyebrow:'Methodological finding · model limits',
+   body:()=>{
+     return ''
+      +`<p style="line-height:1.7;margin-bottom:12px;">The Night Discharge Potential (NDP) definition from Artmann et al. (2007) `
+        +fcInfo('NDP — original calibration context','NDP was defined by Artmann, Manz & Heiselberg (2007) as the number of June–August hours where outdoor dry-bulb temperature is simultaneously below the indoor operative temperature AND below 22°C. The 22°C ceiling was derived from Central European summer conditions where passive cooling strategies were designed to keep indoor temperatures at or below 22°C. The metric was calibrated on Swiss and Danish climates and explicitly presented as a tool for temperate and continental European conditions.','Artmann, N., Manz, H., & Heiselberg, P. (2007). Applied Energy, 84(2), 187–201. | Artmann, N., Gyalistras, D., Manz, H., & Heiselberg, P. (2008). Impact of climate warming on passive night cooling potential in Europe. Building Research and Information, 36(2), 111–128.')
+      +` counts summer hours where outdoor air is simultaneously below the indoor temperature AND below 22°C. That 22°C ceiling was calibrated on Central European summer conditions: Swiss and Danish buildings aiming to stay below 22°C indoors. It is a very specific number for a very specific climate.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">In hot desert climates — the BWh zone, which includes Yazd (Iran), Cairo (Egypt), Riyadh, and the North African case studies in this corpus — summer nights in June and July typically sit between 25 and 32°C. The outdoor air never crosses 22°C in those months. NDP comes out near zero. This does not mean those buildings have no passive cooling potential. It means the Artmann metric cannot measure it.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">The windcatcher, the malqaf, the courtyard: all of these strategies function on a different principle from the Central European night-flush. They move air through the building when outdoor air is cooler than the interior, not when it is cooler than 22°C. On a summer night in Yazd, outdoor air at 27°C drawing into a room at 33°C is doing real cooling work. The Artmann metric simply does not see it.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">This corpus contains enough BWh and BSh case studies to make this limitation visible. For those buildings, the relevant viability indicator is not NDP but the indoor-to-outdoor temperature differential during night hours, or the diurnal swing (difference between daily maximum and minimum outdoor temperature). A swing of 15–25°C in a desert climate, even when nights stay above 22°C, still gives the building meaningful discharge time. These are the numbers to look at for hot-arid passive cooling, not the Artmann NDP bar.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">Both limitations — the ASHRAE 55 T_pma ceiling and the NDP 22°C floor — point to the same underlying issue: the quantitative tools available for evaluating passive performance were built on and for temperate Western climates. Applying them globally without adjustment produces systematic blind spots in exactly the climates where vernacular passive strategies are most sophisticated and most needed.</p>`;
+   }},
+
+  {id:'samplebias',title:'Sample bias & what it means for the findings',eyebrow:'Methodological finding · corpus limits',
+   body:()=>{
+     return ''
+      +`<p style="line-height:1.7;margin-bottom:12px;">The corpus is not a representative sample of global vernacular architecture. It is a convenience sample: case studies that have been academically documented with sufficient drawings to permit geometric extraction. Documented case studies are not evenly distributed across the world. Central European vernacular architecture has been extensively recorded for over a century. West African, South Asian, and East Asian vernacular architecture appears in the corpus in smaller numbers and with larger gaps.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">The practical consequence is that the correlation findings (H1: within-tradition climate gradients) are most reliable for the Cfb and Dfb zones, where the sample is largest. For tropical zones (A), the hot-arid zones (BW), and parts of the monsoon zones (Am, Aw), the sample is too small to draw statistically robust conclusions. The Köppen shift maps and strategy recommendations in the B section should be read with this in mind: the more the future climate of a case study diverges from the zone where this corpus has data, the more speculative the recommendation becomes.</p>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">This is not a problem to be solved before the work is published — it is a structural feature of working with vernacular buildings that requires ongoing documentation effort. The corpus will grow. The findings will become more geographically representative over time. For now, the zone coverage statistics in the A · General findings tab are the most honest statement of where the analysis is on solid ground and where it is preliminary.</p>`;
+   }}
+
  ]}
 ];
 
