@@ -575,15 +575,41 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 .viewer3d-fs-btn:hover{background:var(--paper);color:var(--ink);}
 html[data-theme="dark"] .viewer3d-fs-btn{background:rgba(11,10,22,0.75);color:var(--ink-soft);}
 html[data-theme="dark"] .viewer3d-fs-btn:hover{background:rgba(11,10,22,0.95);color:var(--ink);}
-/* fullscreen state */
-.viewer3d-canvas-box.viewer3d-fullscreen{
+/* ── simulation fullscreen ────────────────────────────────────────────── */
+.sim-fs-wrap{position:relative;}
+.sim-fs-wrap.sim-fullscreen{
   position:fixed!important;inset:0!important;z-index:99997!important;
-  width:100vw!important;height:100vh!important;
-  border:none!important;cursor:grab;
+  background:var(--paper);display:flex;flex-direction:column;
+  padding:10px 14px 10px;box-sizing:border-box;
 }
-.viewer3d-canvas-box.viewer3d-fullscreen canvas{width:100%!important;height:100%!important;}
-.viewer3d-canvas-box.viewer3d-fullscreen .viewer3d-hint{bottom:14px;right:16px;}
-.viewer3d-canvas-box.viewer3d-fullscreen .viewer3d-fs-btn{top:14px;right:16px;font-size:15px;}
+/* in fullscreen: main area = flex row (tabs | viewer+controls) */
+.sim-fs-wrap.sim-fullscreen .climate-tabs-row{
+  flex:1;min-height:0;display:flex;gap:10px;
+}
+/* viewer grows to fill available space */
+.sim-fs-wrap.sim-fullscreen .climate-tabs-content{
+  flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;
+}
+.sim-fs-wrap.sim-fullscreen .viewer3d-canvas-box{
+  flex:1;min-height:0;height:auto!important;
+}
+.sim-fs-wrap.sim-fullscreen .viewer3d-canvas-box canvas{
+  width:100%!important;height:100%!important;
+}
+/* controls strip below viewer */
+.sim-fs-wrap.sim-fullscreen .sim-fs-controls{
+  display:flex;flex-direction:column;gap:6px;padding-top:4px;
+}
+/* metric grid in fullscreen: 2-per-row compact */
+.sim-fs-wrap.sim-fullscreen .sim-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:0!important;
+}
+.sim-fs-wrap.sim-fullscreen .action-btn-wrap{margin-top:0!important;}
+/* fullscreen close button row */
+.sim-fs-header{display:none;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.sim-fs-wrap.sim-fullscreen .sim-fs-header{display:flex;}
+/* hide the ⛶ button in fullscreen (replaced by close in header) */
+.sim-fs-wrap.sim-fullscreen .viewer3d-fs-btn{display:none;}
 .heat-legend{margin-top:9px;}
 .heat-legend-bar{height:8px;border-radius:0;background:linear-gradient(to right,#A50026,#D73027,#F46D43,#FDAE61,#FEE08B,#D9EF8B,#A6D96A,#66BD63,#1A9850,#006837);}
 .heat-legend-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin-top:3px;}
@@ -5516,19 +5542,19 @@ function makeHeatTexture(intensity,seedStr){
 let VIEWERS={A:null,B:null};
 /* ── Simulation viewer fullscreen ──────────────────────────────────────── */
 function toggleSimFullscreen(slot){
+  const wrap=document.getElementById('simFsWrap-'+slot);
   const box=document.getElementById('viewer3d-'+slot);
-  if(!box)return;
-  const btn=box.querySelector('.viewer3d-fs-btn');
-  const entering=!box.classList.contains('viewer3d-fullscreen');
-  box.classList.toggle('viewer3d-fullscreen',entering);
-  if(btn)btn.textContent=entering?'✕':'⛶';
+  if(!wrap)return;
+  const entering=!wrap.classList.contains('sim-fullscreen');
+  wrap.classList.toggle('sim-fullscreen',entering);
+  document.body.style.overflow=entering?'hidden':'';
   /* resize the Three.js renderer to match the new box dimensions */
   const v=VIEWERS[slot];
   if(v&&v.renderer){
-    /* allow layout to settle before reading dimensions */
     requestAnimationFrame(()=>{
+      if(!box)return;
       const nw=box.clientWidth||window.innerWidth;
-      const nh=box.clientHeight||window.innerHeight;
+      const nh=box.clientHeight||(window.innerHeight*0.6);
       v.renderer.setSize(nw,nh);
       v.camera.aspect=nw/nh;
       v.camera.updateProjectionMatrix();
@@ -5538,9 +5564,20 @@ function toggleSimFullscreen(slot){
   if(entering){
     const onEsc=e=>{if(e.key==='Escape'){toggleSimFullscreen(slot);document.removeEventListener('keydown',onEsc);}};
     document.addEventListener('keydown',onEsc);
-    box._escHandler=onEsc;
+    wrap._escHandler=onEsc;
   }else{
-    if(box._escHandler){document.removeEventListener('keydown',box._escHandler);box._escHandler=null;}
+    if(wrap._escHandler){document.removeEventListener('keydown',wrap._escHandler);wrap._escHandler=null;}
+    /* restore renderer size to normal */
+    if(v&&v.renderer){
+      requestAnimationFrame(()=>{
+        if(!box)return;
+        const nw=box.clientWidth||400;
+        const nh=box.clientHeight||210;
+        v.renderer.setSize(nw,nh);
+        v.camera.aspect=nw/nh;
+        v.camera.updateProjectionMatrix();
+      });
+    }
   }
 }
 function disposeViewer(slot){
@@ -6722,6 +6759,11 @@ function caseDetailHTML(c,slot){
 
     <!-- TAB 4: SIMULATION -->
     <div class="cs-panel ${currentCsTab[slot]==='simulation'?'active':''}" data-cspanel="simulation" data-slot="${slot}">
+      <div class="sim-fs-wrap" id="simFsWrap-${slot}">
+        <div class="sim-fs-header">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);">${c.id} · ${c.name}</span>
+          <button onclick="toggleSimFullscreen('${slot}')" style="font-family:var(--mono);font-size:11px;background:none;border:1px solid var(--line);cursor:pointer;padding:3px 8px;color:var(--ink-soft);">✕ exit fullscreen</button>
+        </div>
       <div class="block" style="margin-top:12px;">
         <div class="climate-tabs-row">
           <div class="diagram-tabs sim-tabs-sidebar climate-tabs-sidebar" id="diagramTabs-${slot}">
@@ -6729,6 +6771,7 @@ function caseDetailHTML(c,slot){
           </div>
           <div class="climate-tabs-content">
             <div class="viewer3d-canvas-box" id="viewer3d-${slot}"><div class="viewer3d-hint">drag to rotate</div><button class="viewer3d-fs-btn" title="fullscreen" onclick="toggleSimFullscreen('${slot}')">⛶</button></div>
+            <div class="sim-fs-controls">
             <div style="padding:5px 0 3px;display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9px;color:var(--ink-faint);">
               <span>Present</span>
               <input type="range" id="simSlider-${slot}" min="0" max="8" step="1" value="${SIM_STEP[slot]||0}" style="flex:1;accent-color:var(--terracotta);cursor:pointer;">
@@ -6745,6 +6788,7 @@ function caseDetailHTML(c,slot){
             </div>
             <div class="heat-legend"><div class="heat-legend-bar" id="simLegendBar-${slot}"></div><div class="heat-legend-labels"><span>low</span><span>high</span></div></div>
             <div class="diagram-caption" id="diagramCaption-${slot}"></div>
+            </div><!-- /sim-fs-controls -->
           </div>
         </div>
         <div class="action-btn-wrap" style="margin-top:10px;">
@@ -6761,6 +6805,7 @@ function caseDetailHTML(c,slot){
         <button class="rec-toggle-btn" id="recToggleBtn-${slot}" style="margin-top:14px;">&gt;adaptive<em>RECOMMENDATIONS</em></button>
         <div class="rec-wrap" id="recWrap-${slot}" style="margin-top:10px;display:none;"></div>
       </div>
+      </div><!-- /sim-fs-wrap -->
     </div>`;
 }
 function wireCaseDetail(c,slot){
