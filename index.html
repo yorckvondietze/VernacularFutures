@@ -7510,11 +7510,17 @@ function stratZoneHTML(zone){
 }
 
 function wwrBlock(){
-  const cases=CASES.filter(c=>c.wwr!=null&&c.sim&&c.sim.oh&&c.sim.oh[0]!=null);
+  /* get HSP (h/yr) for present scenario from Excel or viz JSON cache */
+  function _getHsp0(c){
+    if(c.sim?.oh?.[0]!=null)return c.sim.oh[0];
+    const vc=SIM_VIZ_CACHE[c.id]||SIM_CACHE[c.id];
+    return vc?.present?.hsp_hours??null;
+  }
+  const cases=CASES.filter(c=>c.wwr!=null&&_getHsp0(c)!=null);
   if(!cases.length)return `<p style="color:var(--ink-faint);font-size:11px;">No WWR + simulation data loaded yet.</p>`;
 
   /* ── data bounds ── */
-  const wwrs=cases.map(c=>c.wwr), hsps=cases.map(c=>c.sim.oh[0]);
+  const wwrs=cases.map(c=>c.wwr), hsps=cases.map(c=>_getHsp0(c));
   const xMin=0, xMax=Math.ceil(Math.max(...wwrs)/5)*5; /* round up to nearest 5% */
   const yMin=0, yMax=Math.ceil(Math.max(...hsps)/500)*500;
 
@@ -7528,11 +7534,11 @@ function wwrBlock(){
   const n=cases.length;
   const mx=wwrs.reduce((a,b)=>a+b,0)/n, my=hsps.reduce((a,b)=>a+b,0)/n;
   let num=0,den=0;
-  cases.forEach(c=>{num+=(c.wwr-mx)*(c.sim.oh[0]-my);den+=(c.wwr-mx)**2;});
+  cases.forEach(c=>{num+=(c.wwr-mx)*(_getHsp0(c)-my);den+=(c.wwr-mx)**2;});
   const slope=den>0?num/den:0, intercept=my-slope*mx;
   /* R² */
   const ssTot=hsps.reduce((a,v)=>a+(v-my)**2,0);
-  const ssRes=cases.reduce((a,c)=>a+(c.sim.oh[0]-(slope*c.wwr+intercept))**2,0);
+  const ssRes=cases.reduce((a,c)=>a+(_getHsp0(c)-(slope*c.wwr+intercept))**2,0);
   const r2=ssTot>0?Math.max(0,1-ssRes/ssTot):0;
 
   /* regression line clipped to plot area */
@@ -7548,9 +7554,9 @@ function wwrBlock(){
   const dots=cases.map(c=>{
     const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'?';
     const col=cols[k]||'#888';
-    return `<circle cx="${px(c.wwr).toFixed(1)}" cy="${py(c.sim.oh[0]).toFixed(1)}"
+    return `<circle cx="${px(c.wwr).toFixed(1)}" cy="${py(_getHsp0(c)).toFixed(1)}"
       r="4.5" fill="${col}" opacity="0.78"
-      title="${c.id} ${k} — WWR:${c.wwr.toFixed(1)}%  HSP:${Math.round(c.sim.oh[0])}h"/>`;
+      title="${c.id} ${k} — WWR:${c.wwr.toFixed(1)}%  HSP:${Math.round(_getHsp0(c))}h"/>`;
   }).join('');
 
   /* ── axis ticks ── */
@@ -7684,9 +7690,35 @@ const ZONE_TM_LIT={
 };
 
 function tmSimStats(zone){
+  /* helpers that read from Excel sim columns OR from the viz JSON cache
+     (populated lazily when a case is opened in the panel) */
+  const _vcScen=['present','ssp585_2050','ssp585_2080'];
+  function _getSimVal(c,key,i){
+    /* 1. Excel yellow columns */
+    if(key==='ndp'){const v=c.sim?.ndp?.[i];if(v!=null)return v;}
+    if(key==='tcp'){const v=c.sim?.comfort?.[i];if(v!=null)return v;}
+    if(key==='hsp'){const v=c.sim?.oh?.[i];if(v!=null)return v;}
+    /* 2. Viz JSON cache (loaded on case open via fetchSimViz) */
+    const vc=SIM_VIZ_CACHE[c.id]||SIM_CACHE[c.id];
+    if(!vc)return null;
+    const sd=vc[_vcScen[i]];
+    if(!sd)return null;
+    if(key==='ndp')return sd.ndp_hours??sd.ndp_summer_h??null;
+    if(key==='tcp')return sd.tcp??null;
+    if(key==='hsp')return sd.hsp_hours??null;
+    return null;
+  }
+  function _hasRealSim(c){
+    /* true only if at least one actual numeric value exists */
+    if(c.sim?.ndp?.[0]!=null||c.sim?.comfort?.[0]!=null||c.sim?.oh?.[0]!=null)return true;
+    const vc=SIM_VIZ_CACHE[c.id]||SIM_CACHE[c.id];
+    if(!vc)return false;
+    const p=vc['present'];
+    return!!(p&&(p.tcp!=null||p.hsp_hours!=null||p.ndp_hours!=null||p.ndp_summer_h!=null));
+  }
   const cases=CASES.filter(c=>{
     const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';
-    return k===zone&&c.sim&&(c.sim.ndp||c.sim.comfort);
+    return k===zone&&_hasRealSim(c);
   });
   const n=cases.length;
   if(!n)return null;
@@ -7696,9 +7728,9 @@ function tmSimStats(zone){
     return(m&&a&&a>0)?m/a:null;
   });
   return{n,
-    ndp:[avg(cases.map(c=>c.sim?.ndp?.[0])),avg(cases.map(c=>c.sim?.ndp?.[1])),avg(cases.map(c=>c.sim?.ndp?.[2]))],
-    tcp:[avg(cases.map(c=>c.sim?.comfort?.[0])),avg(cases.map(c=>c.sim?.comfort?.[1])),avg(cases.map(c=>c.sim?.comfort?.[2]))],
-    hsp:[avg(cases.map(c=>c.sim?.oh?.[0])),avg(cases.map(c=>c.sim?.oh?.[1])),avg(cases.map(c=>c.sim?.oh?.[2]))],
+    ndp:[0,1,2].map(i=>avg(cases.map(c=>_getSimVal(c,'ndp',i)))),
+    tcp:[0,1,2].map(i=>avg(cases.map(c=>_getSimVal(c,'tcp',i)))),
+    hsp:[0,1,2].map(i=>avg(cases.map(c=>_getSimVal(c,'hsp',i)))),
     tmpm2:avg(tmpm2.filter(Boolean)),
     caseIds:cases.map(c=>c.id),
   };
@@ -7832,7 +7864,9 @@ function thermalMassZoneRows(zone){
 
 function thermalMassZonePanel(zone,counts){
   counts=counts||koppenSampleCounts();
-  const simN=CASES.filter(c=>{const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';return k===zone&&c.sim&&(c.sim.ndp||c.sim.comfort);}).length;
+  /* count only cases with actual sim values, not just initialized empty arrays */
+  const _hasRSim=c=>{if(c.sim?.ndp?.[0]!=null||c.sim?.comfort?.[0]!=null||c.sim?.oh?.[0]!=null)return true;const vc=SIM_VIZ_CACHE[c.id]||SIM_CACHE[c.id];if(!vc)return false;const p=vc['present'];return!!(p&&(p.tcp!=null||p.hsp_hours!=null||p.ndp_hours!=null||p.ndp_summer_h!=null));};
+  const simN=CASES.filter(c=>{const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';return k===zone&&_hasRSim(c);}).length;
   if(simN===0){
     return `<div class="fc-lowsample">No simulation output yet for ${zone} (${counts[zone]||0} case${(counts[zone]||0)===1?'':'s'} total).
       <button class="fc-showanyway" data-tmzone="${zone}">show morphological data</button>
@@ -7849,9 +7883,10 @@ function thermalMassZonePanel(zone,counts){
 function thermalMassBlock(){
   const counts=koppenSampleCounts();
   const zones=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
-  const simZones=zones.filter(z=>CASES.some(c=>{const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';return k===z&&c.sim&&(c.sim.ndp||c.sim.comfort);}));
+  const _hasRSimB=c=>{if(c.sim?.ndp?.[0]!=null||c.sim?.comfort?.[0]!=null||c.sim?.oh?.[0]!=null)return true;const vc=SIM_VIZ_CACHE[c.id]||SIM_CACHE[c.id];if(!vc)return false;const p=vc['present'];return!!(p&&(p.tcp!=null||p.hsp_hours!=null||p.ndp_hours!=null||p.ndp_summer_h!=null));};
+  const simZones=zones.filter(z=>CASES.some(c=>{const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';return k===z&&_hasRSimB(c);}));
   const opts=zones.map(z=>{
-    const sn=CASES.filter(c=>{const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';return k===z&&c.sim&&(c.sim.ndp||c.sim.comfort);}).length;
+    const sn=CASES.filter(c=>{const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';return k===z&&_hasRSimB(c);}).length;
     return `<option value="${z}">${z} \u2014 ${sn>0?sn+' simulated':'no sim'} / ${counts[z]} total</option>`;
   }).join('');
   const first=simZones[0]||zones[0]||'Cfb';
