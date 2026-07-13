@@ -1987,7 +1987,13 @@ html[data-theme="dark"] .loader-status{
 
   <section class="view" id="view-method">
     <div class="method-wrap">
-      <div class="method-lead">MorphSHIFT is an empirical–quantitative correlation study testing which passive strategies in historical vernacular buildings remain valid under projected future climate and which require adaptation. It pairs this with a simulation tool that bridges description and prescription.</div>
+      <div class="method-lead" id="siteAbstract">
+        <span style="font-size:13px;font-family:var(--mono);font-style:normal;letter-spacing:.08em;color:var(--ink-faint);display:block;margin-bottom:14px;">WHAT IS VERNACULARFUTURES?</span>
+        <span style="display:block;margin-bottom:1em;">Vernacularfutures investigates whether vernacular buildings, buildings that climate has already tested and that already exist in the conditions that other regions are projected to reach under SSP5-8.5 projections, can serve as empirical analogues for future design decisions. It is an open atlas built on a corpus of vernacular case studies that makes these analogues and their simulation-backed recommendations accessible to researchers and practitioners, and refinable as data coverage expands.</span>
+        <span style="display:block;margin-bottom:1em;">If we hypothesize that vernacular building envelopes are a product of iterative climate-driven selection we can argue that they embody measurable morphological responses to climate stress. A geographically distributed corpus of measured morphological parameters, large enough to limit cultural influence, yields quantifiable adaptation thresholds that correspond to climate context within Köppen zones.</span>
+        <span style="display:block;margin-bottom:1em;">vernacularfutures tests this premise by extracting morphological parameters based on measured drawings from <span id="abstractCSCount" style="font-style:normal;font-weight:700;">—</span> vernacular case studies spanning the full range of global Köppen climate classifications.</span>
+        <span style="display:block;">Thermal simulations can verify these correlations and produce physically grounded evidence of how passive strategies perform under projected climates, identify where and by how much they fail, quantify the performance differential between a case study and its climate-adapted analogue, and generate concrete adaptation recommendations under EPW-morphed SSP5-8.5 future climate conditions for 2050 and 2080.</span>
+      </div>
       <div class="corpus-stats" id="corpusStats"></div>
       <div class="card-window pipeline-window" id="pipelineWindow" style="margin:24px 0;">
         <div class="card-titlebar">
@@ -6864,7 +6870,7 @@ function wireCaseDetail(c,slot){
       const w=document.createElement('div');
       w.className='sim-ashrae-warn sim-orient-warn';
       w.style.cssText='grid-column:1/-1;margin:0 0 8px;';
-      w.innerHTML='<b>No building orientation recorded.</b> The DXF drawings for this case study do not include a north arrow or orientation marker. The 3D viewer is showing the building in an assumed orientation (0° — plan north = true north). Window positions and solar exposure in the simulation may be rotated relative to reality. Thermal performance under warming can be significantly affected by orientation, especially for glazing and eave shading. Treat the simulation output with caution until orientation is confirmed and the DXF is re-analysed.';
+      w.innerHTML='<b>No building orientation recorded.</b> <button onclick="var d=this.nextElementSibling;d.style.display=d.style.display===\'none\'?\'block\':\'none\'" style="background:none;border:none;font-family:var(--mono);font-size:10px;cursor:pointer;color:var(--rust);padding:0 3px;vertical-align:middle;">ⓘ</button><div style="display:none;margin-top:7px;line-height:1.6;">The DXF drawings for this case study do not include a north arrow or orientation marker. The 3D viewer is showing the building in an assumed orientation (0° — plan north = true north). Window positions and solar exposure in the simulation may be rotated relative to reality. Thermal performance under warming can be significantly affected by orientation, especially for glazing and eave shading. Treat the simulation output with caution until orientation is confirmed and the DXF is re-analysed.</div>';
       const block=wrap.querySelector('.block');
       if(block)block.insertBefore(w,block.firstChild);
     }
@@ -8339,14 +8345,14 @@ function wireMismatchButtons(){
           if(p)p.textContent=`analysing ${yr}: ${done} / ${total} geometry cases\u2026`;
         });
         if(!rows.length){h.innerHTML='<div class="fc-lowsample">No results. EPW files may be unavailable, or no cases with geometry have been processed yet.</div>';return;}
-        const worst=rows.slice(0,15);
+        const worst=rows; /* show all, sorted worst→best */
         const body=worst.map(r=>`<tr>
           <td style="padding:5px 6px;font-family:var(--mono);font-size:10px;">${r.id}<br><span style="color:var(--ink-soft);font-size:9px;">${r.name}</span></td>
           <td style="padding:5px 6px;font-family:var(--mono);font-size:10px;">${dynV(r.brotherId)}<br><span style="color:var(--ink-soft);font-size:9px;">${dynV(r.brother)}</span></td>
           <td style="padding:5px 6px;">${dynV(r.severity)}</td>
           <td style="padding:5px 6px;color:var(--ink-faint);font-size:10px;">${r.dist.toFixed(2)}</td>
         </tr>`).join('');
-        h.innerHTML=`<p style="margin:8px 0 6px;font-family:var(--mono);font-size:10px;color:var(--ink-faint);">WORST ${worst.length} MISMATCHES \u2192 ${yr} &nbsp;\u00b7\u00b7&nbsp; geometry cases only (n\u202f=\u202f${rows.length} of ${geomN})</p>`
+        h.innerHTML=`<p style="margin:8px 0 6px;font-family:var(--mono);font-size:10px;color:var(--ink-faint);">ALL MISMATCHES \u2192 ${yr} &nbsp;\u00b7\u00b7&nbsp; geometry cases (n\u202f=\u202f${rows.length}), sorted worst\u2192best</p>`
           +`<table class="ktable"><thead><tr><th>Case study</th><th>vernacularBIGBROTHER</th><th>severity</th><th>d</th></tr></thead><tbody>${body}</tbody></table>`;
         blinkDynamicFindings();
       }
@@ -8360,6 +8366,7 @@ function buildCorpusStats(){
     kg=CASES.filter(c=>c.koppen[0]).length,simc=CASES.filter(c=>c.sim&&c.sim.oh&&c.sim.oh[0]!=null).length;
   const stats=[[total,'case studies'],[coord,'with coordinates'],[geom,'with full geometry'],[kg+' / '+simc,'Köppen / sim done']];
   document.getElementById('corpusStats').innerHTML=stats.map(s=>`<div class="cstat"><div class="v">${s[0]}</div><div class="k">${s[1]}</div></div>`).join('');
+  const n=document.getElementById('abstractCSCount');if(n)n.textContent=total;
 }
 /* pan + zoom + collapse for the pipeline diagram. Mirrors the map's feel:
    scroll to zoom, drag to pan, +/- buttons, and a collapse toggle that turns
@@ -9913,6 +9920,34 @@ function buildPipeline(){
       tag._btn=btn;bar.appendChild(btn);
     });
     vp.appendChild(bar);
+
+    /* Permanently mark External icons with a green border so they're
+       identifiable without clicking the tag filter */
+    requestAnimationFrame(()=>{
+      const svgEl=document.querySelector('#pipePan svg');
+      if(!svgEl)return;
+      const extColor=TAGS.external.color;
+      ['ext_icon_2','ext_icon_3'].forEach(id=>{
+        const g=svgEl.getElementById(id);
+        if(!g)return;
+        try{
+          const bb=g.getBBox();
+          const pad=6;
+          const r=document.createElementNS('http://www.w3.org/2000/svg','rect');
+          r.setAttribute('x',bb.x-pad);
+          r.setAttribute('y',bb.y-pad);
+          r.setAttribute('width',bb.width+pad*2);
+          r.setAttribute('height',bb.height+pad*2);
+          r.setAttribute('fill','none');
+          r.setAttribute('stroke',extColor);
+          r.setAttribute('stroke-width','2.5');
+          r.setAttribute('rx','6');
+          r.setAttribute('pointer-events','none');
+          r.classList.add('ext-icon-border');
+          g.appendChild(r);
+        }catch(e){}
+      });
+    });
   })();
 }
 
