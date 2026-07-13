@@ -1674,7 +1674,12 @@ body.mobile-mode.atlas-active .c-close svg{
 
 
 /* ── Leaflet zoom controls: push below map titlebar, dark mode inverted ── */
-body.atlas-active .leaflet-top.leaflet-left{top:34px!important;}
+body.atlas-active .leaflet-top.leaflet-left{
+  position:absolute!important;
+  top:34px!important;
+  left:auto!important;
+  right:10px!important;
+}
 html[data-theme="dark"] .leaflet-control-zoom a{background:var(--paper-dim)!important;color:var(--ink)!important;border-color:var(--line-strong)!important;}
 html[data-theme="dark"] .leaflet-control-zoom a:hover{background:var(--paper)!important;color:var(--ink)!important;}
 /* keep transform changes instant (they're driven by JS to clear the filter
@@ -2888,7 +2893,7 @@ const COLMAP_DEF={
   notes:[h=>h==='notes'],
   source:[h=>h.startsWith('source')],
   oh00:[h=>(h.toLowerCase().includes('hsp')||h.toLowerCase().includes('overheating'))&&h.includes('_00')],oh50:[h=>(h.toLowerCase().includes('hsp')||h.toLowerCase().includes('overheating'))&&h.includes('_50')],oh80:[h=>(h.toLowerCase().includes('hsp')||h.toLowerCase().includes('overheating'))&&h.includes('_80')],
-  cf00:[h=>h.includes('adaptive_comfort')&&h.includes('_00')],cf50:[h=>h.includes('adaptive_comfort')&&h.includes('_50')],cf80:[h=>h.includes('adaptive_comfort')&&h.includes('_80')],
+  cf00:[h=>(h.includes('adaptive_comfort')||h.toLowerCase().includes('tcp')||h.toLowerCase().startsWith('cf'))&&h.includes('_00')],cf50:[h=>(h.includes('adaptive_comfort')||h.toLowerCase().includes('tcp')||h.toLowerCase().startsWith('cf'))&&h.includes('_50')],cf80:[h=>(h.includes('adaptive_comfort')||h.toLowerCase().includes('tcp')||h.toLowerCase().startsWith('cf'))&&h.includes('_80')],
   ndp00:[h=>h.includes('ndp')&&h.includes('_00')],ndp50:[h=>h.includes('ndp')&&h.includes('_50')],ndp80:[h=>h.includes('ndp')&&h.includes('_80')],
   topMean00:[h=>h.includes('t_op_mean')&&h.includes('_00')],topMean50:[h=>h.includes('t_op_mean')&&h.includes('_50')],topMean80:[h=>h.includes('t_op_mean')&&h.includes('_80')],
 };
@@ -7334,18 +7339,44 @@ function wetBulbBlock(){
   });
   const topZones=Object.entries(zones).sort((a,b)=>b[1].length-a[1].length).slice(0,8);
   if(!topZones.length)return `<p style="color:var(--ink-faint);font-size:11px;">No data loaded yet.</p>`;
-  // Show by zone with note that hours are estimated from EPW data
-  return `<table class="ktable"><thead><tr><th>Zone</th><th>n</th><th>Estimated Tw>21°C status</th></tr></thead><tbody>`
+  /* Wet-bulb viability is driven by HUMIDITY, not dry-bulb temperature.
+     Hot arid climates (BWh, BSh, Csa) have LOW humidity → LOW wet-bulb →
+     evaporative cooling is HIGHLY effective. This is exactly why windcatchers,
+     courtyard fountains and qanats dominate in those traditions.
+     Tropical and humid climates (Af, Am, Aw, Cfa) have HIGH humidity →
+     wet-bulb approaches dry-bulb → evaporative cooling fails.
+     Source: Givoni (1994), wet-bulb threshold ~21°C for direct evaporation. */
+  return `<table class="ktable"><thead><tr><th>Zone</th><th>n</th><th>Tw>21°C status</th><th>Evaporative cooling</th></tr></thead><tbody>`
     +topZones.map(([k,cs])=>{
-      const hot=['BWh','BSh','Csa','Aw','Am'].includes(k);
-      const warm=['BSk','Csb','Cfa'].includes(k);
-      const status=hot?'<span style="color:var(--rust)">High — strategy failing or marginal under warming</span>'
-                  :warm?'<span style="color:var(--ochre)">Moderate — marginal under 2080 warming</span>'
-                  :'<span style="color:var(--moss,#2d7a2d)">Low — strategy viable</span>';
-      return `<tr><td class="kz">${k}</td><td class="kn">${cs.length}</td><td>${status}</td></tr>`;
+      /* Arid/semi-arid: dry air → Tw stays well below 21°C → highly viable */
+      const arid=['BWh','BWk','BSh','BSk'].includes(k);
+      /* Mediterranean dry summer: low summer humidity → viable in summer */
+      const medDry=['Csa','Csb'].includes(k);
+      /* Tropical and humid subtropical: high humidity → wet-bulb too high */
+      const humid=['Af','Am','Aw','Cfa'].includes(k);
+      /* Temperate/continental: moderate humidity, marginal */
+      const temperate=['Cfb','Dfb','Dfa','Dfc','Cfc'].includes(k);
+      let tw,strat;
+      if(arid){
+        tw='<span style="color:var(--moss,#2d7a2d)">Low — Tw stays well below 21°C</span>';
+        strat='<span style="color:var(--moss,#2d7a2d)">Viable ✓ — primary passive strategy</span>';
+      }else if(medDry){
+        tw='<span style="color:var(--moss,#2d7a2d)">Low in summer — dry season humidity</span>';
+        strat='<span style="color:var(--moss,#2d7a2d)">Viable in summer ✓</span>';
+      }else if(humid){
+        tw='<span style="color:var(--rust)">High — humidity prevents evaporation</span>';
+        strat='<span style="color:var(--rust)">Not viable — wet-bulb too high ✗</span>';
+      }else if(temperate){
+        tw='<span style="color:var(--ochre)">Moderate — marginal in warm months</span>';
+        strat='<span style="color:var(--ochre)">Marginal — secondary strategy only</span>';
+      }else{
+        tw='<span style="color:var(--ink-faint)">—</span>';
+        strat='<span style="color:var(--ink-faint)">—</span>';
+      }
+      return `<tr><td class="kz">${k}</td><td class="kn">${cs.length}</td><td>${tw}</td><td>${strat}</td></tr>`;
     }).join('')
     +'</tbody></table>'
-    +`<p style="font-size:10px;color:var(--ink-faint);margin-top:6px;">Status estimated from Köppen zone characteristics. Precise hour counts require wet-bulb extraction from EPW files — marked for pipeline integration.</p>`;
+    +`<p style="font-size:10px;color:var(--ink-faint);margin-top:6px;">Viability based on typical wet-bulb temperature by zone (Givoni, 1994). In hot arid climates, low humidity keeps Tw well below 21°C despite high dry-bulb temperatures — the opposite of humid tropical zones. Precise Tw hours require extraction from EPW files.</p>`;
 }
 function stratBlock(){
   const counts=koppenSampleCounts();
@@ -8191,13 +8222,6 @@ const FINDINGS=[
       +`<p style="line-height:1.7;margin-bottom:12px;">Both limitations — the ASHRAE 55 T_pma ceiling and the NDP 22°C floor — point to the same underlying issue: the quantitative tools available for evaluating passive performance were built on and for temperate Western climates. Applying them globally without adjustment produces systematic blind spots in exactly the climates where vernacular passive strategies are most sophisticated and most needed.</p>`;
    }},
 
-  {id:'samplebias',title:'Sample bias & what it means for the findings',eyebrow:'Methodological finding · corpus limits',
-   body:()=>{
-     return ''
-      +`<p style="line-height:1.7;margin-bottom:12px;">The corpus is not a representative sample of global vernacular architecture. It is a convenience sample: case studies that have been academically documented with sufficient drawings to permit geometric extraction. Documented case studies are not evenly distributed across the world. Central European vernacular architecture has been extensively recorded for over a century. West African, South Asian, and East Asian vernacular architecture appears in the corpus in smaller numbers and with larger gaps.</p>`
-      +`<p style="line-height:1.7;margin-bottom:12px;">The practical consequence is that the correlation findings (H1: within-tradition climate gradients) are most reliable for the Cfb and Dfb zones, where the sample is largest. For tropical zones (A), the hot-arid zones (BW), and parts of the monsoon zones (Am, Aw), the sample is too small to draw statistically robust conclusions. The Köppen shift maps and strategy recommendations in the B section should be read with this in mind: the more the future climate of a case study diverges from the zone where this corpus has data, the more speculative the recommendation becomes.</p>`
-      +`<p style="line-height:1.7;margin-bottom:12px;">This is not a problem to be solved before the work is published — it is a structural feature of working with vernacular buildings that requires ongoing documentation effort. The corpus will grow. The findings will become more geographically representative over time. For now, the zone coverage statistics in the A · General findings tab are the most honest statement of where the analysis is on solid ground and where it is preliminary.</p>`;
-   }}
 
  ]}
 ];
