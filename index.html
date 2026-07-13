@@ -591,6 +591,10 @@ html[data-theme="dark"] .viewer3d-fs-btn:hover{background:rgba(11,10,22,0.95);co
 .sim-fs-wrap.sim-fullscreen .climate-tabs-content{
   flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;
 }
+/* sidebar buttons don't stretch — only take natural height */
+.sim-fs-wrap.sim-fullscreen .climate-tabs-sidebar{
+  align-self:flex-start;
+}
 .sim-fs-wrap.sim-fullscreen .viewer3d-canvas-box{
   flex:1;min-height:0;height:auto!important;
 }
