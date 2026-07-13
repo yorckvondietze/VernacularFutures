@@ -6634,7 +6634,7 @@ const WALL_LABEL={timber:'Lightweight timber',hybrid:'Timber + masonry',masonry:
 const _TM_DXF_TIP='Total thermal mass of all wall elements from DXF geometry (dxf_analyse_v6.py). Per wall polygon: Volume × VHC from MAT_PROPS lookup per material type. Summed across all walls. Unit (total row): kJ/K. Unit (specific row): kJ/m²K = total ÷ floor area — this is the standard building-physics normalisation, comparable across buildings of different sizes.';
 const _UWALL_TIP='<b>How derived:</b> U = λ / t_wall, where λ is the thermal conductivity of the wall material (W/mK) from the ISO 10456:2007 / EN 1745:2020 material lookup table in MAT_PROPS, and t_wall is the measured wall thickness from the DXF floor plan.<br><br><b>Accuracy:</b> The formula is single-layer and does not account for surface resistances, mortar joints, mixed-material walls, or composite assemblies. For homogeneous massive construction (stone, adobe, brick) errors are typically ±20–30%. For timber-frame or mixed construction the single-layer approximation can be off by a factor of two or more. The value should be treated as an order-of-magnitude estimate, not a certified thermal performance figure. Source material properties: ISO 10456:2007, EN 1745:2020.';
 const _UROOF_TIP='<b>How derived:</b> Same method as U-value wall — U = λ / t, using the roof material conductivity from MAT_PROPS and an estimated or recorded roof thickness. For roofs without explicit thickness data, a default of 0.20m is assumed.<br><br><b>Accuracy:</b> Roof assemblies in vernacular buildings are often multi-layer (rafter + insulating fill + tiles) and highly variable. The single-layer approximation is least reliable here. Values should be read as indicative only. Thatched roofs in particular have measured U-values that vary widely by moisture content and density (0.2–0.6 W/m²K), and the lookup value may not reflect field conditions. Source material properties: ISO 10456:2007, EN 1745:2020.';
-const _TM_HB_TIP='Approximated by sim_corpus.py: (rho x cp x t_wall x A_wall + rho x cp x 0.15m x A_floor + rho x cp x 0.20m x A_floor) / A_floor. Roof + floor use hardcoded 0.15m and 0.20m thickness and inherit wall material. Unit: kJ/m²K (per floor area).<br><br><b>Limitation — interior walls not accounted for:</b> Only the exterior envelope walls extracted from the DXF floor plan are included. Internal partition walls, which can contribute substantial thermal mass in stone or adobe construction, are not modelled. The Honeybee simulation likewise treats only the exterior shell. This means thermal mass is systematically underestimated for buildings with thick internal load-bearing walls — a common feature in Mediterranean, Central European timber-frame with masonry infill, and North African earthen construction. The DXF-derived total (column above) has the same limitation.';
+const _TM_HB_TIP='Approximated by sim_corpus.py: (ρ × cp × t_wall × A_wall + ρ × cp × 0.15m × A_floor + ρ × cp × 0.20m × A_floor) / A_floor. Covers the full building <b>envelope</b>: exterior walls from DXF geometry, roof (hardcoded 0.15m, inherits wall material), and floor slab (hardcoded 0.20m, inherits wall material). Unit: kJ/m²K (specific — normalised by floor area).<br><br><b>Limitation — interior walls not accounted for:</b> Only the exterior envelope is included. Internal partition walls, which can contribute substantial thermal mass in stone or adobe construction, are not modelled. The Honeybee simulation likewise treats only the exterior shell. Thermal mass is therefore systematically underestimated for buildings with thick internal load-bearing walls.';
 const METRIC_PAGES=[
  {label:'Basic info',rows:c=>[
    ['Location / region',mv(c.region)],
@@ -6663,7 +6663,7 @@ const METRIC_PAGES=[
    ['Compactness ψ',fmt(c.psi,'',3)],
    ['DXF_Analyse thermal mass, walls (total) <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,_TM_DXF_TIP)">ⓘ</button>',fmt(c.thermalMass,' kJ/K',0)],
    ['DXF_Analyse thermal mass, walls (specific) <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,_TM_DXF_TIP)">ⓘ</button>',(c.thermalMass!=null&&c.area>0)?((c.thermalMass/c.area).toFixed(1)+' kJ/m²K'):noData],
-   ['HONEYBEE thermal mass approx. (specific) <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,_TM_HB_TIP)">ⓘ</button>',fmt(c.thermalMassHB,' kJ/m²K',1)],
+   ['HONEYBEE thermal mass approx., envelope (specific) <button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,_TM_HB_TIP)">ⓘ</button>',fmt(c.thermalMassHB,' kJ/m²K',1)],
  ]},
  {label:'Windows & openings',rows:c=>[
    ['WWR',fmt(c.wwr,'%',1)],
@@ -10076,6 +10076,7 @@ function toggleTheme(){
 document.getElementById('themeToggle').addEventListener('click',toggleTheme);
 document.getElementById('loaderThemeToggle')?.addEventListener('click',toggleTheme);
 document.getElementById('loaderGameBtn')?.addEventListener('click',()=>openEggGame());
+document.getElementById('openGameBtn')?.addEventListener('click',()=>openEggGame());
 applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light');
 
 /* ===================== EASTER EGG: ELEVATION RUNNER =====================
@@ -10644,63 +10645,74 @@ async function renderAvgTypWin(){
     z.members.length+' case stud'+(z.members.length===1?'y':'ies')+'  ·  '+r+' km radius';
 
   /* ── map visual updates ─────────────────────────────────────────────── */
-  /* 1. Dim markers of CS inside circle, restore others */
+  /* 1. Dim markers of CS inside circle, restore others — more grey */
   document.querySelectorAll('.leaflet-marker-icon').forEach(el=>{
     const csid=el.dataset.csid;
     if(!csid)return;
     const inCircle=z.members.some(c=>c.id===csid);
-    el.style.opacity=inCircle?'0.38':'1';
+    el.style.opacity=inCircle?'0.18':'1';
+    el.style.filter=inCircle?'grayscale(100%)':'';
   });
 
-  /* 2. Remove old wobbly lines, draw fresh ones */
+  /* 2. Remove old lines, draw fresh zigzag spider legs */
   _avgLines.forEach(l=>map.removeLayer(l));
   _avgLines=[];
   if(_avgPin&&z.members.length){
     const pinLL=_avgPin.getLatLng();
     z.members.forEach(c=>{
       if(c.lat==null||c.lon==null)return;
-      /* gentle polyline — Leaflet supports it natively, we animate via CSS dashoffset */
-      const pts=[[pinLL.lat,pinLL.lng],[c.lat,c.lon]];
+      /* Build a zigzag path: straight line + two small perpendicular jogs
+         creating a spider-leg / bent-wire look */
+      const lat1=pinLL.lat,lng1=pinLL.lng,lat2=c.lat,lng2=c.lon;
+      const dlat=lat2-lat1,dlng=lng2-lng1;
+      const len=Math.sqrt(dlat*dlat+dlng*dlng);
+      /* perpendicular unit vector */
+      const px=-dlng/len,py=dlat/len;
+      /* jog amplitude: 0.18° lat-equivalent, scales nicely at European map zoom */
+      const amp=len*0.12;
+      /* two kink points at 33% and 66% along the line with alternating offsets */
+      const mid1=[lat1+dlat*0.33+py*amp, lng1+dlng*0.33+px*amp];
+      const mid2=[lat1+dlat*0.66-py*amp, lng1+dlng*0.66-px*amp];
+      const pts=[[lat1,lng1],mid1,mid2,[lat2,lng2]];
       const line=L.polyline(pts,{
-        color:'var(--terracotta)',weight:1.4,opacity:0.45,dashArray:'6 4',
+        color:'var(--terracotta)',weight:1.6,opacity:0.55,
+        dashArray:null,  /* solid, not dashed */
+        smoothFactor:0,  /* sharp kinks */
         className:'avgt-line-path',interactive:false
       }).addTo(map);
       _avgLines.push(line);
     });
   }
 
-  /* BUILDING */
+  /* BUILDING — inject probable URLs directly, no HEAD probing.
+     onerror hides items that don't exist; the wrapper checks for empties afterward. */
   const bP=document.getElementById('avgt-panel-building');
   if(!z.members.length){
     bP.innerHTML='<p class="avgt-empty">No case studies within radius.</p>';
   }else{
-    bP.innerHTML='<p class="avgt-sec-head">Photos</p><div class="avgt-carousel-wrap" id="avgt-photos"><span style="font-size:10px;color:var(--ink-faint)">loading…</span></div><p class="avgt-sec-head" style="margin-top:12px">Floor plans</p><div class="avgt-carousel-wrap" id="avgt-plans"><span style="font-size:10px;color:var(--ink-faint)">loading…</span></div>';
-    Promise.all(z.members.map(async c=>{
-      const[ph,pl]=await Promise.all([
-        fetchPhotos(c.id).catch(()=>[]),
-        fetchPlans(c.id).catch(()=>[])
-      ]);
-      return{c,ph,pl};
-    })).then(res=>{
-      const pr=document.getElementById('avgt-photos');
-      const plr=document.getElementById('avgt-plans');
-      if(!pr||!plr)return;
-      const ap=[],apl=[];
-      res.forEach(({c,ph,pl})=>{
-        ph.slice(0,2).forEach(u=>ap.push({u,l:c.id+' · '+c.name}));
-        pl.slice(0,1).forEach(p=>apl.push({u:p.url||p,l:c.id+' · '+c.name}));
+    /* Build all probable photo and plan URLs upfront — no network probing needed */
+    const ap=[],apl=[];
+    z.members.forEach(c=>{
+      const base=casePhotoBasename(c.id);
+      const lbl=c.id+' · '+(c.name||c.id);
+      /* photos: primary + up to 2 alternates */
+      ['','b','c'].forEach(s=>{
+        PHOTO_EXTS.forEach(ext=>ap.push({u:`${DATA_BASE}/photos/${base}${s}.${ext}`,l:lbl,ext,s}));
       });
-      const ih=arr=>arr.length
-        ?arr.map(p=>`<div class="avgt-carousel-item"><img src="${p.u}" loading="lazy" onerror="this.closest('.avgt-carousel-item').style.display='none'" alt="${p.l}"><span>${p.l}</span></div>`).join('')
-        :'<span style="font-size:10px;color:var(--ink-faint)">No images found for these case studies.</span>';
-      pr.innerHTML=ih(ap);
-      plr.innerHTML=ih(apl);
-    }).catch(()=>{
-      const pr=document.getElementById('avgt-photos');
-      const plr=document.getElementById('avgt-plans');
-      if(pr)pr.innerHTML='<span style="font-size:10px;color:var(--ink-faint)">Could not load images.</span>';
-      if(plr)plr.innerHTML='<span style="font-size:10px;color:var(--ink-faint)">Could not load plans.</span>';
+      /* plans: floor plan + first two elevations */
+      PHOTO_EXTS.forEach(ext=>apl.push({u:`${DATA_BASE}/plans/${base}_floorplan.${ext}`,l:lbl}));
+      ['01','02'].forEach(n=>PHOTO_EXTS.forEach(ext=>apl.push({u:`${DATA_BASE}/plans/${base}_elevation${n}.${ext}`,l:lbl})));
     });
+    /* Render with onerror hide; after all loads check if anything survived */
+    const uid=Date.now();
+    const mkItem=(arr,wrapId)=>'<div class="avgt-carousel-wrap" id="'+wrapId+'">'+
+      arr.map(p=>`<div class="avgt-carousel-item"><img src="${p.u}" loading="lazy"
+        onerror="this.closest('.avgt-carousel-item').remove();(function(w){if(document.getElementById(w)&&!document.getElementById(w).querySelector('img')){document.getElementById(w).innerHTML='<span style=\\"font-size:10px;color:var(--ink-faint)\\">No images found.</span>';}})(\'${wrapId}\')"
+        alt="${p.l}"><span>${p.l}</span></div>`).join('')+
+      '</div>';
+    bP.innerHTML=
+      '<p class="avgt-sec-head">Photos</p>'+mkItem(ap,'avgt-photos-'+uid)+
+      '<p class="avgt-sec-head" style="margin-top:12px">Floor plans</p>'+mkItem(apl,'avgt-plans-'+uid);
   }
 
   /* CLIMATE */
@@ -10817,8 +10829,8 @@ function closeAvgTypWin(){
   if(_avgPin){map.removeLayer(_avgPin);_avgPin=null;}
   if(_avgCircle){map.removeLayer(_avgCircle);_avgCircle=null;}
   _avgLines.forEach(l=>map.removeLayer(l));_avgLines=[];
-  /* restore all marker opacities */
-  document.querySelectorAll('.leaflet-marker-icon').forEach(el=>{el.style.opacity='';});
+  /* restore all marker opacities and filters */
+  document.querySelectorAll('.leaflet-marker-icon').forEach(el=>{el.style.opacity='';el.style.filter='';});
 }
 function addAvgTypZone(){
   const win=document.getElementById("avgTypWin");
