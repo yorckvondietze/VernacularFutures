@@ -1348,27 +1348,83 @@ body.mobile-mode #view-cases.active{
   overflow:visible!important;
   height:auto!important;
 }
-/* filter bar: single horizontal scroll row on mobile */
+/* ── MOBILE GENERIC LAYOUT ─────────────────────────────────────────────────
+   The win-titlebar + app-header form one sticky block at z-index:700, which
+   sits ABOVE the bottom sheets (z-index:600). This guarantees the scenario
+   slider is always reachable no matter what sheet is open.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* header: sticky block, always above sheets */
+body.mobile-mode .win-titlebar{
+  position:sticky!important;
+  top:0;
+  z-index:701;
+  background:var(--paper-dim);
+}
+body.mobile-mode .app-header{
+  position:sticky!important;
+  top:33px; /* approximate win-titlebar height; JS re-measures via --wintb-h */
+  top:var(--wintb-h,33px);
+  z-index:700;
+  background:var(--paper);
+  border-bottom:1px solid var(--line)!important;
+  /* ONE ROW: prevents slider from wrapping below sheet top edge */
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  padding:7px 10px 7px 8px!important;
+  height:auto!important;
+  gap:8px!important;
+  overflow:visible!important;
+}
+/* compact brand so slider fits on same row */
+body.mobile-mode .brand-subtitle{display:none!important;}
+body.mobile-mode .brand-eyebrow{display:none!important;}
+body.mobile-mode .brand-title{font-size:11px!important;line-height:1.2!important;}
+/* slider fills remaining header width */
+body.mobile-mode .scenario-control{
+  flex:1 1 0;
+  min-width:0;
+  gap:2px!important;
+  overflow:visible;
+}
+body.mobile-mode .scenario-slider-wrap{
+  width:100%!important;
+  min-width:0!important;
+  padding:0 4px;
+  box-sizing:border-box;
+}
+body.mobile-mode .scenario-label{font-size:7.5px!important;letter-spacing:0.04em!important;white-space:nowrap;}
+body.mobile-mode .scenario-slider{height:10px!important;margin:6px 0!important;width:100%!important;}
+body.mobile-mode .scenario-slider::-webkit-slider-thumb{width:34px!important;height:34px!important;}
+body.mobile-mode .scenario-slider::-moz-range-thumb{width:34px!important;height:34px!important;}
+body.mobile-mode .scenario-ticks{margin-top:1px!important;}
+body.mobile-mode .scenario-tick{font-size:6.5px!important;letter-spacing:0!important;}
+body.mobile-mode .scenario-period{display:none;}
+body.mobile-mode #mapFullscreenBtn{display:none!important;}
+
+/* filter bar: horizontally scrollable pill row, contained — no page-level leak */
 body.mobile-mode .filter-bar{
   flex-wrap:nowrap;
   overflow-x:auto;
+  overflow-y:hidden;
   -webkit-overflow-scrolling:touch;
   gap:6px;
-  padding:6px 10px;
+  padding:6px 12px;
   scrollbar-width:none;
+  max-width:100%;
+  box-sizing:border-box;
 }
 body.mobile-mode .filter-bar::-webkit-scrollbar{display:none;}
-body.mobile-mode .filter-group{
-  flex:0 0 auto;
-}
+body.mobile-mode .filter-group{flex:0 0 auto;}
+/* bigger filter selects — 44px tap target */
 body.mobile-mode .filter-group select{
-  font-size:11px;
-  padding:3px 18px 3px 5px;
+  font-size:13px!important;
+  padding:10px 28px 10px 10px!important;
+  min-height:44px!important;
+  box-sizing:border-box;
 }
 /* search bar */
-body.mobile-mode .cs-search-bar{
-  padding:6px 12px;
-}
+body.mobile-mode .cs-search-bar{padding:6px 12px;}
 body.mobile-mode .map-card .cs-search-row{
   position:static!important;
   width:100%!important;
@@ -1381,6 +1437,8 @@ body.mobile-mode .explorer-grid{
   gap:10px;
   padding:10px 12px;
   overflow:visible!important;
+  max-width:100%;
+  box-sizing:border-box;
 }
 /* map: shorter, not sticky */
 body.mobile-mode .map-col{
@@ -1389,113 +1447,64 @@ body.mobile-mode .map-col{
   align-self:auto!important;
   height:auto!important;
 }
-body.mobile-mode .map-card{
-  height:300px!important;
-}
-body.mobile-mode #map{
-  height:300px!important;
-  min-height:300px!important;
-}
+body.mobile-mode .map-card{height:300px!important;}
+body.mobile-mode #map{height:300px!important;min-height:300px!important;}
 /* case study panel: full width, auto height */
-body.mobile-mode #csPanel{
-  height:auto!important;
-  overflow:visible!important;
-  max-height:none!important;
-}
-body.mobile-mode .cs-panel.active{
-  overflow:visible!important;
-  height:auto!important;
-}
-body.mobile-mode .block{
-  overflow:visible!important;
-}
-/* compare: only show slot A on mobile */
-body.mobile-mode .explorer-grid.compare-active{
-  grid-template-columns:1fr!important;
-}
-body.mobile-mode .explorer-grid.compare-active > *:nth-child(2){
-  display:none!important;
-}
-/* hide compare / BB buttons (require slot B) */
+body.mobile-mode #csPanel{height:auto!important;overflow:visible!important;max-height:none!important;}
+body.mobile-mode .cs-panel.active{overflow:visible!important;height:auto!important;}
+body.mobile-mode .block{overflow:visible!important;}
+/* compare: slot A only on mobile */
+body.mobile-mode .explorer-grid.compare-active{grid-template-columns:1fr!important;}
+body.mobile-mode .explorer-grid.compare-active > *:nth-child(2){display:none!important;}
+/* hide compare / BB (require slot B) */
 body.mobile-mode .compare-toggle-btn,
 body.mobile-mode .cscompare-btn,
 body.mobile-mode .bb-btn,
-body.mobile-mode .action-info-icon{
-  display:none!important;
-}
-body.mobile-mode .panel-toolbar{
-  justify-content:flex-start;
-  min-height:0;
-  padding:4px 0;
-}
-/* carousels: slightly shorter */
-body.mobile-mode .photo-carousel{
-  height:200px!important;
-}
-/* climate chart canvas: scale to width */
-body.mobile-mode canvas{
-  max-width:100%;
-  height:auto!important;
-}
-/* tab bar: horizontal scroll */
+body.mobile-mode .action-info-icon{display:none!important;}
+body.mobile-mode .panel-toolbar{justify-content:flex-start;min-height:0;padding:4px 0;}
+/* carousels */
+body.mobile-mode .photo-carousel{height:200px!important;}
+/* canvas */
+body.mobile-mode canvas{max-width:100%;height:auto!important;}
+/* tab bar: horizontal scroll, no page-level overflow */
 body.mobile-mode .tab-bar{
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
   padding:0 12px;
+  max-width:100%;
 }
-/* cs main tabs: tighter */
+/* cs main tabs: tighter + bigger tap targets */
 body.mobile-mode .cs-main-tabs{
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
   padding:8px 0 0;
+  max-width:100%;
 }
 body.mobile-mode .cs-main-tab{
-  padding:5px 10px;
+  padding:10px 14px!important;
   font-size:9px;
   flex:0 0 auto;
   min-width:auto;
 }
-/* wider tap targets */
+/* 44px tap targets everywhere */
 body.mobile-mode .cs-main-tab,
 body.mobile-mode .tab-btn,
 body.mobile-mode .diagram-tab{
-  min-height:36px;
+  min-height:44px!important;
+  display:inline-flex!important;
+  align-items:center!important;
 }
 /* koppen strip */
-body.mobile-mode .koppen-strip{
-  flex-wrap:wrap;
-  gap:4px;
-}
-/* metric table: horizontal scroll */
+body.mobile-mode .koppen-strip{flex-wrap:wrap;gap:4px;}
+/* metric table: horizontal scroll, clipped to container */
 body.mobile-mode .metric-table{
   display:block;
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
+  max-width:100%;
 }
-/* 3D viewer: scale to fit on mobile */
-body.mobile-mode .viewer3d-canvas-box canvas{
-  max-width:100%!important;
-  height:auto!important;
-}
-/* slider bar: sticky on mobile so it stays while scrolling */
-body.mobile-mode #mapFullscreenBtn{display:none!important;}
-body.mobile-mode .app-header{
-  position:sticky!important;
-  top:0;
-  z-index:200;
-  background:var(--paper);
-  border-bottom:1px solid var(--line);
-}
-/* slider: compact on mobile */
-body.mobile-mode .scenario-slider-wrap{width:280px!important;padding:0 5px;box-sizing:border-box;}
-body.mobile-mode .scenario-control{gap:2px!important;}
-body.mobile-mode .scenario-label{font-size:7.5px!important;letter-spacing:0.04em!important;}
-body.mobile-mode .scenario-slider{height:10px!important;margin:8px -5px!important;width:calc(100% + 10px)!important;}
-body.mobile-mode .scenario-slider::-webkit-slider-thumb{width:32px!important;height:32px!important;}
-body.mobile-mode .scenario-slider::-moz-range-thumb{width:32px!important;height:32px!important;}
-body.mobile-mode .scenario-ticks{margin-top:1px!important;}
-body.mobile-mode .scenario-tick{font-size:6.5px!important;letter-spacing:0!important;}
-body.mobile-mode .scenario-period{display:none;}
+/* 3D viewer */
+body.mobile-mode .viewer3d-canvas-box canvas{max-width:100%!important;height:auto!important;}
 
 
 /* findings / method views still scrollable */
@@ -1636,15 +1645,16 @@ body.mobile-mode.atlas-active .mobile-sheet-close{
   z-index:2;
 }
 
-/* case study drawer becomes a bottom sheet, closed by default (mosaic
-   not auto-opened). Same top-anchored + transform pattern as filter. */
+/* case study drawer: bottom sheet. Anchored top:--deck-top so it can never
+   cover the header+slider (z-index:700). The panel inside gets all remaining
+   height and is the only scrollable element — no horizontal overflow. */
 body.mobile-mode.atlas-active:not(.map-fullscreen) .explorer-grid > .card-window{
   position:fixed!important;
   left:0!important;right:0!important;
   top:var(--deck-top,120px)!important;bottom:0!important;
   width:100%!important;height:auto!important;max-height:none!important;
   overflow:hidden!important;
-  border-left:none!important;border-top:1px solid var(--line-strong);
+  border-left:none!important;border-top:2px solid var(--line-strong);
   z-index:600;
   transform:translateY(100%);
   transition:transform .25s cubic-bezier(.4,0,.2,1);
@@ -1653,14 +1663,18 @@ body.mobile-mode.atlas-active:not(.map-fullscreen) .explorer-grid > .card-window
 body.mobile-mode.atlas-active.cs-open .explorer-grid > .card-window{
   transform:translateY(0);
 }
+/* compact card titlebar so maximum height goes to content */
+body.mobile-mode.atlas-active .explorer-grid > .card-window .card-titlebar{
+  padding:10px 14px!important;
+  flex-shrink:0;
+}
 body.mobile-mode.atlas-active .explorer-grid > .card-window .panel{
   flex:1;min-height:0;
-  overflow-y:auto!important;-webkit-overflow-scrolling:touch;touch-action:pan-y;
+  overflow-y:auto!important;overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch;touch-action:pan-y;
   height:auto!important;max-height:none!important;
 }
-/* the old stacked-layout mobile CSS targets #csPanel by ID, which
-   outranks any class-based selector regardless of source order 
-   re-assert scroll here using the same ID so atlas mode wins */
+/* re-assert scroll on #csPanel by ID (outranks class selectors) */
 body.mobile-mode.atlas-active #csPanel{
   overflow-y:auto!important;overflow-x:hidden!important;
   height:auto!important;max-height:none!important;
@@ -1671,7 +1685,7 @@ body.mobile-mode.atlas-active .compare-toggle-btn,
 body.mobile-mode.atlas-active .cscompare-btn,
 body.mobile-mode.atlas-active .bb-btn,
 body.mobile-mode.atlas-active .metric-page-btn,
-body.mobile-mode.atlas-active .cs-tab,
+body.mobile-mode.atlas-active .cs-tab{
   padding:11px 16px!important;font-size:12.5px!important;
 }
 body.mobile-mode.atlas-active .cs-chip{
@@ -1692,8 +1706,6 @@ body.mobile-mode.atlas-active .c-fetch svg,
 body.mobile-mode.atlas-active .c-close svg{
   flex:none!important;
   width:14px!important;height:14px!important;
-}
-  height:24px!important;
 }
 
 
@@ -11333,7 +11345,11 @@ else if(window._hideLoader)window._hideLoader();
     document.body.classList.add('cs-open');
     document.getElementById('csStripBtn')?.classList.add('active');
   }
-  window.addEventListener('resize',()=>{if(document.body.classList.contains('atlas-active'))setDeckTop();});
+  window.addEventListener('resize',()=>{
+    if(document.body.classList.contains('atlas-active'))setDeckTop();
+    const _tb=document.querySelector('.win-titlebar');
+    if(_tb)document.documentElement.style.setProperty('--wintb-h',Math.round(_tb.getBoundingClientRect().height)+'px');
+  });
 
   /* wire hamburger tab buttons, reuse existing tab switching logic */
   drawer.querySelectorAll('.hm-tab[data-tab]').forEach(btn=>{
@@ -11489,6 +11505,22 @@ window.addEventListener('resize',()=>{clearTimeout(window._searchRowTimer);windo
     } else {
       document.body.classList.remove('mobile-mode');
     }
+    /* Re-measure header metrics after mobile styles apply so --deck-top and
+       --wintb-h reflect the actual compact layout, not the desktop layout
+       that was measured at setAtlasActive() time (called earlier in the
+       script before mobile-mode class was added). Two rAF passes let the
+       browser reflow between class mutation and measurement. */
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      const tb=document.querySelector('.win-titlebar');
+      const hd=document.querySelector('.app-header');
+      if(tb){
+        const h=tb.getBoundingClientRect().height;
+        document.documentElement.style.setProperty('--wintb-h',Math.round(h)+'px');
+      }
+      if(hd){
+        document.documentElement.style.setProperty('--deck-top',Math.round(hd.getBoundingClientRect().bottom)+'px');
+      }
+    }));
     /* tell Leaflet the container size changed */
     setTimeout(()=>{
       if(typeof map!=='undefined'&&map){
