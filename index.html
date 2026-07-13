@@ -992,9 +992,8 @@ body:not(.mobile-mode) .app-header .header-logo-center{height:0;overflow:visible
 }
 .hm-subtab:hover{background:var(--paper-dim);color:var(--ink);}
 .hm-subtab.active{color:var(--terracotta-deep);border-left-color:var(--terracotta);font-weight:600;}
-/* subtabs only visible when findings is the active context */
-.hm-subtabs-wrap{display:none;}
-.hm-subtabs-wrap.visible{display:block;}
+/* subtabs always visible in hamburger as nested items under II Findings */
+.hm-subtabs-wrap{display:block;}
 
 /* ═══════════════════════════════════════════════════════
    DECK LAYOUT, Atlas view (Tab I)
@@ -2879,40 +2878,38 @@ function showDataLoadFailure(msg){
     <button id="dataLoadRetryBtn" style="font-family:var(--mono);font-size:11px;padding:3px 9px;border:1px solid #fff;background:transparent;color:#fff;cursor:pointer;">retry</button>`;
   document.getElementById('dataLoadRetryBtn').addEventListener('click',()=>{FULL_CASES_RAW=null;
 
-/* ── Findings subtabs inside hamburger nav ───────────────────────────────
-   Called after buildFindingsMenu() so FINDINGS is populated. Injects
-   .hm-subgroup + .hm-subtab rows after the II Findings hm-tab button.
-   Works on both mobile and desktop (hamburger is available in both). */
+/* ── Findings subtabs in hamburger nav ──────────────────────────────────
+   Injects .hm-subgroup + .hm-subtab rows after the II Findings hm-tab.
+   Uses FINDINGS directly (const at script scope — NOT window.FINDINGS). */
 (function(){
   function buildHmFindingsSubtabs(){
     const nav=document.querySelector('#hamburgerDrawer .hm-nav');
     const findingsBtn=nav&&nav.querySelector('.hm-tab[data-tab="findings"]');
-    if(!nav||!findingsBtn||!window.FINDINGS)return;
-    /* idempotent: remove old subtab block first */
+    /* FINDINGS is a script-scope const, access by name not via window */
+    if(!nav||!findingsBtn||typeof FINDINGS==='undefined'||!FINDINGS.length)return;
     const old=document.getElementById('hmFindingsSubtabs');
     if(old)old.remove();
     const wrap=document.createElement('div');
     wrap.id='hmFindingsSubtabs';
     wrap.className='hm-subtabs-wrap';
-    FINDINGS.forEach(g=>{
+    FINDINGS.forEach(function(g){
       const gl=document.createElement('div');
       gl.className='hm-subgroup';
       gl.textContent=g.group;
       wrap.appendChild(gl);
-      g.items.forEach(it=>{
+      g.items.forEach(function(it){
         const btn=document.createElement('button');
         btn.className='hm-subtab';
         btn.textContent=it.title;
         btn.dataset.fid=it.id;
-        btn.addEventListener('click',()=>{
-          /* navigate to findings tab */
-          document.querySelectorAll('.tab-btn,.hm-tab').forEach(t=>t.classList.remove('active'));
-          document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+        btn.addEventListener('click',function(){
+          /* switch to findings tab */
+          document.querySelectorAll('.tab-btn,.hm-tab').forEach(function(t){t.classList.remove('active');});
+          document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
           findingsBtn.classList.add('active');
-          document.getElementById('view-findings')?.classList.add('active');
-          /* show the chosen finding */
+          var fv=document.getElementById('view-findings');
+          if(fv)fv.classList.add('active');
           if(typeof showFinding==='function')showFinding(it.id);
-          /* close hamburger */
           document.getElementById('hamburgerDrawer')?.classList.remove('open');
           document.getElementById('hamburgerOverlay')?.classList.remove('open');
         });
@@ -2920,38 +2917,25 @@ function showDataLoadFailure(msg){
       });
     });
     findingsBtn.insertAdjacentElement('afterend',wrap);
-    /* show subtabs immediately if findings is already active */
-    syncHmSubtabs();
+    _syncHmSubtabActive();
   }
-
-  /* show/hide subtab block based on whether findings tab is active */
-  function syncHmSubtabs(){
-    const wrap=document.getElementById('hmFindingsSubtabs');
+  /* sync which subtab is highlighted */
+  function _syncHmSubtabActive(){
+    var wrap=document.getElementById('hmFindingsSubtabs');
     if(!wrap)return;
-    const findingsActive=document.getElementById('view-findings')?.classList.contains('active');
-    wrap.classList.toggle('visible',!!findingsActive);
-    /* sync active state on individual subtab */
-    const curId=window._currentFindingId;
-    if(curId)wrap.querySelectorAll('.hm-subtab').forEach(b=>b.classList.toggle('active',b.dataset.fid===curId));
+    /* _currentFindingId is a script-scope let/var — access by name */
+    var curId=typeof _currentFindingId!=='undefined'?_currentFindingId:null;
+    if(curId)wrap.querySelectorAll('.hm-subtab').forEach(function(b){b.classList.toggle('active',b.dataset.fid===curId);});
   }
-
-  /* hook: expand subtabs when findings tab is opened */
-  document.addEventListener('click',e=>{
-    const btn=e.target.closest('.tab-btn,.hm-tab');
-    if(!btn)return;
-    setTimeout(syncHmSubtabs,30);
-  });
-
-  /* build once findings menu is populated */
-  const menu=document.getElementById('findingsMenu');
+  window._syncHmSubtabs=_syncHmSubtabActive;
+  /* Build as soon as findingsMenu gets its items (fired by buildFindingsMenu) */
+  var menu=document.getElementById('findingsMenu');
   if(menu){
-    const obs=new MutationObserver(()=>{
+    var obs=new MutationObserver(function(){
       if(menu.querySelector('.fm-item')){obs.disconnect();buildHmFindingsSubtabs();}
     });
     obs.observe(menu,{childList:true});
   }
-  /* expose so showFinding can sync active subtab */
-  window._syncHmSubtabs=syncHmSubtabs;
 })();
 setAppMode();});
 }
