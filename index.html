@@ -570,6 +570,20 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 .viewer3d-canvas-box canvas{display:block;}
 .viewer3d-fallback{display:flex;align-items:center;justify-content:center;height:100%;font-family:var(--mono);font-size:11px;color:var(--ink-faint);text-align:center;padding:0 16px;}
 .viewer3d-hint{position:absolute;bottom:6px;right:8px;font-family:var(--mono);font-size:8.5px;color:var(--ink-faint);background:rgba(255,255,255,0.85);padding:1px 6px;border-radius:0;}
+/* fullscreen button top-right */
+.viewer3d-fs-btn{position:absolute;top:6px;right:8px;background:rgba(255,255,255,0.85);border:none;font-family:var(--mono);font-size:13px;line-height:1;cursor:pointer;padding:2px 5px;color:var(--ink-soft);z-index:10;border-radius:0;}
+.viewer3d-fs-btn:hover{background:var(--paper);color:var(--ink);}
+html[data-theme="dark"] .viewer3d-fs-btn{background:rgba(11,10,22,0.75);color:var(--ink-soft);}
+html[data-theme="dark"] .viewer3d-fs-btn:hover{background:rgba(11,10,22,0.95);color:var(--ink);}
+/* fullscreen state */
+.viewer3d-canvas-box.viewer3d-fullscreen{
+  position:fixed!important;inset:0!important;z-index:99997!important;
+  width:100vw!important;height:100vh!important;
+  border:none!important;cursor:grab;
+}
+.viewer3d-canvas-box.viewer3d-fullscreen canvas{width:100%!important;height:100%!important;}
+.viewer3d-canvas-box.viewer3d-fullscreen .viewer3d-hint{bottom:14px;right:16px;}
+.viewer3d-canvas-box.viewer3d-fullscreen .viewer3d-fs-btn{top:14px;right:16px;font-size:15px;}
 .heat-legend{margin-top:9px;}
 .heat-legend-bar{height:8px;border-radius:0;background:linear-gradient(to right,#D10A14,#F29500,#E0E000,#0AB837,#00804A);}
 .heat-legend-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin-top:3px;}
@@ -5497,6 +5511,35 @@ function makeHeatTexture(intensity,seedStr){
 }
 
 let VIEWERS={A:null,B:null};
+/* ── Simulation viewer fullscreen ──────────────────────────────────────── */
+function toggleSimFullscreen(slot){
+  const box=document.getElementById('viewer3d-'+slot);
+  if(!box)return;
+  const btn=box.querySelector('.viewer3d-fs-btn');
+  const entering=!box.classList.contains('viewer3d-fullscreen');
+  box.classList.toggle('viewer3d-fullscreen',entering);
+  if(btn)btn.textContent=entering?'✕':'⛶';
+  /* resize the Three.js renderer to match the new box dimensions */
+  const v=VIEWERS[slot];
+  if(v&&v.renderer){
+    /* allow layout to settle before reading dimensions */
+    requestAnimationFrame(()=>{
+      const nw=box.clientWidth||window.innerWidth;
+      const nh=box.clientHeight||window.innerHeight;
+      v.renderer.setSize(nw,nh);
+      v.camera.aspect=nw/nh;
+      v.camera.updateProjectionMatrix();
+    });
+  }
+  /* ESC key exits fullscreen */
+  if(entering){
+    const onEsc=e=>{if(e.key==='Escape'){toggleSimFullscreen(slot);document.removeEventListener('keydown',onEsc);}};
+    document.addEventListener('keydown',onEsc);
+    box._escHandler=onEsc;
+  }else{
+    if(box._escHandler){document.removeEventListener('keydown',box._escHandler);box._escHandler=null;}
+  }
+}
 function disposeViewer(slot){
   const v=VIEWERS[slot];
   if(!v)return;
@@ -5981,7 +6024,7 @@ function updateSimGrid(slot,step,simData){
       <div class="ksub">% occupied hours within ASHRAE 55-2020 adaptive comfort bounds</div>
     </div>
     <div class="sim-cell">
-      <div class="k">HSP, Overheating Hours ${_c('ashrae55','ⓘ')}</div>
+      <div class="k">HSP — Heat Stress Potential, Overheating Hours ${_c('ashrae55','ⓘ')}</div>
       <div class="hsp-split">
         <div class="hsp-half">
           <div class="v">${hspPct??nd}<span class="u">${hspPct!=null?' %':''}</span></div>
@@ -6678,7 +6721,7 @@ function caseDetailHTML(c,slot){
             ${Object.keys(DIAGRAM_META).map(k=>`<button class="diagram-tab sim-tab climate-tab-square ${k===dtab?'active':''}" data-diagram="${k}" data-slot="${slot}">${DIAGRAM_META[k].label}</button>`).join('')}
           </div>
           <div class="climate-tabs-content">
-            <div class="viewer3d-canvas-box" id="viewer3d-${slot}"><div class="viewer3d-hint">drag to rotate</div></div>
+            <div class="viewer3d-canvas-box" id="viewer3d-${slot}"><div class="viewer3d-hint">drag to rotate</div><button class="viewer3d-fs-btn" title="fullscreen" onclick="toggleSimFullscreen('${slot}')">⛶</button></div>
             <div style="padding:5px 0 3px;display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9px;color:var(--ink-faint);">
               <span>Present</span>
               <input type="range" id="simSlider-${slot}" min="0" max="8" step="1" value="${SIM_STEP[slot]||0}" style="flex:1;accent-color:var(--terracotta);cursor:pointer;">
