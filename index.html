@@ -480,6 +480,7 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 @media (max-width:760px){.compare-grid{grid-template-columns:1fr;}.compare-col{padding-right:0;}.compare-col + .compare-col{padding-left:0;border-left:none;border-top:1px solid var(--line);padding-top:16px;margin-top:16px;}}
 
 .sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.sim-ashrae-warn{border:1.5px solid #CC2222;background:rgba(204,34,34,0.06);padding:10px 14px;font-family:var(--mono);font-size:11px;line-height:1.55;color:var(--ink);margin-bottom:10px;}
 .sim-cell .ksub{font-size:9px;color:var(--ink-faint);line-height:1.4;margin-top:3px;}
 .hsp-split{display:flex;align-items:stretch;gap:0;margin:3px 0;}
 .hsp-half{flex:1;text-align:center;padding:2px 4px;}
@@ -6057,7 +6058,23 @@ function updateSimGrid(slot,step,simData){
   const ndpWarn=ndp!=null&&ndp<NDP_THRESHOLD?` <span style="color:var(--rust)">⚠</span>`:'';
   /* Citation helper (reuse AR refs if available) */
   const _c=(k,abbr)=>typeof arShowCite==='function'?`<button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,'${k}')" style="font-size:8px;vertical-align:middle;margin-left:3px">${abbr}</button>`:'' ;
-  el.innerHTML=`
+
+  /* ASHRAE 55 validity warning.
+     Triggers when mean T_op > 25°C (T_pma frequently > 33.5°C)
+     OR when TCP counterintuitively improves from present → 2080. */
+  const _topVal=m&&m.t_op!=null?m.t_op:null;
+  const _simFull=SIM_CACHE[_cslot]||null;
+  let _tcpReversal=false;
+  if(_simFull&&_simFull.present&&_simFull.ssp585_2080){
+    const _tcp0=_simFull.present.tcp;const _tcp2=_simFull.ssp585_2080.tcp;
+    if(_tcp0!=null&&_tcp2!=null&&_tcp2>_tcp0+1)_tcpReversal=true;
+  }
+  const _showWarn=(_topVal!=null&&_topVal>25)||_tcpReversal;
+  const _warnCard=_showWarn?`<div class="sim-ashrae-warn" style="grid-column:1/-1;">
+    <b>Watch out with the TCP values here.</b> ASHRAE 55 only runs the comfort calculation for hours when outdoor temperatures are between 10 and 33.5 degrees. In very hot climates, a lot of summer hours are already above that ceiling and get dropped from the count entirely. Under warming, even more hours fall outside this range, so the formula is working with a smaller and smaller slice of the year. This can make TCP look like it is getting better when things are actually getting worse. The building is not becoming more comfortable — the metric is just measuring fewer of the bad hours. Look at HSP and T_op for a more honest picture of what warming means for this building.
+  </div>`:'';
+
+  el.innerHTML=_warnCard+`
     <div class="sim-cell">
       <div class="k">TCP, Thermal Comfort Probability ${_c('ashrae55','ⓘ')}${_c('dear2002','ⓘ')}</div>
       <div class="v">${tcp??nd}<span class="u">${tcp!=null?' %':''}</span></div>
