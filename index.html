@@ -1524,6 +1524,19 @@ body.mobile-mode .metric-table{
 body.mobile-mode .viewer3d-canvas-box canvas{max-width:100%!important;height:auto!important;}
 
 
+/* ── MOBILE: hide fullscreen modes and averageTYPOLOGY ───────────────────
+   All fullscreen modes (map, 3D viewer, simulation, pipeline) and the
+   averageTYPOLOGY feature are desktop-only — too complex for small screens.
+   desktop is completely unaffected. */
+body.mobile-mode #mapFullscreenBtn{display:none!important;}
+body.mobile-mode .viewer3d-fs-btn{display:none!important;}
+body.mobile-mode #pipeFullscreen{display:none!important;}
+body.mobile-mode #ghSimFullscreen{display:none!important;}
+body.mobile-mode .sim-fs-header{display:none!important;}
+body.mobile-mode #avgTypWin{display:none!important;}
+body.mobile-mode #avgTypBtn{display:none!important;}
+body.mobile-mode .avgt-launch-btn{display:none!important;}
+
 /* findings: sidebar hidden on mobile, nav lives in hamburger */
 body.mobile-mode .findings-grid{display:block!important;padding:0!important;gap:0!important;}
 body.mobile-mode .findings-menu{display:none!important;}
