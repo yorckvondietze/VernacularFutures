@@ -5797,8 +5797,8 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
     }
     /* window apertures from viz JSON, opening_w layer only */
     const _aps=_vizBld?(_vizBld.apertures||[]):[];
-    /* Terracotta outline + semi-transparent fill — visible on both dark and light backgrounds */
-    const WIN_COLOR=0xE07010;
+    /* Lime green — matches DXF plan colour, stepped down slightly for light-mode readability */
+    const WIN_COLOR=0x00CC22;
     _aps.forEach(ap=>{
       if(!ap.p0||!ap.p1||!ap.p2||!ap.p3)return;
       const pts=[ap.p0,ap.p1,ap.p2,ap.p3,ap.p0].map(([x,y,z])=>new THREE.Vector3(x,z,-y));
