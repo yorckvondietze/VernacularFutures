@@ -3994,7 +3994,15 @@ function arSim(c){
       li+=`<p class="ar-adapt-item">As NDP drops, look at whether you can get more out of night ventilation bigger openable windows, cross-ventilation or roof vents before switching to mechanical night cooling. ${arRef('artmann2007')}</p>`;
     }
     if(ndpBelow&&hasMass&&nightCoolClimate){
-      li+=`<p class="ar-adapt-item">NDP already below threshold: the walls can't cool down at night. It might be worth considering whether a lighter, better-insulated building with some mechanical cooling would do better than heavy construction here. ${arRef('szokolay2008')}</p>`;
+      /* In arid/steppe climates thermal mass works through diurnal time-shifting
+         (peak delayed 8-12 h), not NDP discharge. Artmann threshold is temperate-only.
+         Show the correct framing instead of the "lighter construction" advice. */
+      const _isAridFam=['desert','steppe'].includes(fam2);
+      if(_isAridFam){
+        li+=`<p class="ar-adapt-item">NDP is low but in desert climates thermal mass works differently: the high diurnal swing means walls time-shift peak heat by 8-12 hours so midday heat only arrives at night when conditions are cooler. The Artmann 1,000 h/yr threshold is calibrated for temperate climates and does not apply here. Keep the mass. ${arRef('szokolay2008')}</p>`;
+      } else {
+        li+=`<p class="ar-adapt-item">NDP already below threshold: the walls can't cool down at night. It might be worth considering whether a lighter, better-insulated building with some mechanical cooling would do better than heavy construction here. ${arRef('szokolay2008')}</p>`;
+      }
     }
     if(hspCrit){
       li+=`<p class="ar-adapt-item">Add shading on east and west windows they get low-angle morning and afternoon sun that overhangs can't block. Shutters or external louvres work well. A white reflective roof also helps. ${arRef('olgyay1963')}</p>`;
@@ -6289,8 +6297,10 @@ function updateSimGrid(slot,step,simData){
     if(_tcp0!=null&&_tcp2!=null&&_tcp2>_tcp0+1)_tcpReversal=true;
   }
   const _showWarn=(_topVal!=null&&_topVal>29)||_tcpReversal;
-  const _warnCard=_showWarn?`<div class="sim-ashrae-warn" style="grid-column:1/-1;">
-    <b>Watch out with the TCP values here.</b> ASHRAE 55 only runs the comfort calculation for hours when outdoor temperatures are between 10 and 33.5 degrees. In very hot climates, a lot of summer hours are already above that ceiling and get dropped from the count entirely. Under warming, even more hours fall outside this range, so the formula is working with a smaller and smaller slice of the year. This can make TCP look like it is getting better when things are actually getting worse. The building is not becoming more comfortable the metric is just measuring fewer of the bad hours. Look at HSP and T_op for a more honest picture of what warming means for this building.
+  const _warnId='simTcpWarn'+slot;
+  const _warnCard=_showWarn?`<div class="sim-ashrae-warn" style="grid-column:1/-1;cursor:pointer;" onclick="(function(el){el.classList.toggle('sim-ashrae-warn-open');el.querySelector('.saw-body').style.display=el.classList.contains('sim-ashrae-warn-open')?'block':'none';})(this)">
+    <b>Watch out with the TCP values here.</b><span class="action-info-icon" style="margin-left:6px;font-size:11px;vertical-align:middle;">ⓘ</span>
+    <div class="saw-body" style="display:none;margin-top:8px;"> ASHRAE 55 only runs the comfort calculation for hours when outdoor temperatures are between 10 and 33.5 degrees. In very hot climates, a lot of summer hours are already above that ceiling and get dropped from the count entirely. Under warming, even more hours fall outside this range, so the formula is working with a smaller and smaller slice of the year. This can make TCP look like it is getting better when things are actually getting worse. The building is not becoming more comfortable the metric is just measuring fewer of the bad hours. Look at HSP and T_op for a more honest picture of what warming means for this building.</div>
   </div>`:'';
 
   el.innerHTML=_warnCard+`
@@ -7383,6 +7393,7 @@ function loremParagraph(seed){
 function dynV(v){return '<span class="dyn-val">'+v+'</span>';}
 function dynSev(sev){
   const col=sev==='close analogue'?'var(--moss,#2d7a2d)':
+             sev==='near analogue'?'#3a8a72':
              sev==='loose analogue'?'var(--ochre)':
              sev==='marginal mismatch'?'var(--rust)':
              sev==='major mismatch'?'#b02020':'var(--ink-faint)';
@@ -7434,7 +7445,11 @@ function stratRecs(zone,ndp,tcp,hsp,avgSwing){
   }else{
     const ndpNow=ndp[0];const ndpEnd=ndp[2];const margin=ndpNow!=null?ndpNow-1000:null;
     if(ndpNow!=null&&ndpNow<1000){
-      recs.push({title:'Reassess thermal mass strategy',body:`NDP ${f(ndpNow)} h/yr \u2014 already below the Artmann threshold of 1,000 h/yr. Mass is accumulating heat across successive days. Consider reducing mass and introducing mechanical night cooling or prioritising cross-ventilation over storage.`,color:'var(--rust)'});
+      if(['desert','steppe'].includes(family)){
+        recs.push({title:'Thermal mass: time-shift mode',body:`NDP ${f(ndpNow)} h/yr in a desert/steppe climate. The Artmann 1,000 h/yr threshold is calibrated for temperate climates. Here thermal mass works by time-shifting peak heat 8-12 hours, not by discharging to cool night air. High diurnal swing makes mass effective even with low NDP.`,color:'var(--ochre)'});
+      } else {
+        recs.push({title:'Reassess thermal mass strategy',body:`NDP ${f(ndpNow)} h/yr already below the Artmann threshold of 1,000 h/yr. Mass is accumulating heat across successive days. Consider reducing mass and introducing mechanical night cooling or prioritising cross-ventilation over storage.`,color:'var(--rust)'});
+      }
     }else if(ndpEnd!=null&&ndpEnd<1000){
       recs.push({title:'Reinforce night ventilation now',body:`NDP ${f(ndpNow)} h/yr at present but projected to reach ${f(ndpEnd)} h/yr by 2080, crossing the Artmann threshold. Thermal mass remains viable through 2050 but future-proofing requires larger operable openings and clear cross-ventilation paths to maintain discharge capacity.`,color:'var(--ochre)'});
     }else{
@@ -8001,9 +8016,10 @@ function koppenShiftTableHTML(){
    fingerprint, nearest = big brother. Distance > mismatch severity. */
 function bbSeverity(dist){
   if(dist==null||!isFinite(dist))return 'no analogue';
-  if(dist<0.25)return 'close analogue';
-  if(dist<0.55)return 'loose analogue';
-  if(dist<BB_MAX_DISTANCE)return 'marginal mismatch';
+  if(dist<0.10)return 'close analogue';      /* genuinely rare: nearly identical climate */
+  if(dist<0.25)return 'near analogue';
+  if(dist<0.50)return 'loose analogue';
+  if(dist<0.80)return 'marginal mismatch';
   return 'major mismatch';
 }
 let _presentFpCache=null;
