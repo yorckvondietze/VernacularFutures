@@ -2182,7 +2182,7 @@ html[data-theme="dark"] .loader-status{
           <li class="src-key"><span class="src-au">Frampton, K.</span> (1983). Towards a critical regionalism: Six points for an architecture of resistance. In H. Foster (Ed.), <span class="src-j">The anti-aesthetic: Essays on postmodern culture</span> (pp. 16-30). Bay Press.</li>
           <li class="src-key"><span class="src-au">Givoni, B.</span> (1976). <span class="src-j">Man, climate and architecture</span> (2nd ed.). Applied Science Publishers.</li>
           <li><span class="src-au">Givoni, B.</span> (1991). Performance and applicability of passive and low-energy cooling systems. <span class="src-j">Energy and Buildings</span>, 17(3), 177-199.</li>
-          <li><span class="src-au">Givoni, B.</span> (1994). <span class="src-j">Passive and low energy cooling of buildings</span>. Van Nostrand Reinhold.</li>
+          <li class="src-key"><span class="src-au">Givoni, B.</span> (1994). <span class="src-j">Passive and low energy cooling of buildings</span>. Van Nostrand Reinhold.</li>
           <li><span class="src-au">Hausladen, G., de Saldanha, M., Liedl, P., &amp; Sager, C.</span> (2005). <span class="src-j">Climate design: Solutions for buildings that can do more with less technology</span>. Birkhäuser.</li>
           <li><span class="src-au">Hensen, J. L. M., &amp; Lamberts, R.</span> (Eds.). (2011). <span class="src-j">Building performance simulation for design and operation</span>. Routledge.</li>
           <li><span class="src-au">Heschong, L.</span> (1979). <span class="src-j">Thermal delight in architecture</span>. MIT Press.</li>
@@ -2211,6 +2211,7 @@ html[data-theme="dark"] .loader-status{
           <li><span class="src-au">Shen, Z.</span> (2012). Effects of roof pitch on air flow and heating load of sealed and vented attics for gable-roof residential buildings. <span class="src-j">Sustainability</span>, 4(9), 1999-2021.</li>
           <li><span class="src-au">Sherwood, S. C., &amp; Huber, M.</span> (2010). An adaptability limit to climate change due to heat stress. <span class="src-j">Proceedings of the National Academy of Sciences</span>, 107(21), 9552-9555.</li>
           <li><span class="src-au">Stull, R.</span> (2011). Wet-bulb temperature from relative humidity and air temperature. <span class="src-j">Journal of Applied Meteorology and Climatology</span>, 50(11), 2267-2269.</li>
+          <li class="src-key"><span class="src-au">Synnefa, A., Santamouris, M., &amp; Livada, I.</span> (2006). A study of the thermal performance of reflective coatings for the urban environment. <span class="src-j">Solar Energy</span>, 80(8), 968-981.</li>
           <li class="src-key"><span class="src-au">Szokolay, S. V.</span> (2008). <span class="src-j">Introduction to architectural science: The basis of sustainable design</span> (2nd ed.). Architectural Press.</li>
           <li><span class="src-au">United Nations Framework Convention on Climate Change.</span> (2015). <span class="src-j">Paris Agreement</span>. UNFCCC.</li>
           <li><span class="src-au">U.S. Department of Energy.</span> (2023). <span class="src-j">EnergyPlus (Version 23.x)</span> [Computer software]. https://energyplus.net</li>
@@ -3607,6 +3608,8 @@ const AR_REFS={
   szokolay2008:'Szokolay, S. V. (2008). Introduction to Architectural Science: The Basis of Sustainable Design (2nd ed.). Architectural Press.',
   dear2002:'de Dear, R. J., & Brager, G. S. (2002). Thermal comfort in naturally ventilated buildings: revisions to ASHRAE Standard 55. Energy and Buildings, 34(6), 549-561.',
   belcher2005:'Belcher, S. E., Hacker, J. N., & Powell, D. S. (2005). Constructing design weather data for future climates. Building Services Engineering Research and Technology, 26(1), 49-61.',
+  givoni1994:'Givoni, B. (1994). Passive and Low Energy Cooling of Buildings. Van Nostrand Reinhold.',
+  synnefa2006:'Synnefa, A., Santamouris, M., & Livada, I. (2006). A study of the thermal performance of reflective coatings for the urban environment. Solar Energy, 80(8), 968-981.',
 };
 
 /* Popover for ⓘ */
@@ -3683,7 +3686,7 @@ const AR_SHIFT={
   'Cfa→BSh':'significant aridification to semi-arid; year-round heat with declining precipitation.',
   'Csa→BSh':'critical aridification: peak summer temperatures increase by ~3-5°C.',
   'Csb→Csa':'hotter and longer dry season.',
-  'BSh→BWh':'extreme aridification to full desert; summer extremes may exceed 45°C regularly.',
+  'BSh→BWh':'extreme aridification (drying) to full desert conditions; summer extremes may exceed 45°C regularly.',
   'BSk→BSh':'warm steppe to hot steppe; heat stress becomes year-round.',
   'Dfb→Cfb':'milder winters; summers warm modestly.',
   'Dfb→Cfa':'continental to humid subtropical: hot summers become dominant.',
@@ -3711,13 +3714,13 @@ function arClimate(c){
   }
   if(k2){
     const big=k2!==k0&&arKFam(k0)!==arKFam(k2);
-    if(k2===k0&&(!k1||k1===k0)) chunks.push({t:'p',h:`<strong>2080:</strong> Zone stable. Cumulative warming continues under SSP5-8.5. ${arRef('ipcc2021')}${h0>=3?' '+arWarn('In an already warm climate, cumulative warming raises extreme-event frequency non-linearly.'):''}` });
+    if(k2===k0&&(!k1||k1===k0)) chunks.push({t:'p',h:`<strong>2080:</strong> Zone stable. Cumulative warming continues under SSP5-8.5. ${arRef('ipcc2021')}${h0>=3?' '+arWarn('In an already warm climate, even small additional temperature increases raise extreme-event frequency drastically, in a non-linear way (Intergovernmental Panel on Climate Change, 2021).')+arRef('ipcc2021'):''}` });
     else if(k2!==k0) chunks.push({t:'p',h:`<strong>2080${big?', '+arWarn('major zone shift'):''}:</strong> Shift to <strong>${k2}</strong> (${AR_KL[k2]||k2}), ${arKShift(k0,k2)} ${arRef('ipcc2021')}`});
   }
   let v;
   if(dh>=2) v=arWarn(`Major shift of climate by 2080. Passive strategies which are meant for present conditions will probably not be viable in the future.`)+' '+arRef('ipcc2021');
   else if(dh>=1) v=arNote(`Moderate shift. Existing passive strategy will face increasingly difficulties; adaptation measures by mid-century.`)+' '+arRef('olgyay1963');
-  else if(h0>=4) v=arNote(`Zone experiences already heat stress but temperatures rising. Even small temprature increases lead to significantly more heat days.`)+' '+arRef('ipcc2021');
+  else if(h0>=4) v=arNote(`Even small temperature increases lead to significantly more heat days.`)+' '+arRef('ipcc2021');
   else v=arOk(`Will stay stable. Passive strategies remain viable.`)+' '+arRef('olgyay1963');
   chunks.push({t:'p',h:v});
   return chunks;
@@ -3742,7 +3745,7 @@ function arMorph(c){
     if(hi&&diurnal){
       chunks.push({t:'p',h:arOk(`High thermal mass${tmpm2?` (≈${tmpm2} kJ/m²K)`:''} is well-matched to ${AR_KL[k0]||k0}. Heat stored in walls releases overnight, keeping peak indoor temperatures 3-8 degrees cooler iin arid/meditaranian climates `)+arRef('givoni1976')+arRef('szokolay2008')});
     } else if(hi&&tropical){
-      chunks.push({t:'p',h:arWarn(`High thermal mass in ${AR_KL[k0]||k0} when nights stay above ~20°C, stored heat cannot discharge, it delays rather than removes the load, making nights hotter. This rgets worse under SSP5-8.5. `)+arRef('artmann2007')+arRef('givoni1976')});
+      chunks.push({t:'p',h:arWarn(`High thermal mass in ${AR_KL[k0]||k0} when nights stay above ~20°C, stored heat cannot discharge, it delays the load and does not remove it, making nights hotter. This gets worse under SSP5-8.5. `)+arRef('artmann2007')+arRef('givoni1976')});
     } else if(lo&&h2>=3){
       chunks.push({t:'p',h:arNote(`Low thermal mass: fast response to outdoor swings, useful for winter warm-up, howver no summer peaks won't be bufferd. As summer heat rises in ${k2}, outdoor heat will influence indoor temperatures directly. `)+arRef('szokolay2008')});
     } else if(hi){
@@ -3820,7 +3823,7 @@ function arMorph(c){
     } else if(cm.includes('earth')||cm.includes('clay')||cm.includes('adobe')){
       chunks.push({t:'p',h:arNote(`Earth or adobe: high heat storage and absorbs moisture. Very effective in dry climates. Needs protection from rain more precipitation under warming can damage unprotected earth walls. `)+arRef('szokolay2008')+arRef('rapoport1969')});
     } else if(cm.includes('thatch')||cm.includes('organic')||cm.includes('bamboo')||cm.includes('wool')||cm.includes('felt')){
-      chunks.push({t:'p',h:arNote(`Light construction with very little heat storage. In hot humid climates ventilation matters far more than mass anyway. Watch for increased storm and fire risk under warming. `)+arRef('olgyay1963')+arRef('rapoport1969')});
+      chunks.push({t:'p',h:arNote(`Ventilation matters far more than mass. Watch for increased storm and fire risk under warming. `)+arRef('olgyay1963')+arRef('rapoport1969')});
     } else if(cm.includes('timber_frame')||cm.includes('frame')){
       chunks.push({t:'p',h:arNote(`Timber frame: thermal performance depends on what's in the walls. Lower heat storage than solid masonry. Consider heavy floor slabs to buffer summer heat if overheating becomes a problem. `)+arRef('szokolay2008')});
     }
@@ -3833,7 +3836,7 @@ function arMorph(c){
   if(c.roofForm){
     const rf=String(c.roofForm).toLowerCase();
     if(rf.includes('flat')&&h2>=3){
-      chunks.push({t:'p',h:arNote(`Flat roof: all solar radiation hits the top of the building directly. Painting it white can cut roof surface temperature by 20-30°C and indoor temperature by 2-4°C cheap and effective. `)+arRef('givoni1976')});
+      chunks.push({t:'p',h:arNote(`High Albedo (white paint) can cut roof surface temperature by 20-30°C and indoor temperature by 2-4°C. `)+arRef('synnefa2006')});
     }
     if(rf.includes('conical')||rf.includes('dome')||rf.includes('barrel')){
       chunks.push({t:'p',h:arNote(`${rf.charAt(0).toUpperCase()+rf.slice(1)} roof: curved shape means the sun hits at an angle for most of the day, reducing heat gain compared to a flat surface. `)+arRef('olgyay1963')});
@@ -3945,7 +3948,7 @@ function arSim(c){
       h=arWarn(`Significant overheating by 2080: ${Math.round(h2val)} h/yr (${h2p}% of the year), up from ${Math.round(h0)} h/yr now. Add shading on east and west, improve night ventilation and consider a reflective roof coating before 2050. `)+arRef('szokolay2008')+arRef('olgyay1963');
     } else {
       const inc=h2val!=null?Math.round(h2val-h0):null;
-      h=arNote(`Overheating: ${Math.round(h0)} h/yr now${h2val!=null?` > ${Math.round(h2val)} h/yr by 2080 (+${inc} h/yr)`:''} . Manageable increase, building stays in reasonable shape. `);
+      h=arNote(`Overheating: ${Math.round(h0)} h/yr now${h2val!=null?` > ${Math.round(h2val)} h/yr by 2080 (+${inc} h/yr)`:''} . Manageable increase, building stays in reasonable shape. `)+arRef('ashrae55');
     }
     chunks.push({t:'p',h});
   }
@@ -3995,7 +3998,7 @@ function arSim(c){
          Show the correct framing instead of the "lighter construction" advice. */
       const _isAridFam=['desert','steppe'].includes(fam2);
       if(_isAridFam){
-        li+=`<p class="ar-adapt-item">NDP is low but in desert climates thermal mass works differently: the high diurnal swing means walls time-shift peak heat by 8-12 hours so midday heat only arrives at night when conditions are cooler. The Artmann 1,000 h/yr threshold is calibrated for temperate climates and does not apply here. Keep the mass. ${arRef('szokolay2008')}</p>`;
+        li+=`<p class="ar-adapt-item">NDP is low but in desert climates thermal mass works differently: the high diurnal swing means walls time-shift peak heat by 8-12 hours so midday heat only arrives at night when conditions are cooler. The Artmann 1,000 h/yr threshold is modeled for temperate climates and does not apply here. Keep the mass. ${arRef('artmann2007')}${arRef('givoni1976')}</p>`;
       } else {
         li+=`<p class="ar-adapt-item">NDP already below threshold: the walls can't cool down at night. It might be worth considering whether a lighter, better-insulated building with some mechanical cooling would do better than heavy construction here. ${arRef('szokolay2008')}</p>`;
       }
@@ -4004,10 +4007,10 @@ function arSim(c){
       li+=`<p class="ar-adapt-item">Add shading on east and west windows they get low-angle morning and afternoon sun that overhangs can't block. Shutters or external louvres work well. A white reflective roof also helps. ${arRef('olgyay1963')}</p>`;
     }
     if(topHot&&['tropical','desert','steppe'].includes(fam2)){
-      li+=`<p class="ar-adapt-item">Look into evaporative cooling water features or wetted surfaces can drop temperatures by 3-6°C in dry climates if water is available. ${arRef('givoni1976')}</p>`;
+      li+=`<p class="ar-adapt-item">Look into evaporative cooling water features or wetted surfaces can drop temperatures by 3-6°C in dry climates if water is available. ${arRef('givoni1994')}</p>`;
     }
     if(tcpCrit){
-      li+=`<p class="ar-adapt-item">TCP below 50% by 2080: the building won't be passively comfortable for most of the day. Needs a rethink better ventilation, phase-change materials or some mechanical cooling will be necessary. ${arRef('szokolay2008')}</p>`;
+      li+=`<p class="ar-adapt-item">TCP below 50% by 2080: the building won't be passively comfortable for most of the day. Needs adaptation, better ventilation, phase-change materials or some mechanical cooling will be necessary. ${arRef('ashrae55')}${arRef('szokolay2008')}</p>`;
     }
     if(tcpMod&&!tcpCrit){
       li+=`<p class="ar-adapt-item">Monitor thermal performance closely at mid-century. If 2050 TCP falls below 60%, envolope needs aupgrade (additional shading, improved ventilation pathways) before the full 2080 climate materialises. `+arRef('ipcc2021')+`</p>`;
@@ -7432,24 +7435,24 @@ function stratRecs(zone,ndp,tcp,hsp,avgSwing){
   /* 1 Thermal mass viability */
   if(isArid){
     if(swingOk){
-      recs.push({title:'Maximize wall thickness',body:`Diurnal swing ${avgSwing.toFixed(1)}\u00b0C (Givoni threshold >${gt}\u00b0C). Time-lag strategy is viable: thick earth or stone walls delay peak heat by 8\u201312 h. Maintain or increase wall mass. NDP metric not applicable here (22\u00b0C ceiling does not fit desert nights).`,color:'var(--moss,#2d7a2d)'});
+      recs.push({title:'Maximize wall thickness',body:`Diurnal swing ${avgSwing.toFixed(1)}\u00b0C (Givoni threshold >${gt}\u00b0C). Time-lag strategy is viable: thick earth or stone walls delay peak heat by 8\u201312 h. Maintain or increase wall mass. NDP metric not applicable here (22\u00b0C ceiling does not fit desert nights). ${arRef('givoni1976')}`,color:'var(--moss,#2d7a2d)'});
     }else{
-      recs.push({title:'Monitor diurnal swing',body:`Swing ${avgSwing.toFixed(1)}\u00b0C is below the Givoni threshold of ${gt}\u00b0C for effective time-lag. Mass benefit is marginal; nights are not cool enough to fully discharge stored heat.`,color:'var(--ochre)'});
+      recs.push({title:'Monitor diurnal swing',body:`Swing ${avgSwing.toFixed(1)}\u00b0C is below the Givoni threshold of ${gt}\u00b0C for effective time-lag. Mass benefit is marginal; nights are not cool enough to fully discharge stored heat. ${arRef('givoni1976')}`,color:'var(--ochre)'});
     }
   }else if(isTropical){
-    recs.push({title:'Avoid high thermal mass',body:`NDP ${f(ndp[0])} h/yr at present. Nights are too warm for effective discharge. High mass accumulates heat rather than buffering it. Low-mass lightweight construction is the vernacularly confirmed response in this zone.`,color:'var(--rust)'});
+    recs.push({title:'Avoid high thermal mass',body:`NDP ${f(ndp[0])} h/yr at present. Nights are too warm for effective discharge. High mass accumulates heat rather than buffering it. Low-mass lightweight construction is the vernacularly confirmed response in this zone. ${arRef('artmann2007')}${arRef('rapoport1969')}`,color:'var(--rust)'});
   }else{
     const ndpNow=ndp[0];const ndpEnd=ndp[2];const margin=ndpNow!=null?ndpNow-1000:null;
     if(ndpNow!=null&&ndpNow<1000){
       if(['desert','steppe'].includes(family)){
-        recs.push({title:'Thermal mass: time-shift mode',body:`NDP ${f(ndpNow)} h/yr in a desert/steppe climate. The Artmann 1,000 h/yr threshold is calibrated for temperate climates. Here thermal mass works by time-shifting peak heat 8-12 hours, not by discharging to cool night air. High diurnal swing makes mass effective even with low NDP.`,color:'var(--ochre)'});
+        recs.push({title:'Thermal mass: time-shift mode',body:`NDP ${f(ndpNow)} h/yr in a desert/steppe climate. The Artmann 1,000 h/yr threshold is modeled for temperate climates. Here thermal mass works by time-shifting peak heat 8-12 hours, not by discharging to cool night air. High diurnal swing makes mass effective even with low NDP. ${arRef('artmann2007')}${arRef('givoni1976')}`,color:'var(--ochre)'});
       } else {
-        recs.push({title:'Reassess thermal mass strategy',body:`NDP ${f(ndpNow)} h/yr already below the Artmann threshold of 1,000 h/yr. Mass is accumulating heat across successive days. Consider reducing mass and introducing mechanical night cooling or prioritising cross-ventilation over storage.`,color:'var(--rust)'});
+        recs.push({title:'Reassess thermal mass strategy',body:`NDP ${f(ndpNow)} h/yr already below the Artmann threshold of 1,000 h/yr. Mass is accumulating heat across successive days. Consider reducing mass and introducing mechanical night cooling or prioritising cross-ventilation over storage. ${arRef('artmann2007')}`,color:'var(--rust)'});
       }
     }else if(ndpEnd!=null&&ndpEnd<1000){
-      recs.push({title:'Reinforce night ventilation now',body:`NDP ${f(ndpNow)} h/yr at present but projected to reach ${f(ndpEnd)} h/yr by 2080, crossing the Artmann threshold. Thermal mass remains viable through 2050 but future-proofing requires larger operable openings and clear cross-ventilation paths to maintain discharge capacity.`,color:'var(--ochre)'});
+      recs.push({title:'Reinforce night ventilation now',body:`NDP ${f(ndpNow)} h/yr at present but projected to reach ${f(ndpEnd)} h/yr by 2080, crossing the Artmann threshold. Thermal mass remains viable through 2050 but future-proofing requires larger operable openings and clear cross-ventilation paths to maintain discharge capacity. ${arRef('artmann2007')}`,color:'var(--ochre)'});
     }else{
-      recs.push({title:'Thermal mass: maintain',body:`NDP ${f(ndpNow)} > ${f(ndpEnd)} h/yr. Above the Artmann threshold (1,000 h/yr) across all scenarios. Night discharge strategy remains viable. Ensure operable openings are large enough to fully exploit available cool hours.`,color:'var(--moss,#2d7a2d)'});
+      recs.push({title:'Thermal mass: maintain',body:`NDP ${f(ndpNow)} > ${f(ndpEnd)} h/yr. Above the Artmann threshold (1,000 h/yr) across all scenarios. Night discharge strategy remains viable. Ensure operable openings are large enough to fully exploit available cool hours. ${arRef('artmann2007')}`,color:'var(--moss,#2d7a2d)'});
     }
   }
 
@@ -7458,11 +7461,11 @@ function stratRecs(zone,ndp,tcp,hsp,avgSwing){
   if(hspEnd!=null&&hspNow!=null){
     const hspRise=hspEnd-hspNow;
     if(hspEnd>1500||hspRise>500){
-      recs.push({title:'Increase solar shading \u2014 urgent',body:`Overheating ${f(hspNow)} > ${f(hspEnd)} h/yr (+${f(hspRise)} h). East and west fa\u00e7ades receive low-angle sun that fixed horizontal overhangs cannot block. External louvres, shutters or vegetation on these faces are the highest-impact single intervention. Raising roof albedo also reduces peak loads.`,color:'var(--rust)'});
+      recs.push({title:'Increase solar shading (urgent)',body:`Overheating ${f(hspNow)} > ${f(hspEnd)} h/yr (+${f(hspRise)} h). East and west fa\u00e7ades receive low-angle sun that fixed horizontal overhangs cannot block. External louvres, shutters or vegetation on these faces are the highest-impact single intervention. Raising roof albedo also reduces peak loads. ${arRef('olgyay1963')}${arRef('synnefa2006')}`,color:'var(--rust)'});
     }else if(hspEnd>500||hspRise>200){
-      recs.push({title:'Augment solar shading',body:`Overheating hours rising from ${f(hspNow)} to ${f(hspEnd)} h/yr. Eave depth adequate for present; increasing it or adding external shutters on south and west will carry the strategy through 2080.`,color:'var(--ochre)'});
+      recs.push({title:'Augment solar shading',body:`Overheating hours rising from ${f(hspNow)} to ${f(hspEnd)} h/yr. Eave depth adequate for present; increasing it or adding external shutters on south and west will carry the strategy through 2080. ${arRef('olgyay1963')}`,color:'var(--ochre)'});
     }else{
-      recs.push({title:'Solar shading: adequate at present',body:`Overheating ${f(hspNow)} > ${f(hspEnd)} h/yr. Low current load; monitor trajectory and extend eaves or add shutters if HSP exceeds 500 h/yr.`,color:'var(--moss,#2d7a2d)'});
+      recs.push({title:'Solar shading: adequate at present',body:`Overheating ${f(hspNow)} > ${f(hspEnd)} h/yr. Low current load; monitor trajectory and extend eaves or add shutters if HSP exceeds 500 h/yr. ${arRef('olgyay1963')}`,color:'var(--moss,#2d7a2d)'});
     }
   }
 
@@ -7470,16 +7473,16 @@ function stratRecs(zone,ndp,tcp,hsp,avgSwing){
   const tcpNow=tcp[0];const tcpEnd=tcp[2];
   const tcpDrop=tcpNow!=null&&tcpEnd!=null?tcpNow-tcpEnd:null;
   if(tcpEnd!=null&&tcpEnd<50){
-    recs.push({title:'Increase operable window area',body:`TCP ${f(tcpNow)} > ${f(tcpEnd)}%. Below 50% by 2080: passive strategy cannot maintain comfort for the majority of occupied hours. Maximising cross-ventilation (large operable areas, clear through-paths) is the most cost-effective next step before mechanical cooling is required.`,color:'var(--rust)'});
+    recs.push({title:'Increase operable window area',body:`TCP ${f(tcpNow)} > ${f(tcpEnd)}%. Below 50% by 2080: passive strategy cannot maintain comfort for the majority of occupied hours. Maximising cross-ventilation (large operable areas, clear through-paths) is the most cost-effective next step before mechanical cooling is required. ${arRef('ashrae55')}${arRef('dear2002')}`,color:'var(--rust)'});
   }else if(tcpDrop!=null&&tcpDrop>10){
-    recs.push({title:'Improve cross-ventilation',body:`TCP declining ${tcpDrop.toFixed(0)} percentage points by 2080. Increasing the size of operable openings on opposing fa\u00e7ades and removing internal obstructions to airflow will partially compensate for the warming trend.`,color:'var(--ochre)'});
+    recs.push({title:'Improve cross-ventilation',body:`TCP declining ${tcpDrop.toFixed(0)} percentage points by 2080. Increasing the size of operable openings on opposing fa\u00e7ades and removing internal obstructions to airflow will partially compensate for the warming trend. ${arRef('ashrae55')}`,color:'var(--ochre)'});
   }
 
   /* 4 Zone shift note */
   const futureZones=[...new Set(CASES.filter(c=>{const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'';return k===zone;}).flatMap(c=>[(Array.isArray(c.koppen)?c.koppen[1]:null),(Array.isArray(c.koppen)?c.koppen[2]:null)].filter(Boolean)))];
   const shiftZones=futureZones.filter(z=>z!==zone);
   if(shiftZones.length){
-    recs.push({title:'Climate zone shift: review strategy',body:`Projected to shift into ${shiftZones.join(', ')} by 2050\u20132080. Strategies calibrated to ${zone} conditions will face different demands. The vernacularBIGBROTHER tab identifies which present-day case study already inhabits those future conditions.`,color:'var(--ochre)'});
+    recs.push({title:'Climate zone shift: review strategy',body:`Projected to shift into ${shiftZones.join(', ')} by 2050\u20132080. Strategies calibrated to ${zone} conditions will face different demands. The vernacularBIGBROTHER tab identifies which present-day case study already inhabits those future conditions. ${arRef('ipcc2021')}${arRef('kottek2006')}`,color:'var(--ochre)'});
   }
 
   return recs;
@@ -7779,8 +7782,8 @@ function tmZoneInterpretation(zone,family,avgSwing){
     return `<p style="font-size:10px;color:var(--ink-soft);margin-top:10px;line-height:1.55;">
       <b>Arid zone \u2014 primary viability indicator: diurnal swing.</b>
       Thermal mass here operates through time-lag (phase shift of 8\u201312 h), not nightly discharge.
-      The Artmann NDP metric is <em>not applicable</em>: its 22\u00b0C ceiling is calibrated for Central European
-      summers; desert nights commonly sit at 25\u201332\u00b0C and never cross it.
+      Desert nights commonly sit at 25\u201332\u00b0C and never cross the Artmann 22\u00b0C ceiling, so the NDP metric
+      is <em>not applicable</em> here.
       Givoni (1976) threshold for effective mass: daily swing &gt;${gt}\u00b0C.
       This zone\u2019s mean swing: ${avgSwing!=null?avgSwing.toFixed(1)+'°C':'\u2014'} \u2014
       <b style="color:${swingOk?'var(--moss,#2d7a2d)':'var(--rust)'}">${swingOk?'above threshold ':'below threshold '}</b>.
@@ -7793,8 +7796,8 @@ function tmZoneInterpretation(zone,family,avgSwing){
       The Artmann NDP metric gives near-zero values by construction: the 22\u00b0C ceiling is never
       reached in warm-humid summers. Vernacular selection in this zone moved toward lightweight
       construction and cross-ventilation \u2014 precisely the correct response to warm nights and
-      high humidity. Low corpus thermal mass here is evidence of climate-adaptive selection,
-      not a failure of the strategy. TCP/HSP trajectory is the most informative output.
+      high humidity. Low thermal mass here is evidence of correct climate adaption.
+      TCP/HSP trajectory is the most informative output.
       <br>Givoni, B. (1994). <em>Passive and Low Energy Cooling of Buildings</em>.
     </p>`;
   }
@@ -7836,15 +7839,15 @@ function thermalMassZoneRows(zone){
   const crossesByScn=s.ndp.map(v=>v!=null&&v<1000);
   let alert='';
   if(isArid){
-    alert=`<p class="ar-note" style="margin:6px 0 8px;font-size:11px;">Arid zone: NDP not the primary viability metric. See diurnal swing below.</p>`;
+    alert=`<p class="ar-note" style="margin:6px 0 8px;font-size:11px;">Arid zone: NDP not the primary viability metric. See diurnal swing below. ${arRef('givoni1976')}</p>`;
   }else if(isTropical){
-    alert=`<p class="ar-note" style="margin:6px 0 8px;font-size:11px;">Tropical/humid zone: NDP near zero by construction (22\u00b0C ceiling). Low mass in corpus likely reflects correct vernacular selection toward ventilation.</p>`;
+    alert=`<p class="ar-note" style="margin:6px 0 8px;font-size:11px;">Tropical/humid zone: NDP near zero by construction (22\u00b0C ceiling). Low mass in corpus likely reflects correct vernacular selection for ventilation in a tropical climate. ${arRef('artmann2007')}${arRef('rapoport1969')}</p>`;
   }else if(crossesByScn[0]){
-    alert=`<p class="ar-warn" style="margin:6px 0 8px;">NDP already below 1,000 h/yr at present. Thermal mass is not functioning as a passive cooling strategy in this zone.</p>`;
+    alert=`<p class="ar-warn" style="margin:6px 0 8px;">Thermal mass is not functioning as a passive cooling strategy in this zone. ${arRef('artmann2007')}</p>`;
   }else if(!crossesByScn[0]&&crossesByScn[1]){
-    alert=`<p class="ar-note" style="margin:6px 0 8px;">NDP crosses the Artmann threshold by 2050. Strategy viable at present; compromised mid-century.</p>`;
+    alert=`<p class="ar-note" style="margin:6px 0 8px;">NDP crosses the Artmann threshold by 2050. Strategy viable at present; compromised mid-century. ${arRef('artmann2007')}</p>`;
   }else if(!crossesByScn[0]&&!crossesByScn[1]&&crossesByScn[2]){
-    alert=`<p class="ar-note" style="margin:6px 0 8px;">NDP crosses the Artmann threshold by 2080. Strategy viable through 2050.</p>`;
+    alert=`<p class="ar-note" style="margin:6px 0 8px;">NDP crosses the Artmann threshold by 2080. Strategy viable through 2050. ${arRef('artmann2007')}</p>`;
   }
 
   /* NDP primary or secondary label */
