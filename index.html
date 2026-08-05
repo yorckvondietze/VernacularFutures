@@ -7371,7 +7371,7 @@ function koppenSampleCounts(){
 }
 const TM_MIN_N=8;
 
-/* ---- 3. Typological mismatch over the whole corpus (on-demand, slow) ---- */
+/* ---- 3. Morphological mismatch over the whole corpus (on-demand, slow) ---- */
 let _mismatchRunning=false;
 let _currentFindingId=null;
 
@@ -8010,7 +8010,7 @@ function koppenShiftTableHTML(){
     <tbody>${body}</tbody></table>`;
 }
 
-/* ---- 3  TYPOLOGICAL MISMATCH (vernacularBIGBROTHER) ---- */
+/* ---- 3  MORPHOLOGICAL MISMATCH (vernacularBIGBROTHER) ---- */
 /* single case: compare the case's FUTURE fingerprint to every case's PRESENT
    fingerprint, nearest = big brother. Distance > mismatch severity. */
 function bbSeverity(dist){
@@ -8035,6 +8035,85 @@ async function bbPresentFingerprints(onProg){
   }
   _presentFpCache=out;return out;
 }
+
+/* ─── Morphological distance between two case studies ───────────────────────
+   Compares envelope form metrics (WWR, wall thickness, thermal mass, roof
+   pitch, eave depth, compactness, roof form, construction type).
+   Returns a weighted normalised score 0 (identical) → 1 (maximally different).
+   Categorical metrics (roofForm, constr) contribute 0 if matching, 1 if not. */
+function morphDist(a,b){
+  const NUM=[
+    {fn:c=>c.wwr,           range:20,  w:1.2},
+    {fn:c=>c.wallThk*100,   range:50,  w:1.0},  /* cm */
+    {fn:c=>c.thermalMassHB||c.thermalMass, range:2000, w:1.0},
+    {fn:c=>+(c.roofPitch||0), range:45, w:0.8},
+    {fn:c=>c.eaveDepth,     range:1.5, w:0.8},
+    {fn:c=>c.psi,           range:1.0, w:0.6},
+  ];
+  const CAT=[
+    {fn:c=>c.roofForm, w:0.7},
+    {fn:c=>(c.constr||'').replace(/_int$/,''), w:0.8},
+  ];
+  let sumW=0,sumD=0;
+  NUM.forEach(m=>{
+    const va=m.fn(a),vb=m.fn(b);
+    if(va==null||vb==null||!isFinite(va)||!isFinite(vb))return;
+    sumD+=m.w*Math.min(Math.abs(va-vb)/m.range,1);
+    sumW+=m.w;
+  });
+  CAT.forEach(m=>{
+    const va=m.fn(a),vb=m.fn(b);
+    if(!va||!vb)return;
+    sumD+=m.w*(va===vb?0:1);
+    sumW+=m.w;
+  });
+  return sumW>0?Math.round(sumD/sumW*100)/100:null;
+}
+function morphSeverity(d){
+  if(d==null)return 'n/a';
+  if(d<0.15)return 'very similar';
+  if(d<0.30)return 'similar';
+  if(d<0.50)return 'moderate diff';
+  if(d<0.70)return 'significant diff';
+  return 'major diff';
+}
+function dynMorphSev(sev){
+  const col=sev==='very similar'?'var(--moss,#2d7a2d)':
+             sev==='similar'?'#3a8a72':
+             sev==='moderate diff'?'var(--ochre)':
+             sev==='significant diff'?'var(--rust)':
+             sev==='major diff'?'#b02020':'var(--ink-faint)';
+  return '<span class="dyn-val" style="background:transparent;border:1px solid '+col+';color:'+col+'">'+sev+'</span>';
+}
+/* Side-by-side metric comparison row for single-case view */
+function morphCompareHTML(a,b){
+  if(!a||!b)return '';
+  const tm=c=>c.thermalMassHB||c.thermalMass;
+  const rows=[
+    {label:'WWR',        va:a.wwr!=null?a.wwr.toFixed(1)+'%':'—',        vb:b.wwr!=null?b.wwr.toFixed(1)+'%':'—',        diff:a.wwr!=null&&b.wwr!=null?Math.abs(a.wwr-b.wwr):null, thr:5},
+    {label:'Wall thk',   va:a.wallThk!=null?(a.wallThk*100).toFixed(0)+' cm':'—', vb:b.wallThk!=null?(b.wallThk*100).toFixed(0)+' cm':'—', diff:a.wallThk!=null&&b.wallThk!=null?Math.abs(a.wallThk-b.wallThk)*100:null, thr:15},
+    {label:'Therm. mass',va:tm(a)!=null?Math.round(tm(a))+' kJ/m²K':'—', vb:tm(b)!=null?Math.round(tm(b))+' kJ/m²K':'—', diff:tm(a)!=null&&tm(b)!=null?Math.abs(tm(a)-tm(b)):null, thr:400},
+    {label:'Roof pitch',  va:a.roofPitch!=null?a.roofPitch+'°':'—',       vb:b.roofPitch!=null?b.roofPitch+'°':'—',       diff:a.roofPitch!=null&&b.roofPitch!=null?Math.abs(+a.roofPitch-+b.roofPitch):null, thr:15},
+    {label:'Eave depth',  va:a.eaveDepth!=null?a.eaveDepth.toFixed(2)+' m':'—',  vb:b.eaveDepth!=null?b.eaveDepth.toFixed(2)+' m':'—',  diff:a.eaveDepth!=null&&b.eaveDepth!=null?Math.abs(a.eaveDepth-b.eaveDepth):null, thr:0.4},
+    {label:'Compactness', va:a.psi!=null?a.psi.toFixed(2):'—',             vb:b.psi!=null?b.psi.toFixed(2):'—',             diff:a.psi!=null&&b.psi!=null?Math.abs(a.psi-b.psi):null, thr:0.2},
+    {label:'Roof form',   va:a.roofForm||'—', vb:b.roofForm||'—',         diff:null, match:a.roofForm&&b.roofForm?a.roofForm===b.roofForm:null},
+    {label:'Construction',va:a.constr||'—',   vb:b.constr||'—',           diff:null, match:a.constr&&b.constr?(a.constr===b.constr):null},
+  ];
+  const cellStyle=(big)=>big?'color:var(--rust);font-weight:600;':'color:var(--moss,#2d7a2d);';
+  return '<table style="width:100%;border-collapse:collapse;font-family:var(--mono);font-size:9.5px;margin-top:8px;">'
+    +'<thead><tr><th style="text-align:left;padding:3px 6px;color:var(--ink-faint);border-bottom:1px solid var(--line);">metric</th>'
+    +'<th style="padding:3px 6px;color:var(--ink-faint);border-bottom:1px solid var(--line);">subject</th>'
+    +'<th style="padding:3px 6px;color:var(--ink-faint);border-bottom:1px solid var(--line);">big brother</th>'
+    +'<th style="padding:3px 6px;color:var(--ink-faint);border-bottom:1px solid var(--line);">delta</th></tr></thead><tbody>'
+    +rows.map(r=>{
+      let deltaCell='<td style="padding:3px 6px;text-align:right;"></td>';
+      if(r.diff!=null){const big=r.diff>r.thr;deltaCell=`<td style="padding:3px 6px;text-align:right;${cellStyle(big)}>${r.diff.toFixed(r.diff<1?2:0)}</td>`;}
+      else if(r.match!=null){deltaCell=`<td style="padding:3px 6px;text-align:right;${cellStyle(!r.match)}">${r.match?'match':'diff'}</td>`;}
+      return`<tr><td style="padding:3px 6px;color:var(--ink-soft);">${r.label}</td><td style="padding:3px 6px;text-align:right;">${r.va}</td><td style="padding:3px 6px;text-align:right;">${r.vb}</td>${deltaCell}</tr>`;
+    }).join('')
+    +'</tbody></table>';
+}
+
 async function computeMismatchSingle(caseId,scnIdx){
   const c=byId(caseId);
   if(!c||!c.epw||!c.hasGeom)return null; /* subject must have geometry */
@@ -8048,7 +8127,10 @@ async function computeMismatchSingle(caseId,scnIdx){
   const geomPool=present.filter(p=>p.id!==caseId&&byId(p.id)?.hasGeom);
   let best=null,bestD=Infinity;
   geomPool.forEach(p=>{const d=bbDistance(futFp,p.fp);if(d<bestD){bestD=d;best=p;}});
-  return best?{brother:best,dist:bestD,severity:bbSeverity(bestD),poolN:geomPool.length}:null;
+  if(!best)return null;
+  const brotherCase=byId(best.id);
+  const mDist=brotherCase?morphDist(c,brotherCase):null;
+  return{brother:best,dist:bestD,severity:bbSeverity(bestD),poolN:geomPool.length,morphDist:mDist,morphSev:morphSeverity(mDist)};
 }
 /* analyse-all: assign a future big-brother to every case. Network-heavy >
    progress + warning. Cached after first run. */
@@ -8070,12 +8152,18 @@ async function computeMismatchAll(scnIdx,onProg){
         const futFp=computeBBFingerprint(futEpw);
         let best=null,bestD=Infinity;
         geomPool.forEach(p=>{if(p.id===c.id)return;const d=bbDistance(futFp,p.fp);if(d<bestD){bestD=d;best=p;}});
-        if(best)results.push({id:c.id,name:c.name||c.id,brotherId:best.id,brother:best.name||best.id,dist:bestD,severity:bbSeverity(bestD)});
+        if(best){
+          const bCase=byId(best.id);
+          const mDist=bCase?morphDist(c,bCase):null;
+          results.push({id:c.id,name:c.name||c.id,brotherId:best.id,brother:best.name||best.id,
+            dist:bestD,severity:bbSeverity(bestD),morphDist:mDist,morphSev:morphSeverity(mDist),
+            subjectCase:c,brotherCase:bCase});
+        }
       }catch(e){}
     }));
     if(onProg)onProg(Math.min(i+5,withGeom.length),withGeom.length);
   }
-  results.sort((a,b)=>b.dist-a.dist);
+  results.sort((a,b)=>(b.morphDist??0)-(a.morphDist??0));
   _mismatchAllCache[scnIdx]=results;return results;
 }
 
@@ -8350,13 +8438,13 @@ const FINDINGS=[
       +`<p style="margin:24px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">VULNERABILITIES</p>`
       +`<p style="line-height:1.7;margin-bottom:12px;">Zone transitions are not uniformly distributed across construction types and regions. Case studies with high thermal mass (stone, brick, earth construction) in Cfb zones shifting toward Cfa or Csb face the most acute exposure: their passive strategy depends on night discharge, which declines as nights warm. Across the corpus, the cases with the largest overheating delta (HSP present to 2080) cluster in Mediterranean and subtropical zones and in construction types with poor ventilation compatibility. Continental Dfb cases shift into Cfa, which brings humid subtropical summer conditions their morphology was not selected for.</p>`
       +`<p style="line-height:1.7;margin-bottom:14px;">Simulation output provides a direct vulnerability signal: cases where NDP drops below the Artmann threshold (1,000 h/yr) by 2080 and simultaneously show TCP below 50% flag a fundamental strategy failure, not a marginal degradation. These cases require reassessment rather than incremental adaptation.</p>`
-      +`<p style="margin:24px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">TYPOLOGICAL MISMATCH `
-        +fcInfo('Typological mismatch, what it means and its limits',
+      +`<p style="margin:24px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">MORPHOLOGICAL MISMATCH `
+        +fcInfo('Morphological mismatch, what it means and its limits',
           'The vernacularBIGBROTHER finds the present-day case study whose climate already resembles the projected future climate of the selected building. A large distance between them means no established vernacular tradition in this corpus was developed for those future conditions. This is an indicator, not a certainty: a building can still perform well under conditions its tradition was not calibrated for, especially if its passive strategy happens to be broadly applicable. Conversely, a small distance gives reassurance that an existing tradition has already proven viable in that future climate. Interpretation requires simulation to move from correlation to prescription (see Disclaimer, naturalistic fallacy). This analysis is restricted to case studies with extracted DXF geometry. Both the subject case and the big brother candidate must have geometry. The limited sample means results should be read as preliminary indicators. The finding grows more reliable as more case studies are added to the corpus.',
           'Rapoport, A. (1969). House Form and Culture. Prentice-Hall. | Hume, D. (1739). A Treatise of Human Nature.'
         )+`</p>`
-      +`<p style="line-height:1.7;margin-bottom:10px;">Each case study has a future climate it is heading towards. The vernacularBIGBROTHER finds which present-day building in the corpus already lives in that future climate. If the two buildings look very different in their morphology, it could mean the original building was shaped by conditions that will no longer exist. If they look similar, the original strategy is likely to remain relevant. A large mismatch is a flag worth investigating further with simulation, not a conclusion in itself.</p>`
-      +`<p style="font-size:10px;color:var(--ink-faint);margin-bottom:14px;">${dynV(CASES.filter(c=>c.hasGeom).length)} case studies with geometry available for analysis. Both subject and big-brother must have geometry data.</p>`
+      +`<p style="line-height:1.7;margin-bottom:10px;">vernacularBIGBROTHER explores which case study in the corpus already lives in that climate today. If the two case studies have a big morphological difference it could mean that the case study will not perform as well in the future climate, while morphological similarity could lead to better adaptation. A morphological mismatch could also be entirely a cultural phenomenon if the case study pair has a big cultural difference. This is why results have to be treated with caution before any prescriptions can be derived from them.</p>`
+      +`<p style="font-size:10px;color:var(--ink-faint);margin-bottom:14px;">${dynV(CASES.filter(c=>c.hasGeom).length)} case studies with geometry available. Both subject and big brother must have geometry. Morphological comparison: WWR, wall thickness, thermal mass, roof pitch, eave depth, compactness, roof form and construction type.</p>`
       +`<div class="mismatch-opts" id="mismatchOpts">
           <button class="mismatch-btn" data-mismatch="single">Use the open case study</button>
           <button class="mismatch-btn" data-mismatch="all2050">Analyse all > 2050</button>
@@ -8712,9 +8800,10 @@ function wireMismatchButtons(){
         const line=(lbl,r)=>r
           ?`<div style="margin:8px 0;padding:8px 0;border-bottom:1px solid var(--line);">
               <p style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin:0 0 4px;">${lbl}</p>
-              <div class="fc-tmrow"><span class="tm-label">${cs.id} \u00b7 ${cs.name||''}</span><span style="font-size:9px;color:var(--ink-soft);">subject</span></div>
-              <div class="fc-tmrow"><span class="tm-label">${dynV(r.brother.id)} \u00b7 ${dynV(r.brother.name||r.brother.id)}</span><span style="font-size:9px;color:var(--ink-soft);">vernacularBIGBROTHER</span></div>
-              <div class="fc-tmrow"><span class="tm-label">Mismatch</span><span>${dynSev(r.severity)} <span style="color:var(--ink-faint);font-size:9px;">(d\u202f=\u202f${r.dist.toFixed(2)}, pool n\u202f=\u202f${r.poolN||'?'})</span></span></div>
+              <div class="fc-tmrow"><span class="tm-label">${cs.id} · ${cs.name||''}</span><span style="font-size:9px;color:var(--ink-soft);">subject</span></div>
+              <div class="fc-tmrow"><span class="tm-label">${dynV(r.brother.id)} · ${dynV(r.brother.name||r.brother.id)}</span><span style="font-size:9px;color:var(--ink-soft);">vernacularBIGBROTHER</span></div>
+              <div class="fc-tmrow"><span class="tm-label">Morphological diff</span><span>${dynMorphSev(r.morphSev)} <span style="color:var(--ink-faint);font-size:9px;">${r.morphDist!=null?'(d='+r.morphDist.toFixed(2)+')':''}</span></span></div>
+              ${morphCompareHTML(byId(cs.id),byId(r.brother.id))}
             </div>`
           :`<div class="fc-tmrow"><span class="tm-label">${lbl}</span><span style="color:var(--ink-faint)">no analogue found or EPW unavailable</span></div>`;
         h.innerHTML=line('2050 SSP5-8.5',r50)+line('2080 SSP5-8.5',r80);
@@ -8732,11 +8821,11 @@ function wireMismatchButtons(){
         const body=worst.map(r=>`<tr>
           <td style="padding:5px 6px;font-family:var(--mono);font-size:10px;">${r.id}<br><span style="color:var(--ink-soft);font-size:9px;">${r.name}</span></td>
           <td style="padding:5px 6px;font-family:var(--mono);font-size:10px;">${dynV(r.brotherId)}<br><span style="color:var(--ink-soft);font-size:9px;">${dynV(r.brother)}</span></td>
-          <td style="padding:5px 6px;">${dynSev(r.severity)}</td>
-          <td style="padding:5px 6px;color:var(--ink-faint);font-size:10px;">${r.dist.toFixed(2)}</td>
+          <td style="padding:5px 6px;">${dynMorphSev(r.morphSev)}</td>
+          <td style="padding:5px 6px;color:var(--ink-faint);font-size:10px;">${r.morphDist!=null?r.morphDist.toFixed(2):'—'}</td>
         </tr>`).join('');
-        h.innerHTML=`<p style="margin:8px 0 6px;font-family:var(--mono);font-size:10px;color:var(--ink-faint);">ALL MISMATCHES > ${yr} &nbsp;\u00b7\u00b7&nbsp; geometry cases (n\u202f=\u202f${rows.length}), sorted worst>best</p>`
-          +`<table class="ktable"><thead><tr><th>Case study</th><th>vernacularBIGBROTHER</th><th>severity</th><th>d</th></tr></thead><tbody>${body}</tbody></table>`;
+        h.innerHTML=`<p style="margin:8px 0 6px;font-family:var(--mono);font-size:10px;color:var(--ink-faint);">MORPHOLOGICAL MISMATCH > ${yr} · geometry cases (n=${rows.length}), sorted by morphological distance</p>`
+          +`<table class="ktable"><thead><tr><th>Case study</th><th>vernacularBIGBROTHER (climate-assigned)</th><th>morphological diff</th><th>d</th></tr></thead><tbody>${body}</tbody></table>`;
         blinkDynamicFindings();
       }
     });
