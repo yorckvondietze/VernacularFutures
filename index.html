@@ -7577,7 +7577,7 @@ function wwrBlock(){
   const dots=cases.map(c=>{
     const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'?';
     const col=cols[k]||'#888';
-    const _lbl=`${c.id}: ${c.name||c.id} (${k})`;
+    const _lbl=`${c.id}: ${(c.name||c.id).replace(/"/g,'&quot;')} (${k})`;
     return `<circle cx="${px(c.wwr).toFixed(1)}" cy="${py(_getHsp0(c)).toFixed(1)}"
       r="6" fill="${col}" opacity="0.82" style="cursor:pointer;" data-label="${_lbl}"/>`;
   }).join('');
@@ -8520,7 +8520,7 @@ const FINDINGS=[
       +`<p style="line-height:1.7;margin-bottom:12px;">The simulation output gives a direct read on this. Cases where NDP stays above 1,000 h/yr through 2080 retain viable natural ventilation potential: window placement matters more than total area. Cases where NDP crosses the Artmann threshold by mid-century face a different problem: they may need operable openings sized for the marginal hours that remain and supplementary strategies when those hours are exhausted.</p>`
       +`<p style="margin:16px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">WWR VS. HSP CORPUS VIEW</p>`
       +wwrBlock()
-      +`<div id="wwrTooltip" style="display:none;position:absolute;background:var(--paper);border:1px solid var(--line);padding:5px 10px;font-family:var(--mono);font-size:10px;color:var(--ink);pointer-events:none;z-index:999;white-space:nowrap;border-radius:2px;"></div>`
+      +`<div id="wwrTooltip" style="display:none;position:fixed;background:var(--paper);border:1px solid var(--line);padding:5px 10px;font-family:var(--mono);font-size:10px;color:var(--ink);pointer-events:none;z-index:9999;white-space:nowrap;border-radius:2px;box-shadow:0 2px 8px rgba(0,0,0,.25);"></div>`
       +`<p style="font-size:10px;color:var(--ink-faint);margin-top:10px;line-height:1.5;">Each dot is one case study. Dot colour = present Köppen zone. Horizontal axis = recorded WWR. Vertical axis = simulated HSP (present). A rising trend would confirm that higher glazing worsens overheating but the signal is noisy across cultures. Sorting within Köppen groups shows a clearer pattern.</p>`;
   /* tooltip wiring for WWR scatter */
   setTimeout(()=>{
@@ -8534,9 +8534,8 @@ const FINDINGS=[
       if(!c){tip.style.display='none';return;}
       tip.textContent=c.dataset.label;
       tip.style.display='block';
-      const box=cont.getBoundingClientRect();
-      tip.style.left=(e.clientX-box.left+14)+'px';
-      tip.style.top=(e.clientY-box.top-36)+'px';
+        tip.style.left=(e.clientX+16)+'px';
+      tip.style.top=(e.clientY-36)+'px';
     });
     svg.addEventListener('mouseleave',()=>{tip.style.display='none';});
   },200);
