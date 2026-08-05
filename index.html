@@ -2176,7 +2176,7 @@ html[data-theme="dark"] .loader-status{
           <li><span class="src-au">Conrad, V.</span> (1946). Usual formulas of continentality and their limits of validity. <span class="src-j">Transactions of the American Geophysical Union</span>, 27(5), 663-664.</li>
           <li><span class="src-au">de Dear, R. J., &amp; Brager, G. S.</span> (2002). Thermal comfort in naturally ventilated buildings: Revisions to ASHRAE Standard 55. <span class="src-j">Energy and Buildings</span>, 34(6), 549-561.</li>
           <li><span class="src-au">Desogus, G., Cannas, A. E. I., &amp; Sanna, A.</span> (2016). Bioclimatic lessons from Mediterranean vernacular architecture: The Sardinian case study. <span class="src-j">Energy and Buildings</span>, 129, 574-588.</li>
-          <li><span class="src-au">Duffie, J. A., &amp; Beckman, W. A.</span> (2013). <span class="src-j">Solar engineering of thermal processes</span> (4th ed.). Wiley.</li>
+          <li class="src-key"><span class="src-au">Duffie, J. A., &amp; Beckman, W. A.</span> (2013). <span class="src-j">Solar engineering of thermal processes</span> (4th ed.). Wiley.</li>
           <li><span class="src-au">European Committee for Standardization.</span> (2020). <span class="src-j">EN 1745:2020: Masonry and masonry products, methods for determining thermal properties</span>. CEN.</li>
           <li><span class="src-au">Fanger, P. O.</span> (1970). <span class="src-j">Thermal comfort: Analysis and applications in environmental engineering</span>. Danish Technical Press.</li>
           <li class="src-key"><span class="src-au">Fathy, H.</span> (1986). <span class="src-j">Natural energy and vernacular architecture: Principles and examples with reference to the hot arid climates</span> (W. Shearer &amp; A.-e.-r. A. Sultan, Eds.). University of Chicago Press.</li>
@@ -3601,6 +3601,7 @@ function wireAdminInteractions(){
 const AR_REFS={
   ashrae55:'ASHRAE. (2020). ASHRAE Standard 55-2020: Thermal Environmental Conditions for Human Occupancy. ASHRAE.',
   artmann2007:'Artmann, N., Manz, H., & Heiselberg, P. (2007). Climatic potential for passive cooling of buildings by night-time ventilation in Europe. Applied Energy, 84(2), 187-201.',
+  artmann2008:'Artmann, N., Gyalistras, D., Manz, H., & Heiselberg, P. (2008). Impact of climate warming on passive night cooling potential in Europe. Building Research and Information, 36(2), 111-128.',
   olgyay1963:'Olgyay, V. (1963). Design with Climate: Bioclimatic Approach to Architectural Regionalism. Princeton University Press.',
   givoni1976:'Givoni, B. (1976). Man, Climate and Architecture (2nd ed.). Applied Science Publishers.',
   rapoport1969:'Rapoport, A. (1969). House Form and Culture. Prentice-Hall.',
@@ -3611,6 +3612,7 @@ const AR_REFS={
   belcher2005:'Belcher, S. E., Hacker, J. N., & Powell, D. S. (2005). Constructing design weather data for future climates. Building Services Engineering Research and Technology, 26(1), 49-61.',
   givoni1994:'Givoni, B. (1994). Passive and Low Energy Cooling of Buildings. Van Nostrand Reinhold.',
   synnefa2006:'Synnefa, A., Santamouris, M., & Livada, I. (2006). A study of the thermal performance of reflective coatings for the urban environment. Solar Energy, 80(8), 968-981.',
+  duffie2013:'Duffie, J. A., & Beckman, W. A. (2013). Solar Engineering of Thermal Processes (4th ed.). Wiley.',
 };
 
 /* Popover for ⓘ */
@@ -3746,7 +3748,7 @@ function arMorph(c){
     if(hi&&diurnal){
       chunks.push({t:'p',h:arOk(`High thermal mass${tmpm2?` (≈${tmpm2} kJ/m²K)`:''} is well-matched to ${AR_KL[k0]||k0}. Heat stored in walls releases overnight, keeping peak indoor temperatures 3-8 degrees cooler iin arid/meditaranian climates `)+arRef('givoni1976')+arRef('szokolay2008')});
     } else if(hi&&tropical){
-      chunks.push({t:'p',h:arWarn(`High thermal mass in ${AR_KL[k0]||k0} when nights stay above ~20°C, stored heat cannot discharge, it delays the load and does not remove it, making nights hotter. This gets worse under SSP5-8.5. `)+arRef('artmann2007')+arRef('givoni1976')});
+      chunks.push({t:'p',h:arWarn(`High thermal mass in ${AR_KL[k0]||k0} when nights stay above ~20°C, stored heat cannot discharge, it delays the load and does not remove it, making nights hotter. This gets worse under SSP5-8.5. `)+arRef('artmann2008')+arRef('artmann2007')+arRef('givoni1976')});
     } else if(lo&&h2>=3){
       chunks.push({t:'p',h:arNote(`Low thermal mass: fast response to outdoor swings, useful for winter warm-up, howver no summer peaks won't be bufferd. As summer heat rises in ${k2}, outdoor heat will influence indoor temperatures directly. `)+arRef('szokolay2008')});
     } else if(hi){
@@ -3777,7 +3779,7 @@ function arMorph(c){
     } else if(wp<16){
       chunks.push({t:'p',h:arWarn(`WWR ${wp.toFixed(1)}%, high. Solar heat through windows will drive overheating as temperatures rise. East and west windows get low-angle morning and afternoon sun that overhangs can't block. Shutters or external shading are needed. `)+arRef('givoni1976')+arRef('olgyay1963')});
     } else {
-      chunks.push({t:'p',h:arWarn(`WWR ${wp.toFixed(1)}%, very high and unusual in this corpus. Windows on east and west will cause overheating under any warming scenario. External shading is necessary. `)+arRef('givoni1976')+arRef('olgyay1963')});
+      chunks.push({t:'p',h:arWarn(`WWR ${wp.toFixed(1)}%, very high and unusual in this corpus. Windows on east and west will cause overheating under any warming scenario. External shading is necessary. `)+arRef('duffie2013')+arRef('givoni1976')+arRef('olgyay1963')});
     }
   }
 
@@ -3921,13 +3923,13 @@ function arSim(c){
     } else if(n0<NT){
       h=arWarn(`NDP = ${Math.round(n0)} h/yr, already below the 1,000 h/yr threshold. Summer nights are not cool enough for the walls to properly discharge. In a heavy building this means the mass stores up heat day after day instead of releasing it. `)+arRef('artmann2007');
     } else if(n2!=null&&n2<NT&&(n1==null||n1>=NT)){
-      h=arWarn(`NDP = ${Math.round(n0)} h/yr now, but by 2080 it drops to ${Math.round(n2)} h/yr below the 1,000 h/yr threshold. Night cooling stays viable to mid-century but stops working by end of century. Plan ahead. `)+arRef('artmann2007');
+      h=arWarn(`NDP = ${Math.round(n0)} h/yr now, but by 2080 it drops to ${Math.round(n2)} h/yr below the 1,000 h/yr threshold. Night cooling stays viable to mid-century but stops working by end of century. Plan ahead. `)+arRef('artmann2008')+arRef('artmann2007');
     } else if(n1!=null&&n1<NT){
-      h=arWarn(`NDP drops below 1,000 h/yr by 2050: projected ${Math.round(n1)} h/yr. Within 25 years nights won't be cool enough for the thermal mass to work. `)+arRef('artmann2007');
+      h=arWarn(`NDP drops below 1,000 h/yr by 2050: projected ${Math.round(n1)} h/yr. Within 25 years nights won't be cool enough for the thermal mass to work. `)+arRef('artmann2008')+arRef('artmann2007');
     } else {
       const drop=n2!=null?Math.round(n0-n2):0;
-      if(drop>800) h=arNote(`NDP = ${Math.round(n0)} h/yr now, falling to ${n2!=null?Math.round(n2):'-'} h/yr by 2080 (−${drop} h/yr). Still above threshold, but the gap is closing. `)+arRef('artmann2007');
-      else if(drop>400) h=arNote(`NDP = ${Math.round(n0)} h/yr > ${n2!=null?Math.round(n2):'-'} h/yr in 2080. Steady decline but stays above 1,000 h/yr. Night ventilation stays effective. `)+arRef('artmann2007');
+      if(drop>800) h=arNote(`NDP = ${Math.round(n0)} h/yr now, falling to ${n2!=null?Math.round(n2):'-'} h/yr by 2080 (−${drop} h/yr). Still above threshold, but the gap is closing. `)+arRef('artmann2008')+arRef('artmann2007');
+      else if(drop>400) h=arNote(`NDP = ${Math.round(n0)} h/yr > ${n2!=null?Math.round(n2):'-'} h/yr in 2080. Steady decline but stays above 1,000 h/yr. Night ventilation stays effective. `)+arRef('artmann2008')+arRef('artmann2007');
       else h=arOk(`NDP strong: ${Math.round(n0)} h/yr now${n2!=null?' > '+Math.round(n2)+' h/yr by 2080':''}. Well above 1,000 h/yr all century. Night ventilation keeps working. `)+arRef('artmann2007');
     }
     chunks.push({t:'p',h});
@@ -7451,7 +7453,7 @@ function stratRecs(zone,ndp,tcp,hsp,avgSwing){
         recs.push({title:'Reassess thermal mass strategy',body:`NDP ${f(ndpNow)} h/yr already below the Artmann threshold of 1,000 h/yr. Mass is accumulating heat across successive days. Consider reducing mass and introducing mechanical night cooling or prioritising cross-ventilation over storage. ${arRef('artmann2007')}`,color:'var(--rust)'});
       }
     }else if(ndpEnd!=null&&ndpEnd<1000){
-      recs.push({title:'Reinforce night ventilation now',body:`NDP ${f(ndpNow)} h/yr at present but projected to reach ${f(ndpEnd)} h/yr by 2080, crossing the Artmann threshold. Thermal mass remains viable through 2050 but future-proofing requires larger operable openings and clear cross-ventilation paths to maintain discharge capacity. ${arRef('artmann2007')}`,color:'var(--ochre)'});
+      recs.push({title:'Reinforce night ventilation now',body:`NDP ${f(ndpNow)} h/yr at present but projected to reach ${f(ndpEnd)} h/yr by 2080, crossing the Artmann threshold. Thermal mass remains viable through 2050 but future-proofing requires larger operable openings and clear cross-ventilation paths to maintain discharge capacity. ${arRef('artmann2008')}${arRef('artmann2007')}`,color:'var(--ochre)'});
     }else{
       recs.push({title:'Thermal mass: maintain',body:`NDP ${f(ndpNow)} > ${f(ndpEnd)} h/yr. Above the Artmann threshold (1,000 h/yr) across all scenarios. Night discharge strategy remains viable. Ensure operable openings are large enough to fully exploit available cool hours. ${arRef('artmann2007')}`,color:'var(--moss,#2d7a2d)'});
     }
