@@ -7577,9 +7577,9 @@ function wwrBlock(){
   const dots=cases.map(c=>{
     const k=(Array.isArray(c.koppen)?c.koppen[0]:c.koppen)||'?';
     const col=cols[k]||'#888';
+    const _lbl=`${c.id}: ${c.name||c.id} (${k})`;
     return `<circle cx="${px(c.wwr).toFixed(1)}" cy="${py(_getHsp0(c)).toFixed(1)}"
-      r="4.5" fill="${col}" opacity="0.78"
-      title="${c.id} ${k} WWR:${c.wwr.toFixed(1)}%  HSP:${Math.round(_getHsp0(c))}h"/>`;
+      r="6" fill="${col}" opacity="0.82" style="cursor:pointer;" data-label="${_lbl}"/>`;
   }).join('');
 
   /* ── axis ticks ── */
@@ -8434,7 +8434,7 @@ const FINDINGS=[
       +` (Rodrigues et al. 2023), with Köppen classification applied at each horizon.</p>`
       +`<p style="margin:14px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">KÖPPEN ZONE SHIFTS `
         +fcInfo('köppen shift table','For every case, its present Köppen zone (from the assigned TMYx EPW) is compared to its zone under the morphed EPW for 2050 and 2080 (SSP5-8.5). Each row groups cases by their present zone and shows how many stay vs move and where they move to. Classification uses Kottek et al. (2006) thresholds; precipitation is not morphed, so seasonal precip criteria use present-day values.','Kottek, M. et al. (2006). World map of the Köppen-Geiger climate classification updated. Belcher et al. (2005) morphing methodology.')+`</p>`
-      +`<p style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);margin-bottom:6px;">terracotta = zone changed grey = stayed</p>`
+      +`<p style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);margin-bottom:6px;">color = zone changed grey = stayed</p>`
       +koppenShiftTableHTML()
       +`<p style="margin:24px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">VULNERABILITIES</p>`
       +`<p style="line-height:1.7;margin-bottom:12px;">Zone transitions are not uniformly distributed across construction types and regions. Case studies with high thermal mass (stone, brick, earth construction) in Cfb zones shifting toward Cfa or Csb face the most acute exposure: their passive strategy depends on night discharge, which declines as nights warm. Across the corpus, the cases with the largest overheating delta (HSP present to 2080) cluster in Mediterranean and subtropical zones and in construction types with poor ventilation compatibility. Continental Dfb cases shift into Cfa, which brings humid subtropical summer conditions their morphology was not selected for.</p>`
@@ -8520,7 +8520,26 @@ const FINDINGS=[
       +`<p style="line-height:1.7;margin-bottom:12px;">The simulation output gives a direct read on this. Cases where NDP stays above 1,000 h/yr through 2080 retain viable natural ventilation potential: window placement matters more than total area. Cases where NDP crosses the Artmann threshold by mid-century face a different problem: they may need operable openings sized for the marginal hours that remain and supplementary strategies when those hours are exhausted.</p>`
       +`<p style="margin:16px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">WWR VS. HSP CORPUS VIEW</p>`
       +wwrBlock()
+      +`<div id="wwrTooltip" style="display:none;position:absolute;background:var(--paper);border:1px solid var(--line);padding:5px 10px;font-family:var(--mono);font-size:10px;color:var(--ink);pointer-events:none;z-index:999;white-space:nowrap;border-radius:2px;"></div>`
       +`<p style="font-size:10px;color:var(--ink-faint);margin-top:10px;line-height:1.5;">Each dot is one case study. Dot colour = present Köppen zone. Horizontal axis = recorded WWR. Vertical axis = simulated HSP (present). A rising trend would confirm that higher glazing worsens overheating but the signal is noisy across cultures. Sorting within Köppen groups shows a clearer pattern.</p>`;
+  /* tooltip wiring for WWR scatter */
+  setTimeout(()=>{
+    const cont=document.getElementById('findingsContent');
+    const tip=document.getElementById('wwrTooltip');
+    if(!cont||!tip)return;
+    const svg=cont.querySelector('svg');
+    if(!svg)return;
+    svg.addEventListener('mousemove',e=>{
+      const c=e.target.closest('circle[data-label]');
+      if(!c){tip.style.display='none';return;}
+      tip.textContent=c.dataset.label;
+      tip.style.display='block';
+      const box=cont.getBoundingClientRect();
+      tip.style.left=(e.clientX-box.left+14)+'px';
+      tip.style.top=(e.clientY-box.top-36)+'px';
+    });
+    svg.addEventListener('mouseleave',()=>{tip.style.display='none';});
+  },200);
    }},
 
   {id:'evap',title:'4. Evaporative cooling viability (wet-bulb)',eyebrow:'Recommendation wet-bulb',
