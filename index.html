@@ -678,6 +678,7 @@ html[data-theme="dark"] .viewer3d-fs-btn:hover{background:rgba(11,10,22,0.95);co
 .ar-src-e{font-size:9.5px;line-height:1.55;color:var(--ink-soft);margin:0 0 5px;padding-left:14px;text-indent:-14px}
 
 .findings-grid{display:grid;grid-template-columns:180px 1fr;gap:10px;align-items:start;}
+.findings-grid>.card-window{position:relative;z-index:10;} /* popup escapes above sidebar */
 .findings-menu{background:var(--paper);border:1px solid var(--line);border-radius:0;padding:8px;position:sticky;top:14px;}
 .fm-group-label{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink-faint);padding:10px 12px 4px;}
 /* ── Findings: dynamic values, blink, action button, dropdowns ── */
