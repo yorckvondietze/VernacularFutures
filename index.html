@@ -8802,7 +8802,7 @@ function wireMismatchButtons(){
               <p style="font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin:0 0 4px;">${lbl}</p>
               <div class="fc-tmrow"><span class="tm-label">${cs.id} · ${cs.name||''}</span><span style="font-size:9px;color:var(--ink-soft);">subject</span></div>
               <div class="fc-tmrow"><span class="tm-label">${dynV(r.brother.id)} · ${dynV(r.brother.name||r.brother.id)}</span><span style="font-size:9px;color:var(--ink-soft);">vernacularBIGBROTHER</span></div>
-              <div class="fc-tmrow"><span class="tm-label">Morphological diff</span><span>${dynMorphSev(r.morphSev)} <span style="color:var(--ink-faint);font-size:9px;">${r.morphDist!=null?'(d='+r.morphDist.toFixed(2)+')':''}</span></span></div>
+              <div class="fc-tmrow"><span class="tm-label">Morphological diff</span><span>${dynMorphSev(r.morphSev)} </span></div>
               ${morphCompareHTML(byId(cs.id),byId(r.brother.id))}
             </div>`
           :`<div class="fc-tmrow"><span class="tm-label">${lbl}</span><span style="color:var(--ink-faint)">no analogue found or EPW unavailable</span></div>`;
@@ -8822,10 +8822,9 @@ function wireMismatchButtons(){
           <td style="padding:5px 6px;font-family:var(--mono);font-size:10px;">${r.id}<br><span style="color:var(--ink-soft);font-size:9px;">${r.name}</span></td>
           <td style="padding:5px 6px;font-family:var(--mono);font-size:10px;">${dynV(r.brotherId)}<br><span style="color:var(--ink-soft);font-size:9px;">${dynV(r.brother)}</span></td>
           <td style="padding:5px 6px;">${dynMorphSev(r.morphSev)}</td>
-          <td style="padding:5px 6px;color:var(--ink-faint);font-size:10px;">${r.morphDist!=null?r.morphDist.toFixed(2):'—'}</td>
         </tr>`).join('');
         h.innerHTML=`<p style="margin:8px 0 6px;font-family:var(--mono);font-size:10px;color:var(--ink-faint);">MORPHOLOGICAL MISMATCH > ${yr} · geometry cases (n=${rows.length}), sorted by morphological distance</p>`
-          +`<table class="ktable"><thead><tr><th>Case study</th><th>vernacularBIGBROTHER (climate-assigned)</th><th>morphological diff</th><th>d</th></tr></thead><tbody>${body}</tbody></table>`;
+          +`<table class="ktable"><thead><tr><th>Case study</th><th>vernacularBIGBROTHER (climate-assigned)</th><th>morphological diff</th></tr></thead><tbody>${body}</tbody></table>`;
         blinkDynamicFindings();
       }
     });
