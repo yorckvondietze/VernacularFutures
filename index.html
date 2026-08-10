@@ -2016,7 +2016,7 @@ html[data-theme="dark"] .loader-status{
     <div id="adminContent"></div>
   </section>
 
-  <section class="view" id="view-guide">
+  <section class="view" id="view-guide" style="overflow-y:auto;">
     <div class="method-wrap" style="padding:32px 24px;">
       <div class="method-body">
         <h3>Cs Drawing Guide</h3>
@@ -2117,7 +2117,10 @@ html[data-theme="dark"] .loader-status{
     <div class="method-wrap">
       <div class="method-lead" id="siteAbstract">
         <span style="font-size:13px;font-family:var(--mono);font-style:normal;letter-spacing:.08em;color:var(--ink-faint);display:block;margin-bottom:14px;">WHAT IS VERNACULARFUTURES?</span>
-        <span style="display:block;margin-bottom:1em;">vernacularfutures investigates whether vernacular buildings can serve as empirical morphological analogues for regions undergoing bioclimatic reclassification under SSP5-8.5 climate projections. It is an open atlas built on a corpus of vernacular case studies that makes these analogues and their simulation-backed recommendations accessible to researchers and practitioners and refinable as data coverage expands.</span>
+        <span style="display:block;margin-bottom:1em;">vernacularfutures investigates whether vernacular buildings, buildings that climate has already tested and that already exist in the conditions that other regions are projected to reach under SSP5-8.5 projections, can serve as empirical analogues for future design decisions. It is an open atlas built on a corpus of vernacular case studies that makes these analogues and their simulation-backed recommendations accessible to researchers and practitioners, and refinable as data coverage expands.</span>
+        <span style="display:block;margin-bottom:1em;">If we hypothesize that vernacular building envelopes are a product of iterative climate-driven selection we can argue that they embody measurable morphological responses to climate stress. A geographically distributed corpus of measured morphological parameters, large enough to limit cultural influence, yields quantifiable adaptation thresholds that correspond to climate context within Köppen zones.</span>
+        <span style="display:block;margin-bottom:1em;">vernacularfutures tests this premise by extracting morphological parameters based on measured drawings from 44 vernacular case studies spanning the full range of global Köppen climate classifications.</span>
+        <span style="display:block;">Thermal simulations can verify these correlations and produce physically grounded evidence of how passive strategies perform under projected climates, identify where and by how much they fail, quantify the performance differential between a case study and its climate-adapted analogue, and generate concrete adaptation recommendations under EPW-morphed SSP5-8.5 future climate conditions for 2050 and 2080.</span>
       </div>
       <div class="corpus-stats" id="corpusStats"></div>
       <div class="card-window pipeline-window" id="pipelineWindow" style="margin:24px 0;">
@@ -8641,27 +8644,15 @@ const FINDINGS=[
 
  {group:'C Methodological findings',items:[
 
-  {id:'ashrae55limit',title:'ASHRAE 55 in extreme climates',eyebrow:'Methodological finding model limits',
+  {id:'methodfindings',title:'C Methodological Findings',eyebrow:'Methodological finding model limits',
    body:()=>{
      return ''
-      +`<p style="line-height:1.7;margin-bottom:12px;">The ASHRAE adaptive comfort model is designed for climates in which the outdoor mean temperature lies between 10°C and 33.5°C (ASHRAE, 2020; de Dear &amp; Brager, 2002). In hot climates, as the climate shifts, more hours per year pass this threshold and are not accounted for. This could lead to false TCP results, making this metric less reliable in extreme climates. However, HSP will stay unaffected.</p>`
-      +`<p style="line-height:1.7;margin-bottom:12px;">In very hot climates the BWh deserts, BSh steppes and hotter Csa zones in this corpus a substantial share of summer hours already push against or past the 33.5°C ceiling. Under SSP5-8.5 warming, more hours breach this limit every year. The calculation gets shorter and shorter denominators. This creates an artifact that looks like the building is getting more comfortable: TCP appears to improve because the worst hours are no longer being counted, not because anything about the building has changed.</p>`
-      +`<p style="line-height:1.7;margin-bottom:12px;">The atlas includes an automatic warning on the TCP card when this is likely happening (mean T_op above 25°C or TCP reversal detected between scenarios). But the underlying issue is that ASHRAE 55 was not designed for these climates and carries real uncertainty when applied to them. `
-        +fcInfo('Humphreys & Nicol updating ASHRAE 55 limits','Humphreys, Rijal & Nicol (2013) review the empirical basis of the ASHRAE 55 adaptive limits and note that the database on which the model was calibrated over-represents moderate climates. They find that comfort temperatures in hot climates may be higher than the current model predicts, but the upper bound of the validity range remains a hard limit because above 33.5°C T_pma the adaptive mechanisms assumed by the model acclimatisation, clothing adjustment, behaviour change may be insufficient to maintain comfort regardless of building performance.','Humphreys, M. A., Rijal, H. B., & Nicol, J. F. (2013). Updating the adaptive relation between climate and comfort indoors: New insights and an extended database. Building and Environment, 63, 40-55.')
-      +` Humphreys, Rijal & Nicol (2013) have raised this question and it remains open in the literature.</p>`
-      +`<p style="line-height:1.7;margin-bottom:12px;">The consequence for this study is that TCP should be read with caution for any case in a hot arid or warm-hot climate and that HSP and T_op provide more honest indicators for those buildings. HSP counts hours above the upper comfort limit without a validity ceiling it has no upper-temperature exclusion so it continues accumulating as conditions worsen. T_op as an annual mean captures the overall thermal level of the building regardless of whether individual hours fall inside or outside the ASHRAE range.</p>`;
+      +`<p style="line-height:1.7;margin-bottom:16px;">While working with the established models like ASHRAE 55 (ASHRAE, 2020) and the Night Discharge Potential threshold (Artmann, 2007), we found that they are more limited than previously assumed. They are not designed to apply to the whole bandwidth of different climates that are found on the planet. Applying them without adjustments may lead to false conclusions.</p>`
+      +`<h3 style="font-family:var(--mono);font-size:13px;font-weight:700;margin:20px 0 8px;">1. ASHRAE 55 in Extreme Climates</h3>`
+      +`<p style="line-height:1.7;margin-bottom:16px;">The ASHRAE adaptive comfort model is designed for climates in which the outdoor mean temperature lies between 10°C and 33.5°C (ASHRAE, 2020; de Dear &amp; Brager, 2002). In hot climates, as the climate shifts, more hours per year pass this threshold and are not accounted for. This could lead to false TCP results, making this metric less reliable in extreme climates. However, HSP will stay unaffected.</p>`
+      +`<h3 style="font-family:var(--mono);font-size:13px;font-weight:700;margin:20px 0 8px;">2. NDP in Non-Western Climates</h3>`
+      +`<p style="line-height:1.7;margin-bottom:12px;">The NDP threshold, defined by Artmann et al. (2007), is based on a Central European climate and uses an upper limit of 22°C outdoor temperature. In hot desert climates, many nights do not fall below that temperature in summer (Lawrie &amp; Crawley, 2022).</p>`;
    }},
-
-  {id:'ndplimit',title:'NDP in non-western climates',eyebrow:'Methodological finding model limits',
-   body:()=>{
-     return ''
-      +`<p style="line-height:1.7;margin-bottom:12px;">The NDP threshold, defined by Artmann et al. (2007), is based on a Central European climate and uses an upper limit of 22°C outdoor temperature. In hot desert climates, many nights do not fall below that temperature in summer (Lawrie &amp; Crawley, 2022). This makes the metric inapplicable as a standalone indicator in those climates. In desert climates, the time-lag mechanism remains the operative one regardless of NDP.</p>`
-      +`<p style="line-height:1.7;margin-bottom:12px;">In hot desert climates the BWh zone, which includes Yazd (Iran), Cairo (Egypt), Riyadh and the North African case studies in this corpus summer nights in June and July typically sit between 25 and 32°C. The outdoor air never crosses 22°C in those months. NDP comes out near zero. This does not mean those buildings have no passive cooling potential. It means the Artmann metric cannot measure it.</p>`
-      +`<p style="line-height:1.7;margin-bottom:12px;">The windcatcher, the malqaf, the courtyard: all of these strategies function on a different principle from the Central European night-flush. They move air through the building when outdoor air is cooler than the interior, not when it is cooler than 22°C. On a summer night in Yazd, outdoor air at 27°C drawing into a room at 33°C is doing real cooling work. The Artmann metric simply does not see it.</p>`
-      +`<p style="line-height:1.7;margin-bottom:12px;">This corpus contains enough BWh and BSh case studies to make this limitation visible. For those buildings, the relevant viability indicator is not NDP but the indoor-to-outdoor temperature differential during night hours or the diurnal swing (difference between daily maximum and minimum outdoor temperature). A swing of 15-25°C in a desert climate, even when nights stay above 22°C, still gives the building meaningful discharge time. These are the numbers to look at for hot-arid passive cooling, not the Artmann NDP bar.</p>`
-      +`<p style="line-height:1.7;margin-bottom:12px;">Both limitations the ASHRAE 55 T_pma ceiling and the NDP 22°C floor point to the same underlying issue: the quantitative tools available for evaluating passive performance were built on and for temperate Western climates. Applying them globally without adjustment produces systematic blind spots in exactly the climates where vernacular passive strategies are most sophisticated and most needed.</p>`;
-   }},
-
 
  ]}
 ];
