@@ -2520,8 +2520,9 @@ let scn=0,selectedId=null,map=null,markers=[],tileLayer=null;
 let FLOORPLAN_MOSAIC=null;  /* null=not built | [{caseId,name,url}] */
 let _zoomAnimating=false;   /* prevent re-entrant zoom on rapid clicks */
 let _mosaicPaused=false;    /* pause mosaic batch probing while a case panel is loading */
-const LIGHT_TILE_URL='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-const DARK_TILE_URL='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+const CARTO_KEY='cb1_4qrb_1_5e37db41ede25a35f078c78b';
+const LIGHT_TILE_URL='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key='+CARTO_KEY;
+const DARK_TILE_URL='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key='+CARTO_KEY;
 let fRegion='',fKoppen='',fRoof='',fConstruction='',fMass='',fOhDelta='',fComfortDelta='',fKoppenDelta='',fCompact='',fWwr='',fDiurnal='',fPeriod='',fCorpus='',fHideContinuous=false;
 const byId=id=>CASES.find(c=>c.id===id);
 const grp=code=>code?code[0]:null;
@@ -8792,7 +8793,7 @@ function wireEaveControls(){
   mapDiv._eaveMapInit=true;
   if(typeof L==='undefined')return;
   const miniMap=L.map(mapDiv,{zoomControl:true,attributionControl:false}).setView([47,10],3);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{maxZoom:18}).addTo(miniMap);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png?key='+CARTO_KEY,{maxZoom:18}).addTo(miniMap);
   let marker=null;
   const calc=()=>{
     if(!marker)return;
