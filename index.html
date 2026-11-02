@@ -516,6 +516,31 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 .climate-tab.climate-tab-favorite:hover{border-color:var(--ochre);color:var(--ochre);background:var(--ochre-dim);}
 .climate-tab.climate-tab-favorite.active{background:var(--ochre);border-color:var(--ochre);color:var(--paper);}
 .climate-tabs-content{flex:1;min-width:0;}
+
+/* ---- environment layers (map tabs, water legend, climate sidebar separator, water tab) ---- */
+.env-tabs{display:inline-flex;margin-left:12px;vertical-align:middle;}
+.env-tab{font-family:var(--mono);font-size:10px;line-height:1;border:1px solid var(--line);background:var(--paper);color:var(--ink-faint);padding:3px 8px;cursor:pointer;border-radius:0;margin-left:-1px;letter-spacing:0;}
+.env-tab:first-child{margin-left:0;}
+.env-tab:hover{color:var(--terracotta-deep);border-color:var(--terracotta);position:relative;z-index:1;}
+.env-tab.active{border-color:var(--terracotta);color:var(--terracotta-deep);background:var(--terracotta-dim);position:relative;z-index:1;font-weight:700;}
+.wl-metric{font-family:var(--mono);font-size:10px;font-weight:600;background:var(--paper);border:1px solid var(--line);color:var(--ink);padding:2px 3px;max-width:190px;width:100%;margin-bottom:3px;border-radius:0;}
+.wl-dir{font-size:9.5px;color:var(--ink-soft);margin-bottom:3px;}
+.wl-note{font-size:9.5px;color:var(--ink-faint);line-height:1.4;margin-top:5px;max-width:190px;white-space:normal;}
+.legend-dot.arid{background:transparent;border:1.5px dashed #888780;box-sizing:border-box;}
+.legend-dot.wnd{background:#B4B2A9;width:5px;height:5px;margin:2px;}
+.wsw{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px;box-shadow:0 0 0 1px var(--ink-faint);flex:none;}
+.wsw.arid{background:transparent!important;border:1.5px dashed #888780;box-shadow:none;box-sizing:border-box;}
+.wsw.wnd{width:5px;height:5px;margin:0 8px 0 2.5px;box-shadow:none;vertical-align:1px;}
+.climate-tab-sep{border-top:1px solid var(--line-strong);width:72px;margin:3px 0 1px;}
+.wbox .code{font-family:var(--mono);font-size:11px;font-weight:600;line-height:1.25;min-height:28px;display:flex;align-items:center;justify-content:center;}
+.wtable{width:100%;border-collapse:collapse;font-size:11.5px;}
+.wtable th{font-family:var(--mono);font-size:9px;text-transform:uppercase;font-weight:600;color:var(--ink-soft);text-align:left;padding:0 6px 5px 0;}
+.wtable td{padding:5px 6px 5px 0;border-bottom:1px solid var(--line-soft);vertical-align:top;}
+.wtable td.k{color:var(--ink-soft);width:34%;}
+.wtable td.na{color:var(--ink-faint);font-size:10px;}
+.wtable .cur{background:var(--terracotta-dim);}
+.water-foot{font-family:var(--mono);font-size:10px;color:var(--ink-faint);line-height:1.5;margin-top:10px;}
+.water-foot b{color:var(--ink-soft);}
 @media(max-width:600px){
   .climate-tabs-row{flex-direction:column;}
 }
@@ -1924,7 +1949,7 @@ html[data-theme="dark"] .loader-status{
 </div>
 <div id="siteLoader">
   <div class="loader-controls">
-    <span class="vf-version">v403</span>
+    <span class="vf-version">v404</span>
     <button class="theme-toggle" id="loaderThemeToggle" title="Toggle dark mode">☾</button>
     <span class="c-game" id="loaderGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span>
   </div>
@@ -1939,7 +1964,7 @@ html[data-theme="dark"] .loader-status{
 <div class="win-titlebar">
   <span class="win-title">vernacularfutures</span>
   <span class="win-controls">
-    <span class="vf-version">v403</span>
+    <span class="vf-version">v404</span>
     <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">☾</button>
     <span class="c-game" id="openGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span></span>
 </div>
@@ -2092,7 +2117,7 @@ html[data-theme="dark"] .loader-status{
       </div>
       <div class="map-col">
         <div class="map-card">
-          <div class="card-titlebar"><span class="win-title">_map</span><span class="win-controls"><span class="c-fetch" id="mapFullscreenBtn" title="Toggle fullscreen map" style="display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1 L1 1 L1 4 M7 1 L10 1 L10 4 M1 7 L1 10 L4 10 M10 7 L10 10 L7 10"/></svg></span><span class="c-fetch" id="koppenOverlayBtn" title="Toggle Köppen zone overlay" style="display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0.5;"><svg width="17" height="16" viewBox="0 0 17 16" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="discoBallClip"><circle cx="8.5" cy="9.7" r="5.3"/></clipPath></defs><path d="M2.4 2.6 L3.7 3 L2.4 3.4 L2 4.7 L1.6 3.4 L0.3 3 L1.6 2.6 L2 1.3 Z" fill="currentColor"/><path d="M14.6 2 L15.35 2.25 L14.6 2.5 L14.35 3.25 L14.1 2.5 L13.35 2.25 L14.1 2 L14.35 1.25 Z" fill="currentColor"/><line x1="8.5" y1="1.7" x2="8.5" y2="3.5" stroke="currentColor" stroke-width="0.8"/><rect x="7.4" y="3.2" width="2.2" height="1.2" rx="0.2" fill="none" stroke="currentColor" stroke-width="0.7"/><circle cx="8.5" cy="9.7" r="5.3" fill="none" stroke="currentColor" stroke-width="1"/><g clip-path="url(#discoBallClip)"><path d="M3.2 9.7 H13.8 M4.1 7 H12.9 M4.1 12.4 H12.9 M4.9 5.5 Q8.5 9.7 12.1 14 M12.1 5.5 Q8.5 9.7 4.9 14 M8.5 4.5 Q5.9 9.7 8.5 15 M8.5 4.5 Q11.1 9.7 8.5 15" stroke="currentColor" stroke-width="0.5" fill="none" stroke-linecap="round"/></g></svg></span><span class="action-info-icon" id="koppenOverlayInfo" style="font-size:14px;position:relative;display:flex;align-items:center;">ⓘ<div class="action-info-pop" id="koppenOverlayInfoPop" style="top:calc(100% + 4px);bottom:auto;right:0;width:320px;"><div class="ai-head">_Köppen overlay</div><div class="ai-body">Colour field interpolated from Köppen-Geiger classifications at case study station locations using inverse distance weighting (IDW, power 2). Each pixel is a weighted blend of the nearest stations' zone colours.</div><div class="ai-warn"><b>NOTE: This is not a validated climate map.</b> Boundaries are interpolation artefacts, not climatological zone boundaries. The overlay reflects only the stations in this corpus, gaps between stations are extrapolated. Do not interpret as a gridded climate product. For reference gridded data see Kottek et al. (2006), <em>Meteorologische Zeitschrift</em> or Beck et al. (2018), <em>Scientific Data</em>.</div><div class="ai-cite">Classification per scenario derived from EPW-station Köppen assignment (Kottek et al. 2006 thresholds). Future zones: FWG morphed EPW (Rodrigues et al. 2023), SSP5-8.5.</div></div></span><span class="c-fetch" id="fetchMap" title="Re-fetch EPW &amp; coordinates"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 L2 9 M2 5 L2 9 L6 9"/></svg></span><span class="c-close" id="mapCloseBtn"></span></span></div>
+          <div class="card-titlebar"><span class="win-title">_map<span class="env-tabs" role="tablist" aria-label="Environment layers"><button type="button" class="env-tab active" role="tab" aria-selected="true" data-env="climate">climate</button><button type="button" class="env-tab" role="tab" aria-selected="false" data-env="water" title="WRI Aqueduct 4.0 water risk">water risk</button></span></span><span class="win-controls"><span class="c-fetch" id="mapFullscreenBtn" title="Toggle fullscreen map" style="display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1 L1 1 L1 4 M7 1 L10 1 L10 4 M1 7 L1 10 L4 10 M10 7 L10 10 L7 10"/></svg></span><span class="c-fetch" id="koppenOverlayBtn" title="Toggle Köppen zone overlay" style="display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0.5;"><svg width="17" height="16" viewBox="0 0 17 16" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="discoBallClip"><circle cx="8.5" cy="9.7" r="5.3"/></clipPath></defs><path d="M2.4 2.6 L3.7 3 L2.4 3.4 L2 4.7 L1.6 3.4 L0.3 3 L1.6 2.6 L2 1.3 Z" fill="currentColor"/><path d="M14.6 2 L15.35 2.25 L14.6 2.5 L14.35 3.25 L14.1 2.5 L13.35 2.25 L14.1 2 L14.35 1.25 Z" fill="currentColor"/><line x1="8.5" y1="1.7" x2="8.5" y2="3.5" stroke="currentColor" stroke-width="0.8"/><rect x="7.4" y="3.2" width="2.2" height="1.2" rx="0.2" fill="none" stroke="currentColor" stroke-width="0.7"/><circle cx="8.5" cy="9.7" r="5.3" fill="none" stroke="currentColor" stroke-width="1"/><g clip-path="url(#discoBallClip)"><path d="M3.2 9.7 H13.8 M4.1 7 H12.9 M4.1 12.4 H12.9 M4.9 5.5 Q8.5 9.7 12.1 14 M12.1 5.5 Q8.5 9.7 4.9 14 M8.5 4.5 Q5.9 9.7 8.5 15 M8.5 4.5 Q11.1 9.7 8.5 15" stroke="currentColor" stroke-width="0.5" fill="none" stroke-linecap="round"/></g></svg></span><span class="action-info-icon" id="koppenOverlayInfo" style="font-size:14px;position:relative;display:flex;align-items:center;">ⓘ<div class="action-info-pop" id="koppenOverlayInfoPop" style="top:calc(100% + 4px);bottom:auto;right:0;width:320px;"><div class="ai-head">_Köppen overlay</div><div class="ai-body">Colour field interpolated from Köppen-Geiger classifications at case study station locations using inverse distance weighting (IDW, power 2). Each pixel is a weighted blend of the nearest stations' zone colours.</div><div class="ai-warn"><b>NOTE: This is not a validated climate map.</b> Boundaries are interpolation artefacts, not climatological zone boundaries. The overlay reflects only the stations in this corpus, gaps between stations are extrapolated. Do not interpret as a gridded climate product. For reference gridded data see Kottek et al. (2006), <em>Meteorologische Zeitschrift</em> or Beck et al. (2018), <em>Scientific Data</em>.</div><div class="ai-cite">Classification per scenario derived from EPW-station Köppen assignment (Kottek et al. 2006 thresholds). Future zones: FWG morphed EPW (Rodrigues et al. 2023), SSP5-8.5.</div></div></span><span class="c-fetch" id="fetchMap" title="Re-fetch EPW &amp; coordinates"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 L2 9 M2 5 L2 9 L6 9"/></svg></span><span class="c-close" id="mapCloseBtn"></span></span></div>
           <div id="map"></div>
           <div class="map-safe-msg" id="mapSafeMsg"></div>
           <div class="map-legend" id="mapLegend"></div>
@@ -2520,6 +2545,7 @@ function processCases(rawArray){
 CASES = processCases([]);
 
 let scn=0,selectedId=null,map=null,markers=[],tileLayer=null;
+var envLayer='climate',waterMetric='ws';   /* var, not let: refreshMap can run before this line at load */
 let FLOORPLAN_MOSAIC=null;  /* null=not built | [{caseId,name,url}] */
 let _zoomAnimating=false;   /* prevent re-entrant zoom on rapid clicks */
 let _mosaicPaused=false;    /* pause mosaic batch probing while a case panel is loading */
@@ -2600,7 +2626,7 @@ function renderKoppenOverlay(){
   }).addTo(map);
 }
 function scheduleKoppenOverlay(){
-  if(!koppenOverlayActive)return;
+  if(!koppenOverlayActive||envLayer==='water')return;
   clearTimeout(_koppenRenderTimer);
   _koppenRenderTimer=setTimeout(renderKoppenOverlay,180);
 }
@@ -2625,17 +2651,224 @@ function initMap(){
       else clearKoppenOverlay();
     });
     wireInfoIcon('koppenOverlayInfo','koppenOverlayInfoPop');
+    document.querySelectorAll('.env-tab').forEach(b=>b.addEventListener('click',()=>setEnvLayer(b.dataset.env)));
   },0);
+}
+/* ===================== ENVIRONMENT LAYERS: WRI Aqueduct water risk =====================
+   The map has layer tabs (climate / water risk). The water layer reads
+   data/env_layers/Aqueduct_Water_Risk_Atlas.xlsx from R2 the same way _cs.xlsx is read:
+   fetched when first needed, parsed in the browser with SheetJS, matched to the cases by ID.
+   Sheet layout (written by pipeline step 2b): row 1 group labels, row 2 headers, data from row 3.
+   Sheets: baseline, future (pes50_* / pes80_* = pessimistic SSP5-RCP8.5), info. */
+const AQ_FILE='env_layers/Aqueduct_Water_Risk_Atlas.xlsx';
+const AQ={state:'idle',byId:{},info:{},err:null,promise:null};   /* idle | loading | ready | error */
+const WATER_METRICS=[
+  {key:'ws', label:'Water stress',              base:'bws',fut:'ws'},
+  {key:'wd', label:'Water depletion',           base:'bwd',fut:'wd'},
+  {key:'iv', label:'Interannual variability',   base:'iav',fut:'iv'},
+  {key:'sv', label:'Seasonal variability',      base:'sev',fut:'sv'},
+  {key:'gtd',label:'Groundwater table decline', base:'gtd',fut:null},
+  {key:'drr',label:'Drought risk',              base:'drr',fut:null}
+];
+const WATER_CLASS_NAMES=['Low','Low-medium','Medium-high','High','Extremely high'];
+const WATER_RAMP={light:['#E3ECF1','#B8CCDA','#82A2B8','#4F7390','#243F57'],dark:['#2A4052','#46688A','#6E97B8','#A3C5DE','#DCEBF6']};
+const WATER_ARID='#888780',WATER_NODATA='#B4B2A9';
+function isDarkTheme(){return document.documentElement.getAttribute('data-theme')==='dark';}
+function aqEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function aqSheetRows(wb,name){
+  const ws=wb.Sheets[name];if(!ws)return[];
+  const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null,raw:true});
+  const head=(rows[1]||[]).map(h=>h==null?'':String(h).trim());
+  return rows.slice(2).filter(r=>r&&r[0]!=null&&String(r[0]).trim()!=='').map(r=>{
+    const o={};head.forEach((h,i)=>{if(h)o[h]=r[i]===undefined?null:r[i];});return o;});
+}
+function aqParse(wb){
+  const byId={};
+  aqSheetRows(wb,'baseline').forEach(r=>{byId[String(r.ID).trim()]={base:r,fut:null};});
+  aqSheetRows(wb,'future').forEach(r=>{const k=String(r.ID).trim();if(!byId[k])byId[k]={base:null,fut:null};byId[k].fut=r;});
+  const info={};
+  if(wb.Sheets['info'])XLSX.utils.sheet_to_json(wb.Sheets['info'],{header:1,defval:null}).slice(1).forEach(r=>{if(r&&r[0])info[String(r[0]).trim()]=r[1];});
+  return{byId:byId,info:info};
+}
+function ensureAqueduct(){
+  if(AQ.state==='ready')return Promise.resolve(true);
+  if(AQ.promise)return AQ.promise;
+  AQ.state='loading';
+  AQ.promise=(async()=>{
+    try{
+      const res=await fetch(`${DATA_BASE}/${AQ_FILE}?v=${BUILD_TS}`);
+      if(!res.ok)throw new Error('HTTP '+res.status+' fetching '+AQ_FILE);
+      const p=aqParse(XLSX.read(await res.arrayBuffer(),{type:'array'}));
+      AQ.byId=p.byId;AQ.info=p.info;AQ.state='ready';AQ.err=null;return true;
+    }catch(e){AQ.state='error';AQ.err=e.message;AQ.promise=null;console.warn('Aqueduct data failed:',e.message);return false;}
+  })();
+  return AQ.promise;
+}
+/* value of one metric for one case at slider position s (0 = today, 1 = 2050, 2 = 2080).
+   Metrics without a projection (groundwater decline, drought risk) fall back to today's value. */
+function aqValue(id,key,s){
+  const rec=AQ.state==='ready'?AQ.byId[id]:null;
+  if(!rec||!rec.base||rec.base['Lookup status']!=='ok')return null;
+  const m=WATER_METRICS.find(x=>x.key===key);if(!m)return null;
+  if(s>0&&m.fut&&rec.fut&&rec.fut['Lookup status']==='ok'){
+    const p='pes'+(s===1?'50':'80')+'_'+m.fut+'_x_',r=rec.fut;
+    return{cat:r[p+'c'],label:r[p+'l'],raw:r[p+'r'],today:false};
+  }
+  const p=m.base+'_',r=rec.base;
+  return{cat:r[p+'cat'],label:r[p+'label'],raw:r[p+'raw'],today:s>0};
+}
+function waterClassOf(v){
+  if(!v)return{kind:'nodata'};
+  const lab=v.label==null?'':String(v.label);
+  if(/arid/i.test(lab))return{kind:'arid'};
+  /* groundwater table decline: "Insignificant Trend" has no category but is a real value (no decline): lowest class */
+  if(/insignificant/i.test(lab))return{kind:'class',i:0};
+  const c=(v.cat==null||v.cat==='')?null:Number(v.cat);
+  if(c==null||!Number.isFinite(c)||c<0||c>4)return{kind:'nodata'};
+  return{kind:'class',i:c};
+}
+function waterFill(k){
+  if(k.kind==='class')return WATER_RAMP[isDarkTheme()?'dark':'light'][k.i];
+  return k.kind==='arid'?'transparent':WATER_NODATA;
+}
+/* labels differ in spelling between the baseline and future data ("Low - Medium" / "Low-medium"):
+   normalise for display, and optionally cut the threshold in brackets. */
+function waterLabel(s,short){
+  if(s==null||s==='')return'no data';
+  let x=String(s).trim().replace(/\s+-\s+/g,'-');
+  if(short)x=x.replace(/\s*\(.*\)\s*$/,'');
+  return x.charAt(0).toUpperCase()+x.slice(1).toLowerCase();
+}
+function waterSwatch(k){
+  if(k.kind==='arid')return'<span class="wsw arid"></span>';
+  if(k.kind==='nodata')return'<span class="wsw wnd" style="background:'+WATER_NODATA+'"></span>';
+  return'<span class="wsw" style="background:'+waterFill(k)+'"></span>';
+}
+function waterMarkerStyle(c,vis,isSel,bCol){
+  const k=waterClassOf(aqValue(c.id,waterMetric,scn)),dark=isDarkTheme();
+  let st,radius=7;
+  if(k.kind==='class'){st={fillColor:waterFill(k),fillOpacity:vis?0.95:0.07,color:dark?'#E8EEF2':'#1F2D38',weight:1,opacity:vis?1:0.12,dashArray:null};}
+  else if(k.kind==='arid'){st={fillColor:WATER_ARID,fillOpacity:0,color:WATER_ARID,weight:1.6,opacity:vis?1:0.12,dashArray:'3 3'};}
+  else{radius=4;st={fillColor:WATER_NODATA,fillOpacity:vis?0.9:0.07,color:WATER_NODATA,weight:0,opacity:vis?1:0.12,dashArray:null};}
+  if(isSel){st.color=bCol;st.weight=2.5;st.dashArray=null;st.opacity=1;}
+  return{style:st,radius:radius};
+}
+function markerTip(c){
+  if(envLayer==='water'){
+    const m=WATER_METRICS.find(x=>x.key===waterMetric),v=aqValue(c.id,waterMetric,scn);
+    const txt=(AQ.state==='loading'||AQ.state==='idle')?'loading':waterLabel(v&&v.label,true).toLowerCase();
+    return`<b>${c.name||c.id}</b><br>${c.id}  ${c.region}<br>${m.label}: ${txt}${v&&v.today?' (today)':''}`;
+  }
+  return`<b>${c.name||c.id}</b><br>${c.id}  ${c.region}  ${c.koppen[scn]||' '}`;
+}
+function renderWaterLegend(){
+  const el=document.getElementById('mapLegend');if(!el)return;
+  const dark=isDarkTheme(),pal=WATER_RAMP[dark?'dark':'light'];
+  const m=WATER_METRICS.find(x=>x.key===waterMetric)||WATER_METRICS[0];
+  const opts=WATER_METRICS.map(x=>`<option value="${x.key}" ${x.key===waterMetric?'selected':''}>${x.label}${(scn>0&&!x.fut)?' (today)':''}</option>`).join('');
+  const ring=dark?'#E8EEF2':'#1F2D38';
+  let body='';
+  if(AQ.state==='error'){
+    body='<div class="wl-note">Water risk data could not be loaded.</div>';
+  }else{
+    body='<select class="wl-metric" id="wlMetric" aria-label="Water risk metric">'+opts+'</select>'+
+      '<div class="wl-dir">'+(dark?'lighter = more stressed':'darker = more stressed')+'</div>'+
+      WATER_CLASS_NAMES.map((n,i)=>`<div class="legend-row"><span class="legend-dot" style="background:${pal[i]};box-shadow:0 0 0 1px ${ring}"></span>${n}</div>`).join('')+
+      '<div class="legend-row"><span class="legend-dot arid"></span>Arid, low water use</div>'+
+      '<div class="legend-row"><span class="legend-dot wnd"></span>No data</div>'+
+      (scn>0&&!m.fut?'<div class="wl-note">No projection exists for this metric. Today\'s values are shown.</div>':'')+
+      (m.key==='gtd'?'<div class="wl-note">Insignificant trend (no decline) is shown as Low.</div>':'')+
+      (AQ.state!=='ready'?'<div class="wl-note">Loading water risk data</div>':'');
+  }
+  const attr=(AQ.state==='ready'&&AQ.info['Attribution to use'])?AQ.info['Attribution to use']:'Source: WRI Aqueduct 4.0 (CC BY 4.0)';
+  el.innerHTML='<div class="legend-toggle" style="font-weight:600;margin-bottom:5px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;">WATER RISK<span class="legend-chevron">▾</span></div>'+
+    '<div class="legend-body" style="display:block;">'+body+'<div class="wl-note">'+aqEsc(attr)+'</div></div>';
+  const toggle=el.querySelector('.legend-toggle');
+  if(toggle)toggle.addEventListener('click',()=>{if(!document.body.classList.contains('mobile-mode'))return;el.classList.toggle('legend-open');});
+  const sel=document.getElementById('wlMetric');
+  if(sel)sel.addEventListener('change',e=>{waterMetric=e.target.value;refreshMap();renderLegend();});
+}
+async function setEnvLayer(name){
+  if(name===envLayer)return;
+  envLayer=name;
+  document.querySelectorAll('.env-tab').forEach(b=>{const on=b.dataset.env===name;b.classList.toggle('active',on);b.setAttribute('aria-selected',on?'true':'false');});
+  const kb=document.getElementById('koppenOverlayBtn'),ki=document.getElementById('koppenOverlayInfo');
+  if(name==='water'){
+    clearKoppenOverlay();
+    if(kb)kb.style.display='none';if(ki)ki.style.display='none';
+  }else{
+    if(kb)kb.style.display='flex';if(ki)ki.style.display='flex';
+    if(koppenOverlayActive)renderKoppenOverlay();
+  }
+  refreshMap();renderLegend();
+  if(name==='water'&&AQ.state!=='ready'){
+    await ensureAqueduct();
+    if(envLayer==='water'){refreshMap();renderLegend();}
+  }
+}
+/* ---- case study: head block and tab for the water risk sub-tab of the climate tab ---- */
+function waterHeadHTML(c,slot){
+  const src='<div class="kvline">Data source: <b>WRI Aqueduct 4.0</b>, not the weather file</div>';
+  if(AQ.state==='error')return src+'<div class="kvline">Water risk data could not be loaded.</div>';
+  if(AQ.state!=='ready')return src+'<div class="kvline">Loading water risk data</div>';
+  const rec=AQ.byId[c.id];
+  if(!rec||!rec.base)return src+'<div class="kvline">No water risk data for this case study.</div>';
+  const b=rec.base;
+  if(b['Lookup status']!=='ok')return src+'<div class="kvline">Lookup status: <b>'+aqEsc(b['Lookup status'])+'</b></div><div class="kvline" style="color:var(--ink-faint)">Water risk needs readable coordinates.</div>';
+  const rel=AQ.info['Release in the file'];
+  const place=[b.name_1,b.name_0].filter(Boolean).join(', ');
+  const approx=b['Location precision']==='approximate';
+  let h=src+
+   '<div class="kvline">Release: <b>'+aqEsc(rel||'unknown')+'</b></div>'+
+   '<div class="kvline">Watershed: <b>'+aqEsc(b.pfaf_id)+'</b> ('+aqEsc(place)+')</div>'+
+   '<div class="kvline">Area: <b>'+(b.area_km2!=null?Math.round(b.area_km2).toLocaleString('en-US')+' km²':'n/a')+'</b></div>'+
+   '<div class="kvline">Location: <b>'+(approx?'approximate, the watershed may be a neighbour':'exact')+'</b></div>';
+  h+='<div class="koppen-strip">'+[0,1,2].map(i=>{
+    const v=aqValue(c.id,'ws',i),k=waterClassOf(v);
+    const bar=k.kind==='class'?waterFill(k):(k.kind==='arid'?WATER_ARID:WATER_NODATA);
+    return'<div class="koppen-box wbox '+(i===scn?'current':'')+'" style="cursor:pointer;border-top:3px solid '+bar+'" title="Water stress, '+aqEsc(waterLabel(v&&v.label))+'" onclick="const t=document.querySelectorAll(\'.scenario-tick\')['+i+'];if(t)t.click();"><div class="scn">'+SCENARIOS[i]+'</div><div class="code">'+aqEsc(waterLabel(v&&v.label,true))+'</div></div>';
+  }).join('')+'</div>';
+  return h;
+}
+function fillWaterHead(slot,c){const el=document.getElementById('headWater-'+slot);if(el)el.innerHTML=waterHeadHTML(c,slot);}
+function setClimateHead(slot,water){
+  const a=document.getElementById('headEpw-'+slot),b=document.getElementById('headWater-'+slot);
+  if(a)a.style.display=water?'none':'';
+  if(b)b.style.display=water?'':'none';
+}
+function waterTabHTML(c,slot){
+  if(AQ.state==='error')return'<div class="epw-loading">Water risk data could not be loaded ('+aqEsc(AQ.err)+').</div>';
+  if(AQ.state!=='ready')return'<div class="epw-loading">Loading water risk data</div>';
+  const rec=AQ.byId[c.id];
+  if(!rec||!rec.base||rec.base['Lookup status']!=='ok'){
+    const why=rec&&rec.base?rec.base['Lookup status']:'not in the water risk file';
+    return'<div class="epw-loading">No water risk values for this case study ('+aqEsc(why)+').</div>';
+  }
+  const head='<tr><th></th>'+SCENARIOS.map((s,i)=>'<th class="'+(i===scn?'cur':'')+'">'+s+'</th>').join('')+'</tr>';
+  const rows=WATER_METRICS.map(m=>{
+    const cells=[0,1,2].map(i=>{
+      if(i>0&&!m.fut)return'<td class="na '+(i===scn?'cur':'')+'">today only</td>';
+      const v=aqValue(c.id,m.key,i),k=waterClassOf(v);
+      return'<td class="'+(i===scn?'cur':'')+'" title="'+aqEsc(waterLabel(v&&v.label))+'">'+waterSwatch(k)+aqEsc(waterLabel(v&&v.label,true))+'</td>';
+    }).join('');
+    return'<tr><td class="k">'+m.label+'</td>'+cells+'</tr>';
+  }).join('');
+  const attr=AQ.info['Attribution to use']||'Source: WRI Aqueduct 4.0 (CC BY 4.0)';
+  return'<table class="wtable"><thead>'+head+'</thead><tbody>'+rows+'</tbody></table>'+
+    '<div class="water-foot"><b>'+aqEsc(attr)+'</b><br>'+
+    'Future values: pessimistic scenario SSP5-RCP8.5, median of five climate models. 2050 = 2035 to 2065, 2080 = 2065 to 2095. Groundwater decline and drought risk exist for today only.<br>'+
+    'Aqueduct is a screening tool for watersheds, not an assessment of this site.</div>';
 }
 function rebuildMarkers(){
   markers.forEach(mk=>map.removeLayer(mk));markers=[];
   const bounds=[];
   CASES.filter(c=>c.hasCoord).forEach(c=>{
     const mk=L.circleMarker([c.lat,c.lon],{radius:7,weight:0,fillColor:kcolor(c.koppen[scn]),fillOpacity:0.92});
-    mk.bindTooltip(`<b>${c.name||c.id}</b><br>${c.id}  ${c.region}  ${c.koppen[scn]||' '}`,{direction:'top',offset:[0,-6]});
+    mk.bindTooltip(markerTip(c),{direction:'top',offset:[0,-6]});
     mk.on('click',()=>selectCase(c.id));mk._cid=c.id;mk.addTo(map);markers.push(mk);bounds.push([c.lat,c.lon]);
   });
   if(bounds.length)map.fitBounds(bounds,{padding:[30,30]});
+  if(envLayer==='water')refreshMap();
   renderLegend();
   renderLineLegend();
 }
@@ -2668,6 +2901,7 @@ function renderLineLegend(){
   if(head)head.addEventListener('click',()=>el.classList.toggle('collapsed'));
 }
 function renderLegend(){
+  if(envLayer==='water'){renderWaterLegend();return;}
   const codes=[...new Set(CASES.flatMap(c=>c.koppen).filter(Boolean))]
     .sort((a,b)=> a[0]===b[0] ? a.localeCompare(b) : 'ABCDE'.indexOf(a[0])-'ABCDE'.indexOf(b[0]));
   const el=document.getElementById('mapLegend');
@@ -2691,14 +2925,22 @@ function refreshMap(){
   const bCol=selectedMarkerBorder();
   markers.forEach(mk=>{const c=byId(mk._cid),vis=pass(c);
     const isSel=(mk._cid===selectedId||mk._cid===compareId);
-    mk.setStyle({
-      fillColor:kcolor(c.koppen[scn]),
-      opacity:vis?1:0.12,
-      fillOpacity:vis?0.92:0.07,
-      /* selected/compared cases get a solid contrasting ring */
-      color:isSel?bCol:kcolor(c.koppen[scn]),
-      weight:isSel?2.5:0,
-    });
+    if(envLayer==='water'){
+      const w=waterMarkerStyle(c,vis,isSel,bCol);
+      mk.setStyle(w.style);mk.setRadius(w.radius);
+    }else{
+      mk.setStyle({
+        fillColor:kcolor(c.koppen[scn]),
+        opacity:vis?1:0.12,
+        fillOpacity:vis?0.92:0.07,
+        /* selected/compared cases get a solid contrasting ring */
+        color:isSel?bCol:kcolor(c.koppen[scn]),
+        weight:isSel?2.5:0,
+        dashArray:null,
+      });
+      mk.setRadius(7);
+    }
+    if(mk.getTooltip&&mk.getTooltip())mk.setTooltipContent(markerTip(c));
     if(isSel&&mk.bringToFront)mk.bringToFront();
   });
   scheduleKoppenOverlay();
@@ -5304,8 +5546,8 @@ function windSpeedChart(c,s,epwData){
 }
 
 /* ---- climate sub-tabs ---- */
-const CLIMATE_TABS=['psychro','overview','extremes','wind'];
-const CLIMATE_LABEL={overview:'Overview',psychro:'Psychrometric',wind:'Wind',extremes:'Extremes'};
+const CLIMATE_TABS=['psychro','overview','extremes','wind','water'];   /* 'water' is not from the EPW: it has its own source (WRI Aqueduct) */
+const CLIMATE_LABEL={overview:'Overview',psychro:'Psychrometric',wind:'Wind',extremes:'Extremes',water:'Water risk'};
 let currentClimateTab={A:'psychro',B:'psychro'};
 function overviewTabHTML(c,epwData){
   const nd='<span class="nodata">NO_DATA</span>';
@@ -5558,10 +5800,19 @@ function renderClimateTabContent(key,c,epwData,slot){
   if(key==='psychro')return psychroTabHTML(c,epwData,slot);
   if(key==='wind')return windTabHTML(c,epwData);
   if(key==='extremes')return extremesTabHTML(c,epwData);
+  if(key==='water')return waterTabHTML(c,slot);
 }
 async function renderClimateTabAsync(key,c,slot){
   const el=document.getElementById('climateTabContent-'+slot);
   if(!el)return;
+  /* water risk comes from the Aqueduct workbook, not from the EPW: no weather file is loaded for it */
+  if(key==='water'){
+    if(AQ.state!=='ready'){el.innerHTML=waterTabHTML(c,slot);fillWaterHead(slot,c);await ensureAqueduct();if(!document.getElementById('climateTabContent-'+slot))return;}
+    el.innerHTML=waterTabHTML(c,slot);fillWaterHead(slot,c);
+    if(envLayer==='water'){refreshMap();renderLegend();}
+    if(_preserveScroll!==null){const p=document.getElementById('csPanel');if(p)p.scrollTop=_preserveScroll;}
+    return;
+  }
   /* same vernacularBIGBROTHER exception as caseDetailHTML, slot B always
      fetches present-day data during an active comparison */
   const displayScn=(bigBrotherActive&&slot==='B')?0:scn;
@@ -5600,6 +5851,7 @@ function wireClimateTabs(c,slot){
 }
 function switchClimateSubTab(slot,key,c){
   currentClimateTab[slot]=key;
+  setClimateHead(slot,key==='water');
   document.querySelectorAll(`.climate-tab[data-slot="${slot}"]`).forEach(x=>x.classList.toggle('active',x.dataset.ctab===key));
   renderClimateTabAsync(key,c,slot);
 }
@@ -7035,6 +7287,7 @@ function caseDetailHTML(c,slot){
     <!-- TAB 2: CLIMATE -->
     <div class="cs-panel ${currentCsTab[slot]==='climate'?'active':''}" data-cspanel="climate" data-slot="${slot}">
       <div class="block" style="margin-top:12px;">
+        <div id="headEpw-${slot}" style="${ctab==='water'?'display:none;':''}">
         <div class="kvline">Assigned station: <b>${c.epw||noData}</b></div>
         <div class="kvline">Case elevation: <b>${fmt(c.elev,' m',0)}</b></div>
         <div class="kvline" id="stationElev-${slot}" style="${!MOCK&&c.epw?'':'display:none;'}"></div>
@@ -7046,8 +7299,10 @@ function caseDetailHTML(c,slot){
   return `<div class="koppen-box ${i===displayScn?'current':''}" style="cursor:pointer;" onclick="const t=document.querySelectorAll('.scenario-tick')[${i}];if(t)t.click();"><div class="scn">${SCENARIOS[i]}${_iBtn}</div><div class="code">${k||'<span class="nodata" style="font-size:10px"> </span>'}</div></div>`;
 }).join('')}
         </div>
+        </div>
+        <div id="headWater-${slot}" style="${ctab==='water'?'':'display:none;'}">${waterHeadHTML(c,slot)}</div>
         <div class="climate-tabs-row">
-          <div class="diagram-tabs climate-tabs-sidebar">${CLIMATE_TABS.map(k=>`<button class="diagram-tab climate-tab climate-tab-square ${k===ctab?'active':''} ${k==='extremes'?'climate-tab-favorite':''}" data-ctab="${k}" data-slot="${slot}">${CLIMATE_LABEL[k]}</button>`).join('')}</div>
+          <div class="diagram-tabs climate-tabs-sidebar">${CLIMATE_TABS.map(k=>`${k==='water'?'<div class="climate-tab-sep" aria-hidden="true"></div>':''}<button class="diagram-tab climate-tab climate-tab-square ${k===ctab?'active':''} ${k==='extremes'?'climate-tab-favorite':''}" data-ctab="${k}" data-slot="${slot}" ${k==='water'?'title="Source: WRI Aqueduct, not the weather file"':''}>${CLIMATE_LABEL[k]}</button>`).join('')}</div>
           <div id="climateTabContent-${slot}" class="climate-tabs-content"><div class="epw-loading">Loading climate data...</div></div>
         </div>
       </div>
@@ -10604,6 +10859,7 @@ function applyTheme(theme){
   if(tileLayer)tileLayer.setUrl(theme==='dark'?DARK_TILE_URL:LIGHT_TILE_URL);
   applyScenarioPalette();
   if(map&&markers&&markers.length)refreshMap();
+  if(envLayer==='water'&&document.getElementById('mapLegend'))renderLegend();
   /* if the elevation-runner is open, rebuild its saucer sprite so its
      colours follow the new theme immediately (not just on next open).
      Check the overlay's visibility rather than the eggOpen variable:
