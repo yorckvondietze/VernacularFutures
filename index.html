@@ -541,6 +541,52 @@ main{flex:1;overflow:hidden;min-height:0;display:flex;flex-direction:column;}
 .wtable .cur{background:var(--terracotta-dim);}
 .water-foot{font-family:var(--mono);font-size:10px;color:var(--ink-faint);line-height:1.5;margin-top:10px;}
 .water-foot b{color:var(--ink-soft);}
+.wtable td.grp{font:600 10px var(--mono);text-transform:uppercase;color:var(--ink-faint);padding-top:14px;border-bottom:1px solid var(--ink)}
+/* ---- best practice cases (bpc) ---- */
+.bpc-toggle{font:700 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.03em;padding:8px 12px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);cursor:pointer;margin-left:14px;display:inline-flex;gap:8px;align-items:center;vertical-align:middle;border-radius:0;}
+.bpc-toggle:hover{border-color:var(--terracotta);color:var(--terracotta-deep);}
+.bpc-toggle[aria-pressed="true"]{background:var(--terracotta);border-color:var(--terracotta);color:#FFFFFF;}
+.bpc-toggle svg{flex:none}
+.leaflet-marker-icon.bpc-hex{background:none;border:0;}
+.leaflet-marker-icon.bpc-hex svg{display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35));}
+.bpc-photo{width:100%;margin-bottom:12px;}
+.bpc-photo .photo-carousel{height:340px;}
+.bpc-nophoto{height:340px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--line);background:var(--paper-2,var(--paper));color:var(--ink-faint);font:500 12px var(--mono);text-transform:lowercase;}
+.bpc-data{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px 14px;margin:0 0 12px;padding:10px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.bpc-kv{display:flex;flex-direction:column;font:500 10px var(--mono);color:var(--ink-faint);text-transform:uppercase;}
+.bpc-kv b{font:600 12px var(--mono);color:var(--ink);text-transform:none;}
+.bpc-desc{font-size:13px;line-height:1.55;color:var(--ink-soft);margin:0 0 12px;}
+.bpc-src{font:500 12px var(--mono);}
+.bpc-src a{color:var(--terracotta);word-break:break-all;}
+.bpc-src-l{color:var(--ink-faint);text-transform:uppercase;font-size:10px;margin-right:6px;}
+.strat-note{font-size:12.5px;line-height:1.5;color:var(--ink-soft);margin:0 0 12px;padding:8px 10px;border-left:3px solid var(--terracotta);background:var(--paper-2,transparent);}
+.strat-h{font:700 10px var(--mono);text-transform:uppercase;color:var(--ink-faint);margin:12px 0 4px;}
+.strat-list{margin:0;padding:0 0 0 18px;font:500 13px/1.7 var(--mono);}
+.strat-none{font:500 12px var(--mono);color:var(--ink-faint);}
+#view-bpc{width:100%;}
+#view-bpc.active{min-width:min(1460px,calc(100vw - 24px));}
+.bpcv-grid{display:grid;width:100%;max-width:none;box-sizing:border-box;align-self:stretch;grid-template-columns:300px minmax(0,1fr);gap:12px;padding:12px;height:calc(100vh - 160px);min-height:520px;}
+.bpc-tab{letter-spacing:0;}
+.bpcv-grid.with-panel{grid-template-columns:300px minmax(0,1fr) minmax(380px,34vw);}
+.bpcv-card{border:1px solid var(--ink);background:var(--paper);display:flex;flex-direction:column;min-height:0;min-width:0;}
+.bpcv-panelcard{display:none;}
+.bpcv-grid.with-panel .bpcv-panelcard{display:flex;}
+.bpcv-search{padding:8px 10px;border-bottom:1px solid var(--line);}
+.bpcv-search input{width:100%;font:500 12px var(--mono);padding:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:0;}
+.bpcv-list{overflow:auto;flex:1;}
+.bpcv-item{display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:9px 12px;border:0;border-bottom:1px solid var(--line-soft,var(--line));background:none;color:var(--ink);cursor:pointer;font:inherit;}
+.bpcv-item:hover,.bpcv-item.active{background:var(--terracotta-dim);}
+.bpcv-item.active{box-shadow:inset 3px 0 0 var(--terracotta);}
+.bpcv-t{display:flex;flex-direction:column;min-width:0;}
+.bpcv-t b{font:600 12.5px/1.3 var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bpcv-t span{font:500 10.5px var(--mono);color:var(--ink-faint);}
+.bpcv-sep{font:700 10px var(--mono);text-transform:uppercase;color:var(--ink-faint);padding:12px 12px 6px;border-bottom:1px solid var(--line);}
+#mapB{flex:1;min-height:300px;background:var(--paper);}
+.bpcv-panel{overflow:auto;flex:1;padding:0 14px 16px;}
+.bpcv-grid .cs-panel.active{display:flex;}
+@media (max-width:900px){.bpcv-grid,.bpcv-grid.with-panel{grid-template-columns:1fr;height:auto;}#mapB{min-height:340px;}.bpcv-list{max-height:260px;}.bpcv-panelcard{order:3;}}
+
+.cs-main-tabs .cs-main-tab{padding-left:7px;padding-right:7px;font-size:11.5px;}
 @media(max-width:600px){
   .climate-tabs-row{flex-direction:column;}
 }
@@ -1949,7 +1995,7 @@ html[data-theme="dark"] .loader-status{
 </div>
 <div id="siteLoader">
   <div class="loader-controls">
-    <span class="vf-version">v404</span>
+    <span class="vf-version">v406</span>
     <button class="theme-toggle" id="loaderThemeToggle" title="Toggle dark mode">☾</button>
     <span class="c-game" id="loaderGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span>
   </div>
@@ -1964,7 +2010,7 @@ html[data-theme="dark"] .loader-status{
 <div class="win-titlebar">
   <span class="win-title">vernacularfutures</span>
   <span class="win-controls">
-    <span class="vf-version">v404</span>
+    <span class="vf-version">v406</span>
     <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">☾</button>
     <span class="c-game" id="openGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span></span>
 </div>
@@ -2024,6 +2070,7 @@ html[data-theme="dark"] .loader-status{
   <nav class="hm-nav">
     <button class="hm-tab tab-btn admin-tab" data-tab="admin"><svg class="lock-icon" viewBox="0 0 24 24" width="11" height="11"><path d="M6 10V8a6 6 0 0112 0v2h1a1 1 0 011 1v10a1 1 0 01-1 1H5a1 1 0 01-1-1V11a1 1 0 011-1h1zm2 0h8V8a4 4 0 00-8 0v2z" fill="currentColor"/></svg> <span class="numeral">0</span> Administrative</button>
     <button class="hm-tab tab-btn active" data-tab="cases"><span class="numeral">I</span> Atlas of Vernacular Case Studies</button>
+  <button class="hm-tab tab-btn" data-tab="bpc"><span class="numeral">Ib</span> Best Practice Cases</button>
     <button class="hm-tab tab-btn" data-tab="findings"><span class="numeral">II</span> Findings &amp; Recommendations</button>
     <button class="hm-tab tab-btn minor" data-tab="method"><span class="numeral">III</span> Methodology &amp; Limitations</button>
     <button class="hm-tab tab-btn guide-tab" data-tab="guide"><span class="numeral" style="opacity:0.55;">IV</span> Cs Drawing Guide</button>
@@ -2034,6 +2081,7 @@ html[data-theme="dark"] .loader-status{
 <div class="tab-bar" style="display:none;">
   <button class="tab-btn admin-tab" data-tab="admin"><svg class="lock-icon" viewBox="0 0 24 24" width="11" height="11"><path d="M6 10V8a6 6 0 0112 0v2h1a1 1 0 011 1v10a1 1 0 01-1 1H5a1 1 0 01-1-1V11a1 1 0 011-1h1zm2 0h8V8a4 4 0 00-8 0v2z" fill="currentColor"/></svg> <span class="numeral">0</span> Administrative</button>
   <button class="tab-btn active" data-tab="cases"><span class="numeral">I</span> Atlas of Vernacular Case Studies</button>
+  <button class="tab-btn" data-tab="bpc"><span class="numeral">Ib</span> Best Practice Cases</button>
   <button class="tab-btn" data-tab="findings"><span class="numeral">II</span> Findings &amp; Recommendations</button>
   <button class="tab-btn minor" data-tab="method"><span class="numeral">III</span> Methodology &amp; Limitations</button>
   <button class="tab-btn guide-tab" data-tab="guide"><span class="numeral" style="opacity:0.55;">IV</span> Cs Drawing Guide</button>
@@ -2117,7 +2165,7 @@ html[data-theme="dark"] .loader-status{
       </div>
       <div class="map-col">
         <div class="map-card">
-          <div class="card-titlebar"><span class="win-title">_map<span class="env-tabs" role="tablist" aria-label="Environment layers"><button type="button" class="env-tab active" role="tab" aria-selected="true" data-env="climate">climate</button><button type="button" class="env-tab" role="tab" aria-selected="false" data-env="water" title="WRI Aqueduct 4.0 water risk">water risk</button></span></span><span class="win-controls"><span class="c-fetch" id="mapFullscreenBtn" title="Toggle fullscreen map" style="display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1 L1 1 L1 4 M7 1 L10 1 L10 4 M1 7 L1 10 L4 10 M10 7 L10 10 L7 10"/></svg></span><span class="c-fetch" id="koppenOverlayBtn" title="Toggle Köppen zone overlay" style="display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0.5;"><svg width="17" height="16" viewBox="0 0 17 16" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="discoBallClip"><circle cx="8.5" cy="9.7" r="5.3"/></clipPath></defs><path d="M2.4 2.6 L3.7 3 L2.4 3.4 L2 4.7 L1.6 3.4 L0.3 3 L1.6 2.6 L2 1.3 Z" fill="currentColor"/><path d="M14.6 2 L15.35 2.25 L14.6 2.5 L14.35 3.25 L14.1 2.5 L13.35 2.25 L14.1 2 L14.35 1.25 Z" fill="currentColor"/><line x1="8.5" y1="1.7" x2="8.5" y2="3.5" stroke="currentColor" stroke-width="0.8"/><rect x="7.4" y="3.2" width="2.2" height="1.2" rx="0.2" fill="none" stroke="currentColor" stroke-width="0.7"/><circle cx="8.5" cy="9.7" r="5.3" fill="none" stroke="currentColor" stroke-width="1"/><g clip-path="url(#discoBallClip)"><path d="M3.2 9.7 H13.8 M4.1 7 H12.9 M4.1 12.4 H12.9 M4.9 5.5 Q8.5 9.7 12.1 14 M12.1 5.5 Q8.5 9.7 4.9 14 M8.5 4.5 Q5.9 9.7 8.5 15 M8.5 4.5 Q11.1 9.7 8.5 15" stroke="currentColor" stroke-width="0.5" fill="none" stroke-linecap="round"/></g></svg></span><span class="action-info-icon" id="koppenOverlayInfo" style="font-size:14px;position:relative;display:flex;align-items:center;">ⓘ<div class="action-info-pop" id="koppenOverlayInfoPop" style="top:calc(100% + 4px);bottom:auto;right:0;width:320px;"><div class="ai-head">_Köppen overlay</div><div class="ai-body">Colour field interpolated from Köppen-Geiger classifications at case study station locations using inverse distance weighting (IDW, power 2). Each pixel is a weighted blend of the nearest stations' zone colours.</div><div class="ai-warn"><b>NOTE: This is not a validated climate map.</b> Boundaries are interpolation artefacts, not climatological zone boundaries. The overlay reflects only the stations in this corpus, gaps between stations are extrapolated. Do not interpret as a gridded climate product. For reference gridded data see Kottek et al. (2006), <em>Meteorologische Zeitschrift</em> or Beck et al. (2018), <em>Scientific Data</em>.</div><div class="ai-cite">Classification per scenario derived from EPW-station Köppen assignment (Kottek et al. 2006 thresholds). Future zones: FWG morphed EPW (Rodrigues et al. 2023), SSP5-8.5.</div></div></span><span class="c-fetch" id="fetchMap" title="Re-fetch EPW &amp; coordinates"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 L2 9 M2 5 L2 9 L6 9"/></svg></span><span class="c-close" id="mapCloseBtn"></span></span></div>
+          <div class="card-titlebar"><span class="win-title">_map<span class="env-tabs" role="tablist" aria-label="Environment layers"><button type="button" class="env-tab active" role="tab" aria-selected="true" data-env="climate">climate</button><button type="button" class="env-tab" role="tab" aria-selected="false" data-env="water" title="WRI Aqueduct 4.0 water risk">water risk</button></span><button type="button" class="bpc-toggle" id="bpcToggle" aria-pressed="false"><svg width="16" height="16" viewBox="-9 -9 18 18" aria-hidden="true"><polygon points="8,0 4,6.93 -4,6.93 -8,0 -4,-6.93 4,-6.93" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="bpc-toggle-txt">show best practice examples</span></button></span><span class="win-controls"><span class="c-fetch" id="mapFullscreenBtn" title="Toggle fullscreen map" style="display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1 L1 1 L1 4 M7 1 L10 1 L10 4 M1 7 L1 10 L4 10 M10 7 L10 10 L7 10"/></svg></span><span class="c-fetch" id="koppenOverlayBtn" title="Toggle Köppen zone overlay" style="display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0.5;"><svg width="17" height="16" viewBox="0 0 17 16" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="discoBallClip"><circle cx="8.5" cy="9.7" r="5.3"/></clipPath></defs><path d="M2.4 2.6 L3.7 3 L2.4 3.4 L2 4.7 L1.6 3.4 L0.3 3 L1.6 2.6 L2 1.3 Z" fill="currentColor"/><path d="M14.6 2 L15.35 2.25 L14.6 2.5 L14.35 3.25 L14.1 2.5 L13.35 2.25 L14.1 2 L14.35 1.25 Z" fill="currentColor"/><line x1="8.5" y1="1.7" x2="8.5" y2="3.5" stroke="currentColor" stroke-width="0.8"/><rect x="7.4" y="3.2" width="2.2" height="1.2" rx="0.2" fill="none" stroke="currentColor" stroke-width="0.7"/><circle cx="8.5" cy="9.7" r="5.3" fill="none" stroke="currentColor" stroke-width="1"/><g clip-path="url(#discoBallClip)"><path d="M3.2 9.7 H13.8 M4.1 7 H12.9 M4.1 12.4 H12.9 M4.9 5.5 Q8.5 9.7 12.1 14 M12.1 5.5 Q8.5 9.7 4.9 14 M8.5 4.5 Q5.9 9.7 8.5 15 M8.5 4.5 Q11.1 9.7 8.5 15" stroke="currentColor" stroke-width="0.5" fill="none" stroke-linecap="round"/></g></svg></span><span class="action-info-icon" id="koppenOverlayInfo" style="font-size:14px;position:relative;display:flex;align-items:center;">ⓘ<div class="action-info-pop" id="koppenOverlayInfoPop" style="top:calc(100% + 4px);bottom:auto;right:0;width:320px;"><div class="ai-head">_Köppen overlay</div><div class="ai-body">Colour field interpolated from Köppen-Geiger classifications at case study station locations using inverse distance weighting (IDW, power 2). Each pixel is a weighted blend of the nearest stations' zone colours.</div><div class="ai-warn"><b>NOTE: This is not a validated climate map.</b> Boundaries are interpolation artefacts, not climatological zone boundaries. The overlay reflects only the stations in this corpus, gaps between stations are extrapolated. Do not interpret as a gridded climate product. For reference gridded data see Kottek et al. (2006), <em>Meteorologische Zeitschrift</em> or Beck et al. (2018), <em>Scientific Data</em>.</div><div class="ai-cite">Classification per scenario derived from EPW-station Köppen assignment (Kottek et al. 2006 thresholds). Future zones: FWG morphed EPW (Rodrigues et al. 2023), SSP5-8.5.</div></div></span><span class="c-fetch" id="fetchMap" title="Re-fetch EPW &amp; coordinates"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 L2 9 M2 5 L2 9 L6 9"/></svg></span><span class="c-close" id="mapCloseBtn"></span></span></div>
           <div id="map"></div>
           <div class="map-safe-msg" id="mapSafeMsg"></div>
           <div class="map-legend" id="mapLegend"></div>
@@ -2131,7 +2179,24 @@ html[data-theme="dark"] .loader-status{
     </div>
   </section>
 
-  <section class="view" id="view-findings">
+  <section class="view" id="view-bpc">
+    <div class="bpcv-grid" id="bpcvGrid">
+      <div class="bpcv-card bpcv-listcard">
+        <div class="card-titlebar"><span class="win-title">_best_practice_cases</span></div>
+        <div class="bpcv-search"><input type="text" id="bpcvSearch" placeholder="Search by name, ID or country" autocomplete="off" aria-label="Search best practice cases"></div>
+        <div class="bpcv-list" id="bpcvList"></div>
+      </div>
+      <div class="bpcv-card bpcv-mapcard">
+        <div class="card-titlebar"><span class="win-title">_map</span></div>
+        <div id="mapB"></div>
+      </div>
+      <div class="bpcv-card bpcv-panelcard" id="bpcvPanelCard">
+        <div class="card-titlebar"><span class="win-title">_case_study</span><span class="win-controls"><span class="c-fetch" id="bpcvPanelClose" role="button" tabindex="0">close</span></span></div>
+        <div id="bpcPanel" class="bpcv-panel"></div>
+      </div>
+    </div>
+  </section>
+<section class="view" id="view-findings">
     <div class="findings-grid">
       <nav class="findings-menu" id="findingsMenu"></nav>
       <div class="card-window">
@@ -2668,7 +2733,9 @@ const WATER_METRICS=[
   {key:'iv', label:'Interannual variability',   base:'iav',fut:'iv'},
   {key:'sv', label:'Seasonal variability',      base:'sev',fut:'sv'},
   {key:'gtd',label:'Groundwater table decline', base:'gtd',fut:null},
-  {key:'drr',label:'Drought risk',              base:'drr',fut:null}
+  {key:'drr',label:'Drought risk',              base:'drr',fut:null},
+  {key:'rfr',label:'Riverine flood risk',       base:'rfr',fut:null,kind:'flood'},
+  {key:'cfr',label:'Coastal flood risk',        base:'cfr',fut:null,kind:'flood',special:'No coastal flood risk'}
 ];
 const WATER_CLASS_NAMES=['Low','Low-medium','Medium-high','High','Extremely high'];
 const WATER_RAMP={light:['#E3ECF1','#B8CCDA','#82A2B8','#4F7390','#243F57'],dark:['#2A4052','#46688A','#6E97B8','#A3C5DE','#DCEBF6']};
@@ -2720,7 +2787,7 @@ function aqValue(id,key,s){
 function waterClassOf(v){
   if(!v)return{kind:'nodata'};
   const lab=v.label==null?'':String(v.label);
-  if(/arid/i.test(lab))return{kind:'arid'};
+  if(/arid|no risk/i.test(lab))return{kind:'arid'};
   /* groundwater table decline: "Insignificant Trend" has no category but is a real value (no decline): lowest class */
   if(/insignificant/i.test(lab))return{kind:'class',i:0};
   const c=(v.cat==null||v.cat==='')?null:Number(v.cat);
@@ -2765,24 +2832,27 @@ function renderWaterLegend(){
   const el=document.getElementById('mapLegend');if(!el)return;
   const dark=isDarkTheme(),pal=WATER_RAMP[dark?'dark':'light'];
   const m=WATER_METRICS.find(x=>x.key===waterMetric)||WATER_METRICS[0];
-  const opts=WATER_METRICS.map(x=>`<option value="${x.key}" ${x.key===waterMetric?'selected':''}>${x.label}${(scn>0&&!x.fut)?' (today)':''}</option>`).join('');
+  const opt=x=>`<option value="${x.key}" ${x.key===waterMetric?'selected':''}>${x.label}${(scn>0&&!x.fut)?' (today)':''}</option>`;
+  const grp=k=>WATER_METRICS.filter(x=>(x.kind||'water')===k).map(opt).join('');
+  const opts='<optgroup label="Water stress and supply">'+grp('water')+'</optgroup><optgroup label="Flooding">'+grp('flood')+'</optgroup>';
   const ring=dark?'#E8EEF2':'#1F2D38';
   let body='';
   if(AQ.state==='error'){
     body='<div class="wl-note">Water risk data could not be loaded.</div>';
   }else{
     body='<select class="wl-metric" id="wlMetric" aria-label="Water risk metric">'+opts+'</select>'+
-      '<div class="wl-dir">'+(dark?'lighter = more stressed':'darker = more stressed')+'</div>'+
+      '<div class="wl-dir">'+(m.kind==='flood'?(dark?'lighter = higher risk':'darker = higher risk'):(dark?'lighter = more stressed':'darker = more stressed'))+'</div>'+
       WATER_CLASS_NAMES.map((n,i)=>`<div class="legend-row"><span class="legend-dot" style="background:${pal[i]};box-shadow:0 0 0 1px ${ring}"></span>${n}</div>`).join('')+
-      '<div class="legend-row"><span class="legend-dot arid"></span>Arid, low water use</div>'+
+      '<div class="legend-row"><span class="legend-dot arid"></span>'+aqEsc(m.special||'Arid, low water use')+'</div>'+
       '<div class="legend-row"><span class="legend-dot wnd"></span>No data</div>'+
       (scn>0&&!m.fut?'<div class="wl-note">No projection exists for this metric. Today\'s values are shown.</div>':'')+
       (m.key==='gtd'?'<div class="wl-note">Insignificant trend (no decline) is shown as Low.</div>':'')+
+      (m.kind==='flood'?'<div class="wl-note">Share of people in the basin affected in an average year. Basin-level screening, not the flood depth at the site.</div>':'')+
       (AQ.state!=='ready'?'<div class="wl-note">Loading water risk data</div>':'');
   }
   const attr=(AQ.state==='ready'&&AQ.info['Attribution to use'])?AQ.info['Attribution to use']:'Source: WRI Aqueduct 4.0 (CC BY 4.0)';
   el.innerHTML='<div class="legend-toggle" style="font-weight:600;margin-bottom:5px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;">WATER RISK<span class="legend-chevron">▾</span></div>'+
-    '<div class="legend-body" style="display:block;">'+body+'<div class="wl-note">'+aqEsc(attr)+'</div></div>';
+    '<div class="legend-body" style="display:block;">'+body+(bpcShown?'<div class="legend-row" style="margin-top:5px;"><svg width="14" height="14" viewBox="-8 -8 16 16" style="flex:none"><polygon points="'+bpcHexPoints(6.5)+'" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Best practice case</div>':'')+'<div class="wl-note">'+aqEsc(attr)+'</div></div>';
   const toggle=el.querySelector('.legend-toggle');
   if(toggle)toggle.addEventListener('click',()=>{if(!document.body.classList.contains('mobile-mode'))return;el.classList.toggle('legend-open');});
   const sel=document.getElementById('wlMetric');
@@ -2845,20 +2915,234 @@ function waterTabHTML(c,slot){
     return'<div class="epw-loading">No water risk values for this case study ('+aqEsc(why)+').</div>';
   }
   const head='<tr><th></th>'+SCENARIOS.map((s,i)=>'<th class="'+(i===scn?'cur':'')+'">'+s+'</th>').join('')+'</tr>';
-  const rows=WATER_METRICS.map(m=>{
+  const rows=WATER_METRICS.map((m,mi)=>{
     const cells=[0,1,2].map(i=>{
       if(i>0&&!m.fut)return'<td class="na '+(i===scn?'cur':'')+'">today only</td>';
       const v=aqValue(c.id,m.key,i),k=waterClassOf(v);
       return'<td class="'+(i===scn?'cur':'')+'" title="'+aqEsc(waterLabel(v&&v.label))+'">'+waterSwatch(k)+aqEsc(waterLabel(v&&v.label,true))+'</td>';
     }).join('');
-    return'<tr><td class="k">'+m.label+'</td>'+cells+'</tr>';
+    const gh=(m.kind==='flood'&&!(WATER_METRICS[mi-1]&&WATER_METRICS[mi-1].kind))?'<tr><td class="grp" colspan="4">Flooding, today only</td></tr>':'';
+    return gh+'<tr><td class="k">'+m.label+'</td>'+cells+'</tr>';
   }).join('');
   const attr=AQ.info['Attribution to use']||'Source: WRI Aqueduct 4.0 (CC BY 4.0)';
   return'<table class="wtable"><thead>'+head+'</thead><tbody>'+rows+'</tbody></table>'+
     '<div class="water-foot"><b>'+aqEsc(attr)+'</b><br>'+
-    'Future values: pessimistic scenario SSP5-RCP8.5, median of five climate models. 2050 = 2035 to 2065, 2080 = 2065 to 2095. Groundwater decline and drought risk exist for today only.<br>'+
+    'Future values: pessimistic scenario SSP5-RCP8.5, median of five climate models. 2050 = 2035 to 2065, 2080 = 2065 to 2095. Groundwater decline, drought risk and flood risk exist for today only. Flood risk is the share of people in the basin expected to be affected in an average year, with existing protection taken into account: a basin-level screening value, not the flood depth at this site.<br>'+
     'Aqueduct is a screening tool for watersheds, not an assessment of this site.</div>';
 }
+/* ===================== BEST PRACTICE CASES (bpc) =====================
+   Contemporary reference buildings from sheet _bpc. They live in their own list (BPCS), never in CASES,
+   so they stay out of statistics, findings, average typology, BIGBROTHER and compare.
+   Shown as hexagons on the map (button in the _map titlebar) and in main tab Ib. They get the same
+   climate tab (EPW, morphed EPW, Koppen, water risk) as case studies, no metrics, no simulation. */
+var BPCS=[],selectedBpc=null,bpcShown=false,bpcMarkers=[],bpcMarkersB=[],mapB=null,tileLayerB=null,bpcQ='';
+var currentBpcTab={A:'bpc',P:'bpc'};
+const BPC_LOREM='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+function bpcSplitList(v){return v==null?[]:String(v).split(/[,\n;]/).map(s=>s.trim()).filter(s=>s&&s.toLowerCase()!=='none'&&s!=='-');}
+const byBpc=id=>BPCS.find(c=>c.id===id);
+function parseBpcSheet(wb){
+  const sn=wb.SheetNames.find(n=>n.toLowerCase()==='_bpc');if(!sn)return[];
+  const rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:null,raw:true});
+  const hi=locateHeaderRow(rows),headers=(rows[hi]||[]).map(h=>(h||'').toString());
+  const idx={};Object.keys(COLMAP_DEF).forEach(k=>idx[k]=findCol(headers,COLMAP_DEF[k]));
+  const lc=headers.map(h=>h.toLowerCase().trim());
+  const col=f=>lc.findIndex(f);
+  const nameI=col(h=>h.startsWith('case study')),spI=col(h=>h==='strategy_primary'),ssI=col(h=>h==='strategy_secondary'),tyI=col(h=>h==='type'),deI=col(h=>h==='description');
+  const numOf=v=>{if(v==null||v==='')return null;const n=parseFloat(v);return Number.isFinite(n)?n:null;};
+  const out=[];
+  for(let r=hi+1;r<rows.length;r++){
+    const row=rows[r];if(!row)continue;
+    const get=k=>{const i=idx[k];return i>=0?row[i]:null;};
+    const id=get('id');if(!id)continue;
+    const [lat,lon]=parseCoordJS(get('coordinates'));
+    out.push({id:String(id).trim(),isBpc:true,name:(nameI>=0&&row[nameI]?String(row[nameI]).replace(/[\u2060\u200b]/g,'').trim():null)||null,country:get('country')||null,
+      year:get('year')!=null&&String(get('year')).trim()!=='-'?String(get('year')).trim():null,
+      coordRaw:get('coordinates')||null,lat,lon,hasCoord:lat!=null,elev:numOf(get('elevation')),epw:get('epw')||null,
+      koppen:[get('koppenPresent')||null,get('koppen2050')||null,get('koppen2080')||null],
+      source:get('source')||null,type:tyI>=0?(row[tyI]||null):null,desc:deI>=0?(row[deI]||null):null,
+      stratP:bpcSplitList(spI>=0?row[spI]:null),stratS:bpcSplitList(ssI>=0?row[ssI]:null),
+      region:'',flags:null,notes:null,hasSim:false,tags:{},sim:{oh:[null,null,null],comfort:[null,null,null],ndp:[null,null,null],topMean:[null,null,null]}});
+  }
+  return out;
+}
+function bpcFill(c){
+  if(envLayer==='water'){const k=waterClassOf(aqValue(c.id,waterMetric,scn));return k.kind==='class'?waterFill(k):(k.kind==='arid'?'#888780':WATER_NODATA);}
+  return kcolor(c.koppen[scn]);
+}
+function bpcHexPoints(r){const p=[];for(let i=0;i<6;i++){const a=Math.PI/3*i;p.push((r*Math.cos(a)).toFixed(2)+','+(r*Math.sin(a)).toFixed(2));}return p.join(' ');}
+function bpcIcon(c,sel){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark',ink=dark?'#FFFFFF':'#000000',w=sel?3.6:2;
+  return L.divIcon({className:'bpc-hex',iconSize:[30,30],iconAnchor:[15,15],
+    html:`<svg width="30" height="30" viewBox="-15 -15 30 30" aria-hidden="true"><polygon points="${bpcHexPoints(11)}" fill="${bpcFill(c)}" stroke="${sel?(dark?'#FFFFFF':'#000000'):ink}" stroke-width="${w}" stroke-linejoin="round"/>${sel?`<polygon points="${bpcHexPoints(14)}" fill="none" stroke="${ink}" stroke-width="1" stroke-dasharray="2 2"/>`:''}</svg>`});
+}
+function bpcMakeMarker(c){
+  const m=L.marker([c.lat,c.lon],{icon:bpcIcon(c,c.id===selectedBpc),keyboard:false,zIndexOffset:600});
+  m.bindTooltip(aqEsc(c.name||c.id)+' (best practice case)',{direction:'top',offset:[0,-10]});
+  m.on('click',ev=>{if(ev&&ev.originalEvent&&ev.originalEvent.stopPropagation)ev.originalEvent.stopPropagation();selectBpc(c.id);});
+  m._bid=c.id;return m;
+}
+function rebuildBpcMarkers(){
+  bpcMarkers.forEach(m=>{if(map)map.removeLayer(m);});bpcMarkers=[];
+  bpcMarkersB.forEach(m=>{if(mapB)mapB.removeLayer(m);});bpcMarkersB=[];
+  BPCS.forEach(c=>{
+    if(!c.hasCoord)return;
+    if(map){const m=bpcMakeMarker(c);bpcMarkers.push(m);if(bpcShown)m.addTo(map);}
+    if(mapB){const m=bpcMakeMarker(c);bpcMarkersB.push(m);m.addTo(mapB);}
+  });
+}
+function refreshBpcMarkers(){
+  if(typeof bpcMarkers==='undefined'||!bpcMarkers)return;
+  bpcMarkers.concat(bpcMarkersB||[]).forEach(m=>{const c=byBpc(m._bid);if(c)m.setIcon(bpcIcon(c,c.id===selectedBpc));});
+}
+function bpcLegendRow(){
+  return bpcShown?'<div class="legend-row" style="grid-column:1/-1;margin-top:5px;"><svg width="14" height="14" viewBox="-8 -8 16 16" style="flex:none"><polygon points="'+bpcHexPoints(6.5)+'" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Best practice case</div>':'';
+}
+function bpcViewActive(){const v=document.getElementById('view-bpc');return !!(v&&v.classList.contains('active'));}
+function rebuildBpc(){rebuildBpcMarkers();renderBpcList();renderLegend();}
+function setBpcShown(on){
+  bpcShown=!!on;
+  const b=document.getElementById('bpcToggle');
+  if(b){b.setAttribute('aria-pressed',bpcShown?'true':'false');b.querySelector('.bpc-toggle-txt').textContent=bpcShown?'hide best practice examples':'show best practice examples';}
+  bpcMarkers.forEach(m=>{if(bpcShown)m.addTo(map);else map.removeLayer(m);});
+  if(!bpcShown&&selectedBpc&&!bpcViewActive()){selectedBpc=null;renderPanel();}
+  refreshBpcMarkers();renderLegend();
+}
+function selectBpc(id){
+  const c=byBpc(id);if(!c)return;
+  selectedBpc=id;selectedId=null;compareId=null;pickingCompare=false;
+  if(typeof clearBigBrother==='function')clearBigBrother();
+  if(bpcViewActive()){
+    showBpcPanel(c);
+    if(mapB&&c.hasCoord)mapB.flyTo([c.lat,c.lon],Math.max(mapB.getZoom(),7),{duration:0.8});
+  }else{
+    if(!document.body.classList.contains('cs-open')){document.body.classList.add('cs-open');document.getElementById('csStripBtn')?.classList.add('active');setTimeout(()=>{if(map)map.invalidateSize();},260);}
+    if(!bpcShown)setBpcShown(true);
+    renderPanel();
+    if(map&&c.hasCoord)map.flyTo([c.lat,c.lon],Math.max(map.getZoom(),7),{duration:0.8});
+  }
+  if(map)refreshMap();else refreshBpcMarkers();
+  renderBpcList();
+}
+function bpcDataRow(c){
+  const kv=(k,v)=>`<div class="bpc-kv"><span>${k}</span><b>${v}</b></div>`;
+  return '<div class="bpc-data">'+kv('Country',aqEsc(c.country||'-'))+kv('Year',aqEsc(c.year||'-'))+kv('Type',aqEsc(c.type||'-'))+
+    kv('Coordinates',c.hasCoord?c.lat.toFixed(3)+'°, '+c.lon.toFixed(3)+'°':'<span class="nodata">none yet</span>')+kv('Elevation',c.elev!=null?Math.round(c.elev)+' m':'-')+'</div>';
+}
+function bpcSourceHTML(c){
+  const s=c.source?String(c.source).trim():'';
+  if(!s)return '<div class="bpc-src"><span class="nodata">no source link yet</span></div>';
+  const m=s.match(/https?:\/\/\S+/);
+  return '<div class="bpc-src"><span class="bpc-src-l">Source</span> '+(m?`<a href="${aqEsc(m[0])}" target="_blank" rel="noopener">${aqEsc(m[0].length>64?m[0].slice(0,62)+'...':m[0])} &#8599;</a>`:aqEsc(s))+'</div>';
+}
+function stratListHTML(arr){
+  return arr&&arr.length?'<ul class="strat-list">'+arr.map(s=>'<li>'+aqEsc(s)+'</li>').join('')+'</ul>':'<div class="strat-none">none listed</div>';
+}
+function stratBlockHTML(c,note,emptyNote){
+  const has=(c.stratP&&c.stratP.length)||(c.stratS&&c.stratS.length);
+  return '<div class="block" style="margin-top:12px;"><div class="strat-note">'+note+'</div>'+
+    (has||!emptyNote?'<div class="strat-h">Primary</div>'+stratListHTML(c.stratP)+'<div class="strat-h">Secondary</div>'+stratListHTML(c.stratS):'<div class="strat-none">'+emptyNote+'</div>')+'</div>';
+}
+function csStrategiesHTML(c){
+  return stratBlockHTML(c,'<b>Typical strategies.</b> Strategies found in this vernacular building. Typical means observed here, not recommended: what was built is not automatically what should be built (is-ought problem).','not filled yet. The analysis script will fill this later.');
+}
+function bpcDetailHTML(c,slot){
+  const tab=currentBpcTab[slot]||'bpc',ctab=currentClimateTab[slot]||'psychro';
+  const T=(k,n,l)=>`<button class="cs-main-tab bpc-tab ${tab===k?'active':''}" data-bpctab="${k}" data-slot="${slot}"><span class="numeral">${n}</span> ${l}</button>`;
+  return `
+    <div class="panel-eyebrow">best practice case   ${aqEsc(c.id)}  ${aqEsc(c.country||' ')}</div>
+    <div class="cs-title">${aqEsc(c.name||c.id)}</div>
+    <div class="cs-sub">${c.hasCoord?c.lat.toFixed(3)+'°, '+c.lon.toFixed(3)+'°':'<span class="nodata">no coordinates</span>'} &nbsp;&nbsp; ${SCENARIOS_LONG[scn]}${c.year?', built '+aqEsc(c.year):''}</div>
+    <div class="cs-main-tabs">${T('bpc',1,'Best practice case')}${T('climate',2,'Climate')}${T('strategies',3,'Strategies')}</div>
+    <div class="cs-panel ${tab==='bpc'?'active':''}" data-bpcpanel="bpc" data-slot="${slot}">
+      <div class="block" style="margin-top:12px;">
+        <div id="photo-block-${slot}" class="bpc-photo"><div class="bpc-nophoto">loading photo</div></div>
+        ${bpcDataRow(c)}
+        <div class="bpc-desc">${aqEsc(c.desc||BPC_LOREM)}</div>
+        ${bpcSourceHTML(c)}
+      </div>
+    </div>
+    <div class="cs-panel ${tab==='climate'?'active':''}" data-bpcpanel="climate" data-slot="${slot}">
+      <div class="block" style="margin-top:12px;">
+        <div id="headEpw-${slot}" style="${ctab==='water'?'display:none;':''}">
+          <div class="kvline">Assigned station: <b>${aqEsc(c.epw||'')||noData}</b></div>
+          <div class="kvline">Case elevation: <b>${fmt(c.elev,' m',0)}</b></div>
+          <div class="kvline" id="stationElev-${slot}" style="display:none;"></div>
+          <div class="kvline" id="stationDist-${slot}" style="display:none;"></div>
+          <div class="koppen-strip">${c.koppen.map((k,i)=>`<div class="koppen-box ${i===scn?'current':''}" style="cursor:pointer;" onclick="const t=document.querySelectorAll('.scenario-tick')[${i}];if(t)t.click();"><div class="scn">${SCENARIOS[i]}</div><div class="code">${k||'<span class="nodata" style="font-size:10px"> </span>'}</div></div>`).join('')}</div>
+        </div>
+        <div id="headWater-${slot}" style="${ctab==='water'?'':'display:none;'}">${waterHeadHTML(c,slot)}</div>
+        <div class="climate-tabs-row">
+          <div class="diagram-tabs climate-tabs-sidebar">${CLIMATE_TABS.map(k=>`${k==='water'?'<div class="climate-tab-sep" aria-hidden="true"></div>':''}<button class="diagram-tab climate-tab climate-tab-square ${k===ctab?'active':''} ${k==='extremes'?'climate-tab-favorite':''}" data-ctab="${k}" data-slot="${slot}" ${k==='water'?'title="Source: WRI Aqueduct, not the weather file"':''}>${CLIMATE_LABEL[k]}</button>`).join('')}</div>
+          <div id="climateTabContent-${slot}" class="climate-tabs-content"><div class="epw-loading">Loading climate data...</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="cs-panel ${tab==='strategies'?'active':''}" data-bpcpanel="strategies" data-slot="${slot}">
+      ${stratBlockHTML(c,'<b>Assigned strategies.</b> Chosen by us for this reference building. Each one still has to be verified by simulation before it counts as proven.')}
+    </div>`;
+}
+async function renderBpcPhoto(c,slot){
+  const el=document.getElementById('photo-block-'+slot);if(!el)return;
+  const urls=await fetchPhotos(c.id);
+  if(!el.isConnected)return;
+  if(urls.length){el.innerHTML=renderPhotoCarousel(urls,c.id);wirePhotoCarousel(el,urls,c.id);}
+  else el.innerHTML='<div class="bpc-nophoto">no photo yet</div>';
+}
+function wireBpcDetail(c,slot){
+  renderBpcPhoto(c,slot);
+  wireClimateTabs(c,slot);
+  wireChartHoverTips(document.getElementById('climateTabContent-'+slot));
+  document.querySelectorAll(`.bpc-tab[data-slot="${slot}"]`).forEach(b=>b.addEventListener('click',()=>{
+    const key=b.dataset.bpctab;currentBpcTab[slot]=key;
+    document.querySelectorAll(`.bpc-tab[data-slot="${slot}"]`).forEach(x=>x.classList.toggle('active',x===b));
+    document.querySelectorAll(`.cs-panel[data-bpcpanel][data-slot="${slot}"]`).forEach(p=>p.classList.toggle('active',p.dataset.bpcpanel===key));
+    if(key==='climate')renderClimateTabAsync(currentClimateTab[slot]||'psychro',c,slot);
+  }));
+  if((currentBpcTab[slot]||'bpc')==='climate')renderClimateTabAsync(currentClimateTab[slot]||'psychro',c,slot);
+}
+function showBpcPanel(c){
+  const el=document.getElementById('bpcPanel'),grid=document.getElementById('bpcvGrid');if(!el)return;
+  el.innerHTML=bpcDetailHTML(c,'P');wireBpcDetail(c,'P');
+  grid.classList.add('with-panel');setTimeout(()=>{if(mapB)mapB.invalidateSize();},60);
+}
+function closeBpcPanel(){
+  selectedBpc=null;
+  const el=document.getElementById('bpcPanel'),grid=document.getElementById('bpcvGrid');
+  if(el)el.innerHTML='';if(grid)grid.classList.remove('with-panel');
+  setTimeout(()=>{if(mapB)mapB.invalidateSize();},60);
+  refreshBpcMarkers();renderBpcList();
+}
+function renderBpcList(){
+  const el=document.getElementById('bpcvList');if(!el)return;
+  const q=bpcQ,ok=c=>!q||(c.id&&c.id.toLowerCase().includes(q))||(c.name&&c.name.toLowerCase().includes(q))||(c.country&&c.country.toLowerCase().includes(q));
+  const item=c=>`<button type="button" class="bpcv-item${c.id===selectedBpc?' active':''}" data-id="${aqEsc(c.id)}"><svg width="18" height="18" viewBox="-10 -10 20 20" style="flex:none"><polygon points="${bpcHexPoints(8)}" fill="${bpcFill(c)}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span class="bpcv-t"><b>${aqEsc(c.name||c.id)}</b><span>${aqEsc(c.id)}  ${aqEsc(c.country||'')}${c.year?'  '+aqEsc(c.year):''}</span></span></button>`;
+  const on=BPCS.filter(c=>c.hasCoord&&ok(c)),off=BPCS.filter(c=>!c.hasCoord&&ok(c));
+  el.innerHTML=(on.length?on.map(item).join(''):'')+(off.length?'<div class="bpcv-sep">not on the map (no coordinates yet)</div>'+off.map(item).join(''):'')+((!on.length&&!off.length)?'<div class="bpcv-sep">no best practice case found</div>':'');
+}
+function initBpcView(){
+  if(!mapB){
+    mapB=L.map('mapB',{minZoom:2,worldCopyJump:true});
+    const dark=document.documentElement.getAttribute('data-theme')==='dark';
+    tileLayerB=L.tileLayer(dark?DARK_TILE_URL:LIGHT_TILE_URL,{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18}).addTo(mapB);
+    const pts=BPCS.filter(c=>c.hasCoord).map(c=>[c.lat,c.lon]);
+    if(pts.length)mapB.fitBounds(pts,{padding:[30,30],maxZoom:4});else mapB.setView([30,10],2);
+    rebuildBpcMarkers();
+  }
+  setTimeout(()=>mapB.invalidateSize(),60);
+  renderBpcList();
+  if(selectedBpc){const c=byBpc(selectedBpc);if(c)showBpcPanel(c);}
+}
+function refreshBpcView(){
+  refreshBpcMarkers();renderBpcList();
+  if(selectedBpc&&bpcViewActive()){const c=byBpc(selectedBpc);if(c)showBpcPanel(c);}
+}
+document.addEventListener('click',e=>{
+  if(e.target.closest('#bpcToggle')){setBpcShown(!bpcShown);return;}
+  const it=e.target.closest('.bpcv-item');if(it){selectBpc(it.dataset.id);return;}
+  if(e.target.closest('#bpcvPanelClose')){closeBpcPanel();}
+});
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='bpcvSearch'){bpcQ=e.target.value.trim().toLowerCase();renderBpcList();}});
+
 function rebuildMarkers(){
   markers.forEach(mk=>map.removeLayer(mk));markers=[];
   const bounds=[];
@@ -2908,7 +3192,7 @@ function renderLegend(){
   el.innerHTML=
     '<div class="legend-toggle" style="font-weight:600;margin-bottom:5px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;">KÖPPEN-GEIGER ZONE<span class="legend-chevron">▾</span></div>'+
     '<div class="legend-body" style="display:grid;grid-template-columns:auto auto;gap:1px 12px;">'+
-    codes.map(k=>`<div class="legend-row" title="${KOPPEN_LABEL[k]||''}"><span class="legend-dot" style="background:${kcolor(k)}"></span>${k}</div>`).join('')+
+    codes.map(k=>`<div class="legend-row" title="${KOPPEN_LABEL[k]||''}"><span class="legend-dot" style="background:${kcolor(k)}"></span>${k}</div>`).join('')+bpcLegendRow()+
     '</div>';
   const toggle=el.querySelector('.legend-toggle');
   if(toggle)toggle.addEventListener('click',()=>{
@@ -2944,6 +3228,7 @@ function refreshMap(){
     if(isSel&&mk.bringToFront)mk.bringToFront();
   });
   scheduleKoppenOverlay();
+  refreshBpcMarkers();
 }
 function pass(c){
   if(fRegion&&c.country!==fRegion)return false;
@@ -3055,11 +3340,8 @@ function buildFilters(){
   function runSearch(){
     const q=csSearchInput.value.trim().toLowerCase();
     if(!q){csSearchResults.style.display='none';return;}
-    const hits=CASES.filter(c=>{
-      return (c.id&&c.id.toLowerCase().includes(q))
-          ||(c.name&&c.name.toLowerCase().includes(q))
-          ||(c.country&&c.country.toLowerCase().includes(q));
-    }).slice(0,12);
+    const _m=c=>(c.id&&c.id.toLowerCase().includes(q))||(c.name&&c.name.toLowerCase().includes(q))||(c.country&&c.country.toLowerCase().includes(q));
+    const hits=CASES.filter(_m).slice(0,12).concat(bpcShown?BPCS.filter(_m).slice(0,6):[]);
     if(!hits.length){csSearchResults.style.display='none';return;}
     searchHighlight=0;
     csSearchResults.innerHTML=hits.map((c,i)=>`<div class="cs-search-item${i===0?' active':''}" data-id="${c.id}">
@@ -3069,7 +3351,7 @@ function buildFilters(){
     </div>`).join('');
     csSearchResults.style.display='block';
     csSearchResults.querySelectorAll('.cs-search-item').forEach(el=>{
-      el.addEventListener('mousedown',e=>{e.preventDefault();selectCase(el.dataset.id);csSearchInput.value='';csSearchResults.style.display='none';});
+      el.addEventListener('mousedown',e=>{e.preventDefault();(/^bpc/i.test(el.dataset.id)?selectBpc(el.dataset.id):selectCase(el.dataset.id));csSearchInput.value='';csSearchResults.style.display='none';});
     });
   }
   csSearchInput.addEventListener('input',runSearch);
@@ -3077,7 +3359,7 @@ function buildFilters(){
     const items=csSearchResults.querySelectorAll('.cs-search-item');
     if(e.key==='ArrowDown'){e.preventDefault();items[searchHighlight]&&items[searchHighlight].classList.remove('active');searchHighlight=Math.min(searchHighlight+1,items.length-1);items[searchHighlight]&&items[searchHighlight].classList.add('active');}
     else if(e.key==='ArrowUp'){e.preventDefault();items[searchHighlight]&&items[searchHighlight].classList.remove('active');searchHighlight=Math.max(searchHighlight-1,0);items[searchHighlight]&&items[searchHighlight].classList.add('active');}
-    else if(e.key==='Enter'){const active=csSearchResults.querySelector('.cs-search-item.active');if(active){selectCase(active.dataset.id);csSearchInput.value='';csSearchResults.style.display='none';}}
+    else if(e.key==='Enter'){const active=csSearchResults.querySelector('.cs-search-item.active');if(active){(/^bpc/i.test(active.dataset.id)?selectBpc(active.dataset.id):selectCase(active.dataset.id));csSearchInput.value='';csSearchResults.style.display='none';}}
     else if(e.key==='Escape'){csSearchResults.style.display='none';}
   });
   document.addEventListener('click',e=>{if(!e.target.closest('.cs-search-row'))csSearchResults.style.display='none';});
@@ -3163,6 +3445,7 @@ async function fetchFullModeRaw(){
   const buf=await res.arrayBuffer();
   const wb=XLSX.read(buf,{type:'array'});
   const parsed=parseWorkbookToCases(wb);
+  BPCS=parseBpcSheet(wb);
   return parsed.filter(c=>c.hasCoord);
 }
 async function setAppMode(){
@@ -3180,6 +3463,7 @@ async function setAppMode(){
   MOCK=false;appMode='full';
   FLOORPLAN_MOSAIC=null;
   rebuildAppFromCases(JSON.parse(JSON.stringify(FULL_CASES_RAW)));
+  rebuildBpc();
   return true;
 }
 /* visible (not just console) notice when the R2-hosted case data can't be
@@ -3391,6 +3675,7 @@ function parseWorkbookToCases(workbook){
   const headerRowIdx=locateHeaderRow(rows);
   const headers=(rows[headerRowIdx]||[]).map(h=>(h||'').toString());
   const idx={};Object.keys(COLMAP_DEF).forEach(k=>idx[k]=findCol(headers,COLMAP_DEF[k]));
+  const _lcH=headers.map(h=>h.toLowerCase().trim()),_spI=_lcH.indexOf('strategy_primary'),_ssI=_lcH.indexOf('strategy_secondary');
   const numOf=v=>{if(v==null||v==='')return null;const n=parseFloat(v);return Number.isFinite(n)?n:null;};
   /* Parse HSP cell: may be "4.3% | 121 h/y" (new) or plain number (legacy) */
   const parseHSPCell=v=>{
@@ -3492,6 +3777,7 @@ const PERIOD_RANGES={
       facadeColor:get('facadeColor')||null,jettying:get('jettying')||null,pentice:get('pentice')||null,
       elevGF:get('elevGF')||null,shutters:get('shutters')||null,courtyard:get('courtyard')||null,
       balconies:get('balconies')||null,special:get('special')||null,
+       stratP:bpcSplitList(_spI>=0?row[_spI]:null),stratS:bpcSplitList(_ssI>=0?row[_ssI]:null),
       flags:[get('flags')||null,...approxFlags].filter(Boolean).join('; ')||null,
       notes:get('notes')||null,source:get('source')||null,
       sim:(()=>{const _h0=parseHSPCell(get('oh00')),_h1=parseHSPCell(get('oh50')),_h2=parseHSPCell(get('oh80'));return{oh:[_h0.h,_h1.h,_h2.h],oh_pct:[_h0.pct,_h1.pct,_h2.pct],oh_raw:[get('oh00'),get('oh50'),get('oh80')],comfort:[numOf(get('cf00')),numOf(get('cf50')),numOf(get('cf80'))],ndp:[numOf(get('ndp00')),numOf(get('ndp50')),numOf(get('ndp80'))],topMean:[numOf(get('topMean00')),numOf(get('topMean50')),numOf(get('topMean80'))]}})(),
@@ -3726,9 +4012,11 @@ function handleExcelFile(file){
     try{
       const wb=XLSX.read(e.target.result,{type:'array'});
       const parsed=parseWorkbookToCases(wb);
+      BPCS=parseBpcSheet(wb);
       if(!parsed.length){showExcelMsg('No rows with an ID column found. Check the sheet has a header row containing "ID".',true);return;}
       const old=CASES.length;
       rebuildAppFromCases(parsed);
+      rebuildBpc();
       excelSourceName=file.name+' (uploaded '+new Date().toLocaleString()+')';
       showExcelMsg(`Replaced ${old} case studies with ${parsed.length} from ${file.name}.`,false);
       renderAdminStatus();
@@ -4530,7 +4818,7 @@ function zoomToCase(id,thumbEl,planUrl){
 function selectCaseCore(id){
   if(pickingCompare&&selectedId&&id!==selectedId){compareId=id;pickingCompare=false;if(window._maximizeCsWidth)window._maximizeCsWidth();renderPanel();if(map)refreshMap();return;}
   if(id!==selectedId)clearBigBrother();
-  selectedId=id;compareId=null;pickingCompare=false;
+  selectedId=id;selectedBpc=null;compareId=null;pickingCompare=false;
   renderPanel();
   if(map)refreshMap();
   /* zoom map to the selected case works whether triggered from a marker
@@ -4830,6 +5118,7 @@ const PHOTO_EXTS=['png','jpg','jpeg'];
 const PHOTO_SUFFIXES=['','b','c','d','e','f','g'];
 
 function casePhotoBasename(caseId){
+  if(/^bpc/i.test(caseId)){const n=parseInt(String(caseId).replace(/\D/g,''));return 'bpc'+String(n).padStart(3,'0');}
   /* CS_5 > cs05, CS_35 > cs35, CS_100 > cs100 */
   const num=parseInt(caseId.replace('CS_',''));
   return 'cs'+(num<10?'0':'')+num;
@@ -5548,7 +5837,7 @@ function windSpeedChart(c,s,epwData){
 /* ---- climate sub-tabs ---- */
 const CLIMATE_TABS=['psychro','overview','extremes','wind','water'];   /* 'water' is not from the EPW: it has its own source (WRI Aqueduct) */
 const CLIMATE_LABEL={overview:'Overview',psychro:'Psychrometric',wind:'Wind',extremes:'Extremes',water:'Water risk'};
-let currentClimateTab={A:'psychro',B:'psychro'};
+let currentClimateTab={A:'psychro',B:'psychro',P:'psychro'};
 function overviewTabHTML(c,epwData){
   const nd='<span class="nodata">NO_DATA</span>';
   /* headline stats */
@@ -7266,6 +7555,7 @@ function caseDetailHTML(c,slot){
       <button class="cs-main-tab ${currentCsTab[slot]==='climate'?'active':''}" data-cstab="climate" data-slot="${slot}"><span class="numeral">2</span> Climate</button>
       <button class="cs-main-tab ${currentCsTab[slot]==='metrics'?'active':''}" data-cstab="metrics" data-slot="${slot}"><span class="numeral">3</span> Metrics &amp; Attributes</button>
       <button class="cs-main-tab ${currentCsTab[slot]==='simulation'?'active':''}" data-cstab="simulation" data-slot="${slot}"><span class="numeral">4</span> Simulation</button>
+      <button class="cs-main-tab ${currentCsTab[slot]==='strategies'?'active':''}" data-cstab="strategies" data-slot="${slot}"><span class="numeral">5</span> Strategies</button>
     </div>
 
     <!-- TAB 1: BUILDING -->
@@ -7307,6 +7597,9 @@ function caseDetailHTML(c,slot){
         </div>
       </div>
     </div>
+
+    <!-- TAB 5: STRATEGIES (typical strategies, filled by script later) -->
+    <div class="cs-panel ${currentCsTab[slot]==='strategies'?'active':''}" data-cspanel="strategies" data-slot="${slot}">${csStrategiesHTML(c)}</div>
 
     <!-- TAB 3: METRICS & ATTRIBUTES -->
     <div class="cs-panel ${currentCsTab[slot]==='metrics'?'active':''}" data-cspanel="metrics" data-slot="${slot}">
@@ -7534,6 +7827,10 @@ function renderPanel(){
   const el=document.getElementById('csPanel');
   const grid=document.querySelector('.explorer-grid');
   const wasCompare=grid&&grid.classList.contains('compare-active');
+  if(!selectedId&&selectedBpc){
+    const _bc=byBpc(selectedBpc);
+    if(_bc){pickingCompare=false;compareId=null;clearStationMarker();clearSimLines();if(grid)grid.classList.remove('compare-active');el.innerHTML=bpcDetailHTML(_bc,'A');wireBpcDetail(_bc,'A');return;}
+  }
   if(!selectedId){
     pickingCompare=false;compareId=null;
     clearStationMarker();
@@ -7604,7 +7901,7 @@ function renderSlider(){
        when sliding to Present) so we can recompute for the new future. */
     const bbWasActive=bigBrotherActive||bbNoMatch;
     fKoppen='';const ks=document.getElementById('fKoppen');if(ks)ks.value='';
-    refreshKoppenOptions();applyScenarioPalette();refreshMap();applyFilter();renderPanel();renderLegend();renderLineLegend();
+    refreshKoppenOptions();applyScenarioPalette();refreshMap();applyFilter();renderPanel();renderLegend();renderLineLegend();refreshBpcView();
     /* sync sim sliders: scn 0/1/2 > step 0/4/8. Skip the slot driving the change. */
     const _tStep=scn*4;['A','B'].forEach(slot=>{
       if(slot===_simDrivingSlot)return; /* this slot initiated the change, don't snap it back */
@@ -7629,6 +7926,7 @@ document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   b.classList.add('active');document.getElementById('view-'+b.dataset.tab).classList.add('active');
   if(b.dataset.tab==='cases'&&map)setTimeout(()=>map.invalidateSize(),60);
+  if(b.dataset.tab==='bpc')setTimeout(initBpcView,60);
   if(b.dataset.tab==='method'&&typeof _pipeFit==='function')setTimeout(_pipeFit,60);
   if(b.dataset.tab==='findings'){const fid=_currentFindingId||(FINDINGS[0]&&FINDINGS[0].items[0]&&FINDINGS[0].items[0].id);if(fid)setTimeout(()=>showFinding(fid),0);ensureSimDataPrefetched();}}))
 
@@ -10857,6 +11155,8 @@ function applyTheme(theme){
   const loaderBtn=document.getElementById('loaderThemeToggle');
   if(loaderBtn)loaderBtn.textContent=theme==='dark'?'☀':'☾';
   if(tileLayer)tileLayer.setUrl(theme==='dark'?DARK_TILE_URL:LIGHT_TILE_URL);
+if(typeof tileLayerB!=='undefined'&&tileLayerB)tileLayerB.setUrl(theme==='dark'?DARK_TILE_URL:LIGHT_TILE_URL);
+if(typeof refreshBpcMarkers==='function')setTimeout(()=>{refreshBpcMarkers();renderBpcList&&renderBpcList();},0);
   applyScenarioPalette();
   if(map&&markers&&markers.length)refreshMap();
   if(envLayer==='water'&&document.getElementById('mapLegend'))renderLegend();
