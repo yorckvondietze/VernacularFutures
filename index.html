@@ -13065,7 +13065,7 @@ function fsGoStep(n){
   FS.step=n;
   [1,2,3].forEach(i=>{document.getElementById('fsStage'+i).hidden=(i!==n);});
   document.getElementById('fsBack').hidden=(n===1);
-  document.getElementById('fsNextTxt').textContent=(n===3)?'close find strategies':'further';
+  document.getElementById('fsNextTxt').textContent=(n===3)?'close find strategies':'';
   document.getElementById('fsStepLbl').textContent='step '+n+' of 3';
 }
 function fsDonut(p,size){
