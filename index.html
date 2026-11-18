@@ -1963,6 +1963,107 @@ html[data-theme="dark"] .loader-status{
 .avgt-launch-btn:hover{background:var(--terracotta);color:var(--paper);}
 .avgt-launch-btn.active{background:var(--terracotta);color:var(--paper);}
 
+/* ===================== findSTRATEGIES ===================== */
+.ufo-pin{position:relative!important;left:auto!important;top:auto!important;transform:none!important;pointer-events:auto!important;cursor:grab;width:44px;height:44px;border:2px solid #fff;}
+.fs-pop .leaflet-popup-content-wrapper{border-radius:0;border:1px solid var(--line-strong);background:var(--paper);color:var(--ink);box-shadow:0 8px 30px rgba(0,0,0,.25);font-family:var(--mono);}
+.fs-pop .leaflet-popup-tip{background:var(--paper);border:1px solid var(--line-strong);}
+.fs-pop .leaflet-popup-content{margin:12px 14px;width:auto!important;min-width:250px;}
+.fs-pop a.leaflet-popup-close-button{color:var(--ink-faint);}
+.fs-pop-h{font-size:11px;font-weight:700;letter-spacing:.04em;margin-bottom:2px;}
+.fs-pop-c{font-size:10px;color:var(--ink-faint);margin-bottom:10px;}
+.fs-opt{display:block;width:100%;text-align:left;margin:0 0 8px;padding:8px 12px;white-space:normal;line-height:1.35;}
+.fs-opt em{font-style:normal;}
+.fs-radius{border:1px solid var(--line);padding:8px 10px;margin:-2px 0 8px;font-size:10px;color:var(--ink-soft);}
+.fs-radius input[type=range]{width:100%;accent-color:var(--terracotta);margin:6px 0;}
+.fs-radius .fs-rv{font-weight:700;color:var(--ink);}
+.fs-rm{font-size:9.5px;color:var(--ink-faint);cursor:pointer;text-decoration:underline;}
+.fs-rm:hover{color:var(--rust);}
+#fsWin{position:fixed;inset:0;z-index:1500;display:flex;flex-direction:column;background:var(--paper);color:var(--ink);font-family:var(--mono);}
+#fsWin.fs-hidden{display:none;}
+#fsWin:not(.fs-full){inset:5vh 5vw;border:1px solid var(--line-strong);box-shadow:0 14px 52px rgba(0,0,0,.4);}
+#fsWin .win-titlebar{flex:none;}
+.fs-title{font-size:11px;font-weight:700;letter-spacing:.04em;}
+.fs-sub{font-size:10px;color:var(--ink-faint);margin-left:12px;}
+.fs-stage{flex:1;min-height:0;display:flex;}
+.fs-stage[hidden]{display:none;}
+.fs-left{flex:0 0 48%;min-width:0;overflow-y:auto;padding:18px 22px 40px;border-right:1px solid var(--line-strong);}
+.fs-right{flex:1;min-width:0;display:flex;flex-direction:column;}
+.fs-right-scroll{flex:1;min-height:0;overflow-y:auto;padding:18px 22px 12px;}
+.fs-h{font-size:17px;font-weight:700;margin:0 0 6px;letter-spacing:.01em;}
+.fs-note{font-size:11px;line-height:1.55;color:var(--ink-soft);margin:0 0 14px;max-width:70ch;}
+.fs-info{font-size:10.5px;line-height:1.55;color:var(--ink-soft);border-left:3px solid var(--terracotta);padding:6px 10px;margin:0 0 18px;background:var(--paper-dim);}
+.fs-info.warn{border-left-color:var(--rust);}
+.fs-sec{border-top:1px solid var(--line-strong);padding-top:16px;margin-top:22px;}
+.fs-sec:first-child{margin-top:0;border-top:0;padding-top:0;}
+.fs-typ-top{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:10px;margin-bottom:10px;}
+.fs-typ-rest{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}
+.fs-card{position:relative;border:1px solid var(--line);padding:14px 14px 12px;background:var(--paper);min-width:0;}
+.fs-card.first{border-color:var(--terracotta);}
+.fs-rank{position:absolute;top:8px;right:11px;font-size:11px;font-weight:700;color:var(--ink-soft);}
+.fs-card .si{margin-bottom:10px;}
+.fs-card-name{font-size:13px;font-weight:700;line-height:1.2;margin:0 0 3px;overflow-wrap:anywhere;}
+.fs-card.small .fs-card-name{font-size:11.5px;}
+.fs-card-cat{font-size:9.5px;color:var(--ink-faint);margin-bottom:10px;min-height:1.2em;}
+.fs-donut{display:flex;align-items:center;gap:9px;}
+.fs-donut svg{flex:none;}
+.fs-donut span{font-size:9.5px;color:var(--ink-faint);line-height:1.3;}
+.si{display:inline-flex;align-items:center;justify-content:center;flex:none;}
+.si svg{width:66%;height:66%;color:#111;}
+.fs-more{font-size:10.5px;color:var(--ink-soft);margin-top:10px;line-height:1.7;}
+.fs-more b{color:var(--ink);}
+.fs-cs-row{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.5fr);gap:12px;padding:9px 0;border-bottom:1px solid var(--line-soft);}
+.fs-cs-n{font-size:11.5px;font-weight:700;overflow-wrap:anywhere;}
+.fs-cs-m{font-size:9.5px;color:var(--ink-faint);margin-top:1px;}
+.fs-kc{display:inline-block;padding:0 5px;margin-left:4px;border:1px solid var(--line);color:var(--ink-soft);font-size:9px;}
+.fs-chips{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;}
+.fs-chip{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;color:var(--ink);padding:1px 6px 1px 1px;border:1px solid var(--line);}
+.fs-chip.s{border-style:dashed;color:var(--ink-soft);}
+.fs-chip .si{width:16px;height:16px;}
+.fs-none{font-size:10px;color:var(--ink-faint);}
+.fs-bpc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:12px;}
+.fs-bpc{border:1px solid var(--line);background:var(--paper);cursor:pointer;display:flex;flex-direction:column;min-width:0;position:relative;}
+.fs-bpc:hover{border-color:var(--terracotta);}
+.fs-bpc.picked{opacity:.4;}
+.fs-bpc.picked::after{content:'in box';position:absolute;top:8px;left:8px;background:var(--terracotta);color:var(--paper);font-size:9px;font-weight:700;padding:2px 6px;}
+.fs-bpc-img{aspect-ratio:3/2;background:var(--paper-dim);display:flex;align-items:center;justify-content:center;font-size:9.5px;color:var(--ink-faint);overflow:hidden;}
+.fs-bpc-img img{width:100%;height:100%;object-fit:cover;display:block;}
+.fs-bpc-b{padding:9px 10px 10px;display:flex;flex-direction:column;gap:7px;}
+.fs-bpc-name{font-size:11.5px;font-weight:700;line-height:1.25;overflow-wrap:anywhere;}
+.fs-fit{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--ink-soft);}
+.fs-fit i{display:block;flex:1;height:5px;background:var(--line-soft);position:relative;}
+.fs-fit i b{position:absolute;left:0;top:0;bottom:0;background:var(--terracotta);}
+.fs-fit span{font-weight:700;color:var(--ink);min-width:3.2em;text-align:right;}
+.fs-bpc-b .fs-chips{gap:3px 4px;}
+.fs-bpc-b .fs-lbl{font-size:8.5px;color:var(--ink-faint);letter-spacing:.06em;text-transform:uppercase;margin-bottom:-3px;}
+.fs-box{flex:none;margin:0 22px 14px;border:1.5px dashed var(--ink-faint);min-height:112px;padding:8px 12px 10px;background:var(--paper-dim);transition:border-color .15s,background-color .15s;}
+.fs-box.over{border-color:var(--terracotta);background:var(--terracotta-dim);}
+.fs-box-h{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px;}
+.fs-box-hint{font-size:11px;color:var(--ink-faint);line-height:1.5;padding:14px 4px;}
+.fs-box-items{display:flex;flex-wrap:wrap;gap:8px;}
+.fs-pick{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--paper);padding:3px 8px 3px 3px;font-size:10px;max-width:230px;cursor:grab;}
+.fs-pick img,.fs-pick .ph{width:34px;height:34px;object-fit:cover;background:var(--paper-dim);flex:none;}
+.fs-pick .x{cursor:pointer;color:var(--ink-faint);font-size:13px;line-height:1;}
+.fs-pick .x:hover{color:var(--rust);}
+.fs-foot{flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 16px;border-top:1px solid var(--line-strong);background:var(--paper-dim);}
+.fs-step{font-size:10px;color:var(--ink-faint);}
+.fs-btn{font-family:var(--mono);font-size:10.5px;font-weight:700;padding:7px 14px;border:1px solid var(--terracotta);background:transparent;color:var(--terracotta);cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
+.fs-btn:hover{background:var(--terracotta);color:var(--paper);}
+.fs-btn[hidden]{display:none;}
+.fs-btn svg{display:block;}
+.fs-place{margin:auto;text-align:center;max-width:46ch;padding:40px;}
+.fs-place b{display:block;font-size:18px;margin-bottom:10px;}
+.fs-place span{font-size:11px;color:var(--ink-faint);line-height:1.6;}
+.fs-loading{margin:auto;font-size:12px;color:var(--ink-faint);}
+.fs-modal{position:fixed;inset:0;z-index:1600;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;}
+.fs-modal.fs-hidden{display:none;}
+.fs-modal-card{background:var(--paper);border:1px solid var(--line-strong);width:min(900px,94vw);max-height:92vh;overflow-y:auto;padding:18px 22px 24px;position:relative;box-shadow:0 14px 52px rgba(0,0,0,.4);}
+.fs-modal-x{position:sticky;top:0;float:right;font-size:20px;line-height:1;background:var(--paper);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;padding:2px 8px 4px;z-index:2;font-family:var(--mono);}
+.fs-modal-x:hover{color:var(--rust);border-color:var(--rust);}
+.strat-list{list-style:none;padding-left:0!important;}
+.strat-list li{display:flex;align-items:center;gap:9px;margin:5px 0;line-height:1.3;}
+.strat-list .si{width:26px;height:26px;}
+@media (max-width:900px){#fsWin .fs-stage{flex-direction:column;overflow-y:auto;}.fs-left{flex:none;border-right:0;border-bottom:1px solid var(--line-strong);overflow:visible;}.fs-right-scroll{overflow:visible;}.fs-typ-top{grid-template-columns:1fr;}}
+body.mobile-mode .fs-pop,body.mobile-mode #fsWin{font-size:12px;}
 </style>
 </head>
 <body>
@@ -1993,9 +2094,33 @@ html[data-theme="dark"] .loader-status{
     <div class="avgt-panel" id="avgt-panel-members"></div>
   </div>
 </div>
+<div id="fsWin" class="fs-hidden fs-full">
+  <div class="win-titlebar">
+    <div><span class="fs-title">_find<span style="color:var(--terracotta)">STRATEGIES</span></span><span class="fs-sub" id="fsSub"></span></div>
+    <span class="win-controls">
+      <span class="c-fetch" id="fsSizeBtn" title="Toggle fullscreen" style="display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1 L1 1 L1 4 M7 1 L10 1 L10 4 M1 7 L1 10 L4 10 M10 7 L10 10 L7 10"/></svg></span>
+      <span class="c-close" id="fsCloseBtn" title="Close"></span>
+    </span>
+  </div>
+  <div class="fs-stage" id="fsStage1">
+    <div class="fs-left" id="fsLeft"></div>
+    <div class="fs-right">
+      <div class="fs-right-scroll" id="fsRightScroll"></div>
+      <div class="fs-box" id="fsBox"></div>
+    </div>
+  </div>
+  <div class="fs-stage" id="fsStage2" hidden><div class="fs-place"><b>insert shoebox</b><span>Placeholder. The shoebox simulation will be inserted here.</span></div></div>
+  <div class="fs-stage" id="fsStage3" hidden><div class="fs-place"><b>insert make downloadable handout</b><span>Placeholder. The downloadable handout will be created here.</span></div></div>
+  <div class="fs-foot">
+    <button class="fs-btn" id="fsBack" hidden title="Back"><svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 H1 M5 1 L1 5 L5 9"/></svg></button>
+    <span class="fs-step" id="fsStepLbl"></span>
+    <button class="fs-btn" id="fsNext"><span id="fsNextTxt">further</span><svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5 H15 M11 1 L15 5 L11 9"/></svg></button>
+  </div>
+</div>
+<div id="fsModal" class="fs-modal fs-hidden"><div class="fs-modal-card"><button class="fs-modal-x" id="fsModalX" title="Close">&times;</button><div id="fsModalBody"></div></div></div>
 <div id="siteLoader">
   <div class="loader-controls">
-    <span class="vf-version">v407</span>
+    <span class="vf-version">v413</span>
     <button class="theme-toggle" id="loaderThemeToggle" title="Toggle dark mode">☾</button>
     <span class="c-game" id="loaderGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span>
   </div>
@@ -2010,7 +2135,7 @@ html[data-theme="dark"] .loader-status{
 <div class="win-titlebar">
   <span class="win-title">vernacularfutures</span>
   <span class="win-controls">
-    <span class="vf-version">v407</span>
+    <span class="vf-version">v413</span>
     <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">☾</button>
     <span class="c-game" id="openGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span></span>
 </div>
@@ -2488,7 +2613,7 @@ let currentCsTab={A:'building',B:'building'}; /* remembered across scenario chan
    Live:   const DATA_BASE='https://f005.backblazeb2.com/file/morphshift-data'; (B2 direct)
    -------------------------------------------------------------------- */
 const DATA_BASE='https://pub-8944e9777b04487cb29b19062000de40.r2.dev';
-const BUILD_TS='20260627_001';
+const BUILD_TS='20261118_001';
 let modeUnlocked=false;
 /* DEMO_CASES_SEED removed: case data comes from R2 only, see fetchFullModeRaw/setAppMode. */
 let FULL_CASES_RAW=null;
@@ -2941,6 +3066,7 @@ const BPC_LOREM='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
 function bpcSplitList(v){return v==null?[]:String(v).split(/[,\n;]/).map(s=>s.trim()).filter(s=>s&&s.toLowerCase()!=='none'&&s!=='-');}
 const byBpc=id=>BPCS.find(c=>c.id===id);
 function parseBpcSheet(wb){
+  parseStrategyList(wb);   /* sheet 'list of strategies' (column A category, column B strategy) */
   const sn=wb.SheetNames.find(n=>n.toLowerCase()==='_bpc');if(!sn)return[];
   const rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:null,raw:true});
   const hi=locateHeaderRow(rows),headers=(rows[hi]||[]).map(h=>(h||'').toString());
@@ -3035,7 +3161,7 @@ function bpcSourceHTML(c){
   return '<div class="bpc-src"><span class="bpc-src-l">Source</span> '+(m?`<a href="${aqEsc(m[0])}" target="_blank" rel="noopener">${aqEsc(m[0].length>64?m[0].slice(0,62)+'...':m[0])} &#8599;</a>`:aqEsc(s))+'</div>';
 }
 function stratListHTML(arr){
-  return arr&&arr.length?'<ul class="strat-list">'+arr.map(s=>'<li>'+aqEsc(s)+'</li>').join('')+'</ul>':'<div class="strat-none">none listed</div>';
+  return arr&&arr.length?'<ul class="strat-list">'+arr.map(x=>{const k=stratNorm(x);return '<li>'+stratIconHTML(k,26)+'<span>'+aqEsc((STRAT_ICONS[k]||stratInfo(k))?stratLabel(k):x)+'</span></li>';}).join('')+'</ul>':'<div class="strat-none">none listed</div>';
 }
 function stratBlockHTML(c,note,emptyNote){
   const has=(c.stratP&&c.stratP.length)||(c.stratS&&c.stratS.length);
@@ -12675,6 +12801,354 @@ document.addEventListener('keydown',e=>{
   else init();
 })();
 
+
+/* ═══════════════════════════════════════════════════════════════════════
+   findSTRATEGIES
+   Click the map: a UFO pin appears with two options, around here (radius)
+   or this / similar climate. The window then shows, on the left, the typical
+   strategies and the matching case studies, and on the right the best practice
+   cases ranked by how well their strategy profile fits. Chosen cases are
+   dragged into a box. Steps 2 and 3 are placeholders for now.
+   Strategy names come from the sheet "list of strategies" (column A category,
+   column B strategy); the built-in list below is only the fallback.
+   ═══════════════════════════════════════════════════════════════════════ */
+const STRAT_ICONS={"albedo_high_absorbtion":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M0.67 2.32C1.71 2.02 2.42 1.08 2.42 -0C2.42 -1.08 1.71 -2.02 0.67 -2.32L0.67 2.32ZM0.67 0.99L0.67 0.36L0.43 0.21L0.43 0.84L0.67 0.99ZM0.67 0.36L0.67 -2.32C0.59 -2.34 0.51 -2.36 0.43 -2.38L0.43 0.21L0.62 0.33L0.67 0.36ZM0.67 2.32L0.67 0.99L0.62 0.96L0.43 0.84L0.43 2.38C0.51 2.36 0.59 2.34 0.67 2.32Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M0.43 -2.38L0.43 2.38M-1.53 -0.78L-1.81 -0.63M-1.17 -0.45L-1.28 -0.16M-0.32 -0.77L-0.04 -0.63M-0.26 -1.25L0.04 -1.33M-0.53 -1.65L-0.36 -1.91M-0.61 0.19L0.67 0.99M-0.61 -0.45L0.67 0.36M0.67 -2.32L0.67 2.32M0.38 0.18L1.22 0.71M1.22 0.71L1.22 0.37M1.22 0.71L0.91 0.83M0.36 0.8L1.22 1.34M1.22 1.34L1.22 1M1.22 1.34L0.91 1.46M-0.63 -1.09C-0.63 -0.93 -0.77 -0.8 -0.93 -0.8C-1.09 -0.8 -1.22 -0.93 -1.22 -1.09C-1.22 -1.25 -1.09 -1.38 -0.93 -1.38C-0.77 -1.38 -0.63 -1.25 -0.63 -1.09Z\"/></svg>","albedo_high_reflection":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M0.67 -2.32L0.67 2.32C1.71 2.02 2.42 1.08 2.42 0C2.42 -1.08 1.71 -2.02 0.67 -2.32Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M0.43 -2.38L0.43 2.38M-1.53 -0.78L-1.81 -0.63M-1.17 -0.45L-1.28 -0.16M-0.32 -0.77L-0.04 -0.63M-0.26 -1.25L0.04 -1.33M-0.53 -1.65L-0.36 -1.91M-0.61 0.19L0.21 1.01M0.21 1.01L-0.37 1.7M-0.44 1.44L-0.44 1.71M-0.44 1.71L-0.09 1.71M-0.61 -0.45L0.21 0.37M0.21 0.37L-0.37 1.06M-0.44 0.8L-0.44 1.07M-0.44 1.07L-0.09 1.07M0.67 -2.32L0.67 2.32M-0.63 -1.09C-0.63 -0.93 -0.77 -0.8 -0.93 -0.8C-1.09 -0.8 -1.22 -0.93 -1.22 -1.09C-1.22 -1.25 -1.09 -1.38 -0.93 -1.38C-0.77 -1.38 -0.63 -1.25 -0.63 -1.09Z\"/></svg>","atrium_stack_effect":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M-0.69 2.31L-0.69 -0.95L-0.97 -0.95L-0.97 2.21C-0.88 2.25 -0.79 2.29 -0.69 2.31ZM0.69 2.31C0.79 2.29 0.88 2.25 0.97 2.21L0.97 -0.95L0.69 -0.95L0.69 2.31ZM1.02 -1.85L-1.05 -1.85L-1.05 -1.55L1.02 -1.55L1.02 -1.85Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-1.44 -1.19L-1.44 -1.44M-1.44 -1.19L-1.25 -1M1.29 -1.22L1.13 -1.06M1.29 -1.22L1.24 -1.45M-0.97 2.21L-0.97 -0.95L-0.69 -0.95L-0.69 2.31M0.97 2.21L0.97 -0.95L0.69 -0.95L0.69 2.31M-1.05 -1.55L1.02 -1.55L1.02 -1.85L-1.05 -1.85L-1.05 -1.55ZM-0.13 2.01C-0.13 2.01 -0.41 1.45 -0.31 0.87C-0.24 0.5 -0 0.16 0.04 -0.21C0.07 -0.56 -0.04 -0.91 -0.31 -1.12C-0.77 -1.45 -1.39 -1.2 -1.39 -1.2M0.11 1.07C0.11 1.07 0.41 0.57 0.35 0.04C0.32 -0.31 0.13 -0.65 0.27 -0.96C0.5 -1.47 1.24 -1.23 1.24 -1.23\"/></svg>","compactness_heat_preservation":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M0.9 0.9L0.9 -0.9L-0.9 -0.9L-0.9 0.9L0.9 0.9Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M0 -1.25L0 -2M0 -1.25L-0.24 -1.49M0 -1.25L0.24 -1.49M1.25 0L2 0M1.25 0L1.49 -0.24M1.25 0L1.49 0.24M0 1.25L0 2M0 1.25L0.24 1.49M0 1.25L-0.24 1.49M-1.25 -0L-2 -0M-1.25 -0L-1.49 0.24M-1.25 -0L-1.49 -0.24M-0.9 -0.9L0.9 -0.9L0.9 0.9L-0.9 0.9L-0.9 -0.9Z\"/></svg>","courtyard_stack_effect":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M-0.69 2.31L-0.69 -0.95L-0.97 -0.95L-0.97 2.21C-0.88 2.25 -0.79 2.29 -0.69 2.31ZM0.69 2.31C0.79 2.29 0.88 2.25 0.97 2.21L0.97 -0.95L0.69 -0.95L0.69 2.31ZM1.02 -1.85L-1.05 -1.85L-1.05 -1.55L1.02 -1.55L1.02 -1.85Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-1.44 -1.19L-1.44 -1.44M-1.44 -1.19L-1.25 -1M1.29 -1.22L1.13 -1.06M1.29 -1.22L1.24 -1.45M-0.97 2.21L-0.97 -0.95L-0.69 -0.95L-0.69 2.31M0.97 2.21L0.97 -0.95L0.69 -0.95L0.69 2.31M-1.05 -1.55L1.02 -1.55L1.02 -1.85L-1.05 -1.85L-1.05 -1.55ZM-0.13 2.01C-0.13 2.01 -0.41 1.45 -0.31 0.87C-0.24 0.5 -0 0.16 0.04 -0.21C0.07 -0.56 -0.04 -0.91 -0.31 -1.12C-0.77 -1.45 -1.39 -1.2 -1.39 -1.2M0.11 1.07C0.11 1.07 0.41 0.57 0.35 0.04C0.32 -0.31 0.13 -0.65 0.27 -0.96C0.5 -1.47 1.24 -1.23 1.24 -1.23\"/></svg>","cross_ventilation":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M-1.49 1.06L-1.49 1.9C-1.37 1.99 -1.24 2.06 -1.11 2.12L-1.11 1.06L-1.49 1.06ZM1.42 1.96L1.42 1.42L1.03 1.42L1.03 2.18C1.17 2.12 1.3 2.04 1.42 1.96ZM1.42 -0.81L-1.49 -0.81L-1.49 -0.1L-1.11 -0.1L-1.11 -0.38L0.15 -0.38L1.03 -0.38L1.03 0.35L1.42 0.35L1.42 -0.81Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M1.72 0.78L1.54 0.63M1.77 0.81L1.64 1.07M-1.49 1.9L-1.49 1.06L-1.11 1.06L-1.11 2.15M0.15 -0.38L1.03 -0.38L1.03 0.35L1.42 0.35L1.42 -0.81L-1.49 -0.81L-1.49 -0.1L-1.11 -0.1L-1.11 -0.38L0.15 -0.38ZM1.03 2.16L1.03 1.42L1.42 1.42L1.42 1.96M-2.02 0.16C-2.02 0.16 -1.76 0.64 -1.3 0.67C-0.84 0.7 -0.45 0.27 -0.02 0.41C0.26 0.5 0.42 0.79 0.69 0.94C1.17 1.2 1.72 0.78 1.72 0.78\"/></svg>","earth_to_air_channels":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M2.37 0.45L1.54 0.45L1.54 1.24L-1.24 1.24L-1.24 0.45L-2.37 0.45C-2.15 1.59 -1.16 2.42 -0 2.42C1.16 2.42 2.15 1.59 2.37 0.45ZM-0.62 0.8L0.91 0.8L0.91 0.45L-0.62 0.45L-0.62 0.8ZM0.31 -0.82L0 -0.82L0 0.45L0.31 0.45L0.31 -0.82ZM-0.36 -0.82L2.13 -0.82L2.13 -1.14L-0.36 -1.14L-0.36 -0.82Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-1.93 0.45L-1.99 0.22M-1.81 0.45L-1.81 -0.01M-1.68 0.45L-1.62 0.24M-2.37 0.45L-1.24 0.45M-0.62 0.45L-0.62 0.8M-0.62 0.8L0.91 0.8M0.91 0.8L0.91 0.45M-1.24 0.45L-1.24 1.24M-1.24 1.24L1.54 1.24M1.54 1.24L1.54 0.45M-0.62 0.45L0.91 0.45M1.54 0.45L2.37 0.45M1.41 -0.13L1.41 0.16M1.41 -0.13L1.11 -0.22M0 0.45L0.31 0.45L0.31 -0.82L0 -0.82L0 0.45ZM-0.36 -0.82L2.13 -0.82L2.13 -1.14L-0.36 -1.14L-0.36 -0.82ZM-1.65 -0.67C-1.65 -0.67 -1.05 -0.49 -0.98 0.01C-0.93 0.3 -1.1 0.63 -0.93 0.87C-0.87 0.96 -0.78 1.02 -0.68 1.04C-0.38 1.13 -0.07 0.98 0.24 1C0.53 1.01 0.82 1.16 1.06 1.02C1.17 0.96 1.24 0.86 1.26 0.74C1.29 0.51 1.1 0.29 1.19 0.08C1.25 -0.06 1.41 -0.13 1.41 -0.13\"/></svg>","elevated_groundfloor_convection":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M-0.78 0.97L0.78 0.97L0.78 -0.4L-0.78 -0.4L-0.78 0.97ZM-0 -1.18L-0.78 -0.4L0.78 -0.4L-0 -1.18Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M1.33 1.38L1.21 1.61M1.33 1.38L1.1 1.24M-0.5 0.97L-0.5 2.36M0.52 0.97L0.52 2.36M-0.78 0.97L0.78 0.97L0.78 -0.4L-0.78 -0.4L-0.78 0.97ZM-0.78 -0.4L-0 -1.18L0.78 -0.4M-1.42 1.33C-1.42 1.33 -1.21 1.62 -0.9 1.62C-0.55 1.62 -0.3 1.26 0.04 1.28C0.25 1.3 0.41 1.44 0.61 1.49C0.97 1.59 1.33 1.38 1.33 1.38\"/></svg>","facade_micro_shading":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M0.31 -2.4L0.31 -1.76L0.57 -1.76L0.57 -2.35C0.48 -2.37 0.39 -2.39 0.31 -2.4ZM0.61 -0.55L0.61 -1.29L0.31 -1.29L0.31 -0.55L0.61 -0.55ZM0.61 0.54L0.61 -0.2L0.31 -0.2L0.31 0.54L0.61 0.54ZM0.31 0.91L0.31 1.65L0.61 1.65L0.61 0.91L0.31 0.91ZM0.31 2.02L0.31 2.4C0.41 2.38 0.51 2.36 0.61 2.34L0.61 2.02L0.31 2.02Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-1.72 -0.67L-2 -0.52M-1.36 -0.34L-1.47 -0.05M-0.45 -1.14L-0.15 -1.22M-0.72 -1.54L-0.54 -1.8M-0.6 -0.74L-0.04 -0.24M-0.04 -0.24L-0.06 -0.59M-0.04 -0.24L-0.36 -0.26M-0.94 -0.23L-0.04 0.6M-0.04 0.6L-0.06 0.26M-0.04 0.6L-0.36 0.58M0.31 -2.4L0.57 -2.35L0.57 -1.76L0.31 -1.76L0.31 -2.4ZM0.31 -1.29L0.61 -1.29L0.61 -0.55L0.31 -0.55L0.31 -1.29ZM0.31 -0.2L0.61 -0.2L0.61 0.54L0.31 0.54L0.31 -0.2ZM0.31 0.91L0.61 0.91L0.61 1.65L0.31 1.65L0.31 0.91ZM0.31 2.4L0.31 2.02L0.61 2.02L0.61 2.34M-0.82 -0.98C-0.82 -0.82 -0.95 -0.69 -1.12 -0.69C-1.28 -0.69 -1.41 -0.82 -1.41 -0.98C-1.41 -1.14 -1.28 -1.28 -1.12 -1.28C-0.95 -1.28 -0.82 -1.14 -0.82 -0.98Z\"/></svg>","floorplan_section_layout":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-1.68 -0.83L-1.96 -0.68M-0.47 -0.82L-0.2 -0.68M-0.41 -1.31L-0.11 -1.38M-0.69 -1.71L-0.51 -1.96M-0.89 -0.6L-0.89 1.95M-0.89 1.95L-1.13 1.72M-0.89 1.95L-0.68 1.74M-1.36 -0.52L-1.49 -0.24M0.36 -0.21L1.39 -1.24M1.39 -1.24L2.07 -1.24M2.19 1.02L-0.19 1.02L-0.19 2.41L0.19 2.41M2.41 -0.21L0.36 -0.21L0.36 1.02L2.19 1.02M-0.79 -1.14C-0.79 -0.98 -0.92 -0.85 -1.08 -0.85C-1.24 -0.85 -1.37 -0.98 -1.37 -1.14C-1.37 -1.31 -1.24 -1.44 -1.08 -1.44C-0.92 -1.44 -0.79 -1.31 -0.79 -1.14Z\"/></svg>","greenhouse_effect":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M1.68 1.74L-1.63 1.74L-1.63 1.79C-0.69 2.64 0.76 2.62 1.68 1.74Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-1.79 -0.79L-2.07 -0.64M-1.43 -0.47L-1.54 -0.17M-0.94 -0.47L-0.83 -0.17M-0.58 -0.79L-0.3 -0.64M-0.52 -1.27L-0.21 -1.34M-0.79 -1.67L-0.61 -1.92M-1.63 1.79L-1.63 0.6L-0.82 0.05L2.42 0.05M-1.63 1.74L1.68 1.74M-1.2 -0.04L0.03 1.41L1.12 0.27L1.69 0.82M1.69 0.82L1.68 0.47M1.69 0.82L1.36 0.88M-0.89 -1.11C-0.89 -0.95 -1.02 -0.81 -1.18 -0.81C-1.34 -0.81 -1.47 -0.95 -1.47 -1.11C-1.47 -1.27 -1.34 -1.4 -1.18 -1.4C-1.02 -1.4 -0.89 -1.27 -0.89 -1.11Z\"/></svg>","high_thermal_mass":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M-0.69 0.64L-0.25 0.7L0.24 0.64L0.24 -0.27L-0.05 -0.35L-0.11 -0.51L0.05 -0.57L0.05 -0.68L-0.08 -0.74L-0.3 -0.77L-0.49 -0.68L-0.49 -0.57L-0.33 -0.51L-0.4 -0.32L-0.72 -0.27L-0.72 0.64L-0.69 0.64Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M1.82 -0.99L1.5 -1.22M1.82 -0.99L1.53 -0.77M1.82 -0.07L1.5 -0.3M1.82 -0.07L1.53 0.15M1.82 0.84L1.5 0.6M1.82 0.84L1.53 1.05M0.48 -2.34L0.48 2.27M-0.97 -2.21L-0.97 2.15M-0.72 0.64L-0.72 -0.27L-0.4 -0.32L-0.33 -0.51L-0.49 -0.57L-0.49 -0.68L-0.3 -0.77L-0.08 -0.74L0.05 -0.68L0.05 -0.57L-0.11 -0.51L-0.05 -0.35L0.24 -0.27L0.24 0.64L-0.25 0.7L-0.69 0.64M1.73 -1.01C1.73 -1.01 1.59 -0.94 1.47 -1.01C1.41 -1.04 1.37 -1.1 1.31 -1.12C1.26 -1.14 1.2 -1.14 1.16 -1.1C1.12 -1.06 1.12 -0.98 1.07 -0.94C1.02 -0.88 0.92 -0.88 0.87 -0.94C0.81 -0.99 0.8 -1.09 0.73 -1.1C0.71 -1.11 0.69 -1.1 0.69 -1.1M1.73 -0.08C1.73 -0.08 1.59 -0.02 1.47 -0.08C1.41 -0.12 1.37 -0.17 1.31 -0.2C1.26 -0.22 1.2 -0.21 1.16 -0.18C1.12 -0.13 1.12 -0.06 1.07 -0.01C1.02 0.05 0.92 0.05 0.87 -0.01C0.81 -0.07 0.8 -0.17 0.73 -0.18C0.71 -0.18 0.69 -0.18 0.69 -0.18M1.73 0.82C1.73 0.82 1.59 0.89 1.47 0.82C1.41 0.79 1.37 0.73 1.31 0.71C1.26 0.69 1.2 0.69 1.16 0.73C1.12 0.77 1.12 0.84 1.07 0.89C1.02 0.95 0.92 0.95 0.87 0.89C0.81 0.84 0.8 0.74 0.73 0.72C0.71 0.72 0.69 0.72 0.69 0.72\"/></svg>","hygroscopic_materials":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M0.69 -0.79L0.5 -1.22L0.36 -0.8C0.33 -0.74 0.33 -0.67 0.34 -0.6C0.37 -0.52 0.45 -0.47 0.54 -0.48C0.62 -0.49 0.69 -0.55 0.7 -0.63C0.71 -0.69 0.71 -0.74 0.69 -0.79ZM-0.39 -1.14L-0.58 -1.57L-0.72 -1.14C-0.75 -1.08 -0.76 -1.02 -0.74 -0.95C-0.71 -0.87 -0.63 -0.81 -0.54 -0.83C-0.46 -0.84 -0.39 -0.9 -0.38 -0.98C-0.37 -1.03 -0.37 -1.09 -0.39 -1.14ZM-0.03 -0.03L-0.21 -0.45L-0.35 -0.03C-0.38 0.03 -0.39 0.1 -0.37 0.17C-0.35 0.25 -0.26 0.3 -0.18 0.29C-0.09 0.28 -0.03 0.22 -0.01 0.14C-0 0.08 -0.01 0.03 -0.03 -0.03ZM-0.35 1.27L-0.54 0.85L-0.67 1.27C-0.7 1.33 -0.71 1.4 -0.69 1.47C-0.67 1.55 -0.59 1.6 -0.5 1.59C-0.42 1.58 -0.35 1.52 -0.33 1.44C-0.32 1.38 -0.33 1.33 -0.35 1.27Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-0.98 -2.21L-0.98 2.21M0.89 -2.25L0.89 2.25M-0.19 -1.91C-0.19 -1.71 -0.35 -1.55 -0.55 -1.55C-0.75 -1.55 -0.91 -1.71 -0.91 -1.91C-0.91 -2.11 -0.75 -2.27 -0.55 -2.27C-0.35 -2.27 -0.19 -2.11 -0.19 -1.91ZM0.41 -1.6C0.41 -1.41 0.25 -1.25 0.06 -1.25C-0.14 -1.25 -0.29 -1.41 -0.29 -1.6C-0.29 -1.8 -0.14 -1.95 0.06 -1.95C0.25 -1.95 0.41 -1.8 0.41 -1.6ZM0.33 -0.02C0.33 0.32 0.04 0.61 -0.3 0.61C-0.65 0.61 -0.94 0.32 -0.94 -0.02C-0.94 -0.37 -0.65 -0.66 -0.3 -0.66C0.04 -0.66 0.33 -0.37 0.33 -0.02ZM0.67 0.81C0.67 1.01 0.51 1.17 0.31 1.17C0.11 1.17 -0.05 1.01 -0.05 0.81C-0.05 0.61 0.11 0.45 0.31 0.45C0.51 0.45 0.67 0.61 0.67 0.81ZM-0.1 1.66C-0.1 1.88 -0.28 2.06 -0.5 2.06C-0.72 2.06 -0.9 1.88 -0.9 1.66C-0.9 1.44 -0.72 1.26 -0.5 1.26C-0.28 1.26 -0.1 1.44 -0.1 1.66ZM0.84 1.89C0.84 2.06 0.7 2.2 0.53 2.2C0.36 2.2 0.22 2.06 0.22 1.89C0.22 1.71 0.36 1.57 0.53 1.57C0.7 1.57 0.84 1.71 0.84 1.89Z\"/></svg>","insulation":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-0.41 -2.31L-0.41 2.31M1.04 -2.18L1.04 2.18M0.67 2.32L-0.41 1.76L1.04 0.88L-0.41 0.07L1.04 -0.78L-0.41 -1.61L0.6 -2.19L0.77 -2.29M-1.47 -1.09L-0.66 -0.01L-1.44 0.96L-1.44 0.64M-1.44 0.96L-1.1 0.96\"/></svg>","micropores_convection":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-0.96 -2.22L-0.96 2.22M1.11 -2.15L1.11 2.15M1.87 0.34L1.69 0.19M1.92 0.37L1.79 0.63M0.1 1.1C0.1 1.33 -0.08 1.51 -0.31 1.51C-0.53 1.51 -0.72 1.33 -0.72 1.1C-0.72 0.87 -0.53 0.69 -0.31 0.69C-0.08 0.69 0.1 0.87 0.1 1.1ZM0.56 0.76C0.56 0.88 0.46 0.98 0.34 0.98C0.22 0.98 0.12 0.88 0.12 0.76C0.12 0.64 0.22 0.54 0.34 0.54C0.46 0.54 0.56 0.64 0.56 0.76ZM-0.12 -1.02C-0.12 -0.79 -0.31 -0.61 -0.53 -0.61C-0.75 -0.61 -0.94 -0.79 -0.94 -1.02C-0.94 -1.24 -0.75 -1.42 -0.53 -1.42C-0.31 -1.42 -0.12 -1.24 -0.12 -1.02ZM0.34 -1.85C0.34 -1.66 0.19 -1.51 -0 -1.51C-0.19 -1.51 -0.34 -1.66 -0.34 -1.85C-0.34 -2.04 -0.19 -2.19 -0 -2.19C0.19 -2.19 0.34 -2.04 0.34 -1.85ZM0.47 -1.32C0.47 -1.21 0.38 -1.12 0.27 -1.12C0.16 -1.12 0.07 -1.21 0.07 -1.32C0.07 -1.43 0.16 -1.52 0.27 -1.52C0.38 -1.52 0.47 -1.43 0.47 -1.32ZM0.76 -0.62C0.76 -0.4 0.58 -0.22 0.36 -0.22C0.14 -0.22 -0.03 -0.4 -0.03 -0.62C-0.03 -0.84 0.14 -1.02 0.36 -1.02C0.58 -1.02 0.76 -0.84 0.76 -0.62ZM0.92 1.52C0.92 1.78 0.72 1.99 0.46 1.99C0.2 1.99 -0.01 1.78 -0.01 1.52C-0.01 1.27 0.2 1.06 0.46 1.06C0.72 1.06 0.92 1.27 0.92 1.52ZM-0.13 2.09C-0.13 2.22 -0.23 2.33 -0.37 2.33C-0.5 2.33 -0.6 2.22 -0.6 2.09C-0.6 1.96 -0.5 1.85 -0.37 1.85C-0.23 1.85 -0.13 1.96 -0.13 2.09ZM-1.88 -0.28C-1.88 -0.28 -1.61 0.2 -1.15 0.23C-0.7 0.26 -0.3 -0.17 0.12 -0.04C0.41 0.06 0.57 0.35 0.84 0.49C1.32 0.75 1.87 0.34 1.87 0.34\"/></svg>","openings_aperture":"<svg viewBox=\"-2.43 -2.43 4.86 4.86\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M-0.98 -1.16L0.29 -2.43L0.29 -1.16L-0.98 -1.16ZM0.29 -2.38L0.29 -1.16L2.11 -1.16C1.74 -1.83 1.06 -2.29 0.29 -2.38ZM-0.98 -1.16L-0.98 1.65L1.78 1.65C2.19 1.21 2.42 0.62 2.42 0.01C2.42 -0.4 2.31 -0.8 2.11 -1.16L0.29 -1.16L-0.98 -1.16ZM0.26 0.03L0.54 0.03L0.54 0.54L0.26 0.54L0.26 0.03Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M0.37 -0.47L0.37 -1.33M0.37 -0.47L0.09 -0.7M0.37 -0.47L0.69 -0.73M-0.37 0.32L-1.23 0.32M-0.37 0.32L-0.59 0.6M-0.37 0.32L-0.62 0.01M0.42 1.06L0.42 1.92M0.42 1.06L0.71 1.28M0.42 1.06L0.11 1.31M1.16 0.27L2.02 0.27M1.16 0.27L1.39 -0.02M1.16 0.27L1.42 0.58M0.37 -0.47L0.37 -1.33M0.37 -0.47L0.09 -0.7M0.37 -0.47L0.69 -0.73\"/></svg>","phase_changing_materials":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M-0.24 -0.22L-0.43 -0.65L-0.57 -0.22C-0.6 -0.16 -0.6 -0.1 -0.59 -0.03C-0.56 0.05 -0.48 0.11 -0.39 0.09C-0.31 0.08 -0.24 0.02 -0.23 -0.06C-0.22 -0.12 -0.22 -0.17 -0.24 -0.22ZM0.32 0.35C0.32 0.26 0.24 0.18 0.14 0.18C0.05 0.18 -0.03 0.26 -0.03 0.35C-0.03 0.45 0.05 0.53 0.14 0.53C0.24 0.53 0.32 0.45 0.32 0.35ZM0.16 -0.16C0.16 -0.06 0.24 0.01 0.34 0.01C0.43 0.01 0.51 -0.06 0.51 -0.16C0.51 -0.26 0.43 -0.33 0.34 -0.33C0.24 -0.33 0.16 -0.26 0.16 -0.16Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M1.58 -0.84L1.73 -1.28M1.58 -0.84L1.1 -0.96M0.84 1.58L1.28 1.73M0.84 1.58L0.96 1.1M-1.58 0.84L-1.73 1.28M-1.58 0.84L-1.1 0.96M-0.84 -1.58L-1.28 -1.73M-0.84 -1.58L-0.96 -1.1M-0.27 0.54L0 0.45M0.21 0.19L0.28 0M0.32 0.35L0.53 0.5M0.48 -0.29L0.59 -0.54M-0.86 -0.86L0.86 -0.86L0.86 0.86L-0.86 0.86L-0.86 -0.86ZM-0.57 -0.22L-0.43 -0.65L-0.24 -0.22M1.58 -0.84C1.32 -1.34 0.83 -1.69 0.26 -1.77M0.84 1.58C1.34 1.32 1.69 0.83 1.77 0.26M-1.58 0.84C-1.32 1.34 -0.83 1.69 -0.26 1.77M-0.84 -1.58C-1.34 -1.32 -1.69 -0.83 -1.77 -0.26M0.32 0.35C0.32 0.45 0.24 0.53 0.14 0.53C0.05 0.53 -0.03 0.45 -0.03 0.35C-0.03 0.26 0.05 0.18 0.14 0.18C0.24 0.18 0.32 0.26 0.32 0.35ZM0.51 -0.16C0.51 -0.06 0.43 0.01 0.34 0.01C0.24 0.01 0.16 -0.06 0.16 -0.16C0.16 -0.26 0.24 -0.33 0.34 -0.33C0.43 -0.33 0.51 -0.26 0.51 -0.16ZM-0.57 -0.22C-0.57 -0.22 -0.65 -0.05 -0.53 0.05C-0.45 0.12 -0.33 0.11 -0.26 0.02C-0.19 -0.08 -0.24 -0.22 -0.24 -0.22\"/></svg>","shading":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M2.33 -0.06L-0.06 -0.06L-0.06 0.23L2.39 0.23L2.33 -0.06ZM0.65 0.86L0.98 0.86L0.98 0.23L0.65 0.23L0.65 0.86ZM0.98 2.21L0.98 1.62L0.65 1.62L0.65 2.33C0.76 2.3 0.87 2.26 0.98 2.21Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-1.71 -0.8L-1.99 -0.66M-1.35 -0.48L-1.46 -0.19M-0.86 -0.48L-0.75 -0.19M-0.5 -0.8L-0.22 -0.65M-0.44 -1.28L-0.13 -1.35M-0.71 -1.68L-0.53 -1.94M0.27 0.64L0.27 1.73M2.33 -0.06L-0.06 -0.06L-0.06 0.23L2.39 0.23M0.65 0.23L0.65 0.86L0.98 0.86L0.98 0.23M0.65 2.33L0.65 1.62L0.98 1.62L0.98 2.21M0.04 -1.03L0.91 -0.42M0.91 -0.42L1.62 -1.03M1.62 -1.03L1.62 -0.73M1.62 -1.03L1.28 -1.08M-0.81 -1.12C-0.81 -0.96 -0.94 -0.83 -1.1 -0.83C-1.26 -0.83 -1.39 -0.96 -1.39 -1.12C-1.39 -1.28 -1.26 -1.41 -1.1 -1.41C-0.94 -1.41 -0.81 -1.28 -0.81 -1.12Z\"/></svg>","solar_chimney_stack_effect":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M0.11 0.85L0.38 0.85L0.38 -0.73L0.11 -0.73L0.11 0.85Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-1.72 -0.89L-1.99 -0.75M-1.35 -0.57L-1.47 -0.28M-0.44 -1.37L-0.14 -1.44M-0.72 -1.77L-0.54 -2.03M1.79 -0.73L1.85 -0.43M1.76 -0.73L1.46 -0.66M-0.9 -0.62L-0.25 0.3M-0.25 0.3L-0.25 0.02M-0.25 0.3L-0.52 0.26M-0.57 -1.01L-0.2 -0.5M-0.2 -0.5L-0.2 -0.77M-0.2 -0.5L-0.48 -0.54M0.93 -1.03L0.11 -1.03L0.11 2.33M0.93 -1.03L1.26 -1.03L1.26 -0.73L0.38 -0.73L0.11 -0.73M0.11 0.85L0.38 0.85L0.38 2.39M0.38 -0.73L0.38 0.85M1.26 0.39L1.26 2.06M1.26 0.39L0.92 0.39L0.92 2.23M-0.82 -1.21C-0.82 -1.05 -0.95 -0.92 -1.11 -0.92C-1.27 -0.92 -1.4 -1.05 -1.4 -1.21C-1.4 -1.37 -1.27 -1.5 -1.11 -1.5C-0.95 -1.5 -0.82 -1.37 -0.82 -1.21ZM0.61 2.13C0.61 2.13 0.76 1.57 0.7 1.01C0.66 0.62 0.51 0.18 0.8 -0.06C0.97 -0.21 1.22 -0.2 1.42 -0.32C1.64 -0.45 1.74 -0.71 1.74 -0.71\"/></svg>","solar_control_glazing":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M0.4 -2.38L0.4 2.38M0.63 -2.33L0.63 2.33M0.88 -2.24L0.88 2.24M-1.62 -0.71L-1.9 -0.57M-1.26 -0.39L-1.37 -0.1M-0.35 -1.19L-0.04 -1.26M-0.62 -1.59L-0.44 -1.85M-0.44 -0.77L0.2 0.12M0.2 0.12L-0.66 0.98M-0.68 1.01L-0.68 0.74M-0.68 1.01L-0.45 1.01M-0.75 -0.49L-0.59 -0.12M-0.72 -1.03C-0.72 -0.87 -0.85 -0.74 -1.01 -0.74C-1.17 -0.74 -1.3 -0.87 -1.3 -1.03C-1.3 -1.19 -1.17 -1.32 -1.01 -1.32C-0.85 -1.32 -0.72 -1.19 -0.72 -1.03Z\"/></svg>","solar_gains_orientation":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M0.6 2.34L0.6 0.75L0.18 0.75L0.18 2.41C0.32 2.4 0.46 2.38 0.6 2.34ZM0.6 -1.12L0.6 -2.34C0.46 -2.38 0.32 -2.4 0.18 -2.41L0.18 -1.12L0.6 -1.12Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M0.6 -2.34L0.6 -1.12M0.6 0.75L0.6 2.34M0.16 -0.42L1.6 0.52M1.6 0.52L1.6 0.1M1.6 0.52L1.19 0.61M-1.71 -0.87L-1.99 -0.72M-1.35 -0.54L-1.46 -0.25M-0.86 -0.54L-0.75 -0.25M-0.5 -0.86L-0.22 -0.72M-0.44 -1.34L-0.13 -1.42M-0.71 -1.74L-0.53 -2M0.6 0.75L0.18 0.75M0.18 0.75L0.18 2.41M0.6 -1.12L0.18 -1.12L0.18 -2.41M-0.81 -1.18C-0.81 -1.02 -0.94 -0.89 -1.1 -0.89C-1.26 -0.89 -1.39 -1.02 -1.39 -1.18C-1.39 -1.34 -1.26 -1.47 -1.1 -1.47C-0.94 -1.47 -0.81 -1.34 -0.81 -1.18Z\"/></svg>","stack_effect":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M-0.69 2.31L-0.69 -0.95L-0.97 -0.95L-0.97 2.21C-0.88 2.25 -0.79 2.29 -0.69 2.31ZM0.69 2.31C0.79 2.29 0.88 2.25 0.97 2.21L0.97 -0.95L0.69 -0.95L0.69 2.31ZM1.02 -1.85L-1.05 -1.85L-1.05 -1.55L1.02 -1.55L1.02 -1.85Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-1.44 -1.19L-1.44 -1.44M-1.44 -1.19L-1.25 -1M1.29 -1.22L1.13 -1.06M1.29 -1.22L1.24 -1.45M-0.97 2.21L-0.97 -0.95L-0.69 -0.95L-0.69 2.31M0.97 2.21L0.97 -0.95L0.69 -0.95L0.69 2.31M-1.05 -1.55L1.02 -1.55L1.02 -1.85L-1.05 -1.85L-1.05 -1.55ZM-0.13 2.01C-0.13 2.01 -0.41 1.45 -0.31 0.87C-0.24 0.5 -0 0.16 0.04 -0.21C0.07 -0.56 -0.04 -0.91 -0.31 -1.12C-0.77 -1.45 -1.39 -1.2 -1.39 -1.2M0.11 1.07C0.11 1.07 0.41 0.57 0.35 0.04C0.32 -0.31 0.13 -0.65 0.27 -0.96C0.5 -1.47 1.24 -1.23 1.24 -1.23\"/></svg>","subterranean":"<svg viewBox=\"-2.43 -2.43 4.85 4.85\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M1.34 -0.62L0.58 -1.38L-0.17 -0.62L1.34 -0.62ZM1.34 -0.62L-0.17 -0.62L-0.17 0.3L1.34 0.3L1.34 -0.62ZM1.34 0.3L-0.17 0.3L-0.17 1.35L1.34 1.35L1.34 0.3Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-2.41 0.3L-1.58 0.3M-1.58 0.3L-0.17 1.35M-0.17 1.35L-0.17 0.3M-0.17 1.35L1.34 1.35M1.34 1.35L1.34 0.3M-0.17 -0.62L0.58 -1.38M0.58 -1.38L1.34 -0.62M-0.17 0.3L2.43 0.3M-0.23 0.7L1.37 0.7M-0.17 -0.24L1.34 -0.24M-0.17 0.36L-0.17 0.98M1.34 0.44L1.34 0.93M-0.17 0.3L1.34 0.3L1.34 -0.62L-0.17 -0.62L-0.17 0.3Z\"/></svg>","thermal_emissive_roof":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M1.22 0.26L1.22 0.2L1.59 0.2L1.86 0.16L1.81 -0.13L-1.93 0.48L-1.88 0.77L1.22 0.26ZM-1.31 2.03L-0.91 2.03L-0.91 0.69L-1.31 0.69L-1.31 2.03ZM1.59 0.2L1.22 0.26L1.22 1.93L1.46 1.93C1.5 1.89 1.55 1.86 1.59 1.82L1.59 0.2Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-0.87 -1.41L-1.08 -1.12M-0.87 -1.41L-0.63 -1.13M-0.07 -1.63L-0.29 -1.34M-0.07 -1.63L0.16 -1.35M0.81 -1.73L0.59 -1.44M0.81 -1.73L1.04 -1.46M-1.31 2.03L-0.91 2.03L-0.91 0.69L-1.31 0.69L-1.31 2.03ZM-1.88 0.77L1.86 0.16L1.81 -0.13L-1.93 0.48L-1.88 0.77ZM1.59 0.2L1.22 0.2L1.22 1.93L1.59 1.93L1.59 0.2ZM-0.89 0.07C-0.89 0.07 -0.86 -0.01 -0.89 -0.08C-0.93 -0.16 -1.03 -0.21 -1.03 -0.29C-1.03 -0.42 -0.8 -0.37 -0.75 -0.5C-0.7 -0.63 -0.96 -0.65 -0.98 -0.8C-0.98 -0.88 -0.91 -0.94 -0.87 -1.02C-0.77 -1.19 -0.87 -1.41 -0.87 -1.41M-0.1 -0.15C-0.1 -0.15 -0.06 -0.23 -0.1 -0.31C-0.13 -0.39 -0.23 -0.43 -0.23 -0.52C-0.23 -0.65 -0 -0.59 0.05 -0.72C0.1 -0.85 -0.17 -0.87 -0.18 -1.02C-0.19 -1.1 -0.11 -1.17 -0.07 -1.24C0.02 -1.42 -0.07 -1.63 -0.07 -1.63M0.79 -0.25C0.79 -0.25 0.82 -0.33 0.79 -0.41C0.75 -0.49 0.65 -0.53 0.65 -0.62C0.65 -0.75 0.88 -0.69 0.93 -0.82C0.98 -0.96 0.72 -0.97 0.7 -1.12C0.7 -1.21 0.77 -1.27 0.81 -1.34C0.91 -1.52 0.81 -1.73 0.81 -1.73\"/></svg>","topography":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M0.23 0.13L-0.34 0.13L-0.34 0.7L0.23 0.7L0.23 0.13ZM0.23 0.13L-0.06 -0.25L-0.34 0.13L0.23 0.13Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-2.22 -0.96L-1 -0.55L-0.75 0.2L-0.34 0.7L0.18 0.7L0.82 1.07L1.19 1.44L1.71 1.71M-0.34 0.7L0.23 0.7L0.23 0.13L-0.34 0.13L-0.34 0.7ZM-0.34 0.13L-0.06 -0.25L0.23 0.13M0.63 -0.7L0.63 -1.23L1.16 -0.7L1.16 -1.23\"/></svg>","troglodytic":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M2.42 -0C2.42 -0.79 2.03 -1.54 1.37 -1.99L1.25 -1.82L1.13 -1.5L0.71 -1.28L0.41 -1.12L0.16 -0.86L1.87 -0.86L1.87 0.32L0.16 0.32L-0.23 0.32L-0.6 0.46L-0.8 0.89L-1 1.08L-1.65 1.08L-1.97 1.4C-1.36 2.26 -0.26 2.62 0.74 2.3C1.74 1.98 2.42 1.05 2.42 -0Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-1.97 1.4L-1.65 1.08L-1 1.08L-0.8 0.89L-0.6 0.46L-0.23 0.32L0.16 0.32L0.16 -0.86L0.41 -1.12L0.71 -1.28L1.13 -1.5L1.25 -1.82L1.37 -1.99L1.34 -1.94M0.16 0.32L1.87 0.32L1.87 -0.86L0.16 -0.86\"/></svg>","vegetative_evaporation":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M-0.17 1.21C-0.17 1.12 -0.19 1.02 -0.22 0.93C-0.24 0.85 -0.28 0.78 -0.33 0.71C-0.39 0.64 -0.46 0.59 -0.55 0.56C-0.73 0.51 -0.91 0.54 -1.07 0.64C-0.98 0.73 -0.91 0.82 -0.86 0.93C-0.83 1.01 -0.79 1.07 -0.74 1.14C-0.68 1.2 -0.6 1.25 -0.52 1.27C-0.4 1.29 -0.28 1.27 -0.17 1.21ZM0.11 0.21C0.21 0.03 0.22 -0.17 0.16 -0.35C0.09 -0.54 -0.05 -0.68 -0.24 -0.75C-0.23 -0.62 -0.24 -0.49 -0.26 -0.36C-0.28 -0.28 -0.29 -0.2 -0.29 -0.11C-0.28 -0.03 -0.25 0.04 -0.19 0.1C-0.1 0.17 0 0.21 0.11 0.21ZM0.07 1.65C0.24 1.73 0.44 1.75 0.62 1.69C0.78 1.63 0.88 1.47 0.86 1.31C0.85 1.27 0.85 1.23 0.85 1.19C0.86 1.16 0.86 1.13 0.87 1.11C0.88 1.08 0.9 1.05 0.91 1.02L0.07 1.65ZM0.91 1.02C0.53 0.98 0.17 1.22 0.06 1.59L0.91 1.02ZM0.91 1.02C0.53 0.98 0.17 1.22 0.06 1.59L0.13 1.6L0.91 1.02ZM0.07 1.65C0.24 1.73 0.44 1.75 0.62 1.69C0.78 1.63 0.88 1.47 0.86 1.31C0.85 1.27 0.85 1.23 0.85 1.19C0.86 1.16 0.86 1.13 0.87 1.11C0.88 1.08 0.9 1.05 0.91 1.02L0.07 1.65ZM0.07 1.65C0.24 1.73 0.44 1.75 0.62 1.69C0.78 1.63 0.88 1.47 0.86 1.31C0.85 1.27 0.85 1.23 0.85 1.19C0.86 1.16 0.86 1.13 0.87 1.11C0.88 1.08 0.9 1.05 0.91 1.02L0.07 1.65ZM-1.39 0.35L-1.58 -0.08L-1.72 0.34C-1.75 0.4 -1.75 0.47 -1.74 0.54C-1.71 0.62 -1.63 0.67 -1.54 0.66C-1.46 0.65 -1.39 0.59 -1.38 0.51C-1.37 0.45 -1.37 0.4 -1.39 0.35ZM1.53 1.02L1.35 0.59L1.21 1.02C1.18 1.08 1.17 1.14 1.19 1.21C1.21 1.29 1.3 1.35 1.38 1.33C1.47 1.32 1.53 1.26 1.55 1.18C1.56 1.13 1.55 1.07 1.53 1.02Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-1.07 -1.42L-1.29 -1.13M-1.07 -1.42L-0.84 -1.15M0.94 -0.79L0.73 -0.5M0.94 -0.79L1.18 -0.52M1.53 -1.22L1.31 -0.93M1.53 -1.22L1.76 -0.95M-0.07 2.42L0.06 1.59L-0.17 1.21L0.11 0.21M-0.17 1.21C-0.17 1.21 -0.44 1.35 -0.65 1.21C-0.82 1.1 -0.86 0.87 -0.99 0.72C-1.03 0.68 -1.07 0.64 -1.07 0.64M-1.07 0.64C-1.07 0.64 -0.81 0.48 -0.55 0.56C-0.17 0.68 -0.17 1.21 -0.17 1.21M0.06 1.59C0.06 1.59 0.15 1.3 0.38 1.14C0.61 0.99 0.91 1.02 0.91 1.02M0.07 1.65C0.07 1.65 0.28 1.74 0.5 1.72C0.66 1.7 0.83 1.62 0.86 1.46C0.88 1.36 0.84 1.26 0.86 1.16C0.87 1.09 0.91 1.02 0.91 1.02M-1.1 0.06C-1.1 0.06 -1.06 -0.02 -1.1 -0.1C-1.13 -0.18 -1.23 -0.22 -1.23 -0.31C-1.23 -0.44 -1 -0.38 -0.95 -0.51C-0.9 -0.64 -1.17 -0.66 -1.18 -0.81C-1.19 -0.89 -1.11 -0.96 -1.07 -1.03C-0.98 -1.21 -1.07 -1.42 -1.07 -1.42M0.92 0.69C0.92 0.69 0.95 0.61 0.92 0.53C0.88 0.45 0.78 0.41 0.78 0.32C0.78 0.19 1.01 0.25 1.06 0.12C1.11 -0.01 0.85 -0.03 0.84 -0.18C0.83 -0.26 0.9 -0.33 0.94 -0.4C1.04 -0.58 0.94 -0.79 0.94 -0.79M1.51 0.26C1.51 0.26 1.54 0.17 1.51 0.1C1.47 0.02 1.37 -0.02 1.37 -0.11C1.37 -0.24 1.6 -0.19 1.65 -0.31C1.7 -0.45 1.44 -0.46 1.42 -0.62C1.42 -0.7 1.49 -0.76 1.53 -0.83C1.63 -1.01 1.53 -1.22 1.53 -1.22M0.11 0.21C0.11 0.21 -0.13 0.21 -0.24 0.04C-0.34 -0.12 -0.26 -0.32 -0.24 -0.52C-0.23 -0.63 -0.24 -0.75 -0.24 -0.75M-0.24 -0.75C-0.24 -0.75 0.09 -0.62 0.18 -0.33C0.27 -0.07 0.11 0.21 0.11 0.21\"/></svg>","vegetative_shading":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M0.59 0.09L0.41 0.07L0.49 -0.16L0.25 -0.29L0.07 -0.29L-0.06 -0.23L-0.06 -0.06L-0.31 -0.06L-0.28 0.16L-0.42 0.24L-0.51 0.41L-0.38 0.54L-0.23 0.6L-0.3 0.76L-0.22 0.9L0.01 0.89L0.25 0.99L0.47 0.86L0.64 0.69L0.81 0.58L0.56 0.43L0.64 0.25L0.59 0.09ZM1.12 2.14L1.12 0.89L0.81 0.89L0.81 2.27L1.12 2.14ZM1.12 -0.56L0.82 -0.56L0.82 -0.01L1.12 -0.01L1.12 -0.56ZM0.61 -0.56L2.35 -0.56L2.28 -0.79L0.61 -0.79L0.61 -0.56Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-1.71 -0.8L-1.99 -0.66M-1.35 -0.48L-1.46 -0.19M-0.44 -1.28L-0.13 -1.35M-0.71 -1.68L-0.53 -1.94M0.16 0.95L0.16 2.41M-0.92 -0.57L-0.62 -0.28M-0.62 -0.28L-0.58 -0.44M-0.67 -0.25L-0.82 -0.25M-0.55 -0.94L-0.25 -0.65M-0.25 -0.65L-0.21 -0.81M-0.3 -0.62L-0.44 -0.62M0.61 -0.79L0.61 -0.56L2.35 -0.56L2.28 -0.79L0.61 -0.79ZM0.82 -0.56L0.82 -0.01L1.12 -0.01L1.12 -0.56M0.81 0.89L1.12 0.89L1.12 2.14L0.81 2.27L0.81 0.89ZM-0.06 -0.06L-0.31 -0.06L-0.28 0.16L-0.42 0.24L-0.51 0.41L-0.38 0.54L-0.23 0.6L-0.3 0.76L-0.22 0.9L0.01 0.89L0.25 0.99L0.47 0.86L0.64 0.69L0.81 0.58L0.56 0.43L0.64 0.25L0.59 0.09L0.41 0.07L0.49 -0.16L0.25 -0.29L0.07 -0.29L-0.06 -0.23L-0.06 -0.06ZM-0.81 -1.12C-0.81 -0.96 -0.94 -0.83 -1.1 -0.83C-1.26 -0.83 -1.39 -0.96 -1.39 -1.12C-1.39 -1.28 -1.26 -1.41 -1.1 -1.41C-0.94 -1.41 -0.81 -1.28 -0.81 -1.12Z\"/></svg>","ventilated_roof_convection":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M-1.47 1.92L-1.26 2.06L-1.26 0.8L1.15 0.8L1.15 2.12L1.38 1.99L1.38 0.6L-1.47 0.6L-1.47 1.92ZM-1.56 -0.07L1.46 -0.41L1.43 -0.66L-1.59 -0.31L-1.56 -0.07Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M2 0.08L1.88 0.31M2 0.08L1.77 -0.06M-1.05 -0.12L-1.05 0.6M0.94 -0.39L0.94 0.6M-1.26 2.06L-1.26 0.8L1.15 0.8L1.15 2.12L1.38 1.99L1.38 0.6L-1.47 0.6L-1.47 1.92L-1.26 2.06ZM-1.56 -0.07L1.46 -0.41L1.43 -0.66L-1.59 -0.31L-1.56 -0.07ZM-2.04 0.19C-2.04 0.19 -1.61 0.35 -1.17 0.32C-0.73 0.29 -0.31 0.07 0.13 0.05C0.52 0.04 0.89 0.18 1.28 0.19C1.64 0.2 2 0.08 2 0.08\"/></svg>","water_features_evaporation":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M2.25 0.87L1.83 0.87L1.83 0.54L1.5 0.54L1.5 1.31L-1.5 1.31L-1.5 0.54L-1.87 0.54L-1.87 0.87L-2.25 0.87C-1.89 1.8 -1 2.42 0 2.42C1 2.42 1.89 1.8 2.25 0.87ZM0.98 -0.13L0.79 -0.55L0.66 -0.13C0.63 -0.07 0.62 -0 0.64 0.06C0.66 0.15 0.74 0.2 0.83 0.19C0.91 0.18 0.98 0.12 1 0.03C1.01 -0.02 1 -0.08 0.98 -0.13ZM-0.78 -0.64L-0.97 -1.06L-1.11 -0.64C-1.14 -0.58 -1.14 -0.51 -1.13 -0.45C-1.1 -0.36 -1.02 -0.31 -0.93 -0.32C-0.85 -0.33 -0.78 -0.39 -0.77 -0.48C-0.76 -0.53 -0.76 -0.59 -0.78 -0.64Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-0.25 -1.23L-0.46 -0.94M-0.25 -1.23L-0.01 -0.95M0.34 -1.66L0.12 -1.37M0.34 -1.66L0.57 -1.39M-2.25 0.87L-1.87 0.87L-1.87 0.54L-1.5 0.54L-1.5 1.31L1.5 1.31L1.5 0.54L1.83 0.54L1.83 0.87L2.25 0.87M-1.28 0.64C-1.28 0.64 -1.11 0.45 -0.91 0.49C-0.74 0.52 -0.62 0.71 -0.45 0.69C-0.31 0.67 -0.22 0.53 -0.08 0.51C0.09 0.49 0.22 0.65 0.38 0.65C0.54 0.65 0.65 0.51 0.81 0.48C1.06 0.42 1.26 0.68 1.26 0.68M-0.27 0.25C-0.27 0.25 -0.24 0.17 -0.27 0.09C-0.31 0.01 -0.41 -0.03 -0.41 -0.12C-0.41 -0.25 -0.18 -0.19 -0.13 -0.32C-0.08 -0.45 -0.34 -0.47 -0.35 -0.62C-0.36 -0.7 -0.29 -0.77 -0.25 -0.84C-0.15 -1.02 -0.25 -1.23 -0.25 -1.23M0.31 -0.18C0.31 -0.18 0.35 -0.27 0.31 -0.34C0.28 -0.42 0.18 -0.46 0.18 -0.55C0.18 -0.68 0.41 -0.63 0.46 -0.75C0.51 -0.89 0.24 -0.9 0.23 -1.06C0.23 -1.14 0.3 -1.2 0.34 -1.27C0.43 -1.45 0.34 -1.66 0.34 -1.66\"/></svg>","windcatcher":"<svg viewBox=\"-2.42 -2.42 4.83 4.83\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"currentColor\" d=\"M-0.86 2.26L-0.86 -0.65L-1 -0.65L-1 2.2C-0.95 2.22 -0.91 2.24 -0.86 2.26ZM-0.12 -1.64L-0.12 2.41L0.09 2.41L0.09 -1.64L-0.12 -1.64ZM0.91 -1.64L0.91 -1.8L-0.96 -1.8L-0.96 -1.64L0.91 -1.64ZM0.91 -0.69L0.77 -0.69L0.77 2.29C0.81 2.28 0.86 2.26 0.91 2.24L0.91 -0.69Z\"/><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M-0.65 1.65L-0.42 1.83M-0.42 1.83L-0.29 1.66M1.16 -1.3L1.34 -1.06M1.34 -1.06L1.16 -0.88M-0.96 -1.8L0.91 -1.8L0.91 -1.64L-0.96 -1.64L-0.96 -1.8ZM-0.12 -1.64L0.09 -1.64L0.09 2.41L-0.12 2.41L-0.12 -1.64ZM-1 -0.65L-0.86 -0.65L-0.86 2.26L-1 2.26L-1 -0.65ZM0.91 -0.69L0.77 -0.69L0.77 2.29L0.91 2.29L0.91 -0.69ZM-1.68 -1.17C-1.68 -1.17 -1.52 -1.07 -1.35 -1.07C-1.08 -1.07 -0.85 -1.3 -0.62 -1.19C-0.4 -1.09 -0.44 -0.79 -0.48 -0.54C-0.54 -0.16 -0.64 0.22 -0.62 0.61C-0.59 0.98 -0.45 1.33 -0.45 1.7C-0.44 1.75 -0.45 1.79 -0.45 1.79M0.42 0.64C0.42 0.64 0.58 0.28 0.52 -0.09C0.48 -0.39 0.3 -0.66 0.35 -0.95C0.4 -1.19 0.61 -1.41 0.82 -1.31C0.97 -1.24 0.98 -1.09 1.21 -1.06\"/></svg>","solar_gains":"<svg viewBox=\"-2.4 -2.4 4.8 4.8\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"none\" stroke=\"currentColor\" stroke-width=\".15\" stroke-linecap=\"round\" d=\"M0.5 0A0.5 0.5 0 1 1 -0.5 0A0.5 0.5 0 1 1 0.5 0ZM0.8 0L1.7 0M0.57 0.57L1.2 1.2M0 0.8L0 1.7M-0.57 0.57L-1.2 1.2M-0.8 0L-1.7 0M-0.57 -0.57L-1.2 -1.2M-0 -0.8L-0 -1.7M0.57 -0.57L1.2 -1.2\"/></svg>"};
+const STRAT_CAT_COL={'heat harvesting':'#F0DC4E','heat preservation':'#78B7E6','heat prevention':'#ED7470','heat attenuation':'#F3B33E','heat dissipation':'#CA71F7'};
+const STRAT_LIST_DEFAULT=[["heat harvesting","albedo_high_absorbtion"],["heat harvesting","solar_gains_orientation"],["heat harvesting","greenhouse_effect"],["heat harvesting","solar_gains"],["heat preservation","insulation"],["heat preservation","compactness_heat_preservation"],["heat prevention","shading"],["heat prevention","albedo_high_reflection"],["heat prevention","floorplan_section_layout"],["heat prevention","openings_aperture"],["heat prevention","solar_control_glazing"],["heat prevention","topography"],["heat prevention","facade_micro_shading"],["heat prevention","vegetative_shading"],["heat attenuation","high_thermal_mass"],["heat attenuation","troglodytic"],["heat attenuation","subterranean"],["heat attenuation","earth_to_air_channels"],["heat attenuation","hygroscopic_materials"],["heat attenuation","phase_changing_materials"],["heat dissipation","windcatcher"],["heat dissipation","elevated_groundfloor_convection"],["heat dissipation","micropores_convection"],["heat dissipation","cross_ventilation"],["heat dissipation","ventilated_roof_convection"],["heat dissipation","stack_effect"],["heat dissipation","solar_chimney_stack_effect"],["heat dissipation","atrium_stack_effect"],["heat dissipation","courtyard_stack_effect"],["heat dissipation","thermal_emissive_roof"],["heat dissipation","water_features_evaporation"],["heat dissipation","vegetative_evaporation"]];
+let STRAT_LIST=STRAT_LIST_DEFAULT.map(a=>({cat:a[0],key:a[1]}));
+/* spelling variants found in the workbook, mapped to the list names */
+const STRAT_ALIAS={trogolodytic:'troglodytic',coutyard_stack_effect:'courtyard_stack_effect',thermal_mass:'high_thermal_mass',albedo_high_absorption:'albedo_high_absorbtion'};
+function stratNorm(s){const k=String(s==null?'':s).trim().toLowerCase().replace(/[\s\-]+/g,'_');return STRAT_ALIAS[k]||k;}
+function stratInfo(k){return STRAT_LIST.find(s=>s.key===k)||null;}
+function stratOrder(k){const i=STRAT_LIST.findIndex(s=>s.key===k);return i<0?999:i;}
+function stratLabel(k){const t=String(k).replace(/_/g,' ').replace('absorbtion','absorption');return t.charAt(0).toUpperCase()+t.slice(1);}
+function stratCatLabel(k){const i=stratInfo(k);return i?i.cat.charAt(0).toUpperCase()+i.cat.slice(1):'';}
+function stratColor(k){const i=stratInfo(k);return i?(STRAT_CAT_COL[i.cat]||'#C7C7C7'):'#C7C7C7';}
+function stratIconHTML(k,px){return '<span class="si" style="width:'+px+'px;height:'+px+'px;background:'+stratColor(k)+'">'+(STRAT_ICONS[k]||'')+'</span>';}
+function parseStrategyList(wb){
+  try{
+    const sn=wb.SheetNames.find(n=>n.toLowerCase().trim()==='list of strategies');if(!sn)return;
+    const rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:null,raw:true});
+    let cat='';const out=[],seen=new Set();
+    rows.forEach(r=>{
+      if(!r)return;
+      if(r[0]!=null&&String(r[0]).trim())cat=String(r[0]).trim().toLowerCase();
+      const k=r[1]!=null?stratNorm(r[1]):'';
+      if(k&&cat&&!seen.has(k)){seen.add(k);out.push({cat:cat,key:k});}
+    });
+    if(out.length)STRAT_LIST=out;
+  }catch(e){console.warn('list of strategies could not be read',e);}
+}
+/* strategies of one case as Map(key to weight): primary 1, secondary 0.5 */
+function fsStratMap(c){
+  const m=new Map();
+  (c.stratP||[]).forEach(x=>{const k=stratNorm(x);if(k)m.set(k,1);});
+  (c.stratS||[]).forEach(x=>{const k=stratNorm(x);if(k&&!m.has(k))m.set(k,0.5);});
+  return m;
+}
+/* typicality = weighted share of the case studies WITH strategy data that list the strategy */
+function fsTypicality(pool){
+  const withData=pool.filter(c=>fsStratMap(c).size>0),T=new Map();
+  withData.forEach(c=>fsStratMap(c).forEach((w,k)=>T.set(k,(T.get(k)||0)+w)));
+  const n=withData.length;
+  const ranked=[...T.entries()].map(e=>({key:e[0],score:e[1]/n})).sort((a,b)=>b.score-a.score||stratOrder(a.key)-stratOrder(b.key));
+  return {ranked:ranked,n:n,T:new Map(ranked.map(r=>[r.key,r.score]))};
+}
+/* fit of a best practice case: its strategies' typicality (primary x1, secondary x0.5)
+   divided by the best it could score with the same number of primary and secondary slots */
+function fsFit(c,typ){
+  const m=fsStratMap(c);if(!m.size||!typ.n)return null;
+  let nP=0,nS=0,score=0;
+  m.forEach((w,k)=>{if(w===1)nP++;else nS++;score+=w*(typ.T.get(k)||0);});
+  const s=typ.ranked.map(r=>r.score);
+  let ideal=0;
+  for(let i=0;i<nP;i++)ideal+=s[i]||0;
+  for(let i=nP;i<nP+nS;i++)ideal+=0.5*(s[i]||0);
+  return ideal>0?Math.min(1,score/ideal):0;
+}
+
+/* ---------- pin climate: nearest EPW station within 150 m of the pin elevation ---------- */
+const FS_ELEV_BAND=150;
+const FS_SCN=['present','2050','2080'];
+async function fsPinElevation(lat,lon){
+  try{
+    const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),5000);
+    const r=await fetch('https://api.open-meteo.com/v1/elevation?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4),{signal:ctl.signal});
+    clearTimeout(t);const j=await r.json();
+    return Array.isArray(j.elevation)&&j.elevation[0]!=null?j.elevation[0]:null;
+  }catch(e){return null;}
+}
+async function fsPinClimate(lat,lon){
+  const out={zone:null,basis:'',warn:false,elevPin:null,station:null,dist:null,scn:scn};
+  const elev=await fsPinElevation(lat,lon);out.elevPin=elev;
+  const cands=CASES.filter(c=>c.hasCoord&&c.koppen&&c.koppen[scn]).map(c=>({c:c,d:haversineKm(lat,lon,c.lat,c.lon)})).sort((a,b)=>a.d-b.d);
+  if(!cands.length){out.basis='No case study has a Köppen zone for this scenario yet.';out.warn=true;return out;}
+  const pick=(x,basis,warn)=>{out.zone=x.c.koppen[scn];out.basis=basis;out.warn=!!warn;out.dist=x.d;return out;};
+  const withEpw=cands.filter(x=>x.c.epw).slice(0,24);
+  if(withEpw.length&&elev!=null){
+    let best=null;
+    for(let i=0;i<withEpw.length;i+=6){
+      const part=await Promise.all(withEpw.slice(i,i+6).map(x=>fetchStationCoord(x.c.epw).then(st=>({x:x,st:st})).catch(()=>({x:x,st:null}))));
+      part.forEach(p=>{
+        if(!p.st||p.st.elev==null||Math.abs(p.st.elev-elev)>FS_ELEV_BAND)return;
+        const ds=haversineKm(lat,lon,p.st.lat,p.st.lon);
+        if(!best||ds<best.ds)best={x:p.x,st:p.st,ds:ds};
+      });
+    }
+    if(best){out.station=best.x.c.epw.replace(/_TMYx\.\d{4}-\d{4}\.epw/,'').replace(/_/g,' ');out.stElev=best.st.elev;return pick({c:best.x.c,d:best.ds},'EPW station '+out.station+', '+Math.round(best.ds)+' km from the pin, station elevation '+Math.round(best.st.elev)+' m, pin elevation '+Math.round(elev)+' m.',false);}
+  }
+  /* no usable EPW header: use the case study positions and their own elevations */
+  if(elev!=null){
+    const near=cands.find(x=>x.c.elev!=null&&Math.abs(x.c.elev-elev)<=FS_ELEV_BAND);
+    if(near)return pick(near,'No EPW station within '+FS_ELEV_BAND+' m of the pin elevation ('+Math.round(elev)+' m) could be read. Used the nearest case study within that band instead: '+near.c.id+', '+Math.round(near.d)+' km away, '+Math.round(near.c.elev)+' m.',true);
+    return pick(cands[0],'Nothing within '+FS_ELEV_BAND+' m of the pin elevation ('+Math.round(elev)+' m). Used the nearest case study anyway: '+cands[0].c.id+', '+Math.round(cands[0].d)+' km away.',true);
+  }
+  return pick(cands[0],'Elevation of the pin could not be looked up (offline?). Used the nearest case study without an elevation check: '+cands[0].c.id+', '+Math.round(cands[0].d)+' km away.',true);
+}
+
+/* ---------- pin and popup on the main map ---------- */
+const FS={pin:null,circle:null,radius:300,res:null,sel:[],step:1,busy:false,mode:null};
+function fsPinIcon(){
+  const fr=(window.__LOADER_FRAMES||[])[0];
+  let svg='';
+  if(fr)svg=String(fr).replace(/viewBox="[^"]*"/,'viewBox="378 58 654 654" preserveAspectRatio="xMidYMid meet"');
+  return L.divIcon({className:'',html:'<div class="ufo-thumb ufo-pin"><div class="ufo-logo">'+svg+'</div></div>',iconSize:[44,44],iconAnchor:[22,22],popupAnchor:[0,-24]});
+}
+function fsPopupHTML(ll){
+  return '<div class="fs-pop-in">'+
+    '<div class="fs-pop-h">_find<span style="color:var(--terracotta)">STRATEGIES</span></div>'+
+    '<div class="fs-pop-c">'+ll.lat.toFixed(3)+'°, '+ll.lng.toFixed(3)+'°</div>'+
+    '<button class="avgt-launch-btn fs-opt" data-fs="around">&gt;find<em>STRATEGIES</em> around here</button>'+
+    '<div class="fs-radius" id="fsRadiusBox" hidden><label for="fsRadius">radius <span class="fs-rv" id="fsRv">'+FS.radius+' km</span></label>'+
+      '<input type="range" id="fsRadius" min="50" max="3000" step="50" value="'+FS.radius+'">'+
+      '<button class="avgt-launch-btn" id="fsGoAround">analyse</button></div>'+
+    '<button class="avgt-launch-btn fs-opt" data-fs="climate">&gt;find<em>STRATEGIES</em> for this or similar climate</button>'+
+    '<span class="fs-rm" id="fsRm">remove pin</span></div>';
+}
+function fsDrawCircle(){
+  if(!FS.pin||!map)return;
+  const ll=FS.pin.getLatLng();
+  if(!FS.circle)FS.circle=L.circle(ll,{radius:FS.radius*1000,color:'var(--terracotta)',weight:1.5,dashArray:'6,4',fill:true,fillColor:'var(--terracotta)',fillOpacity:0.05,interactive:false}).addTo(map);
+  else{FS.circle.setLatLng(ll);FS.circle.setRadius(FS.radius*1000);}
+}
+function fsClearCircle(){if(FS.circle&&map){map.removeLayer(FS.circle);}FS.circle=null;}
+function fsRemovePin(){
+  if(FS.pin&&map){FS.pin.closePopup();map.removeLayer(FS.pin);}
+  FS.pin=null;fsClearCircle();
+}
+function fsBindPopup(){
+  const pop=FS.pin.getPopup();
+  const root=pop&&pop.getElement();if(!root)return;
+  const inner=root.querySelector('.fs-pop-in');if(!inner||inner.dataset.bound)return;inner.dataset.bound='1';   /* wire each rendering once */
+  root.querySelectorAll('.fs-opt').forEach(b=>b.addEventListener('click',()=>{
+    if(b.dataset.fs==='around'){
+      const box=root.querySelector('#fsRadiusBox');box.hidden=false;fsDrawCircle();if(typeof pop._adjustPan==='function')pop._adjustPan();   /* not pop.update(): it would rebuild the content and lose this state */
+    }else{fsClearCircle();fsStart('climate');}
+  }));
+  const sl=root.querySelector('#fsRadius');
+  if(sl)sl.addEventListener('input',()=>{FS.radius=+sl.value;root.querySelector('#fsRv').textContent=FS.radius+' km';fsDrawCircle();});
+  const go=root.querySelector('#fsGoAround');if(go)go.addEventListener('click',()=>fsStart('around'));
+  const rm=root.querySelector('#fsRm');if(rm)rm.addEventListener('click',fsRemovePin);
+}
+function fsPlacePin(ll){
+  if(!FS.pin){
+    FS.pin=L.marker(ll,{draggable:true,icon:fsPinIcon(),zIndexOffset:900}).addTo(map);
+    FS.pin.bindPopup(fsPopupHTML(ll),{className:'fs-pop',closeOnClick:false,autoClose:false,autoPan:true,autoPanPaddingTopLeft:[20,80],autoPanPaddingBottomRight:[20,20],maxWidth:320});
+    FS.pin.on('popupopen',()=>setTimeout(fsBindPopup,0));
+    FS.pin.on('dragstart',()=>fsClearCircle());
+    FS.pin.on('dragend',()=>{const p=FS.pin.getLatLng().wrap();FS.pin.setLatLng(p);FS.pin.setPopupContent(fsPopupHTML(p));FS.pin.openPopup();setTimeout(fsBindPopup,0);});
+  }else{
+    FS.pin.setLatLng(ll);fsClearCircle();FS.pin.setPopupContent(fsPopupHTML(ll));
+  }
+  FS.pin.openPopup();setTimeout(fsBindPopup,0);
+}
+function fsOnMapClick(e){
+  const t=e.originalEvent&&e.originalEvent.target;
+  if(t&&t.closest&&t.closest('.leaflet-interactive,.leaflet-marker-icon,.leaflet-popup,.leaflet-control,.station-marker-icon'))return;
+  const avg=document.getElementById('avgTypWin');
+  if(avg&&!avg.classList.contains('avgt-hidden'))return;
+  if(document.body.classList.contains('mobile-mode'))return;
+  fsPlacePin(e.latlng.wrap());   /* wrap: the map repeats the world, longitudes can be beyond 180 */
+}
+
+/* ---------- running an analysis ---------- */
+async function fsStart(mode){
+  if(FS.busy||!FS.pin)return;
+  FS.busy=true;FS.mode=mode;
+  const ll=FS.pin.getLatLng().wrap();
+  FS.pin.closePopup();
+  fsOpenWin();
+  document.getElementById('fsLeft').innerHTML='<div class="fs-loading">analysing</div>';
+  document.getElementById('fsRightScroll').innerHTML='';
+  document.getElementById('fsSub').textContent='';
+  try{
+    let pool,meta={};
+    if(mode==='around'){
+      meta={r:FS.radius};
+      pool=CASES.filter(c=>c.hasCoord).map(c=>({c:c,d:haversineKm(ll.lat,ll.lng,c.lat,c.lon)})).filter(x=>x.d<=FS.radius).sort((a,b)=>a.d-b.d).map(x=>x.c);
+    }else{
+      meta=await fsPinClimate(ll.lat,ll.lng);
+      pool=meta.zone?CASES.filter(c=>c.koppen&&c.koppen[scn]===meta.zone):[];
+    }
+    const typ=fsTypicality(pool);
+    const bpcs=BPCS.map(c=>({c:c,fit:fsFit(c,typ)})).sort((a,b)=>(b.fit==null?-1:b.fit)-(a.fit==null?-1:a.fit)||a.c.id.localeCompare(b.c.id));
+    FS.res={mode:mode,ll:ll,meta:meta,pool:pool,typ:typ,bpcs:bpcs};
+    FS.sel=[];FS.step=1;
+    fsRender();
+  }catch(err){
+    console.error(err);
+    document.getElementById('fsLeft').innerHTML='<div class="fs-info warn">The analysis failed: '+aqEsc(err&&err.message||err)+'</div>';
+  }
+  FS.busy=false;
+}
+
+/* ---------- window ---------- */
+function fsOpenWin(){
+  const w=document.getElementById('fsWin');w.classList.remove('fs-hidden');
+  fsGoStep(1);
+}
+function fsCloseWin(){document.getElementById('fsWin').classList.add('fs-hidden');fsCloseModal();}
+function fsGoStep(n){
+  FS.step=n;
+  [1,2,3].forEach(i=>{document.getElementById('fsStage'+i).hidden=(i!==n);});
+  document.getElementById('fsBack').hidden=(n===1);
+  document.getElementById('fsNextTxt').textContent=(n===3)?'close find strategies':'further';
+  document.getElementById('fsStepLbl').textContent='step '+n+' of 3';
+}
+function fsDonut(p,size){
+  const r=size/2-4,c=2*Math.PI*r,d=c*Math.max(0,Math.min(1,p));
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'"><circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="var(--line)" stroke-width="4.5"/>'+
+    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="var(--terracotta)" stroke-width="4.5" stroke-dasharray="'+d.toFixed(1)+' '+c.toFixed(1)+'" transform="rotate(-90 '+size/2+' '+size/2+')"/>'+
+    '<text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" font-family="var(--mono)" font-size="'+(size*0.28)+'" font-weight="700" fill="var(--ink)">'+Math.round(p*100)+'%</text></svg>';
+}
+function fsChip(k,w){return '<span class="fs-chip'+(w<1?' s':'')+'" title="'+aqEsc(stratCatLabel(k))+'">'+stratIconHTML(k,16)+aqEsc(stratLabel(k))+'</span>';}
+function fsCardHTML(r,i,big){
+  const k=r.key,cls=big?'fs-card'+(i===0?' first':''):'fs-card small';
+  return '<div class="'+cls+'"><span class="fs-rank">'+(i+1)+'</span>'+stratIconHTML(k,big?(i===0?64:52):44)+
+    '<div class="fs-card-name">'+aqEsc(stratLabel(k))+'</div><div class="fs-card-cat">'+aqEsc(stratCatLabel(k))+'</div>'+
+    '<div class="fs-donut">'+fsDonut(r.score,big?(i===0?54:46):40)+'<span>typicality in '+(FS.res.mode==='climate'?'this climate':'this area')+'</span></div></div>';
+}
+function fsRender(){
+  const R=FS.res;if(!R)return;
+  const here=R.mode==='climate'?'this climate':'this area';
+  /* title line */
+  document.getElementById('fsSub').textContent=R.mode==='around'
+    ?R.ll.lat.toFixed(2)+'°, '+R.ll.lng.toFixed(2)+'°, radius '+R.meta.r+' km, '+R.pool.length+' case stud'+(R.pool.length===1?'y':'ies')
+    :(R.meta.zone?'Köppen '+R.meta.zone+' ('+FS_SCN[R.meta.scn]+'), '+R.pool.length+' case stud'+(R.pool.length===1?'y':'ies'):'climate not found');
+  /* left: typical strategies, then catalogue */
+  let info='';
+  if(R.mode==='climate'){
+    info='<div class="fs-info'+(R.meta.warn?' warn':'')+'">Pin climate: <b>'+(R.meta.zone?aqEsc(R.meta.zone):'unknown')+'</b>, '+aqEsc(FS_SCN[R.meta.scn])+' scenario. '+aqEsc(R.meta.basis)+'<br>For now all case studies in the same Köppen zone are used.</div>';
+  }
+  const typ=R.typ,top=typ.ranked.slice(0,3),rest=typ.ranked.slice(3,8),more=typ.ranked.slice(8);
+  let typHTML='<div class="fs-sec"><h2 class="fs-h">Typical strategies in '+here+'</h2>'+
+    '<p class="fs-note">Ranked by typicality: the share of the case studies with strategy data that list the strategy (primary counts 1, secondary 0.5). It shows what is common in the profile, not a measured frequency at the exact pin.'+
+    (typ.n?' Based on '+typ.n+' of '+R.pool.length+' case stud'+(R.pool.length===1?'y':'ies')+' with strategy data.':'')+'</p>';
+  if(!typ.n){
+    typHTML+='<div class="fs-info warn">'+(R.pool.length?'None of the '+R.pool.length+' case studies found has strategies filled in yet (columns Strategy_primary and Strategy_secondary), so there is nothing to rank.':'No case studies found.')+'</div>';
+  }else{
+    typHTML+='<div class="fs-typ-top">'+top.map((r,i)=>fsCardHTML(r,i,true)).join('')+'</div>';
+    if(rest.length)typHTML+='<div class="fs-typ-rest">'+rest.map((r,i)=>fsCardHTML(r,i+3,false)).join('')+'</div>';
+    if(more.length)typHTML+='<div class="fs-more"><b>Also found:</b> '+more.map(r=>aqEsc(stratLabel(r.key))+' '+Math.round(r.score*100)+'%').join(', ')+'</div>';
+  }
+  typHTML+='</div>';
+  let csHTML='<div class="fs-sec"><h2 class="fs-h">Case studies that fit</h2><p class="fs-note">'+R.pool.length+' vernacular case stud'+(R.pool.length===1?'y':'ies')+(R.mode==='around'?' within '+R.meta.r+' km, nearest first.':' in the same Köppen zone.')+' Primary strategies are solid, secondary strategies dashed.</p>';
+  if(!R.pool.length)csHTML+='<div class="fs-none">No case studies found.</div>';
+  else csHTML+=R.pool.map(c=>{
+    const m=fsStratMap(c),chips=[...m.entries()].sort((a,b)=>b[1]-a[1]||stratOrder(a[0])-stratOrder(b[0])).map(e=>fsChip(e[0],e[1])).join('');
+    const kc=c.koppen&&c.koppen[scn]?'<span class="fs-kc">'+aqEsc(c.koppen[scn])+'</span>':'';
+    return '<div class="fs-cs-row"><div><div class="fs-cs-n">'+aqEsc(c.name||c.id)+'</div><div class="fs-cs-m">'+aqEsc(c.id)+(c.country?', '+aqEsc(c.country):'')+kc+'</div></div>'+
+      '<div class="fs-chips">'+(chips||'<span class="fs-none">no strategies filled in yet</span>')+'</div></div>';
+  }).join('');
+  csHTML+='</div>';
+  document.getElementById('fsLeft').innerHTML=info+typHTML+csHTML;
+  /* right: best practice cases */
+  const noFit=!typ.n;
+  document.getElementById('fsRightScroll').innerHTML=
+    '<h2 class="fs-h">Best practice cases</h2><p class="fs-note">'+(noFit?'The fit cannot be computed yet because the typical strategies above are empty. ':'Ranked by how well their strategy profile fits the typical strategies of '+here+'. ')+
+    'Click a case to open it. Drag the ones you like into the box below.</p><div class="fs-bpc-grid" id="fsBpcGrid"></div>';
+  const grid=document.getElementById('fsBpcGrid');
+  R.bpcs.forEach(o=>{
+    const c=o.c,m=fsStratMap(c);
+    const P=[...m.entries()].filter(e=>e[1]===1),S=[...m.entries()].filter(e=>e[1]<1);
+    const el=document.createElement('div');el.className='fs-bpc';el.draggable=true;el.dataset.id=c.id;
+    el.innerHTML='<div class="fs-bpc-img">no photo yet</div><div class="fs-bpc-b"><div class="fs-bpc-name">'+aqEsc(c.name||c.id)+'</div>'+
+      '<div class="fs-fit"><i><b style="width:'+(o.fit==null?0:Math.round(o.fit*100))+'%"></b></i><span>'+(o.fit==null?'n/a':Math.round(o.fit*100)+'%')+'</span></div>'+
+      (P.length?'<div class="fs-lbl">primary</div><div class="fs-chips">'+P.map(e=>fsChip(e[0],1)).join('')+'</div>':'')+
+      (S.length?'<div class="fs-lbl">secondary</div><div class="fs-chips">'+S.map(e=>fsChip(e[0],0.5)).join('')+'</div>':'')+
+      (!m.size?'<div class="fs-none">no strategies filled in yet</div>':'')+'</div>';
+    el.addEventListener('click',()=>fsOpenCard(c.id));
+    el.addEventListener('dragstart',ev=>{ev.dataTransfer.setData('text/plain',c.id);ev.dataTransfer.effectAllowed='move';});
+    el.addEventListener('dblclick',ev=>{ev.preventDefault();fsPick(c.id);});
+    grid.appendChild(el);
+    fsLazyPhoto(el,c);
+  });
+  fsRenderBox();
+}
+function fsLazyPhoto(el,c){
+  const load=()=>{
+    fetchPhotos(c.id).then(urls=>{
+      const box=el.querySelector('.fs-bpc-img');if(!box||!urls||!urls.length)return;
+      box.innerHTML='<img alt="" loading="lazy" draggable="false" src="'+aqEsc(urls[0])+'">';
+    }).catch(()=>{});
+  };
+  if('IntersectionObserver' in window){
+    const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();load();}},{root:document.getElementById('fsRightScroll'),rootMargin:'200px'});
+    io.observe(el);
+  }else load();
+}
+
+/* ---------- reference box ---------- */
+function fsPick(id){if(!FS.sel.includes(id)){FS.sel.push(id);fsRenderBox();}}
+function fsUnpick(id){FS.sel=FS.sel.filter(x=>x!==id);fsRenderBox();}
+function fsRenderBox(){
+  const box=document.getElementById('fsBox');if(!box)return;
+  const items=FS.sel.map(id=>byBpc(id)).filter(Boolean);
+  box.innerHTML='<div class="fs-box-h">Reference box'+(items.length?' ('+items.length+')':'')+'</div>'+
+    (items.length?'<div class="fs-box-items">'+items.map(c=>'<div class="fs-pick" draggable="true" data-id="'+aqEsc(c.id)+'"><span class="ph"></span><span>'+aqEsc(c.name||c.id)+'</span><span class="x" data-x="'+aqEsc(c.id)+'" title="Remove">&times;</span></div>').join('')+'</div>'
+      :'<div class="fs-box-hint">Drag the best practice cases you like into this box. They become the references for your project.</div>');
+  box.querySelectorAll('.fs-pick').forEach(p=>{
+    const id=p.dataset.id;
+    p.querySelector('.x').addEventListener('click',()=>fsUnpick(id));
+    p.addEventListener('dragstart',ev=>{ev.dataTransfer.setData('text/plain',id);ev.dataTransfer.setData('text/x-fs-from-box','1');});
+    fetchPhotos(id).then(urls=>{const ph=p.querySelector('.ph');if(ph&&urls&&urls.length){const im=document.createElement('img');im.src=urls[0];im.alt='';im.draggable=false;ph.replaceWith(im);}}).catch(()=>{});
+  });
+  document.querySelectorAll('#fsBpcGrid .fs-bpc').forEach(el=>el.classList.toggle('picked',FS.sel.includes(el.dataset.id)));
+}
+function fsWireDnD(){
+  const box=document.getElementById('fsBox'),scroll=document.getElementById('fsRightScroll');
+  box.addEventListener('dragover',e=>{e.preventDefault();box.classList.add('over');});
+  box.addEventListener('dragleave',e=>{if(!box.contains(e.relatedTarget))box.classList.remove('over');});
+  box.addEventListener('drop',e=>{e.preventDefault();box.classList.remove('over');const id=e.dataTransfer.getData('text/plain');if(id&&byBpc(id))fsPick(id);});
+  /* dropping a box item back onto the grid takes it out again */
+  scroll.addEventListener('dragover',e=>e.preventDefault());
+  scroll.addEventListener('drop',e=>{e.preventDefault();const id=e.dataTransfer.getData('text/plain');if(id&&e.dataTransfer.types.includes('text/x-fs-from-box'))fsUnpick(id);});
+}
+
+/* ---------- the normal bpc info card, opened on top of the window ---------- */
+function fsOpenCard(id){
+  const c=byBpc(id);if(!c)return;
+  currentBpcTab.F=currentBpcTab.F||'bpc';currentClimateTab.F=currentClimateTab.F||'psychro';
+  document.getElementById('fsModalBody').innerHTML=bpcDetailHTML(c,'F');
+  document.getElementById('fsModal').classList.remove('fs-hidden');
+  wireBpcDetail(c,'F');
+}
+function fsCloseModal(){const m=document.getElementById('fsModal');if(m)m.classList.add('fs-hidden');const b=document.getElementById('fsModalBody');if(b)b.innerHTML='';}
+
+function initFindStrategies(){
+  if(!map)return;
+  map.on('click',fsOnMapClick);
+  document.getElementById('fsCloseBtn').addEventListener('click',fsCloseWin);
+  document.getElementById('fsSizeBtn').addEventListener('click',()=>document.getElementById('fsWin').classList.toggle('fs-full'));
+  document.getElementById('fsNext').addEventListener('click',()=>{if(FS.step>=3){fsCloseWin();}else fsGoStep(FS.step+1);});
+  document.getElementById('fsBack').addEventListener('click',()=>fsGoStep(Math.max(1,FS.step-1)));
+  document.getElementById('fsModalX').addEventListener('click',fsCloseModal);
+  document.getElementById('fsModal').addEventListener('click',e=>{if(e.target.id==='fsModal')fsCloseModal();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.getElementById('fsModal');if(m&&!m.classList.contains('fs-hidden'))fsCloseModal();}});
+  fsWireDnD();
+}
+
+initFindStrategies();
 </script>
 <div id="infoPopoverPortal" style="position:fixed;inset:0;pointer-events:none;z-index:99999;overflow:visible;"></div>
 </body>
