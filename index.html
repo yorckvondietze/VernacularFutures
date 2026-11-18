@@ -1965,7 +1965,20 @@ html[data-theme="dark"] .loader-status{
 .avgt-launch-btn.active{background:var(--terracotta);color:var(--paper);}
 
 /* ===================== findSTRATEGIES ===================== */
-.ufo-pin{position:relative!important;left:auto!important;top:auto!important;transform:none!important;pointer-events:auto!important;cursor:grab;width:44px;height:44px;border:2px solid #fff;}
+.fs-ufo-icon{background:none!important;border:0!important;}
+.fs-ufo-wrap{position:absolute;left:0;top:0;transform-origin:50% 95.7%;transition:transform .4s ease;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.22));}
+.fs-ufo{display:block;width:100%;height:100%;overflow:visible;pointer-events:none;}
+.fs-ufo .u{fill:#585858;}
+.fs-ufo .w{fill:#fff;}
+.fs-ufo .bs{stop-color:#cacaca;}
+html[data-theme="dark"] .fs-ufo .u,html[data-theme="dark"] .fs-ufo .w{fill:#e6e6e6;}
+html[data-theme="dark"] .fs-ufo .bs{stop-color:#e6e6e6;}
+.fs-ufo-g path{pointer-events:visiblePainted;}
+.fs-ufo-g .fs-hit{fill:transparent;pointer-events:all;}
+/* while it abducts the ufo grows, anchored at the foot of the beam */
+.fs-ufo-wrap.fs-busy{transform:scale(2);}
+@keyframes fsHover{0%,100%{transform:translateY(0);}50%{transform:translateY(-9px);}}
+.fs-ufo-wrap:not(.fs-busy) .fs-ufo-g{animation:fsHover 3.4s ease-in-out infinite;}
 .fs-pop .leaflet-popup-content-wrapper{border-radius:0;border:1px solid var(--line-strong);background:var(--paper);color:var(--ink);box-shadow:0 8px 30px rgba(0,0,0,.25);font-family:var(--mono);}
 .fs-pop .leaflet-popup-tip{background:var(--paper);border:1px solid var(--line-strong);}
 .fs-pop .leaflet-popup-content{margin:12px 14px;width:auto!important;min-width:250px;}
@@ -2140,7 +2153,7 @@ body.mobile-mode .fs-pop,body.mobile-mode #fsWin{font-size:12px;}
 <div class="fs-mock fs-mock-fixed" hidden>mockup: strategies of the case studies are fake</div>
 <div id="siteLoader">
   <div class="loader-controls">
-    <span class="vf-version">v414</span>
+    <span class="vf-version">v416</span>
     <button class="theme-toggle" id="loaderThemeToggle" title="Toggle dark mode">☾</button>
     <span class="c-game" id="loaderGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span>
   </div>
@@ -2155,7 +2168,7 @@ body.mobile-mode .fs-pop,body.mobile-mode #fsWin{font-size:12px;}
 <div class="win-titlebar">
   <span class="win-title">vernacularfutures</span>
   <span class="win-controls">
-    <span class="vf-version">v414</span>
+    <span class="vf-version">v416</span>
     <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">☾</button>
     <span class="c-game" id="openGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span></span>
 </div>
@@ -2633,7 +2646,7 @@ let currentCsTab={A:'building',B:'building'}; /* remembered across scenario chan
    Live:   const DATA_BASE='https://f005.backblazeb2.com/file/morphshift-data'; (B2 direct)
    -------------------------------------------------------------------- */
 const DATA_BASE='https://pub-8944e9777b04487cb29b19062000de40.r2.dev';
-const BUILD_TS='20261118_002';
+const BUILD_TS='20261118_004';
 let modeUnlocked=false;
 /* DEMO_CASES_SEED removed: case data comes from R2 only, see fetchFullModeRaw/setAppMode. */
 let FULL_CASES_RAW=null;
@@ -12960,12 +12973,73 @@ async function fsPinClimate(lat,lon){
 }
 
 /* ---------- pin and popup on the main map ---------- */
-const FS={pin:null,circle:null,radius:300,res:null,sel:[],step:1,busy:false,mode:null};
+const FS={pin:null,circle:null,radius:300,res:null,sel:[],step:1,busy:false,mode:null,anim:false};
+/* The pin is the UFO. It hovers above the clicked spot (the foot of the beam is the exact point).
+   Idle: ufo only. On analyse: the beam extends, the building rises in it and disappears into the ufo. */
+const FS_UFO={"ufo": ["M320.93,53.12c-.65-.05-1.3-.1-1.95-.15-1.55-.12-3.1-.23-4.66-.35-1.7-.13-3.42-.25-5.14-.36-1.71-.12-3.44-.23-5.16-.33-1.73-.11-3.46-.21-5.2-.31s-3.48-.19-5.23-.28c-1.74-.09-3.5-.17-5.25-.25-1.76-.08-3.52-.16-5.28-.23-1.76-.07-3.53-.14-5.3-.2-5.32-.19-10.67-.34-16.05-.44-2.24-.05-4.47-.09-6.71-.12-1.53-.02-3.05-.04-4.58-.05-3.46-.03-6.92-.05-10.4-.05-2.42,0-4.84.01-7.25.03-1.66,0-3.32.02-4.97.04-5.78.06-11.52.17-17.23.33-1.85.05-3.7.11-5.55.17-1.69.05-3.38.11-5.07.18-2.38.08-4.75.18-7.11.28-1.59.07-3.17.15-4.74.23-1.14.05-2.28.11-3.41.17-1.52.08-3.04.16-4.56.25-1.49.09-2.97.18-4.44.27-1.3.07-2.59.16-3.89.25-2.42.16-4.82.33-7.21.5-1.18.08-2.36.17-3.53.27-1.42.11-2.84.22-4.24.34-1.91.15-3.81.32-5.7.49-.74.06-1.48.12-2.21.19C158.11,22.5,193.66,0,235.05,0s76.27,22.14,85.88,53.12Z", "M316.7,107.47c-.14.17-.45.47-1.11.88l-.37.22-6.38,8.01c-2.4-1.97-6.2-3.21-9.68-4.13-13.2-3.47-37.76-5.62-64.11-5.62s-50.92,2.15-64.12,5.62c-3.47.92-7.27,2.16-9.67,4.13l-6.37-8.01-.37-.22c-.66-.41-.98-.71-1.12-.88,2.51-3.73,31.15-10.11,81.65-10.11s79.14,6.38,81.65,10.11Z", "M327.55,58.69c69.34,6.12,122.55,19.44,143.16,34.82-.25-.11-.51-.23-.77-.33-.69-.3-1.41-.6-2.15-.9-.37-.15-.75-.29-1.13-.44-.38-.15-.77-.29-1.16-.44-.8-.31-1.63-.6-2.48-.89-.82-.28-1.66-.56-2.53-.84-.88-.29-1.79-.57-2.72-.85-.69-.21-1.39-.42-2.11-.62-.72-.21-1.44-.41-2.19-.61-.49-.14-.99-.27-1.5-.41-.58-.16-1.16-.31-1.75-.46-.43-.11-.87-.22-1.31-.33-.55-.13-1.1-.27-1.66-.41-2.23-.54-4.55-1.07-6.96-1.59-.59-.13-1.19-.26-1.8-.38-1.69-.36-3.43-.71-5.21-1.06-1.41-.28-2.85-.55-4.32-.82-1-.18-2.01-.36-3.03-.55-.77-.14-1.54-.27-2.33-.4-.39-.07-.79-.14-1.18-.2-1.98-.34-4-.67-6.07-.99-1.47-.24-2.96-.47-4.48-.69-.72-.11-1.44-.22-2.16-.32-.73-.11-1.45-.21-2.19-.32-2.19-.31-4.42-.62-6.68-.92s-4.55-.59-6.88-.88c-.77-.1-1.55-.19-2.33-.28-4.19-.5-8.48-.99-12.86-1.45-.51-.06-1.02-.11-1.53-.16-.82-.08-1.64-.16-2.47-.25-1.12-.11-2.24-.22-3.37-.33-2.48-.24-4.98-.48-7.51-.7-.57-.05-1.14-.1-1.71-.15-.85-.07-1.71-.15-2.57-.22-1.71-.15-3.44-.29-5.18-.43-.87-.07-1.75-.14-2.62-.21-13.13-1.02-26.84-1.86-41-2.5-1.61-.08-3.22-.15-4.84-.21-2.34-.1-4.68-.2-7.04-.29-3.34-.12-6.7-.23-10.08-.34-6.18-.19-12.43-.34-18.74-.45-3.58-.07-7.19-.13-10.82-.16-6.37-.08-12.8-.12-19.27-.12s-12.88.04-19.25.11c-5.54.07-11.04.16-16.49.28-4.38.1-8.73.21-13.04.34-3.4.1-6.78.22-10.13.34-2.36.09-4.71.19-7.04.29-1.62.06-3.23.13-4.84.21-14.16.64-27.88,1.48-41,2.5-1.48.11-2.95.23-4.41.35-1.14.1-2.26.19-3.39.29-.86.07-1.72.15-2.57.22-.57.05-1.14.1-1.71.15-2.83.25-5.63.52-8.4.79-.83.07-1.66.16-2.48.24-.83.09-1.65.17-2.47.25-.51.05-1.02.1-1.53.16-2.02.21-4.02.43-6.01.65-1.98.22-3.95.44-5.89.68-1.11.13-2.21.26-3.3.4-.77.1-1.54.2-2.31.29-3.48.43-6.89.89-10.22,1.36-.35.05-.69.1-1.03.15-1.11.16-2.22.32-3.31.48-.35.05-.7.1-1.04.16-.76.11-1.51.23-2.26.34-1.43.22-2.84.45-4.23.67-.06,0-.12.01-.18.03-.72.12-1.44.23-2.15.35-2.13.36-4.22.71-6.25,1.08-1.35.23-2.68.48-3.99.73-.61.11-1.22.23-1.82.35-.6.12-1.2.23-1.79.35-1.18.23-2.34.46-3.48.71-.76.15-1.51.32-2.26.48-.6.13-1.19.26-1.77.39-.58.13-1.16.26-1.73.39s-1.13.26-1.69.39c-.45.1-.89.21-1.33.32-.39.09-.78.18-1.16.28-.38.09-.76.18-1.13.28-.4.1-.79.2-1.17.3-1.08.27-2.13.55-3.15.83-.63.17-1.25.34-1.85.52-1.22.34-2.39.69-3.54,1.05-.57.17-1.13.35-1.68.53-2.21.7-4.26,1.42-6.17,2.17-.38.15-.76.29-1.13.44-.37.15-.73.29-1.09.45-.36.15-.71.3-1.06.45-.19.08-.38.16-.56.24,6.82-5.07,17.19-9.99,30.71-14.49,26.18-8.71,62.6-15.48,105.35-19.61.05,0,.1-.01.15-.01.09,0,.2-.01.32-.03,29.84-2.84,61.45-4.28,93.95-4.28,28.95,0,57.24,1.14,84.06,3.4,1.16.1,2.32.2,3.47.29Z", "M304.27,121.87c-.61-.45-2.36-1.46-6.89-2.65-12.66-3.32-36.54-5.39-62.33-5.39s-49.68,2.07-62.34,5.39c-4.53,1.19-6.27,2.2-6.88,2.65,5.79,3.46,31.12,7.78,69.22,7.78s63.44-4.31,69.22-7.78Z", "M235.05,106.83c26.35,0,50.91,2.15,64.11,5.62,3.48.92,7.28,2.16,9.68,4.13l6.38-8.01.37-.22c.66-.41.97-.71,1.11-.88-2.51-3.73-31.14-10.11-81.65-10.11s-79.14,6.38-81.65,10.11c.14.17.46.47,1.12.88l.37.22,6.37,8.01c2.4-1.97,6.2-3.21,9.67-4.13,13.2-3.47,37.77-5.62,64.12-5.62Z", "M480.03,107.23c-.01-.16-.04-.32-.08-.48-.03-.16-.08-.33-.15-.5-.03-.08-.07-.17-.1-.25-.04-.09-.08-.17-.12-.26-.15-.34-.37-.69-.66-1.04-.14-.17-.29-.35-.45-.53-.08-.1-.17-.19-.26-.27-.09-.1-.17-.19-.27-.28-.17-.19-.38-.37-.6-.55-.22-.18-.45-.37-.69-.56-.19-.15-.39-.3-.6-.45-.19-.14-.38-.27-.58-.41-.57-.38-1.19-.77-1.87-1.16-.36-.21-.74-.42-1.14-.63-.2-.1-.4-.21-.6-.32-.61-.32-1.27-.64-1.97-.96h0c-.2-.09-.41-.19-.62-.28-.27-.12-.55-.25-.84-.37-.57-.25-1.17-.5-1.79-.75-.3-.12-.62-.25-.94-.37-.42-.17-.86-.33-1.31-.5-.89-.33-1.81-.66-2.78-.99-.3-.1-.61-.21-.92-.31-.62-.21-1.26-.42-1.92-.63-.04,0-.08-.02-.12-.04-1.27-.41-2.61-.81-4.01-1.21-1.12-.32-2.29-.64-3.5-.96-1.79-.49-3.68-.97-5.67-1.44-.66-.17-1.34-.33-2.03-.48-.68-.17-1.38-.33-2.09-.48-.71-.16-1.43-.32-2.16-.48-.41-.09-.83-.18-1.26-.27-.84-.18-1.7-.36-2.57-.54-1.23-.25-2.48-.5-3.76-.75-.64-.12-1.29-.25-1.95-.37-1.31-.26-2.65-.5-4.02-.74-2.06-.37-4.18-.74-6.38-1.1-.73-.12-1.47-.24-2.21-.36-2.24-.36-4.55-.72-6.93-1.07-1.09-.16-2.19-.32-3.3-.48-1.06-.15-2.13-.3-3.2-.45-.74-.1-1.47-.2-2.21-.3-1.91-.26-3.83-.51-5.78-.75-.76-.1-1.53-.2-2.3-.29-7.69-.95-15.73-1.82-24.05-2.61-.83-.08-1.67-.16-2.51-.24-1.67-.15-3.36-.31-5.06-.45-.85-.08-1.7-.15-2.56-.22-3.67-.32-7.39-.62-11.16-.9-2.38-.17-4.77-.34-7.19-.51-2.9-.2-5.82-.39-8.76-.57-1.8-.11-3.61-.22-5.43-.32-.71-.04-1.43-.09-2.15-.12-2.74-.16-5.51-.3-8.29-.44-14.92-.74-30.36-1.26-46.15-1.55-3.58-.07-7.17-.13-10.78-.16-6.35-.08-12.76-.12-19.2-.12s-12.79.04-19.12.11c-3.64.04-7.26.1-10.86.17-15.79.29-31.23.81-46.15,1.55-2.78.14-5.55.28-8.29.44-.72.03-1.44.08-2.15.12-1.82.1-3.63.21-5.43.32-2.95.18-5.87.37-8.76.57-2.42.17-4.81.34-7.19.51-3.77.28-7.49.58-11.16.9-.86.07-1.71.14-2.56.22-1.7.14-3.39.3-5.06.45-1.38.13-2.75.26-4.12.39-2.46.24-4.91.48-7.32.74-.81.08-1.61.17-2.41.25-4.33.47-8.57.96-12.71,1.47-1.21.15-2.41.3-3.6.45-3.77.48-7.46.98-11.05,1.51-.72.1-1.44.2-2.15.31-2.38.35-4.69.71-6.93,1.07-.74.12-1.48.24-2.21.36-2.92.48-5.73.97-8.41,1.47-.67.12-1.33.24-1.99.37-.66.12-1.31.25-1.95.37-1.28.25-2.53.5-3.76.75-.5.1-.99.2-1.48.31-.97.2-1.93.41-2.87.61-3.52.77-6.78,1.55-9.79,2.33-.6.16-1.19.31-1.77.47-1.2.32-2.36.65-3.48.96-.69.2-1.35.4-2.01.6-.34.1-.68.21-1.02.31-.33.11-.66.21-.99.31-7.87,2.48-13.3,4.95-16.7,7.27-.14.1-.28.2-.42.29-.27.18-.52.37-.76.57-.49.38-.92.75-1.29,1.11-.1.09-.19.19-.28.28-.08.09-.17.18-.25.27-.08.09-.16.18-.23.27-.08.09-.15.17-.22.26-.29.35-.5.7-.66,1.04-.04.09-.08.17-.12.26-.03.08-.07.17-.1.25-.06.17-.11.33-.15.5-.05.16-.07.32-.08.48-.01.08-.01.17-.01.26,0,6.24,18.1,15.63,68.91,23.25,24.52,3.68,53.4,6.47,84.89,8.26l7.15.39,3.61-13.17s-1.43-.69-3-2.06c-1.38-1.19-2.91-2.84-2.91-2.84l-7.14-8.97c-2.11-1.4-3.18-3.04-3.18-4.86,0-3.44,3.04-7.84,26.8-11.4,16.03-2.41,37.31-3.73,59.92-3.73s43.9,1.32,59.93,3.73c23.75,3.56,26.8,7.96,26.8,11.4,0,1.82-1.07,3.46-3.18,4.86l-7.15,8.97s-1.46,1.73-2.91,2.84c-1.57,1.2-3.03,1.97-3.03,1.97-9.85,5.33-41.27,8.1-70.56,8.1s-60.36-2.74-70.39-8.01l-.11.41-3.5,12.76c25.1,1.3,51.74,1.98,79.07,1.98l69.26-1.5,7.16-.35c35.3-1.74,67.64-4.72,94.69-8.78,50.8-7.62,68.91-17.01,68.91-23.25,0-.09,0-.18,0-.26Z"], "white": ["M479.95,106.75c.03.16.06.32.07.48h.01c-.01-.16-.04-.32-.08-.48ZM478.92,104.7c.27.36.49.7.66,1.04-.15-.34-.37-.69-.66-1.04ZM477.34,103.07c.21.19.42.37.6.55-.17-.19-.38-.37-.6-.55ZM469.89,98.58c.7.33,1.35.65,1.97.96-.61-.32-1.27-.64-1.97-.96ZM454.63,93.13c1.4.41,2.74.81,4.01,1.21-1.27-.41-2.61-.81-4.01-1.21ZM433.28,82.95c1.78.35,3.52.7,5.21,1.06-1.69-.36-3.43-.72-5.21-1.06ZM410.84,79.14c-.38-.05-.75-.11-1.13-.16.72.1,1.44.21,2.16.32-.34-.06-.69-.11-1.03-.16ZM400.84,77.74c2.26.3,4.49.61,6.68.92-2.19-.32-4.42-.62-6.68-.92ZM393.96,76.86c2.33.29,4.62.58,6.88.88-2.26-.3-4.55-.6-6.88-.88ZM378.77,75.13c4.38.46,8.67.95,12.86,1.45-4.19-.51-8.48-1-12.86-1.45ZM61.67,80.31c1.39-.22,2.8-.45,4.23-.67-1.43.22-2.85.44-4.23.67ZM53.09,81.77c2.03-.37,4.12-.72,6.25-1.08-2.13.35-4.22.71-6.25,1.08ZM4.57,101.65c3.41-2.3,8.84-4.77,16.7-7.27-7.87,2.48-13.3,4.95-16.7,7.27ZM.46,105.74c.17-.34.39-.68.66-1.04-.29.35-.5.7-.66,1.04ZM.01,107.23h.01c.01-.16.04-.32.07-.48-.05.16-.07.32-.08.48Z"], "beam": "M297.38,119.22c-12.66-3.32-36.54-5.39-62.33-5.39s-49.68,2.07-62.34,5.39c-4.53,1.19-6.27,2.2-6.88,2.65,5.79,3.46,31.12,7.78,69.22,7.78s63.44-4.31,69.22-7.78c-.61-.45-2.36-1.46-6.89-2.65ZM380.26,398.91c-2.1-1.43-6.37-3.48-15.02-5.76-26.44-6.93-76.05-11.23-129.46-11.23s-103.04,4.3-129.46,11.23c-14.3,3.77-16.63,6.92-16.98,7.62-.05.09-.06.15-.06.15,0,0,0,.02.01.03.01.05.06.14.14.27.79,1.21,6.72,7.51,45.8,12.86,27.52,3.76,63.23,5.84,100.55,5.84s73.04-2.08,100.56-5.84c32.56-4.46,42.1-9.58,44.83-11.86.55-.46.83-.8.96-1,.1-.16.14-.27.15-.3-.02-.07-.26-.83-2.02-2.01ZM310.63,144.81l-.67-2.47-.68-2.47-3.63-13.24-.14-.5c-9.85,5.33-41.27,8.1-70.56,8.1s-60.36-2.74-70.39-8.01l-.11.41-3.5,12.76-.67,2.47-.68,2.47-67.46,246.2c3.26-1.45,7.38-2.82,12.4-4.15,26.96-7.07,77.25-11.46,131.24-11.46s104.25,4.39,131.24,11.46c4.21,1.12,7.79,2.26,10.76,3.46l-67.15-245.03Z", "ground": "M382.28,400.92s-.05.14-.15.3c-.13.2-.41.54-.96,1-2.73,2.28-12.27,7.4-44.83,11.86-27.52,3.76-63.24,5.84-100.56,5.84s-73.03-2.08-100.55-5.84c-39.08-5.35-45.01-11.65-45.8-12.86-.08-.13-.13-.22-.14-.27-.01-.01-.01-.03-.01-.03,0,0,.01-.06.06-.15.35-.7,2.68-3.85,16.98-7.62,26.42-6.93,76.02-11.23,129.46-11.23s103.02,4.3,129.46,11.23c8.65,2.28,12.92,4.33,15.02,5.76,1.76,1.18,2,1.94,2.02,2.01Z", "house": "75.03,-67.38 71.87,-60.36 55.77,-72.26 55.77,0.0 -55.77,-0.0 -55.78,-72.31 -71.91,-60.38 -75.04,-67.35 -6.31,-118.19 0.02,-122.85 6.28,-118.22 35.92,-96.3 35.92,-110.26 49.06,-110.26 49.06,-86.59 75.03,-67.38"};
+const FS_UFO_W=52,FS_UFO_GROUND=402;   /* ufo drawing is 480 x 420 units, the beam foot is at y 402 */
+function fsUfoSVG(){
+  const U=FS_UFO;
+  return '<svg class="fs-ufo" viewBox="0 0 480.04 419.92" aria-hidden="true"><defs>'+
+    '<linearGradient id="fsBG" x1="235.78" y1="113.83" x2="235.78" y2="419.92" gradientUnits="userSpaceOnUse">'+
+    [[0,1],[.19,.91],[.25,.8],[.35,.62],[.46,.47],[.58,.35],[.7,.27],[.83,.22],[1,.2]].map(s=>'<stop class="bs" offset="'+s[0]+'" stop-opacity="'+s[1]+'"/>').join('')+'</linearGradient>'+
+    '<clipPath id="fsBeamClip"><rect class="fs-bclip" x="-20" y="0" width="520" height="128"/></clipPath>'+
+    '<clipPath id="fsHouseClip"><rect x="-20" y="128" width="520" height="330"/></clipPath></defs>'+
+    '<g clip-path="url(#fsBeamClip)"><path class="fs-beam" fill="url(#fsBG)" d="'+U.beam+'"/><path class="u" d="'+U.ground+'"/></g>'+
+    '<g clip-path="url(#fsHouseClip)"><g class="fs-house u" opacity="0"><polygon points="'+U.house+'"/></g></g>'+
+    '<g class="fs-ufo-g"><rect class="fs-hit" x="0" y="0" width="480" height="150"/>'+U.ufo.map(d=>'<path class="u" d="'+d+'"/>').join('')+U.white.map(d=>'<path class="w" d="'+d+'"/>').join('')+'</g></svg>';
+}
 function fsPinIcon(){
-  const fr=(window.__LOADER_FRAMES||[])[0];
-  let svg='';
-  if(fr)svg=String(fr).replace(/viewBox="[^"]*"/,'viewBox="378 58 654 654" preserveAspectRatio="xMidYMid meet"');
-  return L.divIcon({className:'',html:'<div class="ufo-thumb ufo-pin"><div class="ufo-logo">'+svg+'</div></div>',iconSize:[44,44],iconAnchor:[22,22],popupAnchor:[0,-24]});
+  const k=FS_UFO_W/480.04,gy=Math.round(FS_UFO_GROUND*k);
+  return L.divIcon({className:'fs-ufo-icon',html:'<div class="fs-ufo-wrap" style="width:'+FS_UFO_W+'px;height:'+Math.round(419.92*k)+'px">'+fsUfoSVG()+'</div>',
+    iconSize:[FS_UFO_W,Math.round(141.37*k)],iconAnchor:[FS_UFO_W/2,gy],popupAnchor:[0,-gy-4]});
+}
+function fsReduced(){return !!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);}
+function fsWrap(){return FS.pin&&FS.pin._icon?FS.pin._icon.querySelector('.fs-ufo-wrap'):null;}
+/* the ufo flies in; from offscreen (off=true) or from where the pin was before */
+function fsFly(dx,dy,ms,off){
+  const w=fsWrap();if(!w||!w.animate||fsReduced())return Promise.resolve();
+  const a=w.animate([
+    {transform:'translate('+dx+'px,'+dy+'px) rotate('+(off?-14:-8)+'deg) scale('+(off?.55:1)+')'},
+    {transform:'translate('+(dx*.22)+'px,'+(dy*.22)+'px) rotate(6deg) scale('+(off?.92:1)+')',offset:.72},
+    {transform:'translate(0,0) rotate(0deg) scale(1)'}
+  ],{duration:ms,easing:'cubic-bezier(.22,.7,.3,1)'});
+  return a.finished.catch(()=>{});
+}
+/* beam extends, the house rises in it and goes into the ufo. Resolves when the house is all inside. */
+function fsAbduct(){
+  return new Promise(res=>{
+    const w=fsWrap();
+    if(!w||fsReduced()){setTimeout(res,200);return;}
+    const rect=w.querySelector('.fs-bclip'),house=w.querySelector('.fs-house');
+    const OUT=700,SHOW=700,RISE0=950,RISE=1500,RETR=500,DONE=RISE0+RISE;
+    const eo=t=>1-Math.pow(1-t,3),eio=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,cl=t=>Math.max(0,Math.min(1,t));
+    const Y0=392,Y1=124;
+    w.classList.add('fs-busy');
+    let done=false;const t0=performance.now();
+    function frame(now){
+      const t=now-t0;
+      if(!w.isConnected){res();return;}
+      let h;
+      if(t<DONE)h=128+(420-128)*eo(cl(t/OUT)); else h=420-(420-128)*eio(cl((t-DONE)/RETR));
+      rect.setAttribute('height',h.toFixed(1));
+      const pop=cl((t-SHOW)/200),p=eio(cl((t-RISE0)/RISE));
+      if(t<DONE){
+        const y=Y0+(Y1-Y0)*p,s=(.5+.5*eo(pop))*(1-.4*p),rot=10*Math.sin(p*9)*cl(p*5)*(1-.3*p),x=235.8+7*Math.sin(p*7)*p;
+        house.setAttribute('transform','translate('+x.toFixed(1)+' '+y.toFixed(1)+') rotate('+rot.toFixed(1)+') scale('+s.toFixed(3)+')');
+        house.setAttribute('opacity',pop.toFixed(2));
+      }else house.setAttribute('opacity','0');
+      if(!done&&t>=DONE){done=true;res();}
+      if(t<DONE+RETR)requestAnimationFrame(frame);
+      else{rect.setAttribute('height','128');w.classList.remove('fs-busy');}
+    }
+    requestAnimationFrame(frame);
+  });
+}
+function fsResetUfo(){
+  const w=fsWrap();if(!w)return;
+  const r=w.querySelector('.fs-bclip'),h=w.querySelector('.fs-house');
+  if(r)r.setAttribute('height','128');if(h)h.setAttribute('opacity','0');w.classList.remove('fs-busy');
 }
 function fsPopupHTML(ll){
   return '<div class="fs-pop-in">'+
@@ -12987,7 +13061,7 @@ function fsDrawCircle(){
 function fsClearCircle(){if(FS.circle&&map){map.removeLayer(FS.circle);}FS.circle=null;}
 function fsRemovePin(){
   if(FS.pin&&map){FS.pin.closePopup();map.removeLayer(FS.pin);}
-  FS.pin=null;fsClearCircle();
+  FS.pin=null;fsClearCircle();FS.anim=false;
 }
 function fsBindPopup(){
   const pop=FS.pin.getPopup();
@@ -13003,21 +13077,35 @@ function fsBindPopup(){
   const go=root.querySelector('#fsGoAround');if(go)go.addEventListener('click',()=>fsStart('around'));
   const rm=root.querySelector('#fsRm');if(rm)rm.addEventListener('click',fsRemovePin);
 }
+function fsLand(p){
+  FS.anim=true;
+  p.then(()=>{FS.anim=false;if(FS.pin&&!FS.busy){FS.pin.openPopup();setTimeout(fsBindPopup,0);}});
+}
 function fsPlacePin(ll){
+  if(FS.anim||FS.busy)return;
   if(!FS.pin){
     FS.pin=L.marker(ll,{draggable:true,icon:fsPinIcon(),zIndexOffset:900}).addTo(map);
     FS.pin.bindPopup(fsPopupHTML(ll),{className:'fs-pop',closeOnClick:false,autoClose:false,autoPan:true,autoPanPaddingTopLeft:[20,80],autoPanPaddingBottomRight:[20,20],maxWidth:320});
     FS.pin.on('popupopen',()=>setTimeout(fsBindPopup,0));
     FS.pin.on('dragstart',()=>fsClearCircle());
     FS.pin.on('dragend',()=>{const p=FS.pin.getLatLng().wrap();FS.pin.setLatLng(p);FS.pin.setPopupContent(fsPopupHTML(p));FS.pin.openPopup();setTimeout(fsBindPopup,0);});
+    /* flies in from offscreen */
+    const p=map.latLngToContainerPoint(ll),sz=map.getSize();
+    const dx=p.x<sz.x/2?-(p.x+240):(sz.x-p.x+240),dy=-(p.y+170);
+    fsLand(fsFly(dx,dy,1150,true));
   }else{
-    FS.pin.setLatLng(ll);fsClearCircle();FS.pin.setPopupContent(fsPopupHTML(ll));
+    /* flies from where it hovered to the new spot */
+    const a=map.latLngToContainerPoint(FS.pin.getLatLng()),b=map.latLngToContainerPoint(ll);
+    FS.pin.closePopup();fsClearCircle();fsResetUfo();
+    FS.pin.setLatLng(ll);FS.pin.setPopupContent(fsPopupHTML(ll));
+    const d=Math.hypot(a.x-b.x,a.y-b.y);
+    fsLand(fsFly(a.x-b.x,a.y-b.y,Math.max(450,Math.min(1100,d*1.1)),false));
   }
-  FS.pin.openPopup();setTimeout(fsBindPopup,0);
 }
 function fsOnMapClick(e){
   const t=e.originalEvent&&e.originalEvent.target;
   if(t&&t.closest&&t.closest('.leaflet-interactive,.leaflet-marker-icon,.leaflet-popup,.leaflet-control,.station-marker-icon'))return;
+  if(FS.anim||FS.busy)return;
   const avg=document.getElementById('avgTypWin');
   if(avg&&!avg.classList.contains('avgt-hidden'))return;
   if(document.body.classList.contains('mobile-mode'))return;
@@ -13026,32 +13114,34 @@ function fsOnMapClick(e){
 
 /* ---------- running an analysis ---------- */
 async function fsStart(mode){
-  if(FS.busy||!FS.pin)return;
+  if(FS.busy||FS.anim||!FS.pin)return;
   FS.busy=true;FS.mode=mode;
   const ll=FS.pin.getLatLng().wrap();
   FS.pin.closePopup();
+  const anim=fsAbduct();   /* the window opens only when the building is all up in the ufo */
+  let err=null;
+  const work=(async()=>{
+    try{
+      let pool,meta={};
+      if(mode==='around'){
+        meta={r:FS.radius};
+        pool=CASES.filter(c=>c.hasCoord).map(c=>({c:c,d:haversineKm(ll.lat,ll.lng,c.lat,c.lon)})).filter(x=>x.d<=FS.radius).sort((a,b)=>a.d-b.d).map(x=>x.c);
+      }else{
+        meta=await fsPinClimate(ll.lat,ll.lng);
+        pool=meta.zone?CASES.filter(c=>c.koppen&&c.koppen[scn]===meta.zone):[];
+      }
+      const typ=fsTypicality(pool);
+      const bpcs=BPCS.map(c=>({c:c,fit:fsFit(c,typ)})).sort((a,b)=>(b.fit==null?-1:b.fit)-(a.fit==null?-1:a.fit)||a.c.id.localeCompare(b.c.id));
+      FS.res={mode:mode,ll:ll,meta:meta,pool:pool,typ:typ,bpcs:bpcs};
+    }catch(e){err=e;console.error(e);}
+  })();
+  await Promise.all([anim,work]);
   fsOpenWin();
-  document.getElementById('fsLeft').innerHTML='<div class="fs-loading">analysing</div>';
-  document.getElementById('fsRightScroll').innerHTML='';
   document.getElementById('fsSub').textContent='';
-  try{
-    let pool,meta={};
-    if(mode==='around'){
-      meta={r:FS.radius};
-      pool=CASES.filter(c=>c.hasCoord).map(c=>({c:c,d:haversineKm(ll.lat,ll.lng,c.lat,c.lon)})).filter(x=>x.d<=FS.radius).sort((a,b)=>a.d-b.d).map(x=>x.c);
-    }else{
-      meta=await fsPinClimate(ll.lat,ll.lng);
-      pool=meta.zone?CASES.filter(c=>c.koppen&&c.koppen[scn]===meta.zone):[];
-    }
-    const typ=fsTypicality(pool);
-    const bpcs=BPCS.map(c=>({c:c,fit:fsFit(c,typ)})).sort((a,b)=>(b.fit==null?-1:b.fit)-(a.fit==null?-1:a.fit)||a.c.id.localeCompare(b.c.id));
-    FS.res={mode:mode,ll:ll,meta:meta,pool:pool,typ:typ,bpcs:bpcs};
-    FS.sel=[];FS.step=1;
-    fsRender();
-  }catch(err){
-    console.error(err);
+  if(err){
     document.getElementById('fsLeft').innerHTML='<div class="fs-info warn">The analysis failed: '+aqEsc(err&&err.message||err)+'</div>';
-  }
+    document.getElementById('fsRightScroll').innerHTML='';
+  }else{FS.sel=[];FS.step=1;fsRender();}
   FS.busy=false;
 }
 
@@ -13065,7 +13155,7 @@ function fsGoStep(n){
   FS.step=n;
   [1,2,3].forEach(i=>{document.getElementById('fsStage'+i).hidden=(i!==n);});
   document.getElementById('fsBack').hidden=(n===1);
-  document.getElementById('fsNextTxt').textContent=(n===3)?'close find strategies':'';
+  document.getElementById('fsNextTxt').textContent=(n===3)?'close find strategies':'further';
   document.getElementById('fsStepLbl').textContent='step '+n+' of 3';
 }
 function fsDonut(p,size){
