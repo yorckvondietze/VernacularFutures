@@ -2025,7 +2025,11 @@ html[data-theme="dark"] .fs-ufo .bs{stop-color:#e6e6e6;}
 .si svg{width:88%;height:88%;color:#111;display:block;}
 .fs-more{font-size:10.5px;color:var(--ink-soft);margin-top:10px;line-height:1.7;}
 .fs-more b{color:var(--ink);}
-.fs-cs-row{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.7fr);gap:12px;padding:9px 0;border-bottom:1px solid var(--line-soft);}
+.fs-cs-row{display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;padding:12px;margin:0 -12px;border-bottom:1px solid var(--line-soft);cursor:pointer;}
+.fs-cs-row:hover{background:var(--paper-dim);}
+.fs-cs-img{aspect-ratio:4/3;align-self:start;}
+.fs-cs-b{display:flex;flex-direction:column;gap:7px;min-width:0;}
+.fs-cs-b .fs-lbl{font-size:8.5px;color:var(--ink-faint);letter-spacing:.06em;text-transform:uppercase;margin-bottom:-3px;}
 .fs-cs-n{font-size:11.5px;font-weight:700;overflow-wrap:anywhere;}
 .fs-cs-m{font-size:9.5px;color:var(--ink-faint);margin-top:1px;}
 .fs-kc{display:inline-block;padding:0 5px;margin-left:4px;border:1px solid var(--line);color:var(--ink-soft);font-size:9px;}
@@ -2153,7 +2157,7 @@ body.mobile-mode .fs-pop,body.mobile-mode #fsWin{font-size:12px;}
 <div class="fs-mock fs-mock-fixed" hidden>mockup: strategies of the case studies are fake</div>
 <div id="siteLoader">
   <div class="loader-controls">
-    <span class="vf-version">v416</span>
+    <span class="vf-version">v417</span>
     <button class="theme-toggle" id="loaderThemeToggle" title="Toggle dark mode">☾</button>
     <span class="c-game" id="loaderGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span>
   </div>
@@ -2168,7 +2172,7 @@ body.mobile-mode .fs-pop,body.mobile-mode #fsWin{font-size:12px;}
 <div class="win-titlebar">
   <span class="win-title">vernacularfutures</span>
   <span class="win-controls">
-    <span class="vf-version">v416</span>
+    <span class="vf-version">v417</span>
     <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">☾</button>
     <span class="c-game" id="openGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span></span>
 </div>
@@ -2646,7 +2650,7 @@ let currentCsTab={A:'building',B:'building'}; /* remembered across scenario chan
    Live:   const DATA_BASE='https://f005.backblazeb2.com/file/morphshift-data'; (B2 direct)
    -------------------------------------------------------------------- */
 const DATA_BASE='https://pub-8944e9777b04487cb29b19062000de40.r2.dev';
-const BUILD_TS='20261118_004';
+const BUILD_TS='20261118_005';
 let modeUnlocked=false;
 /* DEMO_CASES_SEED removed: case data comes from R2 only, see fetchFullModeRaw/setAppMode. */
 let FULL_CASES_RAW=null;
@@ -13197,13 +13201,22 @@ function fsRender(){
   let csHTML='<div class="fs-sec"><h2 class="fs-h">Case studies that fit</h2><p class="fs-note">'+R.pool.length+' vernacular case stud'+(R.pool.length===1?'y':'ies')+(R.mode==='around'?' within '+R.meta.r+' km, nearest first.':' in the same Köppen zone.')+' Primary strategies are solid, secondary strategies dashed.</p>';
   if(!R.pool.length)csHTML+='<div class="fs-none">No case studies found.</div>';
   else csHTML+=R.pool.map(c=>{
-    const m=fsStratMap(c),chips=[...m.entries()].sort((a,b)=>b[1]-a[1]||stratOrder(a[0])-stratOrder(b[0])).map(e=>fsChip(e[0],e[1])).join('');
+    const m=fsStratMap(c),srt=(arr)=>arr.sort((a,b)=>stratOrder(a[0])-stratOrder(b[0])),
+      P=srt([...m.entries()].filter(x=>x[1]===1)),S=srt([...m.entries()].filter(x=>x[1]<1));
     const kc=c.koppen&&c.koppen[scn]?'<span class="fs-kc">'+aqEsc(c.koppen[scn])+'</span>':'';
-    return '<div class="fs-cs-row"><div><div class="fs-cs-n">'+aqEsc(c.name||c.id)+'</div><div class="fs-cs-m">'+aqEsc(c.id)+(c.country?', '+aqEsc(c.country):'')+kc+'</div></div>'+
-      '<div class="fs-chips">'+(chips||'<span class="fs-none">no strategies filled in yet</span>')+'</div></div>';
+    return '<div class="fs-cs-row" data-id="'+aqEsc(c.id)+'"><div class="fs-bpc-img fs-cs-img">no photo yet</div><div class="fs-cs-b">'+
+      '<div class="fs-cs-n">'+aqEsc(c.name||c.id)+'</div><div class="fs-cs-m">'+aqEsc(c.id)+(c.country?', '+aqEsc(c.country):'')+kc+'</div>'+
+      (P.length?'<div class="fs-lbl">primary</div><div class="fs-chips">'+P.map(x=>fsChip(x[0],1)).join('')+'</div>':'')+
+      (S.length?'<div class="fs-lbl">secondary</div><div class="fs-chips">'+S.map(x=>fsChip(x[0],0.5)).join('')+'</div>':'')+
+      (!m.size?'<div class="fs-none">no strategies filled in yet</div>':'')+'</div></div>';
   }).join('');
   csHTML+='</div>';
   document.getElementById('fsLeft').innerHTML=info+typHTML+csHTML;
+  document.querySelectorAll('#fsLeft .fs-cs-row').forEach(row=>{
+    const c=byId(row.dataset.id);if(!c)return;
+    row.addEventListener('click',()=>fsOpenCS(c.id));
+    fsLazyPhoto(row,c,'fsLeft');
+  });
   /* right: best practice cases */
   const noFit=!typ.n;
   document.getElementById('fsRightScroll').innerHTML=
@@ -13227,7 +13240,7 @@ function fsRender(){
   });
   fsRenderBox();
 }
-function fsLazyPhoto(el,c){
+function fsLazyPhoto(el,c,rootId){
   const load=()=>{
     fetchPhotos(c.id).then(urls=>{
       const box=el.querySelector('.fs-bpc-img');if(!box||!urls||!urls.length)return;
@@ -13235,7 +13248,7 @@ function fsLazyPhoto(el,c){
     }).catch(()=>{});
   };
   if('IntersectionObserver' in window){
-    const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();load();}},{root:document.getElementById('fsRightScroll'),rootMargin:'200px'});
+    const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();load();}},{root:document.getElementById(rootId||'fsRightScroll'),rootMargin:'200px'});
     io.observe(el);
   }else load();
 }
@@ -13275,7 +13288,16 @@ function fsOpenCard(id){
   document.getElementById('fsModal').classList.remove('fs-hidden');
   wireBpcDetail(c,'F');
 }
-function fsCloseModal(){const m=document.getElementById('fsModal');if(m)m.classList.add('fs-hidden');const b=document.getElementById('fsModalBody');if(b)b.innerHTML='';}
+/* the normal case study card of the main site, in the modal (slot F) */
+function fsOpenCS(id){
+  const c=byId(id);if(!c)return;
+  currentCsTab.F=currentCsTab.F||'building';currentDiagram.F=currentDiagram.F||'tcp';currentMetricPage.F=currentMetricPage.F||0;currentClimateTab.F=currentClimateTab.F||'psychro';
+  try{disposeViewer('F');}catch(e){}
+  document.getElementById('fsModalBody').innerHTML=caseDetailHTML(c,'F');
+  document.getElementById('fsModal').classList.remove('fs-hidden');
+  wireCaseDetail(c,'F');
+}
+function fsCloseModal(){try{disposeViewer('F');}catch(e){}const m=document.getElementById('fsModal');if(m)m.classList.add('fs-hidden');const b=document.getElementById('fsModalBody');if(b)b.innerHTML='';}
 
 function initFindStrategies(){
   initFsTip();
