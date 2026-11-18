@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>window.VF_MOCKUP=true;</script>
 <meta charset="UTF-8">
 <meta property="og:title" content="vernacularfutures _morphing_typologies_for_future_climates">
 <meta property="og:description" content="An interactive atlas of vernacular building morphology across climate zones, projected onto future climate scenarios (SSP5-8.5, 2050/2080).">
@@ -13,7 +12,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>vernacularfutures _morphing_typologies_for_future_climates (mockup)</title>
+<title>vernacularfutures _morphing_typologies_for_future_climates</title>
 <script>(function(){try{if(localStorage.getItem('atlasTheme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -2100,6 +2099,112 @@ html,html *,html *::before,html *::after{cursor:url("data:image/svg+xml,%3Csvg x
 html[data-theme="dark"],html[data-theme="dark"] *,html[data-theme="dark"] *::before,html[data-theme="dark"] *::after{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='33' height='33' viewBox='0 0 33 33'%3E%3Cpath d='M16.5 1V32M1 16.5H32' stroke='%23000' stroke-width='3' stroke-linecap='butt' opacity='.75'/%3E%3Cpath d='M16.5 1V32M1 16.5H32' stroke='%23fff' stroke-width='1' stroke-linecap='butt'/%3E%3C/svg%3E") 16 16,crosshair!important;}
 @media (max-width:900px){#fsWin .fs-stage{flex-direction:column;overflow-y:auto;}.fs-left{flex:none;border-right:0;border-bottom:1px solid var(--line-strong);overflow:visible;}.fs-right-scroll{overflow:visible;}.fs-typ-top{grid-template-columns:1fr;}}
 body.mobile-mode .fs-pop,body.mobile-mode #fsWin{font-size:12px;}
+
+/* ═══════════════════════════════════════════════════════
+   v418 UI REWORK (desktop atlas only)
+   Floating toolbars on the map, climate time maschine box,
+   drawers open from the left, all old chrome removed.
+   ═══════════════════════════════════════════════════════ */
+.vf-ui,.vf-legend-info{display:none;}
+body.atlas-active:not(.mobile-mode):not(.map-fullscreen){--deck-top:0px;--vf-top:58px;--vf-fw:0px;--vf-cw:0px;}
+body.atlas-active.filter-open:not(.mobile-mode){--vf-fw:max(20vw,260px);}
+body.atlas-active.cs-open:not(.mobile-mode){--vf-cw:clamp(340px,var(--cs-width,40vw),85vw);}
+
+/* remove: top bars, header, sidebars, strips, map titlebar, zoom control */
+body.atlas-active:not(.mobile-mode) .chrome-stripe,
+body.atlas-active:not(.mobile-mode) .win-titlebar,
+body.atlas-active:not(.mobile-mode) .app-header,
+body.atlas-active:not(.mobile-mode) .deck-strip,
+body.atlas-active:not(.mobile-mode) .map-card > .card-titlebar,
+body.atlas-active:not(.mobile-mode) .leaflet-control-zoom{display:none!important;}
+
+/* the map fills the whole window */
+body.atlas-active:not(.mobile-mode):not(.map-fullscreen) .map-col{top:0!important;left:0!important;right:0!important;bottom:0!important;}
+
+/* ── floating toolbars ── */
+body.atlas-active:not(.mobile-mode):not(.map-fullscreen) .vf-tb{display:flex;}
+.vf-tb{position:fixed;top:12px;z-index:600;align-items:center;gap:6px;padding:6px 8px;
+  background:color-mix(in srgb,var(--paper) 94%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  border:1px solid var(--line-strong);box-shadow:0 2px 12px rgba(0,0,0,.14);font-family:var(--mono);}
+.vf-tl{left:12px;}
+.vf-tr{right:12px;}
+.vf-b{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:28px;box-sizing:border-box;
+  font-family:var(--mono);font-size:11px;line-height:1;letter-spacing:.02em;white-space:nowrap;
+  padding:0 9px;border:1px solid var(--line);background:var(--paper);color:var(--ink-soft);cursor:pointer;
+  transition:color .12s,border-color .12s,background-color .12s;}
+.vf-b svg{display:block;flex:none;}
+.vf-b:hover{color:var(--terracotta-deep);border-color:var(--terracotta);}
+.vf-b.on{color:var(--terracotta-deep);border-color:var(--terracotta);background:var(--terracotta-dim);font-weight:700;}
+.vf-b.ic{width:28px;padding:0;}
+.vf-b.bare{border-color:transparent;background:transparent;}
+.vf-b.bare:hover{border-color:var(--terracotta);}
+.vf-sep{width:1px;align-self:stretch;margin:2px 2px;background:var(--line);flex:none;}
+.vf-ver{font-size:10.5px;color:var(--ink-faint);cursor:default;user-select:none;padding:0 4px;letter-spacing:.04em;}
+.vf-ver:hover{color:var(--terracotta);}
+.vf-tr .cs-search-row{position:relative!important;top:auto!important;right:auto!important;width:190px;margin:0!important;border:none!important;z-index:auto;display:block!important;}
+.vf-tr .cs-search-input{height:28px;padding:0 30px 0 9px;font-size:11px;border:1px solid var(--line);background:var(--paper)!important;box-shadow:none!important;backdrop-filter:none!important;}
+.vf-tr .cs-search-input:focus{border-color:var(--terracotta);}
+.vf-tr .cs-search-results{top:calc(100% + 1px);left:-1px;right:-1px;border-top:1px solid var(--line-strong);width:auto;min-width:260px;box-shadow:0 4px 16px rgba(0,0,0,.18);}
+.vf-sglass{position:absolute;right:0;top:0;width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  background:none;border:none;color:var(--ink-soft);cursor:pointer;padding:0;}
+.vf-sglass:hover{color:var(--terracotta);}
+
+/* ── climate time maschine ── */
+body.atlas-active:not(.mobile-mode):not(.map-fullscreen) .vf-sbox{display:flex;}
+.vf-sbox{position:fixed;top:12px;left:calc(var(--vf-fw,0px) + var(--vf-cw,0px) + (100vw - var(--vf-fw,0px) - var(--vf-cw,0px)) / 2);transform:translateX(-50%);transition:left .22s cubic-bezier(.4,0,.2,1);z-index:560;flex-direction:column;align-items:center;
+  padding:9px 18px 6px;background:color-mix(in srgb,var(--paper) 94%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  border:1px solid var(--line-strong);box-shadow:0 2px 14px rgba(0,0,0,.16);}
+.vf-sbox::before{content:"";position:absolute;left:-1px;right:-1px;top:-1px;height:4px;background:linear-gradient(90deg,#7722CC,#9A7870,#E07010);}
+.vf-sh1{font-family:var(--mono);font-weight:800;font-size:17px;letter-spacing:.16em;line-height:1.1;text-transform:uppercase;white-space:nowrap;
+  background:linear-gradient(90deg,#7722CC,#9A7870 50%,#E07010);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;}
+.vf-sbox .scenario-control{transform:none!important;align-items:center;width:100%;}
+.vf-sbox .scenario-label{transform:none!important;text-transform:lowercase;letter-spacing:.04em;font-size:10px;margin:3px 0 0;}
+.vf-sbox .scenario-slider-wrap{width:290px;padding:0 4px;}
+.vf-sbox .scenario-slider{margin:20px 0 4px;}
+.vf-sbox .scenario-ticks{transform:translateY(6px);margin-bottom:6px;}
+.vf-sbox .scenario-tick{font-size:15px;letter-spacing:.02em;}
+.vf-sbox .scenario-tick.active{font-size:16px;}
+.vf-sbox .info-popover{right:auto;left:50%;transform:translateX(-50%);}
+/* label and tick variants: the header (other tabs) keeps the long wording, the box the short one */
+.vf-lbl-b,.tk-b{display:none;}
+.vf-sbox .vf-lbl-a,.vf-sbox .tk-a{display:none;}
+.vf-sbox .vf-lbl-b,.vf-sbox .tk-b{display:inline;}
+@media(max-width:1640px){body.atlas-active:not(.mobile-mode) .vf-sbox{top:66px;}}
+
+/* ── drawers open from the left, below the toolbar ── */
+body.atlas-active:not(.mobile-mode):not(.map-fullscreen) .filter-bar{top:var(--vf-top)!important;left:0!important;z-index:500;}
+body.atlas-active:not(.mobile-mode):not(.map-fullscreen) .explorer-grid > .card-window{
+  top:var(--vf-top)!important;left:var(--vf-fw,0px)!important;right:auto!important;
+  transition:width .22s cubic-bezier(.4,0,.2,1),left .22s cubic-bezier(.4,0,.2,1),border .22s;
+  z-index:499;}
+body.atlas-active.cs-open:not(.mobile-mode):not(.map-fullscreen) .explorer-grid > .card-window{
+  border-left:none!important;border-right:1px solid var(--line-strong)!important;
+  width:clamp(340px,var(--cs-width,40vw),85vw);min-width:0;max-width:none;box-shadow:4px 0 18px rgba(0,0,0,.10);}
+body.atlas-active:not(.mobile-mode) .cs-resize-handle{left:auto;right:0;}
+body.atlas-active:not(.mobile-mode) .cs-resize-handle::after{left:auto;right:0;}
+body.atlas-active:not(.mobile-mode) .filter-bar{box-shadow:none;}
+body.atlas-active.filter-open:not(.mobile-mode):not(.map-fullscreen) .filter-bar{box-shadow:4px 0 18px rgba(0,0,0,.10);}
+
+/* ── koppen info icon sits on the legend (bottom left) ── */
+body.atlas-active:not(.mobile-mode):not(.map-fullscreen) .vf-legend-info{display:flex;}
+.vf-legend-info{position:fixed;z-index:520;align-items:center;justify-content:center;}
+.vf-legend-info .action-info-icon{font-size:13px;color:var(--ink-faint);cursor:pointer;}
+.vf-legend-info .action-info-icon:hover{color:var(--terracotta);}
+#koppenOverlayInfoPop{top:auto!important;bottom:calc(100% + 6px)!important;left:-6px!important;right:auto!important;}
+
+/* ── ufo hint ── */
+body.atlas-active:not(.mobile-mode):not(.map-fullscreen) .vf-hint{display:block;}
+.vf-hint{position:fixed;left:0;top:0;width:190px;z-index:430;pointer-events:none;will-change:transform;transition:opacity .5s ease;}
+.vf-hint.gone{opacity:0;}
+.vf-hint-in{position:relative;animation:vfHover 3.6s ease-in-out infinite;}
+@keyframes vfHover{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-7px) rotate(1.5deg)}}
+.vf-hint .fs-ufo{width:100%;height:auto;}
+.vf-hint-txt{position:absolute;left:24%;right:24%;top:58%;text-align:center;font-family:var(--mono);font-size:10.5px;line-height:1.35;color:var(--ink);font-weight:600;text-shadow:0 0 3px var(--paper),0 0 6px var(--paper),0 0 8px var(--paper);}
+@media(prefers-reduced-motion:reduce){.vf-hint-in{animation:none;}}
+/* main strategy picto on top of the climate circle */
+.vf-ms-icon{background:none!important;border:0!important;}
+.vf-ms-icon .si{border-radius:50%;box-shadow:0 0 0 2px var(--vf-ring,#fff),0 1px 3px rgba(0,0,0,.3);pointer-events:none;}
+body.mobile-mode .vf-ui,body.mobile-mode .vf-legend-info{display:none!important;}
 </style>
 </head>
 <body>
@@ -2157,7 +2262,7 @@ body.mobile-mode .fs-pop,body.mobile-mode #fsWin{font-size:12px;}
 <div class="fs-mock fs-mock-fixed" hidden>mockup: strategies of the case studies are fake</div>
 <div id="siteLoader">
   <div class="loader-controls">
-    <span class="vf-version">v417</span>
+    <span class="vf-version">v418</span>
     <button class="theme-toggle" id="loaderThemeToggle" title="Toggle dark mode">☾</button>
     <span class="c-game" id="loaderGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span>
   </div>
@@ -2172,7 +2277,7 @@ body.mobile-mode .fs-pop,body.mobile-mode #fsWin{font-size:12px;}
 <div class="win-titlebar">
   <span class="win-title">vernacularfutures</span>
   <span class="win-controls">
-    <span class="vf-version">v417</span>
+    <span class="vf-version">v418</span>
     <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">☾</button>
     <span class="c-game" id="openGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span></span>
 </div>
@@ -2194,7 +2299,7 @@ body.mobile-mode .fs-pop,body.mobile-mode #fsWin{font-size:12px;}
   </div>
   
   <div class="scenario-control">
-    <div class="scenario-label">Climate scenario  SSP5-8.5
+    <div class="scenario-label"><span class="vf-lbl-a">Climate scenario  SSP5-8.5</span><span class="vf-lbl-b">based on climate scenario ssp-8.5</span>
       <span class="info-btn" id="scenarioInfoBtn" title="About these scenarios">ⓘ</span>
       <div class="info-popover" id="scenarioInfoPop" style="display:none;">
         <div class="info-pop-head">About the climate scenarios</div>
@@ -2650,7 +2755,7 @@ let currentCsTab={A:'building',B:'building'}; /* remembered across scenario chan
    Live:   const DATA_BASE='https://f005.backblazeb2.com/file/morphshift-data'; (B2 direct)
    -------------------------------------------------------------------- */
 const DATA_BASE='https://pub-8944e9777b04487cb29b19062000de40.r2.dev';
-const BUILD_TS='20261118_005';
+const BUILD_TS='20261118_006';
 let modeUnlocked=false;
 /* DEMO_CASES_SEED removed: case data comes from R2 only, see fetchFullModeRaw/setAppMode. */
 let FULL_CASES_RAW=null;
@@ -2861,7 +2966,7 @@ function clearKoppenOverlay(){
   if(koppenOverlayLayer){map.removeLayer(koppenOverlayLayer);koppenOverlayLayer=null;}
 }
 function initMap(){
-  map=L.map('map',{scrollWheelZoom:true}).setView([40,20],2);
+  map=L.map('map',{scrollWheelZoom:true,zoomControl:false}).setView([40,20],2);
   const isDark=document.documentElement.getAttribute('data-theme')==='dark';
   tileLayer=L.tileLayer(isDark?DARK_TILE_URL:LIGHT_TILE_URL,{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:18}).addTo(map);
   rebuildMarkers();
@@ -3097,7 +3202,7 @@ function waterTabHTML(c,slot){
    so they stay out of statistics, findings, average typology, BIGBROTHER and compare.
    Shown as hexagons on the map (button in the _map titlebar) and in main tab Ib. They get the same
    climate tab (EPW, morphed EPW, Koppen, water risk) as case studies, no metrics, no simulation. */
-var BPCS=[],selectedBpc=null,bpcShown=false,bpcMarkers=[],bpcMarkersB=[],mapB=null,tileLayerB=null,bpcQ='';
+var BPCS=[],selectedBpc=null,bpcShown=true,bpcMarkers=[],bpcMarkersB=[],mapB=null,tileLayerB=null,bpcQ='';
 var currentBpcTab={A:'bpc',P:'bpc'};
 const BPC_LOREM='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
 function bpcSplitList(v){return v==null?[]:String(v).split(/[,\n;]/).map(s=>s.trim()).filter(s=>s&&s.toLowerCase()!=='none'&&s!=='-');}
@@ -3169,6 +3274,7 @@ function setBpcShown(on){
   bpcMarkers.forEach(m=>{if(bpcShown)m.addTo(map);else map.removeLayer(m);});
   if(!bpcShown&&selectedBpc&&!bpcViewActive()){selectedBpc=null;renderPanel();}
   refreshBpcMarkers();renderLegend();
+  if(window.vfSync)vfSync();
 }
 function selectBpc(id){
   const c=byBpc(id);if(!c)return;
@@ -3312,7 +3418,7 @@ function rebuildMarkers(){
   CASES.filter(c=>c.hasCoord).forEach(c=>{
     const mk=L.circleMarker([c.lat,c.lon],{radius:7,weight:0,fillColor:kcolor(c.koppen[scn]),fillOpacity:0.92});
     mk.bindTooltip(markerTip(c),{direction:'top',offset:[0,-6]});
-    mk.on('click',()=>selectCase(c.id));mk._cid=c.id;mk.addTo(map);markers.push(mk);bounds.push([c.lat,c.lon]);
+    mk.on('click',()=>selectCase(c.id));mk._cid=c.id;if(window.vfCsShown!==false)mk.addTo(map);markers.push(mk);bounds.push([c.lat,c.lon]);
   });
   if(bounds.length)map.fitBounds(bounds,{padding:[30,30]});
   if(envLayer==='water')refreshMap();
@@ -3388,10 +3494,11 @@ function refreshMap(){
       mk.setRadius(7);
     }
     if(mk.getTooltip&&mk.getTooltip())mk.setTooltipContent(markerTip(c));
-    if(isSel&&mk.bringToFront)mk.bringToFront();
+    if(isSel&&mk.bringToFront&&map.hasLayer(mk))mk.bringToFront();
   });
   scheduleKoppenOverlay();
   refreshBpcMarkers();
+  if(window.vfRefreshMain)vfRefreshMain();
 }
 function pass(c){
   if(fRegion&&c.country!==fRegion)return false;
@@ -3609,8 +3716,7 @@ async function fetchFullModeRaw(){
   const wb=XLSX.read(buf,{type:'array'});
   const parsed=parseWorkbookToCases(wb);
   BPCS=parseBpcSheet(wb);
-  const _ok=parsed.filter(c=>c.hasCoord);
-  return mockFillStrategies(_ok);
+  return parsed.filter(c=>c.hasCoord);
 }
 async function setAppMode(){
   /* demo mode removed, always full */
@@ -8066,7 +8172,7 @@ function renderPanel(){
 
 function renderSlider(){
   document.getElementById('scenarioSlider').value=scn;
-  document.getElementById('scenarioTicks').innerHTML=SCENARIO_MAIN.map((l,i)=>`<span class="scenario-tick ${i===scn?'active':''}" data-idx="${i}">${l}<br><span class="scenario-period">${SCENARIO_PERIODS[i]}</span></span>`).join('');
+  document.getElementById('scenarioTicks').innerHTML=SCENARIO_MAIN.map((l,i)=>`<span class="scenario-tick ${i===scn?'active':''}" data-idx="${i}"><span class="tk-a">${l}<br><span class="scenario-period">${SCENARIO_PERIODS[i]}</span></span><span class="tk-b">${['2026','2050','2080'][i]}</span></span>`).join('');
   const onScenarioChange=()=>{
     const panel=document.getElementById('csPanel');
     _preserveScroll=panel?panel.scrollTop:null;
@@ -12202,10 +12308,6 @@ else if(window._hideLoader)window._hideLoader();
     if(map)refreshMap();
     /* on desktop, ensure the case study drawer is open showing the mosaic */
     const isMobile=window.innerWidth<768||(('ontouchstart' in window||navigator.maxTouchPoints>0)&&window.innerWidth<1024);
-    if(!isMobile){
-      document.body.classList.add('cs-open');
-      document.getElementById('csStripBtn')?.classList.add('active');
-    }
     setTimeout(()=>{if(map)map.invalidateSize();},120);
   }
   const brandTitle=document.querySelector('.brand-title');
@@ -12328,25 +12430,25 @@ else if(window._hideLoader)window._hideLoader();
     let dragging=false;
     /* minimum width the map must always keep, so the drawer can never
        squash it to a sliver (the bug visible when max was a flat 85vw) */
-    const MAP_MIN=380;
+    const MAP_MIN=160;
     function mapLeftEdge(){
       /* where the map column starts: 40px normally or past the filter
          drawer (20vw, min 260px, +40px anchor) when the filter is open */
       if(document.body.classList.contains('filter-open')){
-        return 40+Math.max(window.innerWidth*0.20,260);
+        return Math.max(window.innerWidth*0.20,260);
       }
-      return 40;
+      return 0;
     }
     function widthFor(clientX){
       /* drawer right edge is fixed at 40px from viewport right; width is
          the gap between the pointer and that right edge */
-      const w=window.innerWidth-clientX-40;
+      const w=clientX-mapLeftEdge();
       const min=340;
       /* the drawer's left edge must stay right of (map left + MAP_MIN),
          with a 16px breathing gap. This one rule covers every case:
          atlas or fullscreen, filter open or closed, because it's driven
          by wherever the map actually begins. */
-      const max=window.innerWidth-40-mapLeftEdge()-MAP_MIN-16;
+      const max=window.innerWidth-mapLeftEdge()-MAP_MIN;
       return Math.max(min,Math.min(max,w));
     }
     function onMove(e){
@@ -12388,7 +12490,7 @@ else if(window._hideLoader)window._hideLoader();
         document.body.classList.remove('filter-open');
         if(fb)fb.classList.remove('active');
       }
-      const max=window.innerWidth-40-mapLeftEdge()-MAP_MIN-16;
+      const max=window.innerWidth-mapLeftEdge()-MAP_MIN;
       document.documentElement.style.setProperty('--cs-width',Math.max(340,max)+'px');
       if(map&&map.invalidateSize)setTimeout(()=>map.invalidateSize(),260);
     };
@@ -12405,7 +12507,7 @@ else if(window._hideLoader)window._hideLoader();
         curPx=parseFloat(getComputedStyle(document.getElementById('csCardWindow')).width);
       }
       if(!curPx)return;
-      const clamped=widthFor(window.innerWidth-curPx-40);
+      const clamped=widthFor(mapLeftEdge()+curPx);
       if(Math.abs(clamped-curPx)>1){
         document.documentElement.style.setProperty('--cs-width',clamped+'px');
         if(map&&map.invalidateSize)setTimeout(()=>map.invalidateSize(),0);
@@ -12423,10 +12525,6 @@ else if(window._hideLoader)window._hideLoader();
      mobile detection runs later in the script than this block) */
   setAtlasActive(true);
   const _isMobileNow=window.innerWidth<768||(('ontouchstart' in window||navigator.maxTouchPoints>0)&&window.innerWidth<1024);
-  if(!_isMobileNow){
-    document.body.classList.add('cs-open');
-    document.getElementById('csStripBtn')?.classList.add('active');
-  }
   window.addEventListener('resize',()=>{
     if(document.body.classList.contains('atlas-active'))setDeckTop();
     const _tb=document.querySelector('.win-titlebar');
@@ -12495,10 +12593,12 @@ function placeSearchRow(){
       else filterBar.insertAdjacentElement('afterbegin',searchRow);
     }
   }else{
-    const mapCard=document.querySelector('.map-card');
-    const titlebar=mapCard?mapCard.querySelector('.card-titlebar'):null;
-    if(mapCard&&titlebar&&searchRow.parentElement!==mapCard){
-      titlebar.insertAdjacentElement('afterend',searchRow);
+    const slot=document.getElementById('vfSearchSlot');
+    if(slot&&searchRow.parentElement!==slot)slot.insertBefore(searchRow,slot.firstChild);
+    else if(!slot){
+      const mapCard=document.querySelector('.map-card');
+      const titlebar=mapCard?mapCard.querySelector('.card-titlebar'):null;
+      if(mapCard&&titlebar&&searchRow.parentElement!==mapCard)titlebar.insertAdjacentElement('afterend',searchRow);
     }
   }
 }
@@ -13315,34 +13415,207 @@ function initFindStrategies(){
   fsWireDnD();
 }
 
-
-/* ---------- MOCKUP ONLY: fake strategies for the case studies ---------- */
-function mockFillStrategies(list){
-  const POOLS={
-    A:{P:['cross_ventilation','shading','elevated_groundfloor_convection','ventilated_roof_convection'],S:['vegetative_shading','stack_effect','openings_aperture','windcatcher','micropores_convection','facade_micro_shading','thermal_emissive_roof']},
-    B:{P:['high_thermal_mass','shading','courtyard_stack_effect','albedo_high_reflection'],S:['windcatcher','water_features_evaporation','troglodytic','earth_to_air_channels','openings_aperture','thermal_emissive_roof','vegetative_evaporation']},
-    Cw:{P:['shading','cross_ventilation','high_thermal_mass'],S:['openings_aperture','stack_effect','courtyard_stack_effect','albedo_high_reflection','vegetative_shading','floorplan_section_layout','hygroscopic_materials']},
-    Cc:{P:['insulation','compactness_heat_preservation','solar_gains_orientation','high_thermal_mass'],S:['greenhouse_effect','cross_ventilation','floorplan_section_layout','shading','topography','hygroscopic_materials']},
-    D:{P:['insulation','compactness_heat_preservation','greenhouse_effect','solar_gains_orientation'],S:['high_thermal_mass','cross_ventilation','topography','solar_gains','floorplan_section_layout','openings_aperture','shading']},
-    E:{P:['insulation','compactness_heat_preservation','topography','solar_gains_orientation'],S:['subterranean','troglodytic','greenhouse_effect','high_thermal_mass','albedo_high_absorbtion','floorplan_section_layout']}
-  };
-  const rng=seed=>{let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};};
-  list.forEach(c=>{
-    if((c.stratP&&c.stratP.length)||(c.stratS&&c.stratS.length))return;
-    let h=2166136261;String(c.id).split('').forEach(ch=>{h^=ch.charCodeAt(0);h=Math.imul(h,16777619);});
-    const r=rng(h);
-    const z=String((c.koppen&&(c.koppen[0]||c.koppen[1]||c.koppen[2]))||'Cfb');
-    let pool;
-    if(z[0]==='C')pool=/^C(s|w|fa)/.test(z)?POOLS.Cw:POOLS.Cc;else pool=POOLS[z[0]]||POOLS.Cc;
-    const take=(arr,n)=>{const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a.slice(0,n);};
-    const P=take(pool.P,1+Math.floor(r()*2));
-    const S=take(pool.S.filter(x=>!P.includes(x)),2+Math.floor(r()*3));
-    c.stratP=P;c.stratS=S;
-  });
-  return list;
-}
-
 initFindStrategies();
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════
+   v418 UI rework: toolbars, climate time maschine, ufo hint.
+   Every control is a thin proxy to the existing handlers.
+   ═══════════════════════════════════════════════════════ */
+(function(){
+  const $=id=>document.getElementById(id);
+  const B=document.body;
+  const isMob=()=>B.classList.contains('mobile-mode');
+
+  /* ---- show / hide case studies and the main strategy overlay ---- */
+  window.vfCsShown=true;
+  function setCsShown(on){
+    window.vfCsShown=!!on;
+    if(typeof markers==='undefined'||!map)return;
+    markers.forEach(m=>{if(on){if(!map.hasLayer(m))m.addTo(map);}else map.removeLayer(m);});
+    if(on&&typeof refreshMap==='function')refreshMap();
+    sync();
+  }
+  let msOn=false,msLayer=null;
+  function msCount(){return CASES.filter(c=>c.hasCoord&&(c.stratP||[]).length).length;}
+  window.vfRefreshMain=function(){
+    if(!map)return;
+    if(msLayer){map.removeLayer(msLayer);msLayer=null;}
+    if(!msOn)return;
+    msLayer=L.layerGroup();
+    CASES.forEach(c=>{
+      if(!c.hasCoord||!(c.stratP||[]).length||!pass(c))return;
+      const k=stratNorm(c.stratP[0]);if(!k)return;
+      const ring=kcolor(c.koppen[scn]);
+      L.marker([c.lat,c.lon],{interactive:false,keyboard:false,zIndexOffset:400,
+        icon:L.divIcon({className:'vf-ms-icon',html:'<div style="--vf-ring:'+ring+'">'+stratIconHTML(k,17)+'</div>',iconSize:[17,17],iconAnchor:[8.5,8.5]})}).addTo(msLayer);
+    });
+    msLayer.addTo(map);
+  };
+  function setMain(on){msOn=!!on;window.vfRefreshMain();sync();}
+
+  /* ---- build the toolbars ---- */
+  const ico={
+    menu:'<svg width="16" height="12" viewBox="0 0 18 14" fill="none"><line x1="0" y1="1" x2="18" y2="1" stroke="currentColor" stroke-width="1.6"/><line x1="0" y1="7" x2="18" y2="7" stroke="currentColor" stroke-width="1.6"/><line x1="0" y1="13" x2="18" y2="13" stroke="currentColor" stroke-width="1.6"/></svg>',
+    house:'<svg width="17" height="15" viewBox="620 424 162 134" fill="none"><polygon points="776.8,485.25 773.64,492.27 757.54,480.36 757.54,552.62 645.99,552.62 645.99,480.31 629.86,492.24 626.73,485.28 695.46,434.44 701.79,429.77 708.05,434.4 737.69,456.32 737.69,442.37 750.83,442.37 750.83,466.04 776.8,485.25" stroke="currentColor" stroke-width="10" stroke-linejoin="round" fill="none"/></svg>',
+    circle:'<svg width="13" height="13" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.2" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>',
+    star:'<svg width="14" height="14" viewBox="0 0 24 24"><path d="M12 2.8l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.6 6.1 21l1.3-6.6L2.5 9.7l6.6-.8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+    filter:'<svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1 2h13L9 8v5l-3-1.5V8L1 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>',
+    glass:'<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="5.8" cy="5.8" r="4.2"/><path d="M9 9l4 4"/></svg>',
+    zoom:'<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6.4 6.4L2 2M2 5V2h3"/><path d="M9.6 6.4L14 2M11 2h3v3"/><path d="M6.4 9.6L2 14M2 11v3h3"/><path d="M9.6 9.6L14 14M11 14h3v-3"/></svg>',
+    moon:'<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M13.2 9.6A5.6 5.6 0 016.4 2.8 5.8 5.8 0 1013.2 9.6z"/></svg>',
+    cloud:'<svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9.2A3.3 3.3 0 015.4 2.7a4 4 0 017.5 1.2A2.9 2.9 0 0112.6 9.2"/><path d="M9 7v8.4M6.4 12.9L9 15.5l2.6-2.6"/></svg>',
+    x:'<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 2l10 10M12 2L2 12"/></svg>'
+  };
+  const ver=(document.querySelector('.win-titlebar .vf-version')||{}).textContent||'';
+  const mk=(h)=>{const d=document.createElement('div');d.innerHTML=h.trim();return d.firstChild;};
+
+  const tl=mk('<div class="vf-ui vf-tb vf-tl" id="vfTL">'+
+    '<button class="vf-b ic bare" id="vfMenu" title="Menu">'+ico.menu+'</button>'+
+    '<button class="vf-b ic" id="vfHouse" title="Case study window (floor plan checkerboard)">'+ico.house+'</button>'+
+    '<button class="vf-b on" id="vfCs" title="Show / hide case studies">'+ico.circle+'<span>vernacular</span></button>'+
+    '<button class="vf-b on" id="vfBp" title="Show / hide best practice examples">'+ico.star+'<span>best practice</span></button>'+
+    '<button class="vf-b ic" id="vfFilter" title="Filters">'+ico.filter+'</button>'+
+    '<span class="vf-sep"></span>'+
+    '<button class="vf-b" id="vfMain" title="Overlay the main strategy of each case study">main strategy</button>'+
+    '<button class="vf-b" id="vfClimate" title="Koppen climate overlay">climate</button>'+
+    '<button class="vf-b" id="vfWater" title="WRI Aqueduct water risk">water risk</button>'+
+  '</div>');
+  const tr=mk('<div class="vf-ui vf-tb vf-tr" id="vfTR">'+
+    '<span class="vf-ver" id="vfVer" title="">'+ver+'</span>'+
+    '<span id="vfSearchSlot" style="position:relative;display:block;"><button class="vf-sglass" id="vfGlass" title="Search">'+ico.glass+'</button></span>'+
+    '<button class="vf-b ic" id="vfZoom" title="Zoom out to the whole world">'+ico.zoom+'</button>'+
+    '<button class="vf-b ic" id="vfTheme" title="Dark mode">'+ico.moon+'</button>'+
+    '<button class="vf-b ic" id="vfFetch" title="Refetch data">'+ico.cloud+'</button>'+
+    '<button class="vf-b ic" id="vfClose" title="Close the world">'+ico.x+'</button>'+
+  '</div>');
+  const sbox=mk('<div class="vf-ui vf-sbox" id="vfSbox"><div class="vf-sh1">climate time maschine</div><div id="vfSslot" style="width:100%"></div></div>');
+  B.appendChild(tl);B.appendChild(tr);B.appendChild(sbox);
+
+  /* ---- ufo hint ---- */
+  let hint=null;
+  (function(){
+    if(typeof fsUfoSVG!=='function')return;
+    let s=fsUfoSVG().replace(/fsBG/g,'vfBG').replace(/fsBeamClip/g,'vfBeamClip').replace(/fsHouseClip/g,'vfHouseClip');
+    s=s.replace('class="fs-bclip" x="-20" y="0" width="520" height="128"','class="fs-bclip" x="-20" y="0" width="520" height="430"');
+    hint=mk('<div class="vf-ui vf-hint" id="vfHint"><div class="vf-hint-in">'+s+'<div class="vf-hint-txt">click anywhere or select case study</div></div></div>');
+    B.appendChild(hint);
+  })();
+
+  /* ---- legend info icon ---- */
+  const li=mk('<div class="vf-legend-info" id="vfLegInfo"></div>');B.appendChild(li);
+  const ki=$('koppenOverlayInfo');if(ki)li.appendChild(ki);
+  function placeInfo(){
+    const lg=$('mapLegend');if(!lg||!li)return;
+    const r=lg.getBoundingClientRect();
+    if(!r.width||getComputedStyle(lg).display==='none'){li.style.visibility='hidden';return;}
+    li.style.visibility=(envLayer==='water')?'hidden':'visible';
+    li.style.left=(r.right-22)+'px';li.style.top=(r.top+3)+'px';
+    /* legend is shifted by the filter drawer logic through a transform; getBoundingClientRect includes it */
+  }
+  if($('mapLegend')&&window.MutationObserver)new MutationObserver(placeInfo).observe($('mapLegend'),{childList:true,subtree:true,attributes:true});
+  window.addEventListener('resize',placeInfo);
+
+  /* ---- slider: header (other tabs, mobile) <-> climate time maschine box ---- */
+  function relocate(){
+    const sc=document.querySelector('.scenario-control');if(!sc)return;
+    const want=(B.classList.contains('atlas-active')&&!isMob())?$('vfSslot'):document.querySelector('.app-header');
+    if(want&&sc.parentElement!==want)want.appendChild(sc);
+    placeInfo();
+  }
+  new MutationObserver(relocate).observe(B,{attributes:true,attributeFilter:['class']});
+  relocate();
+
+  /* ---- search box into the top right toolbar ---- */
+  window.vfPlaceSearch=function(){
+    const row=document.querySelector('.cs-search-row'),slot=$('vfSearchSlot');
+    if(!row||!slot||isMob())return;
+    if(row.parentElement!==slot)slot.insertBefore(row,slot.firstChild);
+  };
+  vfPlaceSearch();
+  {const si=$('csSearch');if(si)si.placeholder='search';}
+  $('vfGlass').addEventListener('click',()=>{const i=$('csSearch');if(i){i.focus();i.dispatchEvent(new Event('input',{bubbles:true}));}});
+
+  /* ---- proxies ---- */
+  $('vfMenu').addEventListener('click',()=>$('hamburgerBtn')&&$('hamburgerBtn').click());
+  $('vfHouse').addEventListener('click',()=>$('csStripBtn')&&$('csStripBtn').click());
+  $('vfFilter').addEventListener('click',()=>$('filterStripBtn')&&$('filterStripBtn').click());
+  $('vfCs').addEventListener('click',()=>setCsShown(!window.vfCsShown));
+  $('vfBp').addEventListener('click',()=>setBpcShown(!bpcShown));
+  $('vfMain').addEventListener('click',()=>setMain(!msOn));
+  $('vfClimate').addEventListener('click',async()=>{
+    if(envLayer==='water'){await setEnvLayer('climate');if(!koppenOverlayActive)$('koppenOverlayBtn').click();}
+    else $('koppenOverlayBtn').click();
+    sync();placeInfo();
+  });
+  $('vfWater').addEventListener('click',async()=>{await setEnvLayer(envLayer==='water'?'climate':'water');sync();placeInfo();});
+  $('vfZoom').addEventListener('click',()=>{if(map)map.flyTo([40,20],2,{duration:0.8});});
+  $('vfTheme').addEventListener('click',()=>$('themeToggle')&&$('themeToggle').click());
+  $('vfFetch').addEventListener('click',()=>$('fetchMap')&&$('fetchMap').click());
+  $('vfClose').addEventListener('click',()=>$('mapCloseBtn')&&$('mapCloseBtn').click());
+  /* climate runner easter egg: double click the version */
+  $('vfVer').addEventListener('dblclick',()=>{if(typeof openEggGame==='function')openEggGame();});
+
+  /* ---- state mirror ---- */
+  function sync(){
+    const set=(id,on)=>{const e=$(id);if(e)e.classList.toggle('on',!!on);};
+    set('vfHouse',B.classList.contains('cs-open'));
+    set('vfFilter',B.classList.contains('filter-open'));
+    set('vfCs',window.vfCsShown);
+    set('vfBp',typeof bpcShown!=='undefined'&&bpcShown);
+    set('vfMain',msOn);
+    set('vfClimate',envLayer!=='water'&&koppenOverlayActive);
+    set('vfWater',envLayer==='water');
+    set('vfTheme',document.documentElement.getAttribute('data-theme')==='dark');
+    const m=$('vfMain');if(m)m.title='Overlay the main strategy of each case study ('+msCount()+' with strategy data)';
+    updHint();
+  }
+  window.vfSync=sync;
+  new MutationObserver(sync).observe(B,{attributes:true,attributeFilter:['class']});
+  new MutationObserver(sync).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+  setInterval(sync,500);
+
+  /* ---- ufo hint: floats over the map and dodges the cursor ---- */
+  let dismissed=false,hx=0,hy=0,tx=0,ty=0,mx=-999,my=-999,homeX=0,homeY=0,raf=0;
+  const HW=190,R=190;
+  function hintH(){return hint?hint.offsetHeight||170:170;}
+  function home(){homeX=Math.round(window.innerWidth/2-HW/2);homeY=Math.round(window.innerHeight*0.52-hintH()/2);}
+  function updHint(){
+    if(!hint)return;
+    const used=!!(typeof FS!=='undefined'&&FS.pin)||(typeof selectedId!=='undefined'&&selectedId)||B.classList.contains('cs-open');
+    if(used)dismissed=true;
+    hint.classList.toggle('gone',dismissed);
+  }
+  if(hint){
+    home();hx=tx=homeX;hy=ty=homeY;
+    hint.style.transform='translate('+hx+'px,'+hy+'px)';
+    window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;},{passive:true});
+    window.addEventListener('mouseout',e=>{if(!e.relatedTarget){mx=-999;my=-999;}});
+    window.addEventListener('resize',home);
+    const step=()=>{
+      raf=requestAnimationFrame(step);
+      if(dismissed&&hint.classList.contains('gone')&&getComputedStyle(hint).opacity==='0')return;
+      const h=hintH(),cx=hx+HW/2,cy=hy+h/2,dx=cx-mx,dy=cy-my,d=Math.hypot(dx,dy);
+      if(d<R){
+        /* push away from the cursor, keep it on screen */
+        const k=(R-d)/Math.max(d,1);
+        tx=hx+dx*k*0.55;ty=hy+dy*k*0.55;
+      }else{tx=homeX;ty=homeY;}
+      tx=Math.max(8,Math.min(window.innerWidth-HW-8,tx));
+      const minY=Math.max(70,Math.round(sbox.getBoundingClientRect().bottom)+10);
+      ty=Math.max(minY,Math.min(window.innerHeight-h-8,ty));
+      hx+=(tx-hx)*0.12;hy+=(ty-hy)*0.12;
+      hint.style.transform='translate('+hx.toFixed(1)+'px,'+hy.toFixed(1)+'px)';
+    };
+    raf=requestAnimationFrame(step);
+    setTimeout(()=>{if(typeof map!=='undefined'&&map)map.on('click',()=>{dismissed=true;updHint();});},300);
+  }
+
+  /* defaults: best practice shown, case studies shown */
+  setTimeout(()=>{if(typeof bpcShown!=='undefined'&&!bpcShown)setBpcShown(true);sync();placeInfo();},600);
+  setTimeout(()=>{sync();placeInfo();},1500);
+  sync();
+})();
 </script>
 <div id="infoPopoverPortal" style="position:fixed;inset:0;pointer-events:none;z-index:99999;overflow:visible;"></div>
 </body>
