@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>window.VF_MOCKUP=true;</script>
 <meta charset="UTF-8">
 <meta property="og:title" content="vernacularfutures _morphing_typologies_for_future_climates">
 <meta property="og:description" content="An interactive atlas of vernacular building morphology across climate zones, projected onto future climate scenarios (SSP5-8.5, 2050/2080).">
@@ -12,7 +13,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>vernacularfutures _morphing_typologies_for_future_climates</title>
+<title>vernacularfutures _morphing_typologies_for_future_climates (mockup)</title>
 <script>(function(){try{if(localStorage.getItem('atlasTheme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -2154,9 +2155,8 @@ body.atlas-active:not(.mobile-mode):not(.map-fullscreen) .vf-sbox{display:flex;}
 .vf-sbox{position:fixed;top:12px;left:calc(var(--vf-fw,0px) + var(--vf-cw,0px) + (100vw - var(--vf-fw,0px) - var(--vf-cw,0px)) / 2);transform:translateX(-50%);transition:left .22s cubic-bezier(.4,0,.2,1);z-index:560;flex-direction:column;align-items:center;
   padding:9px 18px 6px;background:color-mix(in srgb,var(--paper) 94%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
   border:1px solid var(--line-strong);box-shadow:0 2px 14px rgba(0,0,0,.16);}
-.vf-sbox::before{content:"";position:absolute;left:-1px;right:-1px;top:-1px;height:4px;background:linear-gradient(90deg,#7722CC,#9A7870,#E07010);}
-.vf-sh1{font-family:var(--mono);font-weight:800;font-size:17px;letter-spacing:.16em;line-height:1.1;text-transform:uppercase;white-space:nowrap;
-  background:linear-gradient(90deg,#7722CC,#9A7870 50%,#E07010);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;}
+
+.vf-sh1{font-family:var(--mono);font-weight:800;font-size:17px;letter-spacing:.16em;line-height:1.1;text-transform:uppercase;white-space:nowrap;color:var(--ink);}
 .vf-sbox .scenario-control{transform:none!important;align-items:center;width:100%;}
 .vf-sbox .scenario-label{transform:none!important;text-transform:lowercase;letter-spacing:.04em;font-size:10px;margin:3px 0 0;}
 .vf-sbox .scenario-slider-wrap{width:290px;padding:0 4px;}
@@ -2205,6 +2205,7 @@ body.atlas-active:not(.mobile-mode):not(.map-fullscreen) .vf-hint{display:block;
 .vf-ms-icon{background:none!important;border:0!important;}
 .vf-ms-icon .si{border-radius:50%;box-shadow:0 0 0 2px var(--vf-ring,#fff),0 1px 3px rgba(0,0,0,.3);pointer-events:none;}
 body.mobile-mode .vf-ui,body.mobile-mode .vf-legend-info{display:none!important;}
+.fs-mock-fixed{top:auto!important;bottom:10px!important;}
 </style>
 </head>
 <body>
@@ -3716,7 +3717,8 @@ async function fetchFullModeRaw(){
   const wb=XLSX.read(buf,{type:'array'});
   const parsed=parseWorkbookToCases(wb);
   BPCS=parseBpcSheet(wb);
-  return parsed.filter(c=>c.hasCoord);
+  const _ok=parsed.filter(c=>c.hasCoord);
+  return mockFillStrategies(_ok);
 }
 async function setAppMode(){
   /* demo mode removed, always full */
@@ -13413,6 +13415,33 @@ function initFindStrategies(){
   document.getElementById('fsModal').addEventListener('click',e=>{if(e.target.id==='fsModal')fsCloseModal();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.getElementById('fsModal');if(m&&!m.classList.contains('fs-hidden'))fsCloseModal();}});
   fsWireDnD();
+}
+
+
+/* ---------- MOCKUP ONLY: fake strategies for the case studies ---------- */
+function mockFillStrategies(list){
+  const POOLS={
+    A:{P:['cross_ventilation','shading','elevated_groundfloor_convection','ventilated_roof_convection'],S:['vegetative_shading','stack_effect','openings_aperture','windcatcher','micropores_convection','facade_micro_shading','thermal_emissive_roof']},
+    B:{P:['high_thermal_mass','shading','courtyard_stack_effect','albedo_high_reflection'],S:['windcatcher','water_features_evaporation','troglodytic','earth_to_air_channels','openings_aperture','thermal_emissive_roof','vegetative_evaporation']},
+    Cw:{P:['shading','cross_ventilation','high_thermal_mass'],S:['openings_aperture','stack_effect','courtyard_stack_effect','albedo_high_reflection','vegetative_shading','floorplan_section_layout','hygroscopic_materials']},
+    Cc:{P:['insulation','compactness_heat_preservation','solar_gains_orientation','high_thermal_mass'],S:['greenhouse_effect','cross_ventilation','floorplan_section_layout','shading','topography','hygroscopic_materials']},
+    D:{P:['insulation','compactness_heat_preservation','greenhouse_effect','solar_gains_orientation'],S:['high_thermal_mass','cross_ventilation','topography','solar_gains','floorplan_section_layout','openings_aperture','shading']},
+    E:{P:['insulation','compactness_heat_preservation','topography','solar_gains_orientation'],S:['subterranean','troglodytic','greenhouse_effect','high_thermal_mass','albedo_high_absorbtion','floorplan_section_layout']}
+  };
+  const rng=seed=>{let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};};
+  list.forEach(c=>{
+    if((c.stratP&&c.stratP.length)||(c.stratS&&c.stratS.length))return;
+    let h=2166136261;String(c.id).split('').forEach(ch=>{h^=ch.charCodeAt(0);h=Math.imul(h,16777619);});
+    const r=rng(h);
+    const z=String((c.koppen&&(c.koppen[0]||c.koppen[1]||c.koppen[2]))||'Cfb');
+    let pool;
+    if(z[0]==='C')pool=/^C(s|w|fa)/.test(z)?POOLS.Cw:POOLS.Cc;else pool=POOLS[z[0]]||POOLS.Cc;
+    const take=(arr,n)=>{const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a.slice(0,n);};
+    const P=take(pool.P,1+Math.floor(r()*2));
+    const S=take(pool.S.filter(x=>!P.includes(x)),2+Math.floor(r()*3));
+    c.stratP=P;c.stratS=S;
+  });
+  return list;
 }
 
 initFindStrategies();
