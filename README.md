@@ -9,5 +9,3 @@ By Moritz Saul, Sinem Vatansever, Yorck von Dietze, Toprak Tilic, Lukas Gruenwal
 Tutor: Bilge Kobas
 
 TU Muenchen
-
-Yorck von Dietze and team, TU Muenchen.
