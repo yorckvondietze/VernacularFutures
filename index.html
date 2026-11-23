@@ -2160,9 +2160,7 @@ body.atlas-active:not(.mobile-mode):not(.map-fullscreen) .vf-sbox{display:flex;}
 .vf-sbox{position:fixed;top:12px;left:calc(var(--vf-fw,0px) + var(--vf-cw,0px) + (100vw - var(--vf-fw,0px) - var(--vf-cw,0px)) / 2);transform:translateX(-50%);transition:left .22s cubic-bezier(.4,0,.2,1);z-index:560;flex-direction:column;align-items:center;
   padding:9px 18px 6px;background:color-mix(in srgb,var(--paper) 94%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
   border:1px solid var(--line-strong);box-shadow:0 2px 14px rgba(0,0,0,.16);}
-.vf-sbox::before{content:"";position:absolute;left:-1px;right:-1px;top:-1px;height:4px;background:linear-gradient(90deg,#7722CC,#9A7870,#E07010);}
-.vf-sh1{font-family:var(--mono);font-weight:800;font-size:17px;letter-spacing:.16em;line-height:1.1;text-transform:uppercase;white-space:nowrap;
-  background:linear-gradient(90deg,#7722CC,#9A7870 50%,#E07010);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;}
+.vf-sh1{font-family:var(--mono);font-weight:800;font-size:17px;letter-spacing:.16em;line-height:1.1;text-transform:uppercase;white-space:nowrap;color:var(--ink);}
 .vf-sbox .scenario-control{transform:none!important;align-items:center;width:100%;}
 .vf-sbox .scenario-label{transform:none!important;text-transform:lowercase;letter-spacing:.04em;font-size:10px;margin:3px 0 0;}
 .vf-sbox .scenario-slider-wrap{width:290px;padding:0 4px;}
@@ -2268,7 +2266,7 @@ body.mobile-mode .vf-ui,body.mobile-mode .vf-legend-info{display:none!important;
 <div class="fs-mock fs-mock-fixed" hidden>mockup: strategies of the case studies are fake</div>
 <div id="siteLoader">
   <div class="loader-controls">
-    <span class="vf-version">v421</span>
+    <span class="vf-version">v422</span>
     <button class="theme-toggle" id="loaderThemeToggle" title="Toggle dark mode">☾</button>
     <span class="c-game" id="loaderGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span>
   </div>
@@ -2283,7 +2281,7 @@ body.mobile-mode .vf-ui,body.mobile-mode .vf-legend-info{display:none!important;
 <div class="win-titlebar">
   <span class="win-title">vernacularfutures</span>
   <span class="win-controls">
-    <span class="vf-version">v421</span>
+    <span class="vf-version">v422</span>
     <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">☾</button>
     <span class="c-game" id="openGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span></span>
 </div>
@@ -2761,7 +2759,7 @@ let currentCsTab={A:'building',B:'building'}; /* remembered across scenario chan
    Live:   const DATA_BASE='https://f005.backblazeb2.com/file/morphshift-data'; (B2 direct)
    -------------------------------------------------------------------- */
 const DATA_BASE='https://pub-8944e9777b04487cb29b19062000de40.r2.dev';
-const BUILD_TS='20261118_006';
+const BUILD_TS='20261123_001';
 let modeUnlocked=false;
 /* DEMO_CASES_SEED removed: case data comes from R2 only, see fetchFullModeRaw/setAppMode. */
 let FULL_CASES_RAW=null;
@@ -3243,7 +3241,7 @@ function bpcFill(c){
   if(envLayer==='water'){const k=waterClassOf(aqValue(c.id,waterMetric,scn));return k.kind==='class'?waterFill(k):(k.kind==='arid'?'#888780':WATER_NODATA);}
   return kcolor(c.koppen[scn]);
 }
-function bpcHexPoints(r){const p=[];for(let i=0;i<6;i++){const a=Math.PI/3*i;p.push((r*Math.cos(a)).toFixed(2)+','+(r*Math.sin(a)).toFixed(2));}return p.join(' ');}
+function bpcHexPoints(r){const p=[];for(let i=0;i<6;i++){const a=Math.PI/3*i+Math.PI/2;p.push((r*Math.cos(a)).toFixed(2)+','+(r*Math.sin(a)).toFixed(2));}return p.join(' ');}
 function bpcIcon(c,sel){
   const dark=document.documentElement.getAttribute('data-theme')==='dark',ink=dark?'#FFFFFF':'#000000',w=sel?3.6:2;
   return L.divIcon({className:'bpc-hex',iconSize:[30,30],iconAnchor:[15,15],
