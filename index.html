@@ -57,8 +57,8 @@ html[data-theme="dark"]{
 /* chrome-stripe intentionally has no dark-mode override, it uses
    var(--terracotta) which applyScenarioPalette() already updates
    correctly per-theme; a static override here was blocking that. */
-html[data-theme="dark"] .scenario-slider{background:linear-gradient(90deg,#B86AF5,#F0A030);border-radius:6px;}
-html[data-theme="dark"] .scenario-slider::-moz-range-track{background:linear-gradient(90deg,#B86AF5,#F0A030);height:12px;border-radius:6px;}
+html[data-theme="dark"] .scenario-slider{background:linear-gradient(90deg,#B86AF5,#F0A030);border-radius:0;}
+html[data-theme="dark"] .scenario-slider::-moz-range-track{background:linear-gradient(90deg,#B86AF5,#F0A030);height:12px;border-radius:0;}
 html[data-theme="dark"] body{background:radial-gradient(ellipse at top,#15123080,transparent 60%) var(--paper);}
 html[data-theme="dark"] .map-legend{background:rgba(11,10,22,0.9);color:var(--ink);}
 html[data-theme="dark"] .leaflet-control-attribution{background:rgba(11,10,22,0.85)!important;color:var(--ink-faint)!important;}
@@ -134,10 +134,10 @@ body:not(.map-fullscreen) .scenario-control{transform:scale(0.9);transform-origi
 .scenario-label{font-family:var(--mono);font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);}
 body:not(.map-fullscreen) .scenario-label{transform:translateY(5px);}
 .scenario-slider-wrap{width:420px;padding:0 5px;box-sizing:border-box;}
-.scenario-slider{-webkit-appearance:none;appearance:none;width:100%;height:12px;background:linear-gradient(90deg,#7722CC,#9A7870,#E07010);cursor:pointer;margin:23px 0 5px;border-radius:6px;}
+.scenario-slider{-webkit-appearance:none;appearance:none;width:100%;height:12px;background:linear-gradient(90deg,#7722CC,#9A7870,#E07010);cursor:pointer;margin:23px 0 5px;border-radius:0;}
 .scenario-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:30px;height:30px;border-radius:50%;background:var(--terracotta);border:none;cursor:pointer;outline:none;box-shadow:0 2px 12px rgba(0,0,0,0.25);}
 .scenario-slider::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:var(--terracotta);border:none;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.25);}
-.scenario-slider::-moz-range-track{height:12px;background:linear-gradient(90deg,#7722CC,#9A7870,#E07010);border-radius:6px;}
+.scenario-slider::-moz-range-track{height:12px;background:linear-gradient(90deg,#7722CC,#9A7870,#E07010);border-radius:0;}
 /* ── animated UFO slider thumb (reuses the boot-loader frames) ──────── */
 .scenario-slider-wrap{position:relative;}
 .scenario-slider::-webkit-slider-thumb{background:transparent!important;box-shadow:none!important;}
@@ -454,7 +454,7 @@ html[data-theme="dark"] .ufo-mini-host svg .mcls-2{fill:none!important;}
 /* scrollbar styling, thin, themed, never white */
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:3px;}
+::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:0;}
 ::-webkit-scrollbar-thumb:hover{background:var(--ink-faint);}
 html[data-theme="dark"] ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.18);}
 html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.32);}
@@ -726,6 +726,10 @@ html[data-theme="dark"] .viewer3d-fs-btn:hover{background:rgba(11,10,22,0.95);co
 .sim-fs-wrap.sim-fullscreen .sim-fs-header{display:flex;}
 /* hide the ⛶ button in fullscreen (replaced by close in header) */
 .sim-fs-wrap.sim-fullscreen .viewer3d-fs-btn{display:none;}
+.sim-fs-x{display:none;position:fixed;top:12px;right:14px;z-index:100001;width:34px;height:34px;align-items:center;justify-content:center;background:var(--paper);color:var(--ink);border:1px solid var(--ink);border-radius:0;cursor:pointer;padding:0;}
+.sim-fs-x:hover{background:var(--ink);color:var(--paper);}
+.sim-fs-wrap.sim-fullscreen .sim-fs-x{display:flex;}
+.sim-fs-wrap.sim-fullscreen .sim-fs-header{padding-right:46px;}
 .heat-legend{margin-top:9px;}
 .heat-legend-bar{height:8px;border-radius:0;background:linear-gradient(to right,#A50026,#D73027,#F46D43,#FDAE61,#FEE08B,#D9EF8B,#A6D96A,#66BD63,#1A9850,#006837);}
 .heat-legend-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--ink-faint);margin-top:3px;}
@@ -1902,6 +1906,7 @@ html[data-theme="dark"] .loader-status{
 .loader-svg-host svg{width:100%;height:auto;display:block;}
 .loader-svg-host svg .cls-1,.loader-svg-host svg .cls-2,.loader-svg-host svg .cls-4{stroke-width:3.2px!important;}
 .loader-svg-host svg .cls-3{stroke-width:4.5px!important;}
+.loader-svg-host svg path:not(.cls-1):not(.cls-2),.loader-svg-host svg ellipse,.loader-svg-host svg polygon{fill:#585858!important;}
 .loader-brand{
   font-family:var(--serif);font-size:28px;font-weight:700;letter-spacing:-0.01em;
   color:#111111;
@@ -2175,7 +2180,7 @@ body.atlas-active:not(.mobile-mode):not(.map-fullscreen) .vf-sbox{display:flex;}
 .vf-lbl-b,.tk-b{display:none;}
 .vf-sbox .vf-lbl-a,.vf-sbox .tk-a{display:none;}
 .vf-sbox .vf-lbl-b,.vf-sbox .tk-b{display:inline;}
-@media(max-width:1640px){body.atlas-active:not(.mobile-mode) .vf-sbox{top:66px;}}
+
 
 /* ── drawers open from the left, below the toolbar ── */
 body.atlas-active:not(.mobile-mode):not(.map-fullscreen) .filter-bar{top:var(--vf-top)!important;left:0!important;z-index:500;}
@@ -2211,6 +2216,37 @@ body.atlas-active:not(.mobile-mode):not(.map-fullscreen) .vf-hint{display:block;
 .vf-ms-icon{background:none!important;border:0!important;}
 .vf-ms-icon .si{border-radius:50%;box-shadow:0 0 0 2px var(--vf-ring,#fff),0 1px 3px rgba(0,0,0,.3);pointer-events:none;}
 body.mobile-mode .vf-ui,body.mobile-mode .vf-legend-info{display:none!important;}
+
+/* v423: round strategy icons, sharp bars */
+.si,.fs-card .si,.strat-icons .si,.fs-all-i .si{border-radius:50%!important;overflow:hidden;}
+.si svg{border-radius:50%;}
+.scenario-slider,.scenario-slider::-webkit-slider-runnable-track,.scenario-slider::-moz-range-track,.heat-legend-bar,.vf-sbox,.vf-tb *:not(.si){border-radius:0!important;}
+::-webkit-scrollbar-thumb{border-radius:0!important;}
+.vf-sbox::before{display:none!important;}
+.vf-sh1{background:none!important;-webkit-background-clip:initial!important;background-clip:initial!important;-webkit-text-fill-color:var(--ink)!important;color:var(--ink)!important;}
+
+
+/* v423: toolbar aligned with the case study window; time machine never overlaps the toolbars */
+body.atlas-active.cs-open:not(.mobile-mode) .vf-tl{left:var(--vf-fw,0px);min-width:var(--vf-cw);box-sizing:border-box;justify-content:flex-start;}
+.vf-sbox{transition:none;}
+/* v423 findSTRATEGIES: half-screen window, map stays visible on the right */
+#fsWin,#fsWin.fs-full,#fsWin:not(.fs-full){inset:auto;left:var(--vf-fw,0px);top:var(--vf-top,58px);bottom:0;width:50vw;border:0;border-right:1px solid var(--line-strong);box-shadow:none;}
+#fsSizeBtn{display:none!important;}
+#fsWin.fs-sub-cs .fs-right{display:none;}
+#fsWin.fs-sub-cs .fs-left{flex:1 1 auto;border-right:0;}
+#fsWin.fs-sub-bpc #fsStage1 .fs-left{display:none;}
+#fsWin.fs-sub-cs .fs-foot{display:none;}
+#fsWin .fs-typ-top{grid-template-columns:1.2fr 1fr 1fr;}
+.fs-bigarrow{display:none;position:absolute;right:26px;bottom:22px;width:96px;height:64px;background:none;border:0;padding:0;cursor:pointer;color:var(--ink);z-index:5;}
+.fs-bigarrow svg{width:100%;height:100%;display:block;transition:transform .2s ease;}
+.fs-bigarrow:hover{color:var(--terracotta);}
+.fs-bigarrow:hover svg{transform:translateX(6px);}
+#fsWin.fs-sub-cs.fs-step1 .fs-bigarrow{display:block;}
+.fs-xbtn{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;background:none;border:1px solid var(--line-strong);border-radius:0;color:var(--ink);cursor:pointer;padding:0;margin-left:6px;}
+.fs-xbtn:hover{background:var(--ink);color:var(--paper);}
+#fsWin .win-controls .c-close{display:none;}
+@media (max-width:900px){#fsWin,#fsWin.fs-full,#fsWin:not(.fs-full){left:0;width:100vw;}}
+.fs-used-ring{pointer-events:none;}
 </style>
 </head>
 <body>
@@ -2246,7 +2282,7 @@ body.mobile-mode .vf-ui,body.mobile-mode .vf-legend-info{display:none!important;
     <div><span class="fs-title">_find<span style="color:var(--terracotta)">STRATEGIES</span></span><span class="fs-sub" id="fsSub"></span><span class="fs-mock" hidden>mockup: strategies of the case studies are fake</span></div>
     <span class="win-controls"><button type="button" class="avgt-launch-btn fs-allbtn" data-fs-all>view all strategies</button>
       <span class="c-fetch" id="fsSizeBtn" title="Toggle fullscreen" style="display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 1 L1 1 L1 4 M7 1 L10 1 L10 4 M1 7 L1 10 L4 10 M10 7 L10 10 L7 10"/></svg></span>
-      <span class="c-close" id="fsCloseBtn" title="Close"></span>
+      <button type="button" class="fs-xbtn" id="fsCloseBtn" title="Close findSTRATEGIES" aria-label="Close findSTRATEGIES"><svg viewBox="0 0 14 14" width="13" height="13"><path d="M2 2L12 12M12 2L2 12" stroke="currentColor" stroke-width="1.6" fill="none"/></svg></button>
     </span>
   </div>
   <div class="fs-stage" id="fsStage1">
@@ -2258,6 +2294,7 @@ body.mobile-mode .vf-ui,body.mobile-mode .vf-legend-info{display:none!important;
   </div>
   <div class="fs-stage" id="fsStage2" hidden><div class="fs-place"><b>insert shoebox</b><span>Placeholder. The shoebox simulation will be inserted here.</span></div></div>
   <div class="fs-stage" id="fsStage3" hidden><div class="fs-place"><b>insert make downloadable handout</b><span>Placeholder. The downloadable handout will be created here.</span></div></div>
+  <button type="button" class="fs-bigarrow" id="fsBigArrow" title="Further: best practice cases" aria-label="Further"><svg viewBox="0 0 96 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 32H88M62 8L88 32L62 56"/></svg></button>
   <div class="fs-foot">
     <button class="fs-btn" id="fsBack" hidden title="Back"><svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 H1 M5 1 L1 5 L5 9"/></svg></button>
     <span class="fs-step" id="fsStepLbl"></span>
@@ -2268,7 +2305,7 @@ body.mobile-mode .vf-ui,body.mobile-mode .vf-legend-info{display:none!important;
 <div class="fs-mock fs-mock-fixed" hidden>mockup: strategies of the case studies are fake</div>
 <div id="siteLoader">
   <div class="loader-controls">
-    <span class="vf-version">v422</span>
+    <span class="vf-version">v423</span>
     <button class="theme-toggle" id="loaderThemeToggle" title="Toggle dark mode">☾</button>
     <span class="c-game" id="loaderGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span>
   </div>
@@ -2283,7 +2320,7 @@ body.mobile-mode .vf-ui,body.mobile-mode .vf-legend-info{display:none!important;
 <div class="win-titlebar">
   <span class="win-title">vernacularfutures</span>
   <span class="win-controls">
-    <span class="vf-version">v422</span>
+    <span class="vf-version">v423</span>
     <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">☾</button>
     <span class="c-game" id="openGameBtn" title="Open _climate_runner" style="display:inline-flex;align-items:center;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M12 3c-2.8 0-5 2.2-5 5H4c-1.7 0-3 1.1-3 2.5S2.3 13 4 13h16c1.7 0 3-1.1 3-2.5S21.7 8 20 8h-3c0-2.8-2.2-5-5-5z"/><path d="M10.5 13.5l-1.8 7h6.6l-1.8-7z" opacity="0.45"/></svg></span></span>
 </div>
@@ -3221,7 +3258,7 @@ function parseBpcSheet(wb){
   const idx={};Object.keys(COLMAP_DEF).forEach(k=>idx[k]=findCol(headers,COLMAP_DEF[k]));
   const lc=headers.map(h=>h.toLowerCase().trim());
   const col=f=>lc.findIndex(f);
-  const nameI=col(h=>h.startsWith('case study')),spI=col(h=>h==='strategy_primary'),ssI=col(h=>h==='strategy_secondary'),tyI=col(h=>h==='type'),deI=col(h=>h==='description');
+  const nameI=col(h=>h.startsWith('case study')||h.startsWith('case_study')),spI=col(h=>h==='strategy_primary'),ssI=col(h=>h==='strategy_secondary'),tyI=col(h=>h==='type'),deI=col(h=>h==='description');
   const numOf=v=>{if(v==null||v==='')return null;const n=parseFloat(v);return Number.isFinite(n)?n:null;};
   const out=[];
   for(let r=hi+1;r<rows.length;r++){
@@ -3243,7 +3280,7 @@ function bpcFill(c){
   if(envLayer==='water'){const k=waterClassOf(aqValue(c.id,waterMetric,scn));return k.kind==='class'?waterFill(k):(k.kind==='arid'?'#888780':WATER_NODATA);}
   return kcolor(c.koppen[scn]);
 }
-function bpcHexPoints(r){const p=[];for(let i=0;i<6;i++){const a=Math.PI/3*i;p.push((r*Math.cos(a)).toFixed(2)+','+(r*Math.sin(a)).toFixed(2));}return p.join(' ');}
+function bpcHexPoints(r){const p=[];for(let i=0;i<6;i++){const a=Math.PI/3*i+Math.PI/2;p.push((r*Math.cos(a)).toFixed(2)+','+(r*Math.sin(a)).toFixed(2));}return p.join(' ');}
 function bpcIcon(c,sel){
   const dark=document.documentElement.getAttribute('data-theme')==='dark',ink=dark?'#FFFFFF':'#000000',w=sel?3.6:2;
   return L.divIcon({className:'bpc-hex',iconSize:[30,30],iconAnchor:[15,15],
@@ -3843,7 +3880,7 @@ let excelSourceName='workbook (embedded at build time)';
    re-uploaded workbook with reordered/added columns still parses. ---- */
 const COLMAP_DEF={
   id:[h=>h==='id'],
-  name:[h=>h==='case study'],
+  name:[h=>(h==='case study'||h==='case_study')],
   country:[h=>h.startsWith('country')],
   year:[h=>h==='year'],
   coordinates:[h=>h.startsWith('coordinates')],
@@ -4486,7 +4523,7 @@ function arShowCite(btn,key){
   btn._arKey=key;
   const txt=AR_REFS[key]||key;
   const pop=document.createElement('div');
-  pop.style.cssText='position:fixed;z-index:9999;max-width:280px;padding:8px 10px;background:var(--paper);border:1px solid var(--line);border-radius:3px;font-size:10px;line-height:1.55;color:var(--ink-soft);box-shadow:0 3px 10px rgba(0,0,0,.2)';
+  pop.style.cssText='position:fixed;z-index:9999;max-width:280px;padding:8px 10px;background:var(--paper);border:1px solid var(--line);border-radius:0;font-size:10px;line-height:1.55;color:var(--ink-soft);box-shadow:0 3px 10px rgba(0,0,0,.2)';
   pop.innerHTML=txt;document.body.appendChild(pop);_arPop=pop;
   const r=btn.getBoundingClientRect();
   pop.style.left=Math.min(r.left,window.innerWidth-290)+'px';
@@ -5026,7 +5063,7 @@ function renderMosaicGrid(el,plans){
     wireRouletteBtn();
     return;
   }
-  const thumbs=plans.map(p=>`<div class="mosaic-thumb" data-id="${p.caseId}" data-has-plan="1" title="${p.name}"><img src="${p.url}" alt="${p.name}" loading="lazy"/><div class="mosaic-thumb-label">${p.caseId}${p.name&&p.name!==p.caseId?' '+p.name:''}</div></div>`).join('');
+  const thumbs=plans.map(p=>`<div class="mosaic-thumb" data-id="${p.caseId}" data-has-plan="1" title="${p.name}"><img src="${p.url}" alt="${p.name}" loading="lazy"/></div>`).join('');
   el.innerHTML=`<div class="mosaic-wrap"><div class="mosaic-grid">${thumbs}</div>${rouletteBtnHTML()}</div>`;
   el.querySelectorAll('.mosaic-thumb').forEach(th=>{
     th.addEventListener('click',()=>{
@@ -5054,7 +5091,7 @@ function renderEmptyPanel(el){
     if(!grid)return;
     const th=document.createElement('div');
     th.className='mosaic-thumb';th.dataset.id=entry.caseId;th.dataset.hasPlan='1';th.title=entry.name;
-    th.innerHTML=`<img src="${entry.url}" alt="${entry.name}" loading="lazy"/><div class="mosaic-thumb-label">${entry.caseId}${entry.name&&entry.name!==entry.caseId?' '+entry.name:''}</div>`;
+    th.innerHTML=`<img src="${entry.url}" alt="${entry.name}" loading="lazy"/>`;
     th.addEventListener('click',()=>zoomToCase(entry.caseId,th,entry.url));
     grid.appendChild(th);
   }).then(plans=>{
@@ -6225,7 +6262,7 @@ function extremesTabHTML(c,epwData){
      enables cross-site comparison (relative thresholds normalise
      away the climate differences that drive morphological variation).
      ─────────────────────────────────────────────────────────────── */
-  let heatwaveDays=0;
+  let heatwaveDays=0,tropicalDays=0;
   if(hasHourly){
     const days=Math.floor(n/24);
     /* 1. compute daily Tmax array */
@@ -6240,8 +6277,10 @@ function extremesTabHTML(c,epwData){
     const hot=new Uint8Array(days);
     for(let d=0;d<days;d++){if(tmax[d]>30){run++;if(run>=3){hot[d]=1;if(run===3){hot[d-1]=1;hot[d-2]=1;}}}else{run=0;}}
     for(let d=0;d<days;d++)if(hot[d])heatwaveDays++;
+    for(let d=0;d<days;d++)if(tmax[d]>=30)tropicalDays++;
   }else{
     heatwaveDays=Math.max(0,Math.round((maxT-26)*2.6+(MOCK?rnd()*5:0)+scn*5));
+    tropicalDays=Math.max(0,Math.round(heatwaveDays*1.8));
   }
 
   /* ── mean diurnal swing: annual mean of daily (Tmax − Tmin) ─
@@ -6327,6 +6366,17 @@ function extremesTabHTML(c,epwData){
         </div>
       </div>
       <div class="cstat"><div class="v">${frostDays}</div><div class="k">FROST DAYS &lt;0°C</div></div>
+    </div>
+    <div class="climate-stat-row" style="grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px;">
+      <div class="cstat" style="position:relative;">
+        <div class="v">${tropicalDays}</div>
+        <div class="k">TROPICAL DAYS ≥30°C
+          <span class="action-info-icon" style="font-size:10px;vertical-align:middle;">ⓘ<div class="action-info-pop" style="bottom:calc(100% + 4px);top:auto;left:0;right:auto;width:280px;">
+            <div class="ai-head">_tropical days</div>
+            <div class="ai-body">Days per year with daily T<sub>max</sub> ≥ 30°C, counted individually (heatwave days only count runs of 3 or more).</div>
+          </div></span>
+        </div>
+      </div>
     </div>
     <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-faint);margin:12px 0 6px;">WET-BULB TEMPERATURE  STULL (2011)</div>
     <div class="climate-stat-row" style="grid-template-columns:repeat(3,1fr);gap:8px;">
@@ -6488,27 +6538,25 @@ const NDP_THRESHOLD=1000;   /* Artmann et al. 2007 h/yr */
         ERA5 / CMIP6 near-surface temperature plots in climate science.          */
 const SIM_CMAPS={
   tcp:[
-    [0.647,0.000,0.149],  /* 0 % deep crimson  */
-    [0.843,0.188,0.153],  /* 14 % red            */
-    [0.957,0.427,0.263],  /* 29 % orange-red     */
-    [0.992,0.682,0.380],  /* 43 % warm amber     */
-    [0.996,0.878,0.545],  /* 57 % pale gold      */
-    [0.851,0.937,0.545],  /* 71 % yellow-green   */
-    [0.651,0.851,0.416],  /* 79 % light green    */
-    [0.400,0.741,0.388],  /* 86 % medium green   */
-    [0.102,0.596,0.314],  /* 93 % green          */
-    [0.000,0.408,0.216],  /* 100 % forest green   */
+    [0.400,0.000,0.050],  /* 0 % dark red        */
+    [0.700,0.060,0.110],  /* red                 */
+    [0.880,0.250,0.160],  /* red-orange          */
+    [0.980,0.600,0.250],  /* orange              */
+    [0.990,0.850,0.400],  /* yellow              */
+    [0.750,0.880,0.420],  /* yellow-green        */
+    [0.450,0.760,0.380],  /* light green         */
+    [0.150,0.620,0.300],  /* green               */
+    [0.000,0.450,0.210],  /* 100 % forest green  */
   ],
   hsp:[
-    [0.910,0.961,0.961],  /* 0 h pale teal-white (negligible)  */
-    [0.639,0.831,0.831],  /* 150 h light teal                    */
-    [0.361,0.737,0.722],  /* 300 h teal                          */
-    [0.200,0.627,0.588],  /* 500 h medium teal-green             */
-    [0.949,0.812,0.392],  /* 750 h gold (approaching threshold)  */
-    [0.941,0.627,0.188],  /* 1000 h amber  ←  Artmann threshold   */
-    [0.878,0.298,0.188],  /* 1500 h orange-red                    */
-    [0.753,0.094,0.125],  /* 2000 h crimson                       */
-    [0.439,0.000,0.063],  /* 3000 h deep maroon                   */
+    [0.000,0.450,0.210],  /* 0 h  dark green (no overheating)   */
+    [0.150,0.620,0.300],  /* green                               */
+    [0.600,0.820,0.380],  /* light green                         */
+    [0.990,0.850,0.400],  /* yellow                              */
+    [0.980,0.600,0.250],  /* orange  (~Artmann threshold)        */
+    [0.880,0.250,0.160],  /* red-orange                          */
+    [0.780,0.090,0.120],  /* red                                 */
+    [0.400,0.000,0.050],  /* 3000 h dark red                     */
   ],
   ndp:[
     [0.502,0.000,0.149],  /* 0 h deep red (no potential)    */
@@ -6521,7 +6569,7 @@ const SIM_CMAPS={
     [0.141,0.518,0.267],  /* 1800 h green                      */
     [0.000,0.267,0.106],  /* 2000 h deep forest green           */
   ],
-  csp:[[0.93,0.95,0.98],[0.67,0.85,0.91],[0.45,0.68,0.82],[0.27,0.46,0.71],[0.19,0.21,0.58]],   /* overcooling: pale > deep blue */
+  csp:[[0.000,0.450,0.210],[0.300,0.680,0.350],[0.560,0.820,0.700],[0.350,0.640,0.850],[0.150,0.380,0.720],[0.060,0.130,0.450]],   /* overcooling: green > blue > dark blue */
   t_op:[
     [0.192,0.212,0.584],  /* ~10 °C deep indigo-blue            */
     [0.271,0.459,0.706],  /* ~14 °C blue                        */
@@ -6564,15 +6612,15 @@ function simNorm(v,metric){
 const SIM_YEAR_LABELS=['TMYx','~2030','~2040','2050','~2057','~2064','~2070','~2075','2080'];
 
 DIAGRAM_META={
-  tcp:{label:'TCP %',caption:c=>{
+  tcp:{label:'Thermal comfort %',caption:c=>{
     const step=SIM_STEP[c===byId(selectedId)?'A':'B']||0;
     const m=simInterp(SIM_CACHE[c.id]||SIM_VIZ_CACHE[c.id]&&vizCacheToSimData(SIM_VIZ_CACHE[c.id]),step);
-    if(m&&m.tcp!=null)return `${m.tcp.toFixed(1)}% thermal comfort probability (ASHRAE 55-2020 adaptive).`;
+    if(m&&m.tcp!=null)return `${m.tcp.toFixed(1)}% thermal comfort percent (ASHRAE 55-2020 adaptive).`;
     const si=step<=4?0:1;const xl=c.sim&&c.sim.comfort?c.sim.comfort[step<=0?0:step<=4?1:2]:null;
-    if(xl!=null)return `${xl.toFixed(1)}% thermal comfort probability (ASHRAE 55-2020 adaptive).`;
+    if(xl!=null)return `${xl.toFixed(1)}% thermal comfort percent (ASHRAE 55-2020 adaptive).`;
     return 'Simulation not yet run.';
   }},
-  hsp:{label:'HSP %',caption:c=>{
+  hsp:{label:'Heat stress %',caption:c=>{
     const step=SIM_STEP[c===byId(selectedId)?'A':'B']||0;
     const m=simInterp(SIM_CACHE[c.id]||SIM_VIZ_CACHE[c.id]&&vizCacheToSimData(SIM_VIZ_CACHE[c.id]),step);
     if(m&&m.hsp!=null)return `${Math.round(m.hsp)} h/yr overheating hours.`;
@@ -6581,7 +6629,7 @@ DIAGRAM_META={
     return 'Simulation not yet run.';
   }},
 };
-DIAGRAM_META.csp={label:'CSP %',caption:c=>{
+DIAGRAM_META.csp={label:'Cold stress %',caption:c=>{
     const step=SIM_STEP[c===byId(selectedId)?'A':'B']||0;
     const m=simInterp(SIM_CACHE[c.id]||SIM_VIZ_CACHE[c.id]&&vizCacheToSimData(SIM_VIZ_CACHE[c.id]),step);
     if(m&&m.csp!=null)return `${m.csp.toFixed(1)}% of applicable hours below the ASHRAE 55-2020 adaptive lower limit (overcooling).`;
@@ -6657,47 +6705,44 @@ function toggleSimFullscreen(slot){
   const box=document.getElementById('viewer3d-'+slot);
   if(!wrap)return;
   const entering=!wrap.classList.contains('sim-fullscreen');
-  wrap.classList.toggle('sim-fullscreen',entering);
-  document.body.style.overflow=entering?'hidden':'';
-  /* resize the Three.js renderer to match the new box dimensions */
-  const v=VIEWERS[slot];
-  if(v&&v.renderer){
-    requestAnimationFrame(()=>{
-      if(!box)return;
-      const nw=box.clientWidth||window.innerWidth;
-      const nh=box.clientHeight||(window.innerHeight*0.6);
-      v.renderer.setSize(nw,nh);
-      v.camera.aspect=nw/nh;
-      v.camera.updateProjectionMatrix();
-    });
-  }
-  /* ESC key exits fullscreen */
-  if(entering){
-    const onEsc=e=>{if(e.key==='Escape'){toggleSimFullscreen(slot);document.removeEventListener('keydown',onEsc);}};
-    document.addEventListener('keydown',onEsc);
-    wrap._escHandler=onEsc;
-  }else{
-    if(wrap._escHandler){document.removeEventListener('keydown',wrap._escHandler);wrap._escHandler=null;}
-  /* move sim-grid into left col when entering fullscreen, restore on exit */
   const grid=document.getElementById('simGrid-'+slot);
   const leftCol=document.getElementById('simLeftCol-'+slot);
   const recBtn=document.getElementById('recToggleBtn-'+slot);
   if(entering){
+    /* reparent to body so no ancestor transform/overflow can trap or hide it */
+    wrap._vfHome=wrap.parentNode;
+    wrap._vfNext=wrap.nextSibling;
+    document.body.appendChild(wrap);
+    wrap.classList.add('sim-fullscreen');
     if(grid&&leftCol)leftCol.appendChild(grid);
-  }else{
-    if(grid&&recBtn&&recBtn.parentNode)recBtn.parentNode.insertBefore(grid,recBtn);
-  }
-  /* restore renderer size to normal */
-    if(v&&v.renderer){
-      requestAnimationFrame(()=>{
-        if(!box)return;
-        const nw=box.clientWidth||400;
-        const nh=box.clientHeight||210;
-        v.renderer.setSize(nw,nh);
-        v.camera.aspect=nw/nh;
-        v.camera.updateProjectionMatrix();
-      });
+    if(!wrap.querySelector('.sim-fs-x')){
+      const x=document.createElement('button');
+      x.className='sim-fs-x';x.type='button';x.setAttribute('aria-label','close fullscreen');
+      x.innerHTML='<svg viewBox="0 0 14 14" width="14" height="14"><path d="M2 2L12 12M12 2L2 12" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="square"/></svg>';
+      x.addEventListener('click',ev=>{ev.stopPropagation();toggleSimFullscreen(slot);});
+      wrap.appendChild(x);
     }
+    const onEsc=e=>{if(e.key==='Escape'){toggleSimFullscreen(slot);}};
+    document.addEventListener('keydown',onEsc);
+    wrap._escHandler=onEsc;
+  }else{
+    if(wrap._escHandler){document.removeEventListener('keydown',wrap._escHandler);wrap._escHandler=null;}
+    wrap.classList.remove('sim-fullscreen');
+    if(grid&&recBtn&&recBtn.parentNode)recBtn.parentNode.insertBefore(grid,recBtn);
+    if(wrap._vfHome&&wrap._vfHome.isConnected){wrap._vfHome.insertBefore(wrap,wrap._vfNext&&wrap._vfNext.parentNode===wrap._vfHome?wrap._vfNext:null);}
+  }
+  document.body.style.overflow=entering?'hidden':'';
+  const v=VIEWERS[slot];
+  if(v&&v.renderer){
+    const fit=()=>{
+      if(!box)return;
+      const nw=box.clientWidth||(entering?window.innerWidth:400);
+      const nh=box.clientHeight||(entering?window.innerHeight*0.6:210);
+      v.renderer.setSize(nw,nh);
+      v.camera.aspect=nw/nh;
+      v.camera.updateProjectionMatrix();
+    };
+    requestAnimationFrame(fit);setTimeout(fit,120);
   }
 }
 function disposeViewer(slot){
@@ -7130,7 +7175,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
     container.addEventListener('wheel',onWheel,{passive:false});
     /* hover tooltip for sensor grid */
     const tooltip=document.createElement('div');
-    tooltip.style.cssText='position:absolute;pointer-events:none;display:none;background:rgba(0,0,0,.75);color:#fff;font-family:monospace;font-size:10px;padding:3px 7px;border-radius:3px;white-space:nowrap;';
+    tooltip.style.cssText='position:absolute;pointer-events:none;display:none;background:rgba(0,0,0,.75);color:#fff;font-family:monospace;font-size:10px;padding:3px 7px;border-radius:0;white-space:nowrap;';
     container.style.position='relative';container.appendChild(tooltip);
     const raycaster=new THREE.Raycaster();
     const _mouse=new THREE.Vector2();
@@ -7154,12 +7199,12 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
           if(cellN!=null&&hasRad){
             /* Radiance path: show real per-cell values */
             if(metric==='tcp'){
-              disp=`TCP: ${(cellN*100).toFixed(1)}%`;
+              disp=`Thermal comfort: ${(cellN*100).toFixed(1)}%`;
             }else if(metric==='csp'){
-              disp=`CSP: ${(cellN*100).toFixed(1)}% of occ. hrs`;
+              disp=`Cold stress: ${(cellN*100).toFixed(1)}% of occ. hrs`;
             }else if(metric==='hsp'){
               /* cell.n = hsp_pct/100 for Radiance output */
-              disp=`HSP: ${(cellN*100).toFixed(1)}% of occ. hrs`;
+              disp=`Heat stress: ${(cellN*100).toFixed(1)}% of occ. hrs`;
             }else if(metric==='t_op'&&cellTemp!=null){
               disp=`T_op: ${cellTemp.toFixed(1)}°C`;
             }else if(metric==='ndp'){
@@ -7173,16 +7218,16 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
               disp=`T_op: ${cellTemp.toFixed(1)}°C`;
             }else{
               /* Show spatial T_op as only honest per-cell value; zone metric in parens */
-              const zoneLabel=metric==='tcp'&&mv&&mv.tcp!=null?` (zone TCP ${mv.tcp.toFixed(1)}%)`
-                             :metric==='hsp'&&mv&&mv.hsp!=null?` (zone HSP ${Math.round(mv.hsp)} h/yr)`
+              const zoneLabel=metric==='tcp'&&mv&&mv.tcp!=null?` (zone thermal comfort ${mv.tcp.toFixed(1)}%)`
+                             :metric==='hsp'&&mv&&mv.hsp!=null?` (zone heat stress ${Math.round(mv.hsp)} h/yr)`
                              :metric==='ndp'&&mv&&mv.ndp!=null?` (zone NDP ${Math.round(mv.ndp)} h/yr)`:'';
               disp=`T_op: ${cellTemp.toFixed(1)}°C${zoneLabel}`;
             }
           }else if(!mv){
             disp=`${metric.toUpperCase()}: loading...`;
           }else{
-            if(metric==='tcp') disp=mv.tcp!=null?`TCP: ${mv.tcp.toFixed(1)}%`:`TCP: `;
-            else if(metric==='hsp') disp=mv.hsp!=null?`HSP: ${Math.round(mv.hsp)} h/yr`:`HSP: `;
+            if(metric==='tcp') disp=mv.tcp!=null?`Thermal comfort: ${mv.tcp.toFixed(1)}%`:`Thermal comfort: `;
+            else if(metric==='hsp') disp=mv.hsp!=null?`Heat stress: ${Math.round(mv.hsp)} h/yr`:`Heat stress: `;
             else if(metric==='ndp') disp=mv.ndp!=null?`NDP: ${Math.round(mv.ndp)} h/yr`:`NDP: `;
             else if(metric==='t_op') disp=mv.t_op!=null?`T_op: ${mv.t_op.toFixed(1)}°C`:`T_op: `;
             else disp=`${metric}: `;
@@ -7291,12 +7336,12 @@ function updateSimGrid(slot,step,simData){
 
   el.innerHTML=_warnCard+`
     <div class="sim-cell">
-      <div class="k">TCP, Thermal Comfort Probability ${_c('ashrae55','ⓘ')}${_c('dear2002','ⓘ')}</div>
+      <div class="k">Thermal Comfort Percent ${_c('ashrae55','ⓘ')}${_c('dear2002','ⓘ')}</div>
       <div class="v">${tcp??nd}<span class="u">${tcp!=null?' %':''}</span></div>
       <div class="ksub">% occupied hours within ASHRAE 55-2020 adaptive comfort bounds</div>
     </div>
     <div class="sim-cell">
-      <div class="k">HSP Heat Stress Potential, Overheating Hours ${_c('ashrae55','ⓘ')}</div>
+      <div class="k">Heat Stress Percent ${_c('ashrae55','ⓘ')}</div>
       <div class="hsp-split">
         <div class="hsp-half">
           <div class="v">${hspPct??nd}<span class="u">${hspPct!=null?' %':''}</span></div>
@@ -7311,17 +7356,17 @@ function updateSimGrid(slot,step,simData){
       <div class="ksub">above ASHRAE 55-2020 adaptive upper limit (T_pma 10-33.5°C range only)</div>
     </div>
     <div class="sim-cell">
-      <div class="k">NDP, Night Discharge Potential ${_c('artmann2007','ⓘ')}</div>
+      <div class="k">Night Discharge Potential ${_c('artmann2007','ⓘ')}</div>
       <div class="v">${ndp??nd}${ndpWarn}<span class="u">${ndp!=null?' h/y':''}</span></div>
       <div class="ksub">all year, zone air temperature: hours with T_out &lt; T_in and T_out &lt; 22°C (Artmann et al. 2007)</div>
     </div>
     <div class="sim-cell">
-      <div class="k">T_op, Mean Operative Temperature ${_c('dear2002','ⓘ')}</div>
+      <div class="k">Mean Operative Temperature ${_c('dear2002','ⓘ')}</div>
       <div class="v">${top??nd}<span class="u">${top!=null?' °C':''}</span></div>
       <div class="ksub">Annual mean; T_op = (T_air + T_MRT) / 2, ISO 7726:1998</div>
     </div>
     <div class="sim-cell">
-      <div class="k">CSP, Cold Stress Potential</div>
+      <div class="k">Cold Stress Percent</div>
       <div class="hsp-split">
         <div class="hsp-half"><div class="v">${cspPct??nd}<span class="u">${cspPct!=null?' %':''}</span></div><div class="hsp-sublabel">of applicable hours</div></div>
         <div class="hsp-divider"></div>
@@ -7330,7 +7375,7 @@ function updateSimGrid(slot,step,simData){
       <div class="ksub">below ASHRAE 55-2020 adaptive lower limit</div>
     </div>
     <div class="sim-cell">
-      <div class="k">NHR, Night Heat Retention</div>
+      <div class="k">Night Heat Removed</div>
       <div class="v">${nhr??nd}<span class="u">${nhr!=null?' kWh/m²':''}</span></div>
       <div class="ksub">night 20-07 h in the warm season${warmTxt}, per m² floor</div>
     </div>
@@ -8064,8 +8109,8 @@ function caseDetailHTML(c,slot){
             </div>
             <div class="sim-ndp-wrap" style="padding:2px 0 4px;">
               <div style="font-family:var(--mono);font-size:8.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">NDP night discharge potential</div>
-              <div style="position:relative;height:7px;background:var(--line);border-radius:4px;overflow:visible;">
-                <div id="simNdpBar-${slot}" style="height:100%;border-radius:4px;transition:width .35s,background .35s;width:0%;background:#1D9E75;"></div>
+              <div style="position:relative;height:7px;background:var(--line);border-radius:0;overflow:visible;">
+                <div id="simNdpBar-${slot}" style="height:100%;border-radius:0;transition:width .35s,background .35s;width:0%;background:#1D9E75;"></div>
                 <div style="position:absolute;top:-3px;left:${(NDP_THRESHOLD/2000*100).toFixed(1)}%;width:2px;height:13px;background:rgba(255,180,0,.85);border-radius:1px;" title="Artmann 2007: 1000 h/yr"></div>
               </div>
               <div id="simNdpState-${slot}" style="font-family:var(--mono);font-size:8.5px;margin-top:3px;min-height:12px;color:var(--ink-faint);"></div>
@@ -8081,8 +8126,8 @@ function caseDetailHTML(c,slot){
           </div>
         </div>
         <div class="sim-grid" id="simGrid-${slot}" style="margin-top:10px;">
-          <div class="sim-cell"><div class="k">TCP, thermal comfort probability</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
-          <div class="sim-cell"><div class="k">HSP, overheating hours</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
+          <div class="sim-cell"><div class="k">Thermal Comfort Percent</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
+          <div class="sim-cell"><div class="k">Heat Stress Percent</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
           <div class="sim-cell"><div class="k">NDP, night discharge</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
           <div class="sim-cell"><div class="k">T_op, mean operative temp</div><div class="v"><span class="nodata" style="font-size:11px">NO_DATA</span></div></div>
         </div>
@@ -9533,7 +9578,7 @@ const FINDINGS=[
       +`<p style="line-height:1.7;margin-bottom:6px;">Of course, this represents only a correlation. As the corpus size increases, future analysis should investigate these trends within the individual Köppen zones as the influence of WWR on overheating may differ significantly between climates.</p>`
       +`<p style="margin:16px 0 6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);">WWR VS. HSP CORPUS VIEW</p>`
       +wwrBlock()
-      +`<div id="wwrTooltip" style="display:none;position:fixed;background:var(--paper);border:1px solid var(--line);padding:5px 10px;font-family:var(--mono);font-size:10px;color:var(--ink);pointer-events:none;z-index:9999;white-space:nowrap;border-radius:2px;box-shadow:0 2px 8px rgba(0,0,0,.25);"></div>`
+      +`<div id="wwrTooltip" style="display:none;position:fixed;background:var(--paper);border:1px solid var(--line);padding:5px 10px;font-family:var(--mono);font-size:10px;color:var(--ink);pointer-events:none;z-index:9999;white-space:nowrap;border-radius:0;box-shadow:0 2px 8px rgba(0,0,0,.25);"></div>`
       +`<p style="font-size:10px;color:var(--ink-faint);margin-top:10px;line-height:1.5;">Each dot is one case study. Dot colour = present Köppen zone. Horizontal axis = recorded WWR. Vertical axis = simulated HSP (present). A rising trend would confirm that higher glazing worsens overheating but the signal is noisy across cultures. Sorting within Köppen groups shows a clearer pattern.</p>`;
   /* tooltip wiring for WWR scatter */
   setTimeout(()=>{
@@ -11375,7 +11420,7 @@ function buildPipeline(){
       btn.textContent=tag.label;
       btn.dataset.ptag=key;
       btn.style.cssText=`font-family:var(--mono);font-size:10.5px;padding:4px 14px;`
-        +`border:1.5px solid ${tag.color};border-radius:3px;background:var(--paper);`
+        +`border:1.5px solid ${tag.color};border-radius:0;background:var(--paper);`
         +`color:${tag.color};cursor:pointer;transition:background .18s,color .18s,opacity .18s;`;
       btn.addEventListener('pointerdown',e=>e.stopPropagation());
       btn.addEventListener('click',()=>{
@@ -12318,8 +12363,8 @@ async function renderAvgTypWin(){
       '<table class="avgt-metric-table">'+kopRows+'</table>'+
       '<p class="avgt-sec-head">Simulation (present / 2050 / 2080)</p>'+
       '<table class="avgt-metric-table">'+
-        row('TCP %',z.avgTcp.map((v)=>v!=null?f(v)+'%':'-').join(' / '))+
-        row('HSP h/yr',z.avgHsp.map((v)=>v!=null?Math.round(v)+' h':'-').join(' / '))+
+        row('Thermal comfort %',z.avgTcp.map((v)=>v!=null?f(v)+'%':'-').join(' / '))+
+        row('Heat stress h/yr',z.avgHsp.map((v)=>v!=null?Math.round(v)+' h':'-').join(' / '))+
         row('NDP h/yr',z.avgNdp.map((v)=>v!=null?Math.round(v)+' h':'-').join(' / '))+
         row('Country',z.domCountry||'-')+
       '</table>';
@@ -12419,7 +12464,16 @@ else if(window._hideLoader)window._hideLoader();
 (function(){
   /* wire case study panel titlebar X > reset to mosaic */
   const csClose=document.getElementById('csPanelCloseBtn');
+  document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#csPanelCloseBtn'))window._csWasMosaic=!selectedId;},true);
   if(csClose)csClose.addEventListener('click',()=>{
+    /* v423: X in the plain mosaic collapses the window */
+    if(window._csWasMosaic){
+      document.body.classList.remove('cs-open');
+      document.getElementById('csStripBtn')?.classList.remove('active');
+      if(window._resetCsWidth)window._resetCsWidth();
+      setTimeout(()=>{if(map)map.invalidateSize();},260);
+      return;
+    }
     if(map)refreshMap();
     if(window._resetCsWidth)window._resetCsWidth();
     /* mobile: X also collapses the bottom sheet (no persistent
@@ -13222,7 +13276,7 @@ async function fsPinClimate(lat,lon){
 }
 
 /* ---------- pin and popup on the main map ---------- */
-const FS={pin:null,circle:null,radius:300,res:null,sel:[],step:1,busy:false,mode:null,anim:false};
+const FS={pin:null,circle:null,radius:300,res:null,sel:[],step:1,sub:'cs',lines:[],busy:false,mode:null,anim:false};
 /* The pin is the UFO. It hovers above the clicked spot (the foot of the beam is the exact point).
    Idle: ufo only. On analyse: the beam extends, the building rises in it and disappears into the ufo. */
 const FS_UFO={"ufo": ["M320.93,53.12c-.65-.05-1.3-.1-1.95-.15-1.55-.12-3.1-.23-4.66-.35-1.7-.13-3.42-.25-5.14-.36-1.71-.12-3.44-.23-5.16-.33-1.73-.11-3.46-.21-5.2-.31s-3.48-.19-5.23-.28c-1.74-.09-3.5-.17-5.25-.25-1.76-.08-3.52-.16-5.28-.23-1.76-.07-3.53-.14-5.3-.2-5.32-.19-10.67-.34-16.05-.44-2.24-.05-4.47-.09-6.71-.12-1.53-.02-3.05-.04-4.58-.05-3.46-.03-6.92-.05-10.4-.05-2.42,0-4.84.01-7.25.03-1.66,0-3.32.02-4.97.04-5.78.06-11.52.17-17.23.33-1.85.05-3.7.11-5.55.17-1.69.05-3.38.11-5.07.18-2.38.08-4.75.18-7.11.28-1.59.07-3.17.15-4.74.23-1.14.05-2.28.11-3.41.17-1.52.08-3.04.16-4.56.25-1.49.09-2.97.18-4.44.27-1.3.07-2.59.16-3.89.25-2.42.16-4.82.33-7.21.5-1.18.08-2.36.17-3.53.27-1.42.11-2.84.22-4.24.34-1.91.15-3.81.32-5.7.49-.74.06-1.48.12-2.21.19C158.11,22.5,193.66,0,235.05,0s76.27,22.14,85.88,53.12Z", "M316.7,107.47c-.14.17-.45.47-1.11.88l-.37.22-6.38,8.01c-2.4-1.97-6.2-3.21-9.68-4.13-13.2-3.47-37.76-5.62-64.11-5.62s-50.92,2.15-64.12,5.62c-3.47.92-7.27,2.16-9.67,4.13l-6.37-8.01-.37-.22c-.66-.41-.98-.71-1.12-.88,2.51-3.73,31.15-10.11,81.65-10.11s79.14,6.38,81.65,10.11Z", "M327.55,58.69c69.34,6.12,122.55,19.44,143.16,34.82-.25-.11-.51-.23-.77-.33-.69-.3-1.41-.6-2.15-.9-.37-.15-.75-.29-1.13-.44-.38-.15-.77-.29-1.16-.44-.8-.31-1.63-.6-2.48-.89-.82-.28-1.66-.56-2.53-.84-.88-.29-1.79-.57-2.72-.85-.69-.21-1.39-.42-2.11-.62-.72-.21-1.44-.41-2.19-.61-.49-.14-.99-.27-1.5-.41-.58-.16-1.16-.31-1.75-.46-.43-.11-.87-.22-1.31-.33-.55-.13-1.1-.27-1.66-.41-2.23-.54-4.55-1.07-6.96-1.59-.59-.13-1.19-.26-1.8-.38-1.69-.36-3.43-.71-5.21-1.06-1.41-.28-2.85-.55-4.32-.82-1-.18-2.01-.36-3.03-.55-.77-.14-1.54-.27-2.33-.4-.39-.07-.79-.14-1.18-.2-1.98-.34-4-.67-6.07-.99-1.47-.24-2.96-.47-4.48-.69-.72-.11-1.44-.22-2.16-.32-.73-.11-1.45-.21-2.19-.32-2.19-.31-4.42-.62-6.68-.92s-4.55-.59-6.88-.88c-.77-.1-1.55-.19-2.33-.28-4.19-.5-8.48-.99-12.86-1.45-.51-.06-1.02-.11-1.53-.16-.82-.08-1.64-.16-2.47-.25-1.12-.11-2.24-.22-3.37-.33-2.48-.24-4.98-.48-7.51-.7-.57-.05-1.14-.1-1.71-.15-.85-.07-1.71-.15-2.57-.22-1.71-.15-3.44-.29-5.18-.43-.87-.07-1.75-.14-2.62-.21-13.13-1.02-26.84-1.86-41-2.5-1.61-.08-3.22-.15-4.84-.21-2.34-.1-4.68-.2-7.04-.29-3.34-.12-6.7-.23-10.08-.34-6.18-.19-12.43-.34-18.74-.45-3.58-.07-7.19-.13-10.82-.16-6.37-.08-12.8-.12-19.27-.12s-12.88.04-19.25.11c-5.54.07-11.04.16-16.49.28-4.38.1-8.73.21-13.04.34-3.4.1-6.78.22-10.13.34-2.36.09-4.71.19-7.04.29-1.62.06-3.23.13-4.84.21-14.16.64-27.88,1.48-41,2.5-1.48.11-2.95.23-4.41.35-1.14.1-2.26.19-3.39.29-.86.07-1.72.15-2.57.22-.57.05-1.14.1-1.71.15-2.83.25-5.63.52-8.4.79-.83.07-1.66.16-2.48.24-.83.09-1.65.17-2.47.25-.51.05-1.02.1-1.53.16-2.02.21-4.02.43-6.01.65-1.98.22-3.95.44-5.89.68-1.11.13-2.21.26-3.3.4-.77.1-1.54.2-2.31.29-3.48.43-6.89.89-10.22,1.36-.35.05-.69.1-1.03.15-1.11.16-2.22.32-3.31.48-.35.05-.7.1-1.04.16-.76.11-1.51.23-2.26.34-1.43.22-2.84.45-4.23.67-.06,0-.12.01-.18.03-.72.12-1.44.23-2.15.35-2.13.36-4.22.71-6.25,1.08-1.35.23-2.68.48-3.99.73-.61.11-1.22.23-1.82.35-.6.12-1.2.23-1.79.35-1.18.23-2.34.46-3.48.71-.76.15-1.51.32-2.26.48-.6.13-1.19.26-1.77.39-.58.13-1.16.26-1.73.39s-1.13.26-1.69.39c-.45.1-.89.21-1.33.32-.39.09-.78.18-1.16.28-.38.09-.76.18-1.13.28-.4.1-.79.2-1.17.3-1.08.27-2.13.55-3.15.83-.63.17-1.25.34-1.85.52-1.22.34-2.39.69-3.54,1.05-.57.17-1.13.35-1.68.53-2.21.7-4.26,1.42-6.17,2.17-.38.15-.76.29-1.13.44-.37.15-.73.29-1.09.45-.36.15-.71.3-1.06.45-.19.08-.38.16-.56.24,6.82-5.07,17.19-9.99,30.71-14.49,26.18-8.71,62.6-15.48,105.35-19.61.05,0,.1-.01.15-.01.09,0,.2-.01.32-.03,29.84-2.84,61.45-4.28,93.95-4.28,28.95,0,57.24,1.14,84.06,3.4,1.16.1,2.32.2,3.47.29Z", "M304.27,121.87c-.61-.45-2.36-1.46-6.89-2.65-12.66-3.32-36.54-5.39-62.33-5.39s-49.68,2.07-62.34,5.39c-4.53,1.19-6.27,2.2-6.88,2.65,5.79,3.46,31.12,7.78,69.22,7.78s63.44-4.31,69.22-7.78Z", "M235.05,106.83c26.35,0,50.91,2.15,64.11,5.62,3.48.92,7.28,2.16,9.68,4.13l6.38-8.01.37-.22c.66-.41.97-.71,1.11-.88-2.51-3.73-31.14-10.11-81.65-10.11s-79.14,6.38-81.65,10.11c.14.17.46.47,1.12.88l.37.22,6.37,8.01c2.4-1.97,6.2-3.21,9.67-4.13,13.2-3.47,37.77-5.62,64.12-5.62Z", "M480.03,107.23c-.01-.16-.04-.32-.08-.48-.03-.16-.08-.33-.15-.5-.03-.08-.07-.17-.1-.25-.04-.09-.08-.17-.12-.26-.15-.34-.37-.69-.66-1.04-.14-.17-.29-.35-.45-.53-.08-.1-.17-.19-.26-.27-.09-.1-.17-.19-.27-.28-.17-.19-.38-.37-.6-.55-.22-.18-.45-.37-.69-.56-.19-.15-.39-.3-.6-.45-.19-.14-.38-.27-.58-.41-.57-.38-1.19-.77-1.87-1.16-.36-.21-.74-.42-1.14-.63-.2-.1-.4-.21-.6-.32-.61-.32-1.27-.64-1.97-.96h0c-.2-.09-.41-.19-.62-.28-.27-.12-.55-.25-.84-.37-.57-.25-1.17-.5-1.79-.75-.3-.12-.62-.25-.94-.37-.42-.17-.86-.33-1.31-.5-.89-.33-1.81-.66-2.78-.99-.3-.1-.61-.21-.92-.31-.62-.21-1.26-.42-1.92-.63-.04,0-.08-.02-.12-.04-1.27-.41-2.61-.81-4.01-1.21-1.12-.32-2.29-.64-3.5-.96-1.79-.49-3.68-.97-5.67-1.44-.66-.17-1.34-.33-2.03-.48-.68-.17-1.38-.33-2.09-.48-.71-.16-1.43-.32-2.16-.48-.41-.09-.83-.18-1.26-.27-.84-.18-1.7-.36-2.57-.54-1.23-.25-2.48-.5-3.76-.75-.64-.12-1.29-.25-1.95-.37-1.31-.26-2.65-.5-4.02-.74-2.06-.37-4.18-.74-6.38-1.1-.73-.12-1.47-.24-2.21-.36-2.24-.36-4.55-.72-6.93-1.07-1.09-.16-2.19-.32-3.3-.48-1.06-.15-2.13-.3-3.2-.45-.74-.1-1.47-.2-2.21-.3-1.91-.26-3.83-.51-5.78-.75-.76-.1-1.53-.2-2.3-.29-7.69-.95-15.73-1.82-24.05-2.61-.83-.08-1.67-.16-2.51-.24-1.67-.15-3.36-.31-5.06-.45-.85-.08-1.7-.15-2.56-.22-3.67-.32-7.39-.62-11.16-.9-2.38-.17-4.77-.34-7.19-.51-2.9-.2-5.82-.39-8.76-.57-1.8-.11-3.61-.22-5.43-.32-.71-.04-1.43-.09-2.15-.12-2.74-.16-5.51-.3-8.29-.44-14.92-.74-30.36-1.26-46.15-1.55-3.58-.07-7.17-.13-10.78-.16-6.35-.08-12.76-.12-19.2-.12s-12.79.04-19.12.11c-3.64.04-7.26.1-10.86.17-15.79.29-31.23.81-46.15,1.55-2.78.14-5.55.28-8.29.44-.72.03-1.44.08-2.15.12-1.82.1-3.63.21-5.43.32-2.95.18-5.87.37-8.76.57-2.42.17-4.81.34-7.19.51-3.77.28-7.49.58-11.16.9-.86.07-1.71.14-2.56.22-1.7.14-3.39.3-5.06.45-1.38.13-2.75.26-4.12.39-2.46.24-4.91.48-7.32.74-.81.08-1.61.17-2.41.25-4.33.47-8.57.96-12.71,1.47-1.21.15-2.41.3-3.6.45-3.77.48-7.46.98-11.05,1.51-.72.1-1.44.2-2.15.31-2.38.35-4.69.71-6.93,1.07-.74.12-1.48.24-2.21.36-2.92.48-5.73.97-8.41,1.47-.67.12-1.33.24-1.99.37-.66.12-1.31.25-1.95.37-1.28.25-2.53.5-3.76.75-.5.1-.99.2-1.48.31-.97.2-1.93.41-2.87.61-3.52.77-6.78,1.55-9.79,2.33-.6.16-1.19.31-1.77.47-1.2.32-2.36.65-3.48.96-.69.2-1.35.4-2.01.6-.34.1-.68.21-1.02.31-.33.11-.66.21-.99.31-7.87,2.48-13.3,4.95-16.7,7.27-.14.1-.28.2-.42.29-.27.18-.52.37-.76.57-.49.38-.92.75-1.29,1.11-.1.09-.19.19-.28.28-.08.09-.17.18-.25.27-.08.09-.16.18-.23.27-.08.09-.15.17-.22.26-.29.35-.5.7-.66,1.04-.04.09-.08.17-.12.26-.03.08-.07.17-.1.25-.06.17-.11.33-.15.5-.05.16-.07.32-.08.48-.01.08-.01.17-.01.26,0,6.24,18.1,15.63,68.91,23.25,24.52,3.68,53.4,6.47,84.89,8.26l7.15.39,3.61-13.17s-1.43-.69-3-2.06c-1.38-1.19-2.91-2.84-2.91-2.84l-7.14-8.97c-2.11-1.4-3.18-3.04-3.18-4.86,0-3.44,3.04-7.84,26.8-11.4,16.03-2.41,37.31-3.73,59.92-3.73s43.9,1.32,59.93,3.73c23.75,3.56,26.8,7.96,26.8,11.4,0,1.82-1.07,3.46-3.18,4.86l-7.15,8.97s-1.46,1.73-2.91,2.84c-1.57,1.2-3.03,1.97-3.03,1.97-9.85,5.33-41.27,8.1-70.56,8.1s-60.36-2.74-70.39-8.01l-.11.41-3.5,12.76c25.1,1.3,51.74,1.98,79.07,1.98l69.26-1.5,7.16-.35c35.3-1.74,67.64-4.72,94.69-8.78,50.8-7.62,68.91-17.01,68.91-23.25,0-.09,0-.18,0-.26Z"], "white": ["M479.95,106.75c.03.16.06.32.07.48h.01c-.01-.16-.04-.32-.08-.48ZM478.92,104.7c.27.36.49.7.66,1.04-.15-.34-.37-.69-.66-1.04ZM477.34,103.07c.21.19.42.37.6.55-.17-.19-.38-.37-.6-.55ZM469.89,98.58c.7.33,1.35.65,1.97.96-.61-.32-1.27-.64-1.97-.96ZM454.63,93.13c1.4.41,2.74.81,4.01,1.21-1.27-.41-2.61-.81-4.01-1.21ZM433.28,82.95c1.78.35,3.52.7,5.21,1.06-1.69-.36-3.43-.72-5.21-1.06ZM410.84,79.14c-.38-.05-.75-.11-1.13-.16.72.1,1.44.21,2.16.32-.34-.06-.69-.11-1.03-.16ZM400.84,77.74c2.26.3,4.49.61,6.68.92-2.19-.32-4.42-.62-6.68-.92ZM393.96,76.86c2.33.29,4.62.58,6.88.88-2.26-.3-4.55-.6-6.88-.88ZM378.77,75.13c4.38.46,8.67.95,12.86,1.45-4.19-.51-8.48-1-12.86-1.45ZM61.67,80.31c1.39-.22,2.8-.45,4.23-.67-1.43.22-2.85.44-4.23.67ZM53.09,81.77c2.03-.37,4.12-.72,6.25-1.08-2.13.35-4.22.71-6.25,1.08ZM4.57,101.65c3.41-2.3,8.84-4.77,16.7-7.27-7.87,2.48-13.3,4.95-16.7,7.27ZM.46,105.74c.17-.34.39-.68.66-1.04-.29.35-.5.7-.66,1.04ZM.01,107.23h.01c.01-.16.04-.32.07-.48-.05.16-.07.32-.08.48Z"], "beam": "M297.38,119.22c-12.66-3.32-36.54-5.39-62.33-5.39s-49.68,2.07-62.34,5.39c-4.53,1.19-6.27,2.2-6.88,2.65,5.79,3.46,31.12,7.78,69.22,7.78s63.44-4.31,69.22-7.78c-.61-.45-2.36-1.46-6.89-2.65ZM380.26,398.91c-2.1-1.43-6.37-3.48-15.02-5.76-26.44-6.93-76.05-11.23-129.46-11.23s-103.04,4.3-129.46,11.23c-14.3,3.77-16.63,6.92-16.98,7.62-.05.09-.06.15-.06.15,0,0,0,.02.01.03.01.05.06.14.14.27.79,1.21,6.72,7.51,45.8,12.86,27.52,3.76,63.23,5.84,100.55,5.84s73.04-2.08,100.56-5.84c32.56-4.46,42.1-9.58,44.83-11.86.55-.46.83-.8.96-1,.1-.16.14-.27.15-.3-.02-.07-.26-.83-2.02-2.01ZM310.63,144.81l-.67-2.47-.68-2.47-3.63-13.24-.14-.5c-9.85,5.33-41.27,8.1-70.56,8.1s-60.36-2.74-70.39-8.01l-.11.41-3.5,12.76-.67,2.47-.68,2.47-67.46,246.2c3.26-1.45,7.38-2.82,12.4-4.15,26.96-7.07,77.25-11.46,131.24-11.46s104.25,4.39,131.24,11.46c4.21,1.12,7.79,2.26,10.76,3.46l-67.15-245.03Z", "ground": "M382.28,400.92s-.05.14-.15.3c-.13.2-.41.54-.96,1-2.73,2.28-12.27,7.4-44.83,11.86-27.52,3.76-63.24,5.84-100.56,5.84s-73.03-2.08-100.55-5.84c-39.08-5.35-45.01-11.65-45.8-12.86-.08-.13-.13-.22-.14-.27-.01-.01-.01-.03-.01-.03,0,0,.01-.06.06-.15.35-.7,2.68-3.85,16.98-7.62,26.42-6.93,76.02-11.23,129.46-11.23s103.02,4.3,129.46,11.23c8.65,2.28,12.92,4.33,15.02,5.76,1.76,1.18,2,1.94,2.02,2.01Z", "house": "75.03,-67.38 71.87,-60.36 55.77,-72.26 55.77,0.0 -55.77,-0.0 -55.78,-72.31 -71.91,-60.38 -75.04,-67.35 -6.31,-118.19 0.02,-122.85 6.28,-118.22 35.92,-96.3 35.92,-110.26 49.06,-110.26 49.06,-86.59 75.03,-67.38"};
@@ -13355,6 +13409,7 @@ function fsOnMapClick(e){
   const t=e.originalEvent&&e.originalEvent.target;
   if(t&&t.closest&&t.closest('.leaflet-interactive,.leaflet-marker-icon,.leaflet-popup,.leaflet-control,.station-marker-icon'))return;
   if(FS.anim||FS.busy)return;
+  {const _w=document.getElementById('fsWin');if(_w&&!_w.classList.contains('fs-hidden'))return;}
   const avg=document.getElementById('avgTypWin');
   if(avg&&!avg.classList.contains('avgt-hidden'))return;
   if(document.body.classList.contains('mobile-mode'))return;
@@ -13397,15 +13452,50 @@ async function fsStart(mode){
 /* ---------- window ---------- */
 function fsOpenWin(){
   const w=document.getElementById('fsWin');w.classList.remove('fs-hidden');
-  fsGoStep(1);
+  fsGoStep(1,'cs');
 }
-function fsCloseWin(){document.getElementById('fsWin').classList.add('fs-hidden');fsCloseModal();}
-function fsGoStep(n){
+function fsClearLines(){
+  (FS.lines||[]).forEach(l=>{try{map.removeLayer(l);}catch(e){}});FS.lines=[];
+}
+/* same wobbly zigzag legs as averageTYPOLOGY, from the pin to every used case */
+function fsDrawLines(kind){
+  fsClearLines();
+  const R=FS.res;if(!R||!map)return;
+  const pinLL=FS.pin?FS.pin.getLatLng():R.ll;
+  const targets=(kind==='cs'?R.pool:R.bpcs.map(o=>o.c)).filter(c=>c&&c.lat!=null&&c.lon!=null);
+  const bounds=[[pinLL.lat,pinLL.lng]];
+  targets.forEach(c=>{
+    const lat1=pinLL.lat,lng1=pinLL.lng,lat2=c.lat,lng2=c.lon,dlat=lat2-lat1,dlng=lng2-lng1;
+    const len=Math.sqrt(dlat*dlat+dlng*dlng);if(!len)return;
+    const px=-dlng/len,py=dlat/len,amp=len*0.12;
+    const pts=[[lat1,lng1],[lat1+dlat*0.33+py*amp,lng1+dlng*0.33+px*amp],[lat1+dlat*0.66-py*amp,lng1+dlng*0.66-px*amp],[lat2,lng2]];
+    const picked=kind==='bpc'&&FS.sel.includes(c.id);
+    FS.lines.push(L.polyline(pts,{color:'var(--terracotta)',weight:picked?2.4:1.6,opacity:picked?0.9:0.55,smoothFactor:0,className:'avgt-line-path',interactive:false}).addTo(map));
+    FS.lines.push(L.circleMarker([lat2,lng2],{radius:kind==='bpc'?14:11,color:'var(--terracotta)',weight:2,fill:false,opacity:0.9,className:'fs-used-ring',interactive:false}).addTo(map));
+    bounds.push([lat2,lng2]);
+  });
+  if(bounds.length>1){
+    const wpx=Math.round(document.getElementById('fsWin').getBoundingClientRect().right)+30;
+    try{map.fitBounds(bounds,{paddingTopLeft:[wpx,90],paddingBottomRight:[50,50],maxZoom:Math.max(map.getZoom(),5),animate:true});}catch(e){}
+  }
+}
+function fsCloseWin(){
+  document.getElementById('fsWin').classList.add('fs-hidden');fsCloseModal();
+  fsClearLines();
+  fsRemovePin();
+}
+function fsGoStep(n,sub){
   FS.step=n;
+  if(n===1)FS.sub=sub||FS.sub||'cs';
+  const w=document.getElementById('fsWin');
+  w.classList.toggle('fs-step1',n===1);
+  w.classList.toggle('fs-sub-cs',n===1&&FS.sub==='cs');
+  w.classList.toggle('fs-sub-bpc',n===1&&FS.sub==='bpc');
   [1,2,3].forEach(i=>{document.getElementById('fsStage'+i).hidden=(i!==n);});
-  document.getElementById('fsBack').hidden=(n===1);
+  document.getElementById('fsBack').hidden=(n===1&&FS.sub==='cs');
   document.getElementById('fsNextTxt').textContent=(n===3)?'close find strategies':'further';
-  document.getElementById('fsStepLbl').textContent='step '+n+' of 3';
+  document.getElementById('fsStepLbl').textContent=n===1?(FS.sub==='cs'?'case studies':'best practice cases'):('step '+n+' of 3');
+  if(n===1)fsDrawLines(FS.sub==='cs'?'cs':'bpc');else fsClearLines();
 }
 function fsDonut(p,size){
   const r=size/2-4,c=2*Math.PI*r,d=c*Math.max(0,Math.min(1,p));
@@ -13499,8 +13589,8 @@ function fsLazyPhoto(el,c,rootId){
 }
 
 /* ---------- reference box ---------- */
-function fsPick(id){if(!FS.sel.includes(id)){FS.sel.push(id);fsRenderBox();}}
-function fsUnpick(id){FS.sel=FS.sel.filter(x=>x!==id);fsRenderBox();}
+function fsPick(id){if(!FS.sel.includes(id)){FS.sel.push(id);fsRenderBox();if(FS.step===1&&FS.sub==='bpc')fsDrawLines('bpc');}}
+function fsUnpick(id){FS.sel=FS.sel.filter(x=>x!==id);fsRenderBox();if(FS.step===1&&FS.sub==='bpc')fsDrawLines('bpc');}
 function fsRenderBox(){
   const box=document.getElementById('fsBox');if(!box)return;
   const items=FS.sel.map(id=>byBpc(id)).filter(Boolean);
@@ -13552,8 +13642,10 @@ function initFindStrategies(){
   map.on('click',fsOnMapClick);
   document.getElementById('fsCloseBtn').addEventListener('click',fsCloseWin);
   document.getElementById('fsSizeBtn').addEventListener('click',()=>document.getElementById('fsWin').classList.toggle('fs-full'));
-  document.getElementById('fsNext').addEventListener('click',()=>{if(FS.step>=3){fsCloseWin();}else fsGoStep(FS.step+1);});
-  document.getElementById('fsBack').addEventListener('click',()=>fsGoStep(Math.max(1,FS.step-1)));
+  document.getElementById('fsNext').addEventListener('click',()=>{if(FS.step>=3){fsCloseWin();}else if(FS.step===1&&FS.sub==='cs')fsGoStep(1,'bpc');else fsGoStep(FS.step+1);});
+  document.getElementById('fsBigArrow').addEventListener('click',()=>fsGoStep(1,'bpc'));
+  document.getElementById('fsBack').addEventListener('click',()=>{if(FS.step===1)fsGoStep(1,'cs');else if(FS.step===2)fsGoStep(1,'bpc');else fsGoStep(FS.step-1);});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){const w=document.getElementById('fsWin');const m=document.getElementById('fsModal');if(w&&!w.classList.contains('fs-hidden')&&(!m||m.classList.contains('fs-hidden')))fsCloseWin();}});
   document.getElementById('fsModalX').addEventListener('click',fsCloseModal);
   document.getElementById('fsModal').addEventListener('click',e=>{if(e.target.id==='fsModal')fsCloseModal();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.getElementById('fsModal');if(m&&!m.classList.contains('fs-hidden'))fsCloseModal();}});
@@ -13763,5 +13855,27 @@ initFindStrategies();
 })();
 </script>
 <div id="infoPopoverPortal" style="position:fixed;inset:0;pointer-events:none;z-index:99999;overflow:visible;"></div>
+<script>
+/* v423: place the climate time machine between the left and right toolbars, never over the search bar */
+(function(){
+  function place(){
+    const sb=document.getElementById('vfSbox'),tl=document.getElementById('vfTL'),tr=document.getElementById('vfTR');
+    if(!sb||!tr||!sb.offsetWidth)return;
+    const vw=window.innerWidth,cs=getComputedStyle(document.body);
+    const fw=parseFloat(getComputedStyle(document.body).getPropertyValue('--vf-fw'))||0;
+    const cw=document.body.classList.contains('cs-open')?(document.querySelector('.explorer-grid > .card-window')?document.querySelector('.explorer-grid > .card-window').getBoundingClientRect().width:0):0;
+    const trL=tr.getBoundingClientRect().left;
+    const tlR=tl?tl.getBoundingClientRect().right:0;
+    const w=sb.offsetWidth+16;
+    const l=Math.max(tlR,fw+cw)+12,r=trL-12;
+    if(r-l>=w){sb.style.top='12px';sb.style.left=((l+r)/2)+'px';}
+    else{sb.style.top='66px';const l2=fw+cw,r2=vw;sb.style.left=((l2+r2)/2)+'px';}
+  }
+  window.vfPlaceSbox=place;
+  window.addEventListener('resize',place);
+  if(window.MutationObserver)new MutationObserver(()=>{place();setTimeout(place,260);}).observe(document.body,{attributes:true,attributeFilter:['class','style']});
+  [300,900,2000].forEach(t=>setTimeout(place,t));
+})();
+</script>
 </body>
 </html>
