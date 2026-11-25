@@ -2160,7 +2160,9 @@ body.atlas-active:not(.mobile-mode):not(.map-fullscreen) .vf-sbox{display:flex;}
 .vf-sbox{position:fixed;top:12px;left:calc(var(--vf-fw,0px) + var(--vf-cw,0px) + (100vw - var(--vf-fw,0px) - var(--vf-cw,0px)) / 2);transform:translateX(-50%);transition:left .22s cubic-bezier(.4,0,.2,1);z-index:560;flex-direction:column;align-items:center;
   padding:9px 18px 6px;background:color-mix(in srgb,var(--paper) 94%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
   border:1px solid var(--line-strong);box-shadow:0 2px 14px rgba(0,0,0,.16);}
-.vf-sh1{font-family:var(--mono);font-weight:800;font-size:17px;letter-spacing:.16em;line-height:1.1;text-transform:uppercase;white-space:nowrap;color:var(--ink);}
+.vf-sbox::before{content:"";position:absolute;left:-1px;right:-1px;top:-1px;height:4px;background:linear-gradient(90deg,#7722CC,#9A7870,#E07010);}
+.vf-sh1{font-family:var(--mono);font-weight:800;font-size:17px;letter-spacing:.16em;line-height:1.1;text-transform:uppercase;white-space:nowrap;
+  background:linear-gradient(90deg,#7722CC,#9A7870 50%,#E07010);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;}
 .vf-sbox .scenario-control{transform:none!important;align-items:center;width:100%;}
 .vf-sbox .scenario-label{transform:none!important;text-transform:lowercase;letter-spacing:.04em;font-size:10px;margin:3px 0 0;}
 .vf-sbox .scenario-slider-wrap{width:290px;padding:0 4px;}
@@ -2759,7 +2761,7 @@ let currentCsTab={A:'building',B:'building'}; /* remembered across scenario chan
    Live:   const DATA_BASE='https://f005.backblazeb2.com/file/morphshift-data'; (B2 direct)
    -------------------------------------------------------------------- */
 const DATA_BASE='https://pub-8944e9777b04487cb29b19062000de40.r2.dev';
-const BUILD_TS='20261123_001';
+const BUILD_TS='20261118_006';
 let modeUnlocked=false;
 /* DEMO_CASES_SEED removed: case data comes from R2 only, see fetchFullModeRaw/setAppMode. */
 let FULL_CASES_RAW=null;
@@ -3241,7 +3243,7 @@ function bpcFill(c){
   if(envLayer==='water'){const k=waterClassOf(aqValue(c.id,waterMetric,scn));return k.kind==='class'?waterFill(k):(k.kind==='arid'?'#888780':WATER_NODATA);}
   return kcolor(c.koppen[scn]);
 }
-function bpcHexPoints(r){const p=[];for(let i=0;i<6;i++){const a=Math.PI/3*i+Math.PI/2;p.push((r*Math.cos(a)).toFixed(2)+','+(r*Math.sin(a)).toFixed(2));}return p.join(' ');}
+function bpcHexPoints(r){const p=[];for(let i=0;i<6;i++){const a=Math.PI/3*i;p.push((r*Math.cos(a)).toFixed(2)+','+(r*Math.sin(a)).toFixed(2));}return p.join(' ');}
 function bpcIcon(c,sel){
   const dark=document.documentElement.getAttribute('data-theme')==='dark',ink=dark?'#FFFFFF':'#000000',w=sel?3.6:2;
   return L.divIcon({className:'bpc-hex',iconSize:[30,30],iconAnchor:[15,15],
@@ -3905,6 +3907,12 @@ const COLMAP_DEF={
   ndp00:[h=>h.includes('ndp')&&(h.includes('_00')||h.includes('_present')||/ndp0*$/.test(h))],
   ndp50:[h=>h.includes('ndp')&&(h.includes('_50')||h.includes('_2050'))],
   ndp80:[h=>h.includes('ndp')&&(h.includes('_80')||h.includes('_2080'))],
+  csp00:[h=>h.includes('csp')&&(h.includes('_00')||h.includes('_present'))],
+  csp50:[h=>h.includes('csp')&&(h.includes('_50')||h.includes('_2050'))],
+  csp80:[h=>h.includes('csp')&&(h.includes('_80')||h.includes('_2080'))],
+  nhr00:[h=>h.startsWith('nhr')&&(h.includes('_00')||h.includes('_present'))],
+  nhr50:[h=>h.startsWith('nhr')&&(h.includes('_50')||h.includes('_2050'))],
+  nhr80:[h=>h.startsWith('nhr')&&(h.includes('_80')||h.includes('_2080'))],
   topMean00:[h=>h.includes('t_op_mean')&&(h.includes('_00')||h.includes('_present'))],
   topMean50:[h=>h.includes('t_op_mean')&&(h.includes('_50')||h.includes('_2050'))],
   topMean80:[h=>h.includes('t_op_mean')&&(h.includes('_80')||h.includes('_2080'))],
@@ -4054,7 +4062,7 @@ const PERIOD_RANGES={
        stratP:bpcSplitList(_spI>=0?row[_spI]:null),stratS:bpcSplitList(_ssI>=0?row[_ssI]:null),
       flags:[get('flags')||null,...approxFlags].filter(Boolean).join('; ')||null,
       notes:get('notes')||null,source:get('source')||null,
-      sim:(()=>{const _h0=parseHSPCell(get('oh00')),_h1=parseHSPCell(get('oh50')),_h2=parseHSPCell(get('oh80'));return{oh:[_h0.h,_h1.h,_h2.h],oh_pct:[_h0.pct,_h1.pct,_h2.pct],oh_raw:[get('oh00'),get('oh50'),get('oh80')],comfort:[numOf(get('cf00')),numOf(get('cf50')),numOf(get('cf80'))],ndp:[numOf(get('ndp00')),numOf(get('ndp50')),numOf(get('ndp80'))],topMean:[numOf(get('topMean00')),numOf(get('topMean50')),numOf(get('topMean80'))]}})(),
+      sim:(()=>{const _h0=parseHSPCell(get('oh00')),_h1=parseHSPCell(get('oh50')),_h2=parseHSPCell(get('oh80'));return{oh:[_h0.h,_h1.h,_h2.h],oh_pct:[_h0.pct,_h1.pct,_h2.pct],oh_raw:[get('oh00'),get('oh50'),get('oh80')],comfort:[numOf(get('cf00')),numOf(get('cf50')),numOf(get('cf80'))],ndp:[numOf(get('ndp00')),numOf(get('ndp50')),numOf(get('ndp80'))],topMean:[numOf(get('topMean00')),numOf(get('topMean50')),numOf(get('topMean80'))],csp:[parseHSPCell(get('csp00')).pct,parseHSPCell(get('csp50')).pct,parseHSPCell(get('csp80')).pct],csp_h:[parseHSPCell(get('csp00')).h,parseHSPCell(get('csp50')).h,parseHSPCell(get('csp80')).h],nhr:[numOf(get('nhr00')),numOf(get('nhr50')),numOf(get('nhr80'))]}})(),
       wallType:wallTypeFromStructure(structure),
       hasGeom:numOf(get('psi'))!=null,
       hasCoord:lat!=null,
@@ -6445,7 +6453,13 @@ const SIM_VIZ_CACHE={};       /* cid > {present,ssp585_2050,ssp585_2080} viz JSO
 
 /* Convert viz JSON cache to simInterp-compatible format */
 function vizCacheToSimData(vc){
-  function m(d){if(!d||!d.metrics)return{};const t=d.metrics;return{tcp:t.tcp,hsp_hours:t.hsp_hours,ndp_hours:t.ndp_summer_h,t_op_mean:t.t_op_mean};}
+  /* every metric the simulation writes; ndp_h is the all-year value (older JSONs: ndp_summer_h) */
+  function m(d){if(!d||!d.metrics)return{};const t=d.metrics;
+    return{tcp:t.tcp,hsp_hours:t.hsp_hours,hsp_pct:t.hsp,csp:t.csp,csp_hours:t.csp_hours,
+      ndp_hours:(t.ndp_h!=null?t.ndp_h:t.ndp_summer_h),t_op_mean:t.t_op_mean,nhr:t.nhr,
+      t_air_mean_year:t.t_air_mean_year,t_air_mean_warm:t.t_air_mean_warm,t_air_peak_warm:t.t_air_peak_warm,
+      vent_loss:t.vent_loss_kwh,vent_gain:t.vent_gain_kwh,ach_night:t.ach_night_mean_warm,
+      warm_season:t.warm_season||(d.meta&&d.meta.warm_season)||null};}
   return{present:m(vc.present),ssp585_2050:m(vc.ssp585_2050),ssp585_2080:m(vc.ssp585_2080)};
 }
 const SIM_STEP={A:0,B:0};   /* continuous slider 0-8 per slot */
@@ -6507,6 +6521,7 @@ const SIM_CMAPS={
     [0.141,0.518,0.267],  /* 1800 h green                      */
     [0.000,0.267,0.106],  /* 2000 h deep forest green           */
   ],
+  csp:[[0.93,0.95,0.98],[0.67,0.85,0.91],[0.45,0.68,0.82],[0.27,0.46,0.71],[0.19,0.21,0.58]],   /* overcooling: pale > deep blue */
   t_op:[
     [0.192,0.212,0.584],  /* ~10 °C deep indigo-blue            */
     [0.271,0.459,0.706],  /* ~14 °C blue                        */
@@ -6530,13 +6545,19 @@ function simInterp(d,step){
   if(!d)return null;
   const t=step/8,p=d.present||{},s5=d.ssp585_2050||{},s8=d.ssp585_2080||{};
   const L=(a,b,f)=>a!=null&&b!=null?+(a+f*(b-a)).toFixed(2):null;
-  if(t<=0.5){const f=t*2;return{tcp:L(p.tcp,s5.tcp,f),hsp:L(p.hsp_hours,s5.hsp_hours,f),ndp:L(p.ndp_hours,s5.ndp_hours,f),t_op:L(p.t_op_mean,s5.t_op_mean,f)};}
-  const f=(t-0.5)*2;return{tcp:L(s5.tcp,s8.tcp,f),hsp:L(s5.hsp_hours,s8.hsp_hours,f),ndp:L(s5.ndp_hours,s8.ndp_hours,f),t_op:L(s5.t_op_mean,s8.t_op_mean,f)};
+  const lo=t<=0.5?p:s5,hi=t<=0.5?s5:s8,f=t<=0.5?t*2:(t-0.5)*2;
+  return{tcp:L(lo.tcp,hi.tcp,f),hsp:L(lo.hsp_hours,hi.hsp_hours,f),hsp_pct:L(lo.hsp_pct,hi.hsp_pct,f),
+    csp:L(lo.csp,hi.csp,f),csp_h:L(lo.csp_hours,hi.csp_hours,f),
+    ndp:L(lo.ndp_hours,hi.ndp_hours,f),t_op:L(lo.t_op_mean,hi.t_op_mean,f),nhr:L(lo.nhr,hi.nhr,f),
+    tair_y:L(lo.t_air_mean_year,hi.t_air_mean_year,f),tair_w:L(lo.t_air_mean_warm,hi.t_air_mean_warm,f),
+    tair_p:L(lo.t_air_peak_warm,hi.t_air_peak_warm,f),vloss:L(lo.vent_loss,hi.vent_loss,f),vgain:L(lo.vent_gain,hi.vent_gain,f),
+    ach:L(lo.ach_night,hi.ach_night,f),warm:(p.warm_season||s5.warm_season||s8.warm_season||null)};
 }
 function simNorm(v,metric){
   if(v==null)return 0.5;
   if(metric==='tcp') return Math.max(0,Math.min(1,v/100));         /* 0%=deep red, 100%=forest green */
   if(metric==='hsp') return Math.max(0,Math.min(1,v/3000));        /* 0=teal, 3000h=maroon (Artmann at 0.33) */
+  if(metric==='csp') return Math.max(0,Math.min(1,v/60));          /* 0 h = pale, 60 % of applicable hours = deep blue */
   if(metric==='ndp') return Math.max(0,Math.min(1,v/2000));        /* 0=red, 2000h=forest green (Artmann at 0.5) */
   return Math.max(0,Math.min(1,(v-10)/30));                         /* t_op: 10°C=indigo, 40°C=crimson */
 }
@@ -6560,6 +6581,14 @@ DIAGRAM_META={
     return 'Simulation not yet run.';
   }},
 };
+DIAGRAM_META.csp={label:'CSP %',caption:c=>{
+    const step=SIM_STEP[c===byId(selectedId)?'A':'B']||0;
+    const m=simInterp(SIM_CACHE[c.id]||SIM_VIZ_CACHE[c.id]&&vizCacheToSimData(SIM_VIZ_CACHE[c.id]),step);
+    if(m&&m.csp!=null)return `${m.csp.toFixed(1)}% of applicable hours below the ASHRAE 55-2020 adaptive lower limit (overcooling).`;
+    const xl=c.sim&&c.sim.csp?c.sim.csp[step<=0?0:step<=4?1:2]:null;
+    if(xl!=null)return `${xl.toFixed(1)}% of applicable hours below the ASHRAE 55-2020 adaptive lower limit (overcooling).`;
+    return 'Simulation not yet run.';
+}};
 let currentDiagram={A:'tcp',B:'tcp'};
 let shapeShiftOn={A:false,B:false};
 let bigBrotherActive=false,bbLine=null,bbResultId=null;
@@ -6685,6 +6714,9 @@ function disposeViewer(slot){
     mats.forEach(m=>{if(m&&m.map&&typeof m.map.dispose==='function')m.map.dispose();if(m&&typeof m.dispose==='function')m.dispose();});
   });
   v.renderer.dispose();
+  if(v.ro){try{v.ro.disconnect();}catch(e){}}
+  if(v.lbl&&v.lbl.parentNode)v.lbl.parentNode.removeChild(v.lbl);
+  if(v.container)v.container.querySelectorAll('.sim-legend-ov').forEach(n=>n.remove());
   if(v.renderer.domElement&&v.renderer.domElement.parentNode)v.renderer.domElement.parentNode.removeChild(v.renderer.domElement);
   VIEWERS[slot]=null;
 }
@@ -6743,6 +6775,7 @@ function createNoDataCube(container,slot,label){
     lbl.style.cssText='position:absolute;bottom:10px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);pointer-events:none;letter-spacing:.04em;';
     lbl.textContent=label||'simulation not yet run';
     container.appendChild(lbl);
+    container.querySelectorAll('.sim-legend-ov').forEach(n=>n.remove());
 
     /* orbit controls, same pattern as regular viewer */
     const radius=22;let az=Math.PI*0.28,pol=Math.PI*0.36,dragging=false,lastX=0,lastY=0;
@@ -6763,7 +6796,7 @@ function createNoDataCube(container,slot,label){
     requestAnimationFrame(()=>requestAnimationFrame(onResize));
 
     /* register before tick so VIEWERS[slot].raf = N works */
-    const thisViewer={renderer,scene,camera,container,onDown,onMove,onUp,onResize,raf:0};
+    const thisViewer={renderer,scene,camera,container,onDown,onMove,onUp,onResize,raf:0,lbl:lbl};
     VIEWERS[slot]=thisViewer;
     /* Initial render, must happen before RAF so something is visible immediately */
     renderer.render(scene,camera);
@@ -6825,6 +6858,8 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
     const shape=EGG_SHAPES[c.id];
     if(!_vizPoly&&!shape){createNoDataCube(container,slot);return;}
     const poly=_vizPoly||shape.env.map(([nx,ny])=>[nx*W,ny*D]);
+    const _pxs=poly.map(q=>q[0]),_pys=poly.map(q=>q[1]);
+    const SW=_vizPoly?Math.max(..._pxs)-Math.min(..._pxs):W,SD=_vizPoly?Math.max(..._pys)-Math.min(..._pys):D;
     const eH=_vizBld&&_vizBld.building&&_vizBld.building.eave_height||Math.max(2.4,Math.min(7,H));
     const ridgeH=_vizBld&&_vizBld.building&&_vizBld.building.ridge_height||eH+( (Math.min(W,D)/2)*Math.tan(pitch*Math.PI/180) );
     const rise=ridgeH-eH;
@@ -6838,6 +6873,14 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
     const ePts=poly.map(([x,y])=>new THREE.Vector3(x,eH,-y));ePts.push(ePts[0]);
     group.add(mkL(fPts));group.add(mkL(ePts));
     poly.forEach(([x,y])=>group.add(mkL([new THREE.Vector3(x,0,-y),new THREE.Vector3(x,eH,-y)])));
+    /* courtyards: the walls facing the courtyard are exterior walls, drawn like the outer ones */
+    const _holes=(_vizBld&&_vizBld.building&&_vizBld.building.holes_2d)||[];
+    _holes.forEach(hr=>{
+      const fp2=hr.map(([x,y])=>new THREE.Vector3(x,0,-y));fp2.push(fp2[0]);
+      const ep2=hr.map(([x,y])=>new THREE.Vector3(x,eH,-y));ep2.push(ep2[0]);
+      group.add(mkL(fp2));group.add(mkL(ep2));
+      hr.forEach(([x,y])=>group.add(mkL([new THREE.Vector3(x,0,-y),new THREE.Vector3(x,eH,-y)])));
+    });
     /* roof wireframe, read pre-computed segments from viz JSON.
        Coordinates are already in Three.js space (Python _to3: [x, ridge_h, -y_dxf]).
        Covers all roof types: gable, hipped, conical, dome, barrel, gambrel, shed, flat. */
@@ -6865,6 +6908,14 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
       group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([rA,rB]),rm()));
       ePts.slice(0,-1).forEach(p=>{const to=p.distanceTo(new THREE.Vector3(rA.x,eH,rA.z))<p.distanceTo(new THREE.Vector3(rB.x,eH,rB.z))?rA:rB;group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([p.clone(),to.clone()]),rm()));});
     }
+    /* roof surfaces (real shapes, also cone and dome): faint filled faces behind the wireframe */
+    const _rsf=(_vizBld&&_vizBld.roof_surfaces)||[];
+    if(_rsf.length){
+      const pos=[];
+      _rsf.forEach(P=>{for(let i=1;i<P.length-1;i++)[P[0],P[i],P[i+1]].forEach(v=>pos.push(v[0],v[1],v[2]));});
+      const rg=new THREE.BufferGeometry();rg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+      group.add(new THREE.Mesh(rg,new THREE.MeshBasicMaterial({color:dark?0xaaaaaa:0x8a7a6a,transparent:true,opacity:0.13,side:THREE.DoubleSide,depthWrite:false})));
+    }
     /* inner wall face, polygon offset inward by wall_thick_m */
     const _innerPoly=_vizBld&&_vizBld.building&&_vizBld.building.inner_polygon_2d;
     if(_innerPoly&&_innerPoly.length>2){
@@ -6890,11 +6941,14 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
     const _aps=_vizBld?(_vizBld.apertures||[]):[];
     /* Lime green matches DXF plan colour, stepped down slightly for light-mode readability */
     const WIN_COLOR=0x00CC22;
+    const OPEN_COL3={opening_w:0x00CC22,opening_fixed:0x3C78D8,opening_open:0xF0A030};
+    const _typesSeen=new Set();
     _aps.forEach(ap=>{
+      const _wc=OPEN_COL3[ap.type]||WIN_COLOR;if(ap.type)_typesSeen.add(ap.type);
       if(!ap.p0||!ap.p1||!ap.p2||!ap.p3)return;
       const pts=[ap.p0,ap.p1,ap.p2,ap.p3,ap.p0].map(([x,y,z])=>new THREE.Vector3(x,z,-y));
       /* outline */
-      const winMat=new THREE.LineBasicMaterial({color:WIN_COLOR,opacity:1,transparent:false});
+      const winMat=new THREE.LineBasicMaterial({color:_wc,opacity:1,transparent:false});
       group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),winMat));
       /* filled face two triangles so it renders as a solid quad */
       const [p0,p1,p2,p3]=pts;
@@ -6904,9 +6958,51 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
         p0.x,p0.y,p0.z, p2.x,p2.y,p2.z, p3.x,p3.y,p3.z,
       ]);
       fGeo.setAttribute('position',new THREE.BufferAttribute(verts,3));
-      const fMat=new THREE.MeshBasicMaterial({color:WIN_COLOR,transparent:true,opacity:0.22,side:THREE.DoubleSide});
+      const fMat=new THREE.MeshBasicMaterial({color:_wc,transparent:true,opacity:ap.type==='opening_open'?0.35:0.22,side:THREE.DoubleSide});
       group.add(new THREE.Mesh(fGeo,fMat));
     });
+    /* shutters: wood surfaces floating in front of the windows */
+    const _shs=(_vizBld&&_vizBld.shutters)||[];
+    _shs.forEach(sh=>{
+      if(!sh.p0)return;
+      const q=[sh.p0,sh.p1,sh.p2,sh.p3].map(([x,y,z])=>new THREE.Vector3(x,z,-y));
+      const g2=new THREE.BufferGeometry();
+      g2.setAttribute('position',new THREE.BufferAttribute(new Float32Array([q[0].x,q[0].y,q[0].z,q[1].x,q[1].y,q[1].z,q[2].x,q[2].y,q[2].z,q[0].x,q[0].y,q[0].z,q[2].x,q[2].y,q[2].z,q[3].x,q[3].y,q[3].z]),3));
+      group.add(new THREE.Mesh(g2,new THREE.MeshBasicMaterial({color:0x8a6a44,transparent:true,opacity:0.8,side:THREE.DoubleSide})));
+      group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(q.concat([q[0]])),new THREE.LineBasicMaterial({color:0x5a4529})));
+    });
+    /* roof opening */
+    const _rop=_vizBld&&_vizBld.roof_opening;
+    if(_rop&&_rop.length>=3){
+      const q=_rop.map(([x,y,z])=>new THREE.Vector3(x,z+0.03,-y));
+      const g3=new THREE.BufferGeometry();
+      g3.setAttribute('position',new THREE.BufferAttribute(new Float32Array([q[0].x,q[0].y,q[0].z,q[1].x,q[1].y,q[1].z,q[2].x,q[2].y,q[2].z,q[0].x,q[0].y,q[0].z,q[2].x,q[2].y,q[2].z,q[3].x,q[3].y,q[3].z]),3));
+      group.add(new THREE.Mesh(g3,new THREE.MeshBasicMaterial({color:0xF0A030,transparent:true,opacity:0.6,side:THREE.DoubleSide})));
+      group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(q.concat([q[0]])),new THREE.LineBasicMaterial({color:0xF0A030})));
+    }
+    /* neighbours: the four context boxes of the simulation (same height as the house) */
+    const _nbs=(_vizBld&&_vizBld.neighbours)||[];
+    _nbs.forEach(nb=>{
+      const bg=new THREE.BoxGeometry(nb.size[0],nb.height,nb.size[1]);
+      const bm=new THREE.Mesh(bg,new THREE.MeshBasicMaterial({color:dark?0x888888:0x999999,transparent:true,opacity:0.10,depthWrite:false}));
+      bm.position.set(nb.center[0],nb.height/2,-nb.center[1]);group.add(bm);
+      const bl=new THREE.LineSegments(new THREE.EdgesGeometry(bg),new THREE.LineBasicMaterial({color:dark?0x777777:0x888888,transparent:true,opacity:0.5}));
+      bl.position.copy(bm.position);group.add(bl);
+    });
+    /* legend of what is drawn (only the items this case has) */
+    (function(){
+      const items=[];
+      const nm={opening_w:['#00CC22','opening_w'],opening_fixed:['#3C78D8','opening_fixed'],opening_open:['#F0A030','opening_open']};
+      Object.keys(nm).forEach(k=>{if(_typesSeen.has(k))items.push(nm[k]);});
+      if(_shs.length)items.push(['#8a6a44','shutters']);
+      if(_rop)items.push(['#F0A030','roof opening']);
+      if(_nbs.length)items.push(['#999999','neighbours ('+((_vizBld&&_vizBld.context)||'')+')']);
+      if(!items.length)return;
+      const lg=document.createElement('div');lg.className='sim-legend-ov';
+      lg.style.cssText='position:absolute;top:8px;left:8px;display:flex;flex-direction:column;gap:2px;font-family:var(--mono);font-size:9px;color:var(--ink-soft);pointer-events:none;';
+      lg.innerHTML=items.map(([c2,t2])=>`<span style="display:flex;align-items:center;gap:5px;"><i style="display:inline-block;width:9px;height:9px;background:${c2};opacity:.85"></i>${t2}</span>`).join('');
+      if(getComputedStyle(container).position==='static')container.style.position='relative';container.appendChild(lg);
+    })();
     /* ground plane */
     const gd=new THREE.Mesh(new THREE.PlaneGeometry(60,60),new THREE.MeshBasicMaterial({color:dark?0x111113:0xe8e4de,transparent:true,opacity:0.35}));
     gd.rotation.x=-Math.PI/2;scene.add(gd);
@@ -6917,7 +7013,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
       while(ndpGroup.children.length){const m=ndpGroup.children[0];ndpGroup.remove(m);m.geometry&&m.geometry.dispose();m.material&&m.material.dispose();}
       const mv=simInterp(simData,step);if(!mv)return;
       const metric=currentDiagram[slot]||'tcp';
-      const metricVal=metric==='t_op'?mv.t_op:metric==='hsp'?mv.hsp:metric==='ndp'?mv.ndp:mv.tcp;
+      const metricVal=metric==='t_op'?mv.t_op:metric==='hsp'?mv.hsp:metric==='csp'?mv.csp_pct_for_norm??mv.csp:metric==='ndp'?mv.ndp:mv.tcp;
       const norm=simNorm(metricVal,metric);
       /* use viz JSON sensor grid if available, else solid floor */
       const nearest=step<=2?'present':step<=6?'ssp585_2050':'ssp585_2080';
@@ -6926,7 +7022,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
       /* sensor grid only valid for tcp/hsp, those have real spatial proximity data.
          t_op and ndp are zone-averaged only; showing a grid would imply per-cell
          EnergyPlus data we don't have. */
-      const gridApplies=grid&&grid.cells&&grid.cells.length>0&&(metric==='tcp'||metric==='hsp');
+      const gridApplies=grid&&grid.cells&&grid.cells.length>0&&(metric==='tcp'||metric==='hsp'||(metric==='csp'&&grid.method==='radiance_adaptive_comfort_map'));
       if(gridApplies){
         const res=(grid.res||0.5)*1.01; /* 1% overlap eliminates seams */
         /* Local histogram stretch: find min/max of cell.n in THIS grid so the full
@@ -6936,13 +7032,13 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
            Blend: 70% zone norm (so the overall hue strongly reflects the actual
            metric value and changes visibly as the slider moves) + 30% local
            stretch (preserves spatial variation within the floor plan). */
-        const nArr=grid.cells.map(c=>metric==='tcp'?(c.n_tcp??c.n):c.n);
+        const nArr=grid.cells.map(c=>metric==='tcp'?(c.n_tcp??c.n):metric==='csp'?(c.n_csp??c.n):c.n);
         const nMin=Math.min(...nArr),nMax=Math.max(...nArr);
         const nR=Math.max(nMax-nMin,0.02); /* guard against degenerate flat grid */
         const cg=new THREE.Group();cg.isGroup=true;
         const hasRadiance=grid.method==='radiance_adaptive_comfort_map';
         grid.cells.forEach(cell=>{
-          const cellN=metric==='tcp'?(cell.n_tcp??cell.n):cell.n;
+          const cellN=metric==='tcp'?(cell.n_tcp??cell.n):metric==='csp'?(cell.n_csp??cell.n):cell.n;
           const stretched=(cellN-nMin)/nR;          /* 0=best cell, 1=worst */
           /* 60 % zone-level norm + 40 % local stretch > richer colour variance
              while still showing the true metric magnitude across buildings     */
@@ -6962,6 +7058,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
         /* solid floor colour, zone-averaged metric (also fallback for t_op/ndp) */
         const[r,g,b]=simCmap(norm,metric);
         const shape2d=new THREE.Shape(poly.map(([x,y])=>new THREE.Vector2(x,-y)));
+        _holes.forEach(hr=>shape2d.holes.push(new THREE.Path(hr.map(([x,y])=>new THREE.Vector2(x,-y)))));
         floorMesh=new THREE.Mesh(new THREE.ShapeGeometry(shape2d),new THREE.MeshBasicMaterial({color:new THREE.Color(r,g,b),transparent:true,opacity:0.55,side:THREE.DoubleSide}));
         floorMesh.rotation.x=-Math.PI/2;floorMesh.position.y=0.02;group.add(floorMesh);
       }
@@ -6979,8 +7076,8 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
       }
     }
     /* orbit + scroll zoom + hover tooltip */
-    let az=0.88,pol=0.95,drag=false,lx=0,ly=0,rad=Math.max(W,D)*2.4+8;
-    const radMin=Math.max(W,D)*0.8+2,radMax=Math.max(W,D)*6+20;
+    let az=0.88,pol=0.95,drag=false,lx=0,ly=0,rad=Math.max(SW,SD)*2.4+8;
+    const radMin=Math.max(SW,SD)*0.8+2,radMax=Math.max(SW,SD)*9+30;
     /* centroid of actual polygon for camera target */
     const pcx=poly.reduce((s,p)=>s+p[0],0)/poly.length;
     const pcy=poly.reduce((s,p)=>s+p[1],0)/poly.length;
@@ -6989,7 +7086,7 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
       ?_vizBld.building.north_angle_rad:null;
     /* North arrow, simple flat arrow lying on the ground plane */
     if(_northRad!==null){
-      const bspan=Math.max(W||5,D||5);
+      const bspan=Math.max(SW||5,SD||5);
       /* Arrow placed entirely outside the building:
          tail at 1.3×span from center (well beyond any eave),
          tip at 0.8×span from center, both south of the building edge (≈0.5×span).
@@ -7058,6 +7155,8 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
             /* Radiance path: show real per-cell values */
             if(metric==='tcp'){
               disp=`TCP: ${(cellN*100).toFixed(1)}%`;
+            }else if(metric==='csp'){
+              disp=`CSP: ${(cellN*100).toFixed(1)}% of occ. hrs`;
             }else if(metric==='hsp'){
               /* cell.n = hsp_pct/100 for Radiance output */
               disp=`HSP: ${(cellN*100).toFixed(1)}% of occ. hrs`;
@@ -7099,8 +7198,11 @@ function buildSimViewer(container,c,simDataOrVizCache,slot){
     container.addEventListener('pointerdown',onDown);
     window.addEventListener('pointerup',onUp);window.addEventListener('resize',onResize);
     requestAnimationFrame(()=>requestAnimationFrame(onResize));
+    /* the tab can be hidden while the viewer is built (container 0 x 0): follow every later size change */
+    let _ro=null;
+    if(typeof ResizeObserver!=='undefined'){_ro=new ResizeObserver(()=>onResize());_ro.observe(container);}
     /* expose update hooks */
-    VIEWERS[slot]={renderer,scene,camera,container,onDown,onMove,onUp,onResize,raf:null,
+    VIEWERS[slot]={renderer,scene,camera,container,onDown,onMove,onUp,onResize,raf:null,ro:_ro,
       _updateScene:updateScene,
       _setStep:(s)=>{SIM_STEP[slot]=s;updateScene(s);
         const inp=document.getElementById('simSlider-'+slot);if(inp)inp.value=s;
@@ -7160,6 +7262,12 @@ function updateSimGrid(slot,step,simData){
   /* hspDisp: separate pct and hours for split-cell layout */
   const ndp=m&&m.ndp!=null?Math.round(m.ndp):null;
   const top=m&&m.t_op!=null?m.t_op.toFixed(1):null;
+  const f1=(v,d=1)=>v!=null?(+v).toFixed(d):null;
+  const cspPct=f1(m&&m.csp),cspH=m&&m.csp_h!=null?Math.round(m.csp_h):null;
+  const nhr=f1(m&&m.nhr),tairY=f1(m&&m.tair_y),tairW=f1(m&&m.tair_w),tairP=f1(m&&m.tair_p);
+  const vloss=m&&m.vloss!=null?Math.round(m.vloss):null,vgain=m&&m.vgain!=null?Math.round(m.vgain):null;
+  const ach=f1(m&&m.ach,2);
+  const warmTxt=m&&m.warm?` (warm season: ${m.warm})`:'';
   const ndpWarn=ndp!=null&&ndp<NDP_THRESHOLD?` <span style="color:var(--rust)">⚠</span>`:'';
   /* Citation helper (reuse AR refs if available) */
   const _c=(k,abbr)=>typeof arShowCite==='function'?`<button class="ar-cite" onclick="event.stopPropagation();arShowCite(this,'${k}')" style="font-size:8px;vertical-align:middle;margin-left:3px">${abbr}</button>`:'' ;
@@ -7205,12 +7313,44 @@ function updateSimGrid(slot,step,simData){
     <div class="sim-cell">
       <div class="k">NDP, Night Discharge Potential ${_c('artmann2007','ⓘ')}</div>
       <div class="v">${ndp??nd}${ndpWarn}<span class="u">${ndp!=null?' h/y':''}</span></div>
-      <div class="ksub">Jun-Aug hours: T_out &lt; T_in and T_out &lt; 22°C (Artmann et al. 2007)</div>
+      <div class="ksub">all year, zone air temperature: hours with T_out &lt; T_in and T_out &lt; 22°C (Artmann et al. 2007)</div>
     </div>
     <div class="sim-cell">
       <div class="k">T_op, Mean Operative Temperature ${_c('dear2002','ⓘ')}</div>
       <div class="v">${top??nd}<span class="u">${top!=null?' °C':''}</span></div>
       <div class="ksub">Annual mean; T_op = (T_air + T_MRT) / 2, ISO 7726:1998</div>
+    </div>
+    <div class="sim-cell">
+      <div class="k">CSP, Cold Stress Potential</div>
+      <div class="hsp-split">
+        <div class="hsp-half"><div class="v">${cspPct??nd}<span class="u">${cspPct!=null?' %':''}</span></div><div class="hsp-sublabel">of applicable hours</div></div>
+        <div class="hsp-divider"></div>
+        <div class="hsp-half"><div class="v">${cspH??nd}<span class="u">${cspH!=null?' h/y':''}</span></div><div class="hsp-sublabel">per year</div></div>
+      </div>
+      <div class="ksub">below ASHRAE 55-2020 adaptive lower limit</div>
+    </div>
+    <div class="sim-cell">
+      <div class="k">NHR, Night Heat Retention</div>
+      <div class="v">${nhr??nd}<span class="u">${nhr!=null?' kWh/m²':''}</span></div>
+      <div class="ksub">night 20-07 h in the warm season${warmTxt}, per m² floor</div>
+    </div>
+    <div class="sim-cell">
+      <div class="k">T_air, Zone Air Temperature</div>
+      <div class="hsp-split">
+        <div class="hsp-half"><div class="v">${tairY??nd}<span class="u">${tairY!=null?' °C':''}</span></div><div class="hsp-sublabel">year mean</div></div>
+        <div class="hsp-divider"></div>
+        <div class="hsp-half"><div class="v">${tairW??nd}<span class="u">${tairW!=null?' °C':''}</span></div><div class="hsp-sublabel">warm season</div></div>
+      </div>
+      <div class="ksub">warm season peak: ${tairP!=null?tairP+' °C':'NO_DATA'}</div>
+    </div>
+    <div class="sim-cell">
+      <div class="k">Ventilation Heat Loss / Gain</div>
+      <div class="hsp-split">
+        <div class="hsp-half"><div class="v">${vloss??nd}<span class="u">${vloss!=null?' kWh':''}</span></div><div class="hsp-sublabel">loss, year</div></div>
+        <div class="hsp-divider"></div>
+        <div class="hsp-half"><div class="v">${vgain??nd}<span class="u">${vgain!=null?' kWh':''}</span></div><div class="hsp-sublabel">gain, year</div></div>
+      </div>
+      <div class="ksub">night ventilation ${ach!=null?ach+' ACH (warm season mean)':'rate n/a'}</div>
     </div>`;
 }
 
@@ -7403,6 +7543,7 @@ const LEGEND_GRADIENTS={
   tcp: cmapToGradient(SIM_CMAPS.tcp),   /* crimson > forest green */
   hsp: cmapToGradient(SIM_CMAPS.hsp),   /* pale teal > deep maroon */
   ndp: cmapToGradient(SIM_CMAPS.ndp),   /* deep red > forest green */
+  csp: cmapToGradient(SIM_CMAPS.csp),   /* pale > deep blue        */
   t_op:cmapToGradient(SIM_CMAPS.t_op),  /* indigo > crimson        */
 };
 function updateLegendGradient(slot,metric){
